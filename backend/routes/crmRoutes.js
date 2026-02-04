@@ -1,0 +1,25 @@
+const express = require('express');
+const router = express.Router();
+const crmController = require('../controllers/crmController');
+
+// Leads
+router.post('/leads', crmController.createLead);
+router.get('/leads', crmController.getLeads);
+router.put('/leads/:id', crmController.updateLead);
+router.delete('/leads/:id', crmController.deleteLead);
+
+// Deals
+router.post('/deals', crmController.createDeal);
+router.get('/deals', crmController.getDeals);
+router.put('/deals/:id', crmController.updateDeal);
+router.delete('/deals/:id', crmController.deleteDeal);
+
+// Tasks
+router.post('/tasks', crmController.createTask);
+router.get('/tasks', crmController.getTasks);
+router.put('/tasks/:id', crmController.updateTask);
+
+// Dashboard
+router.get('/dashboard', crmController.getDashboardStats);
+
+module.exports = router;

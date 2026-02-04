@@ -1,0 +1,320 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import api from '@/lib/api';
+import toast from 'react-hot-toast';
+import { FiBarChart2, FiDownload, FiCheckCircle, FiAlertCircle, FiSearch, FiFileText } from 'react-icons/fi';
+
+export default function TrialBalance() {
+    const router = useRouter();
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dateRange, setDateRange] = useState({
+        startDate: '',
+        endDate: ''
+    });
+
+    useEffect(() => {
+        fetchTrialBalance();
+    }, []);
+
+    const fetchTrialBalance = async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (dateRange.startDate) params.append('startDate', dateRange.startDate);
+            if (dateRange.endDate) params.append('endDate', dateRange.endDate);
+            
+            const res = await api.get(`/accounting/reports/trial-balance?${params}`);
+            setData(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to load trial balance');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleFilter = () => {
+        fetchTrialBalance();
+    };
+
+    const filteredData = data?.trialBalance.filter(item =>
+        item.ledgerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.groupName.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
+    const handleExport = () => {
+        if (!data) return;
+        const csvContent = [
+            ['Ledger Name', 'Group', 'Group Type', 'Opening Balance', 'Debit', 'Credit', 'Closing Balance'],
+            ...filteredData.map(item => [
+                item.ledgerName,
+                item.groupName,
+                item.groupType,
+                (item.openingBalance || 0).toFixed(2),
+                (item.debit || 0).toFixed(2),
+                (item.credit || 0).toFixed(2),
+                (item.closingBalance || 0).toFixed(2)
+            ]),
+            ['', '', 'TOTAL', (data.totalOpening || 0).toFixed(2), (data.totalDebit || 0).toFixed(2), (data.totalCredit || 0).toFixed(2), (data.totalClosing || 0).toFixed(2)]
+        ].map(row => row.join(',')).join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trial-balance-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+    };
+
+    const handleExportJSON = () => {
+        if (!data) return;
+        const exportData = {
+            reportType: 'Trial Balance',
+            generatedAt: new Date().toISOString(),
+            dateRange: dateRange,
+            summary: {
+                totalOpening: data.totalOpening,
+                totalDebit: data.totalDebit,
+                totalCredit: data.totalCredit,
+                totalClosing: data.totalClosing,
+                isBalanced: data.balanced
+            },
+            ledgers: filteredData.map(item => ({
+                ledgerName: item.ledgerName,
+                groupName: item.groupName,
+                groupType: item.groupType,
+                openingBalance: item.openingBalance || 0,
+                debit: item.debit || 0,
+                credit: item.credit || 0,
+                closingBalance: item.closingBalance || 0
+            }))
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trial-balance-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+    };
+
+    return (
+        <div className="p-4 bg-[#f8fafc] min-h-screen text-slate-700">
+            {/* Premium Gradient Header */}
+            <header className="rounded-xl bg-gradient-to-r from-emerald-800 to-teal-900 p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-emerald-900/10 no-print">
+                <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
+                        <FiBarChart2 className="text-emerald-400" size={20} />
+                    </div>
+                    <div>
+                        <h1 className="text-lg font-normal text-white leading-tight">Trial Balance</h1>
+                        <p className="text-emerald-300/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
+                    </div>
+                    <div className="hidden md:block h-8 border-l border-white/10 mx-2" />
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[9px] text-emerald-300/60 uppercase tracking-tighter">Period</span>
+                            <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded border border-white/10">
+                                <input
+                                    type="date"
+                                    className="bg-transparent border-none p-0 text-xs text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark]"
+                                    value={dateRange.startDate}
+                                    onChange={e => setDateRange({...dateRange, startDate: e.target.value})}
+                                />
+                                <span className="text-white/30 text-xs">to</span>
+                                <input
+                                    type="date"
+                                    className="bg-transparent border-none p-0 text-xs text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark]"
+                                    value={dateRange.endDate}
+                                    onChange={e => setDateRange({...dateRange, endDate: e.target.value})}
+                                />
+                            </div>
+                        </div>
+                        <div className="relative">
+                            <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40" size={14} />
+                            <input
+                                type="text"
+                                placeholder="Search ledgers..."
+                                className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-emerald-400 w-48 font-normal"
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            onClick={handleFilter}
+                            className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95"
+                        >
+                            Apply
+                        </button>
+                    </div>
+                </div>
+                <div className="flex gap-2">
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition-all text-[11px] font-normal border border-white/10 backdrop-blur-sm shadow-sm"
+                    >
+                        <FiDownload size={14} className="text-emerald-400" /> Export CSV
+                    </button>
+                    <button
+                        onClick={handleExportJSON}
+                        className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition-all text-[11px] font-normal border border-white/10 backdrop-blur-sm shadow-sm"
+                    >
+                        <FiFileText size={14} className="text-blue-400" /> Export JSON
+                    </button>
+                </div>
+            </header>
+
+            {/* Integrity Summary Row */}
+            {data && (
+                <div className={`mb-6 px-4 py-3 border rounded-lg shadow-sm ${data.balanced ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                    <div className="flex justify-between items-center text-xs">
+                        <div className="flex items-center gap-3">
+                            {data.balanced ? <FiCheckCircle className="text-emerald-600" size={18} /> : <FiAlertCircle className="text-rose-600" size={18} />}
+                            <span className="font-normal uppercase tracking-wider">
+                                {data.balanced ? 'Trial Balance Equilibrium Maintained' : 'Accounting Variance Detected!'}
+                            </span>
+                        </div>
+                        <div className="flex gap-8 items-center tabular-nums">
+                            <div className="flex flex-col items-end">
+                                <span className="text-[9px] opacity-60 uppercase">Net Opening</span>
+                                <span className="text-sm font-normal">₹{(data.totalOpening || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[9px] opacity-60 uppercase">Total Debits</span>
+                                <span className="text-sm font-normal">₹{(data.totalDebit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[9px] opacity-60 uppercase">Total Credits</span>
+                                <span className="text-sm font-normal">₹{(data.totalCredit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                            </div>
+                            <div className={`flex flex-col items-end px-4 border-l ${data.balanced ? 'border-emerald-200' : 'border-red-200'}`}>
+                                <span className="text-[9px] opacity-60 uppercase">Net Closing</span>
+                                <span className="text-sm font-normal">₹{(data.totalClosing || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {loading ? (
+                <div className="text-center py-20 text-xs text-slate-400 uppercase tracking-widest font-normal animate-pulse">Running Ledger Validation...</div>
+            ) : data ? (
+                <div className="border border-slate-300 shadow-xl shadow-slate-200/50 bg-white overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
+                                    <th className="px-4 py-2 text-left font-normal border-r border-slate-200 w-12">#</th>
+                                    <th className="px-4 py-2 text-left font-normal border-r border-slate-200">Account Particulars</th>
+                                    <th className="px-4 py-2 text-left font-normal border-r border-slate-200 w-32">Classification</th>
+                                    <th className="px-4 py-2 text-right font-normal border-r border-slate-200 w-32">Opening (₹)</th>
+                                    <th className="px-4 py-2 text-right font-normal border-r border-slate-200 w-32">Debit (₹)</th>
+                                    <th className="px-4 py-2 text-right font-normal border-r border-slate-200 w-32">Credit (₹)</th>
+                                    <th className="px-4 py-2 text-right font-normal w-32">Closing (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 font-normal">
+                                {filteredData.length === 0 ? (
+                                    <tr><td colSpan="7" className="px-4 py-10 text-center text-slate-300 text-xs uppercase tracking-widest font-normal">No Ledger Data Found</td></tr>
+                                ) : (
+                                    filteredData.map((item, index) => (
+                                        <tr key={index} className="hover:bg-slate-100/50 transition-colors text-[13px] text-slate-600">
+                                            <td className="px-4 py-1.5 text-[10px] text-slate-400 border-r border-slate-100">{index + 1}</td>
+                                            <td className="px-4 py-1.5 border-r border-slate-100">
+                                                <div 
+                                                    className="font-normal text-slate-800 hover:text-emerald-600 hover:underline cursor-pointer transition-colors"
+                                                    onClick={() => router.push(`/accounting/reports/ledger?ledgerId=${item.ledgerId}&startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`)}
+                                                >
+                                                    {item.ledgerName}
+                                                </div>
+                                                <div className="text-[10px] text-slate-400 uppercase tracking-tighter">{item.groupName}</div>
+                                            </td>
+                                            <td className="px-4 py-1.5 border-r border-slate-100">
+                                                <span className={`text-[9px] font-normal uppercase tracking-tighter px-2 py-0.5 rounded border inline-block w-10 text-center ${
+                                                    item.groupType === 'ASSETS' ? 'border-blue-200 bg-blue-50 text-blue-600' :
+                                                    item.groupType === 'LIABILITIES' ? 'border-rose-200 bg-rose-50 text-rose-600' :
+                                                    item.groupType === 'EQUITY' ? 'border-purple-200 bg-purple-50 text-purple-600' :
+                                                    item.groupType === 'INCOME' ? 'border-emerald-200 bg-emerald-50 text-emerald-600' :
+                                                    item.groupType === 'EXPENSES' ? 'border-amber-200 bg-amber-50 text-amber-600' :
+                                                    'border-slate-200 bg-slate-50 text-slate-600'
+                                                }`}>
+                                                    {item.groupType.substring(0, 3)}
+                                                </span>
+                                            </td>
+                                            <td className={`px-4 py-1.5 text-right tabular-nums border-r border-slate-100 font-normal ${(item.openingBalance || 0) >= 0 ? 'text-slate-600' : 'text-rose-600'}`}>
+                                                {(item.openingBalance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                            </td>
+                                            <td className="px-4 py-1.5 text-right tabular-nums border-r border-slate-100 font-normal text-slate-600">
+                                                {item.debit > 0 ? (item.debit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) : '-'}
+                                            </td>
+                                            <td className="px-4 py-1.5 text-right tabular-nums border-r border-slate-100 font-normal text-slate-600">
+                                                {item.credit > 0 ? (item.credit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) : '-'}
+                                            </td>
+                                            <td className={`px-4 py-1.5 text-right tabular-nums font-normal ${(item.closingBalance || 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                                {(item.closingBalance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                                {/* Vertical Spacer */}
+                                {[...Array(Math.max(0, 15 - filteredData.length))].map((_, i) => (
+                                    <tr key={`empty-${i}`} className="h-9">
+                                        <td className="border-r border-slate-100"></td>
+                                        <td className="border-r border-slate-100"></td>
+                                        <td className="border-r border-slate-100"></td>
+                                        <td className="border-r border-slate-100"></td>
+                                        <td className="border-r border-slate-100"></td>
+                                        <td className="border-r border-slate-100"></td>
+                                        <td></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <tfoot>
+                                <tr className="bg-gradient-to-r from-emerald-800 to-teal-900 border-t border-slate-300">
+                                    <td className="px-4 py-3 font-normal text-emerald-50 border-r border-white/10 uppercase text-xs" colSpan="3">Grand Trial Totals</td>
+                                    <td className="px-4 py-3 text-right tabular-nums text-white font-normal text-sm border-r border-white/10">
+                                        {(data.totalOpening || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                    </td>
+                                    <td className="px-4 py-3 text-right tabular-nums text-white font-normal text-sm border-r border-white/10">
+                                        {(data.totalDebit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                    </td>
+                                    <td className="px-4 py-3 text-right tabular-nums text-white font-normal text-sm border-r border-white/10">
+                                        {(data.totalCredit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                    </td>
+                                    <td className="px-4 py-3 text-right tabular-nums text-white font-normal text-sm">
+                                        {(data.totalClosing || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    {/* Footer Info */}
+                    <div className="bg-slate-50 border-t border-slate-200 px-4 py-2 flex justify-between items-center no-print">
+                        <div className="text-[10px] text-slate-400 uppercase tracking-widest font-normal">
+                            System Generated • High Density Reporting
+                        </div>
+                        <div className="text-[11px] text-slate-500 font-normal">
+                            Displaying {filteredData.length} records
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="text-center py-20 text-slate-300 text-xs font-normal uppercase tracking-widest">No Trial Balance Available</div>
+            )}
+
+            <style jsx global>{`
+                @media print {
+                    .no-print { display: none !important; }
+                    body { background: white !important; margin: 0; padding: 0.5in; }
+                    .bg-gradient-to-r { background: #064e3b !important; -webkit-print-color-adjust: exact; }
+                    .text-emerald-50, .text-white { color: white !important; -webkit-print-color-adjust: exact; }
+                    .border-slate-300 { border-color: #cbd5e1 !important; }
+                    table { border-collapse: collapse !important; width: 100% !important; }
+                }
+            `}</style>
+        </div>
+    );
+}

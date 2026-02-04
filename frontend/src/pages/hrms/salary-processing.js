@@ -1,0 +1,529 @@
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
+import toast from 'react-hot-toast';
+import { FiPlus, FiCalendar, FiDollarSign, FiUsers, FiCheckCircle, FiLoader, FiTrash2, FiFileText } from 'react-icons/fi';
+import ProfessionalModal from '@/components/ProfessionalModal';
+
+export default function SalaryProcessing() {
+    const [users, setUsers] = useState([]);
+    const [companyProfile, setCompanyProfile] = useState(null);
+    const [processingMode, setProcessingMode] = useState('individual'); // 'individual' or 'bulk'
+    const [processingData, setProcessingData] = useState({ 
+        userId: '', 
+        fromDate: '', 
+        toDate: '', 
+        allowances: '0', 
+        deductions: '0',
+        month: '',
+        year: new Date().getFullYear().toString()
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [recentProcessed, setRecentProcessed] = useState([]);
+    const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0, processing: false });
+    
+    // Confirmation Modal State
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        type: 'info',
+        title: '',
+        message: '',
+        confirmText: 'Confirm',
+        onConfirm: () => {},
+        details: []
+    });
+
+    const [preview, setPreview] = useState(null);
+    const [loadingPreview, setLoadingPreview] = useState(false);
+
+    useEffect(() => {
+        fetchUsers();
+        fetchCompanyProfile();
+        fetchRecentProcessed();
+    }, []);
+
+    useEffect(() => {
+        if (processingMode === 'individual' && processingData.userId && processingData.fromDate && processingData.toDate) {
+            fetchPreview();
+        } else {
+            setPreview(null);
+        }
+    }, [processingData.userId, processingData.fromDate, processingData.toDate, processingMode]);
+
+    const fetchPreview = async () => {
+        setLoadingPreview(true);
+        try {
+            const res = await api.get(`/hrms/payroll/preview`, {
+                params: {
+                    userId: processingData.userId,
+                    fromDate: processingData.fromDate,
+                    toDate: processingData.toDate
+                }
+            });
+            setPreview(res.data);
+        } catch (err) {
+            console.error("Preview failed:", err);
+        } finally {
+            setLoadingPreview(false);
+        }
+    };
+
+    const fetchUsers = async () => {
+        try {
+            const res = await api.get('/users');
+            setUsers(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to load users');
+        }
+    };
+
+    const fetchCompanyProfile = async () => {
+        try {
+            const res = await api.get('/company'); 
+            setCompanyProfile(res.data);
+        } catch (err) {
+            console.error("Failed to fetch company profile:", err);
+        }
+    };
+
+    const fetchRecentProcessed = async () => {
+        try {
+            const res = await api.get('/hrms/payroll/history');
+            setRecentProcessed(res.data.slice(0, 10));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleProcessSalary = async (e) => {
+        e.preventDefault();
+        if (!processingData.userId || !processingData.fromDate || !processingData.toDate) {
+            toast.error("Please fill all required fields");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const payload = {
+                ...processingData,
+                allowances: parseFloat(processingData.allowances || 0),
+                deductions: parseFloat(processingData.deductions || 0),
+                year: parseInt(processingData.year),
+                month: processingData.month || new Date(processingData.fromDate).toLocaleString('default', { month: 'long' })
+            };
+            await api.post('/hrms/payroll/generate', payload);
+            toast.success("Salary Processed Successfully!");
+            setProcessingData({ 
+                userId: '', fromDate: '', toDate: '', 
+                allowances: '0', deductions: '0', 
+                month: '', year: new Date().getFullYear().toString() 
+            });
+            fetchRecentProcessed();
+        } catch (err) {
+            toast.error(err.response?.data?.error || "Failed to process salary");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleBulkProcess = async (e) => {
+        e.preventDefault();
+        if (!processingData.fromDate || !processingData.toDate) {
+            toast.error("Please select date range");
+            return;
+        }
+
+        const eligibleUsers = users.filter(u => u.employeeProfile?.basicSalary > 0);
+        if (eligibleUsers.length === 0) {
+            toast.error("No employees with salary configured");
+            return;
+        }
+
+        setBulkProgress({ current: 0, total: eligibleUsers.length, processing: true });
+        let successCount = 0;
+        let failCount = 0;
+
+        for (let i = 0; i < eligibleUsers.length; i++) {
+            const user = eligibleUsers[i];
+            try {
+                const payload = {
+                    userId: user.id,
+                    fromDate: processingData.fromDate,
+                    toDate: processingData.toDate,
+                    allowances: parseFloat(processingData.allowances || 0),
+                    deductions: parseFloat(processingData.deductions || 0),
+                    year: parseInt(processingData.year),
+                    month: processingData.month || new Date(processingData.fromDate).toLocaleString('default', { month: 'long' })
+                };
+                await api.post('/hrms/payroll/generate', payload);
+                successCount++;
+            } catch (err) {
+                console.error(`Failed to process salary for ${user.name}:`, err);
+                failCount++;
+            }
+            setBulkProgress({ current: i + 1, total: eligibleUsers.length, processing: true });
+            // Small delay to prevent overwhelming the server
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        setBulkProgress({ current: 0, total: 0, processing: false });
+        toast.success(`Processed ${successCount} employees successfully${failCount > 0 ? `, ${failCount} failed` : ''}`);
+        fetchRecentProcessed();
+    };
+
+    const handleApprovePayroll = (payroll) => {
+        setConfirmModal({
+            isOpen: true,
+            type: 'success',
+            title: 'Approve Payroll',
+            message: `Are you sure you want to approve the salary for ${payroll.user?.name}? Once approved, the record will be locked and ready for payment disbursement.`,
+            confirmText: 'Approve Now',
+            onConfirm: () => executeApprove(payroll.id),
+            details: [
+                { label: 'Employee', value: payroll.user?.name },
+                { label: 'Period', value: `${payroll.month} ${payroll.year}` },
+                { label: 'Net Salary', value: `${companyProfile?.currencySymbol || '₹'}${parseFloat(payroll.netSalary).toLocaleString()}` }
+            ]
+        });
+    };
+
+    const executeApprove = async (id) => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        try {
+            await api.put(`/hrms/payroll/${id}/status`, { status: 'APPROVED' });
+            toast.success("Payroll approved successfully");
+            fetchRecentProcessed();
+        } catch (err) {
+            toast.error(err.response?.data?.error || "Failed to approve payroll");
+        }
+    };
+
+    const handleDeletePayroll = (payroll) => {
+        setConfirmModal({
+            isOpen: true,
+            type: 'danger',
+            title: 'Delete Payroll Record',
+            message: `You are about to delete the generated payroll for ${payroll.user?.name}. This action will reset any associated salary advances so they can be processed again. This cannot be undone.`,
+            confirmText: 'Yes, Delete',
+            onConfirm: () => executeDelete(payroll.id),
+            details: [
+                { label: 'Employee', value: payroll.user?.name },
+                { label: 'Period', value: `${payroll.month} ${payroll.year}` },
+                { label: 'Amount to Void', value: `${companyProfile?.currencySymbol || '₹'}${parseFloat(payroll.netSalary).toLocaleString()}` }
+            ]
+        });
+    };
+
+    const executeDelete = async (id) => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        try {
+            await api.delete(`/hrms/payroll/${id}`);
+            toast.success("Payroll deleted successfully");
+            fetchRecentProcessed();
+        } catch (err) {
+            toast.error(err.response?.data?.error || "Failed to delete payroll");
+        }
+    };
+
+    const progressPercentage = bulkProgress.total > 0 ? (bulkProgress.current / bulkProgress.total) * 100 : 0;
+
+    return (
+        <div className="p-6 max-w-7xl mx-auto">
+            <header className="mb-8">
+                <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <FiDollarSign className="text-emerald-600" />
+                    Salary Processing
+                </h1>
+                <p className="text-slate-500 text-sm mt-1">Process employee salaries with custom date ranges</p>
+            </header>
+
+            {/* Processing Mode Selector */}
+            <div className="mb-6 flex bg-slate-100 p-1 rounded-xl gap-1 w-fit">
+                <button 
+                    onClick={() => setProcessingMode('individual')}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${processingMode === 'individual' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                    Individual Processing
+                </button>
+                <button 
+                    onClick={() => setProcessingMode('bulk')}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${processingMode === 'bulk' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                    Bulk Processing (All Employees)
+                </button>
+            </div>
+
+            {/* Bulk Progress Bar */}
+            {bulkProgress.processing && (
+                <div className="mb-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <FiLoader className="text-emerald-600 animate-spin" size={20} />
+                            <span className="font-bold text-slate-800">Processing Salaries...</span>
+                        </div>
+                        <span className="text-sm font-medium text-slate-600">
+                            {bulkProgress.current} / {bulkProgress.total}
+                        </span>
+                    </div>
+                    <div className="relative w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-300 ease-out rounded-full shadow-sm"
+                            style={{ width: `${progressPercentage}%` }}
+                        >
+                            <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                        </div>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-2">Please wait while we process all employee salaries...</p>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Process Salary Form */}
+                <div className="lg:col-span-1">
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+                            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                <FiPlus className="text-emerald-500" /> 
+                                {processingMode === 'individual' ? 'Process Individual' : 'Process All Employees'}
+                            </h2>
+                        </div>
+                        <form onSubmit={processingMode === 'individual' ? handleProcessSalary : handleBulkProcess} className="p-6 space-y-5">
+                            {processingMode === 'individual' && (
+                                <div>
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Employee</label>
+                                    <select 
+                                        required
+                                        className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
+                                        value={processingData.userId}
+                                        onChange={e => setProcessingData({...processingData, userId: e.target.value})}
+                                    >
+                                        <option value="">Select Employee</option>
+                                        {users.map(u => (
+                                            <option key={u.id} value={u.id}>
+                                                {u.name} (@{u.username})
+                                                {u.employeeProfile?.basicSalary ? ` - ${companyProfile?.currencySymbol || '₹'}${u.employeeProfile.basicSalary}` : ' - No salary set'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {processingMode === 'bulk' && (
+                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                    <div className="flex items-start gap-3">
+                                        <FiUsers className="text-blue-600 mt-0.5 flex-shrink-0" size={20} />
+                                        <div>
+                                            <p className="text-sm font-bold text-blue-900">Bulk Processing</p>
+                                            <p className="text-xs text-blue-700 mt-1">
+                                                This will process salaries for all employees with configured basic salary ({users.filter(u => u.employeeProfile?.basicSalary > 0).length} employees)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">From Date</label>
+                                    <input 
+                                        required
+                                        type="date"
+                                        className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
+                                        value={processingData.fromDate}
+                                        onChange={e => setProcessingData({...processingData, fromDate: e.target.value})}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">To Date</label>
+                                    <input 
+                                        required
+                                        type="date"
+                                        className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
+                                        value={processingData.toDate}
+                                        onChange={e => setProcessingData({...processingData, toDate: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Preview Section */}
+                            {processingMode === 'individual' && preview && (
+                                <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
+                                    <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+                                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Calculation Summary</h3>
+                                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Attendance Driven</span>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Days</p>
+                                            <p className="text-lg font-black text-slate-800">{preview.calculation.totalDays}</p>
+                                        </div>
+                                        <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                                            <p className="text-[10px] text-emerald-500 font-bold uppercase mb-1">Payable Days</p>
+                                            <p className="text-lg font-black text-emerald-600">{preview.calculation.payableDays}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2 px-1">
+                                        <div className="flex justify-between text-xs font-bold text-slate-600">
+                                            <span>Monthly Basic</span>
+                                            <span>{companyProfile?.currencySymbol || '₹'}{parseFloat(preview.basicSalary).toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between text-xs font-bold text-red-500">
+                                            <span className="flex items-center gap-1">
+                                                Deductions ({preview.calculation.totalDays - preview.calculation.payableDays} days)
+                                            </span>
+                                            <span>-{companyProfile?.currencySymbol || '₹'}{(parseFloat(preview.basicSalary) - parseFloat(preview.calculation.calculatedBasic)).toLocaleString()}</span>
+                                        </div>
+                                        {preview.pendingAdvances > 0 && (
+                                            <div className="flex justify-between text-xs font-bold text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-100 mt-2">
+                                                <span>Salary Advances</span>
+                                                <span>-{companyProfile?.currencySymbol || '₹'}{parseFloat(preview.pendingAdvances).toLocaleString()}</span>
+                                            </div>
+                                        )}
+                                        <div className="border-t border-slate-200 pt-2 flex justify-between items-center">
+                                            <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Est. Basic Pay</span>
+                                            <span className="text-lg font-black text-slate-900 leading-none">
+                                                {companyProfile?.currencySymbol || '₹'}{parseFloat(preview.calculation.calculatedBasic).toLocaleString()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {processingMode === 'individual' && loadingPreview && (
+                                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                    <FiLoader className="mx-auto text-emerald-500 animate-spin mb-2" size={24} />
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Calculating...</p>
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                    Allowances ({companyProfile?.currencySymbol || '₹'})
+                                </label>
+                                <input 
+                                    type="number"
+                                    step="0.01"
+                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
+                                    value={processingData.allowances}
+                                    onChange={e => setProcessingData({...processingData, allowances: e.target.value})}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                    Deductions ({companyProfile?.currencySymbol || '₹'})
+                                </label>
+                                <input 
+                                    type="number"
+                                    step="0.01"
+                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
+                                    value={processingData.deductions}
+                                    onChange={e => setProcessingData({...processingData, deductions: e.target.value})}
+                                />
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                disabled={isSubmitting || bulkProgress.processing}
+                                className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black hover:shadow-xl hover:shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isSubmitting || bulkProgress.processing ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <FiLoader className="animate-spin" />
+                                        Processing...
+                                    </span>
+                                ) : (
+                                    processingMode === 'individual' ? 'Generate Payroll' : `Process All ${users.filter(u => u.employeeProfile?.basicSalary > 0).length} Employees`
+                                )}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {/* Recent Processed & Stats */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+                            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Recently Processed</h2>
+                        </div>
+                        <div className="p-6">
+                            {recentProcessed.length === 0 ? (
+                                <div className="text-center py-8 text-slate-400">
+                                    <FiCalendar className="mx-auto text-4xl mb-2" />
+                                    <p>No salaries processed yet</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {recentProcessed.map(p => (
+                                        <div key={p.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-emerald-200 transition-colors group">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                                                    <FiCheckCircle className="text-emerald-600" />
+                                                </div>
+                                                <div>
+                                                    <div className="font-bold text-slate-800">{p.user?.name || 'Unknown'}</div>
+                                                    <div className="text-xs text-slate-500 uppercase font-bold tracking-tighter">
+                                                        {p.fromDate && p.toDate ? (
+                                                            `${new Date(p.fromDate).toLocaleDateString()} - ${new Date(p.toDate).toLocaleDateString()}`
+                                                        ) : (
+                                                            `${p.month} ${p.year}`
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <div className="text-right">
+                                                    <div className="font-bold text-emerald-600">
+                                                        {companyProfile?.currencySymbol || '₹'}{parseFloat(p.netSalary).toFixed(2)}
+                                                    </div>
+                                                    <div className={`text-[10px] font-black uppercase tracking-widest ${p.status === 'GENERATED' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                                        {p.status}
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* Actions */}
+                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {p.status === 'GENERATED' && (
+                                                        <>
+                                                            <button 
+                                                                onClick={() => handleApprovePayroll(p)}
+                                                                className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                                                title="Approve for Payment"
+                                                            >
+                                                                <FiCheckCircle size={14} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handleDeletePayroll(p)}
+                                                                className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                                                title="Delete Payroll"
+                                                            >
+                                                                <FiTrash2 size={14} />
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ProfessionalModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                type={confirmModal.type}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                confirmText={confirmModal.confirmText}
+                details={confirmModal.details}
+            />
+        </div>
+    );
+}

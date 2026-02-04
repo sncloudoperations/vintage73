@@ -1,0 +1,223 @@
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
+import toast from 'react-hot-toast';
+import { FiLayers, FiDownload, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+
+export default function BalanceSheet() {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [asOfDate, setAsOfDate] = useState(new Date().toISOString().split('T')[0]);
+
+    useEffect(() => {
+        fetchBalanceSheet();
+    }, []);
+
+    const fetchBalanceSheet = async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (asOfDate) params.append('asOfDate', asOfDate);
+            
+            const res = await api.get(`/accounting/reports/balance-sheet?${params}`);
+            setData(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to load balance sheet');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="p-4 bg-[#f8fafc] min-h-screen text-slate-700">
+            {/* Premium Gradient Header */}
+            <header className="rounded-xl bg-gradient-to-r from-emerald-800 to-teal-900 p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-emerald-900/10 no-print">
+                <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
+                        <FiLayers className="text-emerald-400" size={20} />
+                    </div>
+                    <div>
+                        <h1 className="text-lg font-normal text-white leading-tight">Financial Balance Sheet</h1>
+                        <p className="text-emerald-300/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
+                    </div>
+                    <div className="hidden md:block h-8 border-l border-white/10 mx-2" />
+                    <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] text-emerald-300/60 uppercase tracking-tighter">Reporting Date</span>
+                            <input
+                                type="date"
+                                className="bg-transparent border-none p-0 text-sm text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark]"
+                                value={asOfDate}
+                                onChange={e => setAsOfDate(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            onClick={fetchBalanceSheet}
+                            className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95"
+                        >
+                            Update Report
+                        </button>
+                    </div>
+                </div>
+                <button
+                    onClick={() => window.print()}
+                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all text-xs font-normal border border-white/10 backdrop-blur-sm shadow-sm"
+                >
+                    <FiDownload size={14} className="text-emerald-400" /> Export PDF / Print
+                </button>
+            </header>
+
+            {loading ? (
+                <div className="text-center py-20 text-xs text-slate-400 uppercase tracking-widest font-normal">Processing Ledgers...</div>
+            ) : data ? (
+                <div className="overflow-x-auto text-[13px] font-normal">
+                    {/* Integrity Summary Row */}
+                    <div className={`mb-4 px-4 py-2 border ${data.balanced ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                        <div className="flex justify-between items-center text-xs">
+                            <div className="flex items-center gap-2">
+                                {data.balanced ? <FiCheckCircle size={14} /> : <FiAlertCircle size={14} />}
+                                <span>{data.balanced ? 'Equilibrium Maintained' : 'Out of Balance!'}</span>
+                            </div>
+                            <div className="flex gap-6">
+                                <span>Assets: {data.totalAssets.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                <span>Lia + Eq: {(data.totalLiabilities + data.totalEquity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                <span>Variance: {(data.totalAssets - (data.totalLiabilities + data.totalEquity)).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border-t border-l border-slate-300 shadow-xl shadow-slate-200/50">
+                        {/* ASSETS TABLE */}
+                        <div className="border-r border-b border-slate-300">
+                            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 px-4 py-3 border-b border-slate-300 text-xs text-emerald-50 uppercase font-normal tracking-wider">
+                                Assets (Application of Funds)
+                            </div>
+                            <table className="w-full border-collapse">
+                                <thead className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
+                                    <tr>
+                                        <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200">Account Name</th>
+                                        <th className="px-4 py-1.5 text-right font-normal">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {data.assets.map((item, index) => (
+                                        <tr key={index} className="hover:bg-slate-50 transition-colors text-slate-600">
+                                            <td className="px-4 py-1.5 border-r border-slate-100">
+                                                <div className="font-normal">{item.ledgerName}</div>
+                                                <div className="text-[10px] text-slate-400 uppercase tracking-tighter">{item.groupName}</div>
+                                            </td>
+                                            <td className="px-4 py-1.5 text-right tabular-nums">
+                                                {item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {/* Vertical Spacer */}
+                                    {[...Array(Math.max(0, 10 - data.assets.length))].map((_, i) => (
+                                        <tr key={`empty-${i}`} className="h-9">
+                                            <td className="border-r border-slate-100"></td>
+                                            <td></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr className="bg-gradient-to-r from-emerald-800 to-teal-900 border-t border-slate-300">
+                                        <td className="px-4 py-3 font-normal text-emerald-50 border-r border-white/10 uppercase text-xs">Total Assets</td>
+                                        <td className="px-4 py-3 text-right tabular-nums text-white font-normal">
+                                            {data.totalAssets.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        {/* LIABILITIES & EQUITY TABLE */}
+                        <div className="border-r border-b border-slate-300">
+                            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 px-4 py-3 border-b border-slate-300 text-xs text-emerald-50 uppercase font-normal tracking-wider">
+                                Liabilities & Equity (Sources of Funds)
+                            </div>
+                            
+                            {/* Liabilities Sub-section */}
+                            <table className="w-full border-collapse">
+                                <thead className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
+                                    <tr>
+                                        <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200">Account Name</th>
+                                        <th className="px-4 py-1.5 text-right font-normal">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="2" className="px-4 py-1 bg-slate-50/50 text-[10px] text-slate-400 uppercase font-normal tracking-widest border-b border-slate-100">
+                                            Liabilities
+                                        </td>
+                                    </tr>
+                                    {data.liabilities.map((item, index) => (
+                                        <tr key={index} className="border-b border-slate-50 hover:bg-slate-50 text-slate-600">
+                                            <td className="px-4 py-1.5 border-r border-slate-100">
+                                                <div className="font-normal">{item.ledgerName}</div>
+                                                <div className="text-[10px] text-slate-400 uppercase tracking-tighter">{item.groupName}</div>
+                                            </td>
+                                            <td className="px-4 py-1.5 text-right tabular-nums">
+                                                {item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    
+                                    <tr>
+                                        <td colSpan="2" className="px-4 py-1 bg-slate-50/50 text-[10px] text-slate-400 uppercase font-normal tracking-widest border-b border-t border-slate-100 mt-2">
+                                            Equity & Retained Earnings
+                                        </td>
+                                    </tr>
+                                    {data.equity.map((item, index) => (
+                                        <tr key={index} className="border-b border-slate-50 hover:bg-slate-50 text-slate-600">
+                                            <td className="px-4 py-1.5 border-r border-slate-100">
+                                                <div className="font-normal">{item.ledgerName}</div>
+                                                <div className="text-[10px] text-slate-400 uppercase tracking-tighter">{item.groupName}</div>
+                                            </td>
+                                            <td className="px-4 py-1.5 text-right tabular-nums text-emerald-600">
+                                                {item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                            </td>
+                                        </tr>
+                                    ))}
+
+                                    {/* Vertical Spacer */}
+                                    {[...Array(Math.max(0, 10 - (data.liabilities.length + data.equity.length)))].map((_, i) => (
+                                        <tr key={`empty-lia-${i}`} className="h-9">
+                                            <td className="border-r border-slate-100"></td>
+                                            <td></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr className="bg-gradient-to-r from-emerald-800 to-teal-900 border-t border-slate-300">
+                                        <td className="px-4 py-3 font-normal text-emerald-50 border-r border-white/10 uppercase text-xs">Total Lia + Eq</td>
+                                        <td className="px-4 py-3 text-right tabular-nums text-white font-normal">
+                                            {(data.totalLiabilities + data.totalEquity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div className="mt-8 text-center text-[10px] text-slate-300 uppercase tracking-[0.3em] font-normal no-print">
+                        Computer Generated Document - Professional Accounting Mode
+                    </div>
+                </div>
+            ) : (
+                <div className="text-center py-20 text-slate-300 text-xs font-normal uppercase tracking-widest">No Data Available</div>
+            )}
+
+            <style jsx global>{`
+                @media print {
+                    .no-print { display: none !important; }
+                    body { background: white !important; margin: 0; padding: 0.5in; }
+                    .bg-slate-100 { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
+                    .bg-slate-50 { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; }
+                    .border-slate-300 { border-color: #cbd5e1 !important; }
+                    .grid { display: flex !important; flex-direction: row !important; }
+                    .grid > div { flex: 1 !important; }
+                }
+            `}</style>
+        </div>
+    );
+}

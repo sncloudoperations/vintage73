@@ -1,0 +1,276 @@
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
+import toast from 'react-hot-toast';
+import { FiTrendingUp, FiDownload, FiSearch } from 'react-icons/fi';
+
+export default function ProfitLoss() {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dateRange, setDateRange] = useState({
+        startDate: '',
+        endDate: ''
+    });
+
+    useEffect(() => {
+        fetchProfitLoss();
+    }, []);
+
+    const fetchProfitLoss = async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (dateRange.startDate) params.append('startDate', dateRange.startDate);
+            if (dateRange.endDate) params.append('endDate', dateRange.endDate);
+            
+            const res = await api.get(`/accounting/reports/profit-loss?${params}`);
+            setData(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to load profit & loss statement');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleFilter = () => {
+        fetchProfitLoss();
+    };
+
+    const filteredIncome = data?.income.filter(item =>
+        item.ledgerName.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
+    const filteredExpenses = data?.expenses.filter(item =>
+        item.ledgerName.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
+    const handleExport = () => {
+        if (!data) return;
+        const csvContent = [
+            ['INCOME'],
+            ['Ledger Name', 'Group', 'Amount'],
+            ...filteredIncome.map(item => [item.ledgerName, item.groupName, item.amount.toFixed(2)]),
+            ['', 'TOTAL INCOME', data.totalIncome.toFixed(2)],
+            [''],
+            ['EXPENSES'],
+            ['Ledger Name', 'Group', 'Amount'],
+            ...filteredExpenses.map(item => [item.ledgerName, item.groupName, item.amount.toFixed(2)]),
+            ['', 'TOTAL EXPENSES', data.totalExpenses.toFixed(2)],
+            [''],
+            ['', data.isProfitable ? 'NET PROFIT' : 'NET LOSS', Math.abs(data.netProfit).toFixed(2)]
+        ].map(row => row.join(',')).join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'profit-loss.csv';
+        a.click();
+    };
+
+    return (
+        <div className="p-4 bg-[#f8fafc] min-h-screen text-slate-700">
+            {/* Premium Gradient Header */}
+            <header className="rounded-xl bg-gradient-to-r from-emerald-800 to-teal-900 p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-emerald-900/10 no-print">
+                <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
+                        <FiTrendingUp className="text-emerald-400" size={20} />
+                    </div>
+                    <div>
+                        <h1 className="text-lg font-normal text-white leading-tight">Profit & Loss Statement</h1>
+                        <p className="text-emerald-300/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
+                    </div>
+                    <div className="hidden md:block h-8 border-l border-white/10 mx-2" />
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[9px] text-emerald-300/60 uppercase tracking-tighter">Period</span>
+                            <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded border border-white/10">
+                                <input
+                                    type="date"
+                                    className="bg-transparent border-none p-0 text-xs text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark]"
+                                    value={dateRange.startDate}
+                                    onChange={e => setDateRange({...dateRange, startDate: e.target.value})}
+                                />
+                                <span className="text-white/30 text-xs">to</span>
+                                <input
+                                    type="date"
+                                    className="bg-transparent border-none p-0 text-xs text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark]"
+                                    value={dateRange.endDate}
+                                    onChange={e => setDateRange({...dateRange, endDate: e.target.value})}
+                                />
+                            </div>
+                        </div>
+                        <div className="relative">
+                            <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40" size={14} />
+                            <input
+                                type="text"
+                                placeholder="Search ledgers..."
+                                className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-emerald-400 w-48 font-normal"
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            onClick={handleFilter}
+                            className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95"
+                        >
+                            Apply
+                        </button>
+                    </div>
+                </div>
+                <button
+                    onClick={handleExport}
+                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all text-xs font-normal border border-white/10 backdrop-blur-sm shadow-sm"
+                >
+                    <FiDownload size={14} className="text-emerald-400" /> Export CSV
+                </button>
+            </header>
+
+            {loading ? (
+                <div className="text-center py-20 text-xs text-slate-400 uppercase tracking-widest font-normal animate-pulse">Analyzing Financial Records...</div>
+            ) : data ? (
+                <div className="space-y-6 overflow-x-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                        {/* INCOME TABLE */}
+                        <div className="border border-slate-300 shadow-xl shadow-slate-200/50 bg-white">
+                            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 px-4 py-3 border-b border-slate-300 text-xs text-emerald-50 uppercase font-normal tracking-wider">
+                                Income Analysis
+                            </div>
+                            <table className="w-full border-collapse">
+                                <thead className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
+                                    <tr>
+                                        <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200 w-12">#</th>
+                                        <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200">Particulars</th>
+                                        <th className="px-4 py-1.5 text-right font-normal">Amount (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 font-normal">
+                                    {filteredIncome.length === 0 ? (
+                                        <tr><td colSpan="3" className="px-4 py-10 text-center text-slate-300 text-xs uppercase tracking-widest font-normal">No Income Recorded</td></tr>
+                                    ) : (
+                                        filteredIncome.map((item, index) => (
+                                            <tr key={index} className="hover:bg-slate-50 transition-colors text-[13px] text-slate-600">
+                                                <td className="px-4 py-1.5 text-[10px] text-slate-400 border-r border-slate-100">{index + 1}</td>
+                                                <td className="px-4 py-1.5 border-r border-slate-100">
+                                                    <div className="font-normal">{item.ledgerName}</div>
+                                                    <div className="text-[10px] text-slate-400 uppercase tracking-tighter">{item.groupName}</div>
+                                                </td>
+                                                <td className="px-4 py-1.5 text-right tabular-nums text-emerald-600">
+                                                    {item.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                    {/* Vertical Spacer */}
+                                    {[...Array(Math.max(0, 12 - filteredIncome.length))].map((_, i) => (
+                                        <tr key={`empty-inc-${i}`} className="h-9">
+                                            <td className="border-r border-slate-100"></td>
+                                            <td className="border-r border-slate-100"></td>
+                                            <td></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr className="bg-gradient-to-r from-emerald-800 to-teal-900 border-t border-slate-300">
+                                        <td className="px-4 py-3 font-normal text-emerald-50 border-r border-white/10 uppercase text-xs" colSpan="2">Total Operating Income</td>
+                                        <td className="px-4 py-3 text-right tabular-nums text-white font-normal text-sm">
+                                            {data.totalIncome.toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        {/* EXPENSES TABLE */}
+                        <div className="border border-slate-300 shadow-xl shadow-slate-200/50 bg-white">
+                            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 px-4 py-3 border-b border-slate-300 text-xs text-emerald-50 uppercase font-normal tracking-wider">
+                                Expense Analysis
+                            </div>
+                            <table className="w-full border-collapse">
+                                <thead className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
+                                    <tr>
+                                        <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200 w-12">#</th>
+                                        <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200">Particulars</th>
+                                        <th className="px-4 py-1.5 text-right font-normal">Amount (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 font-normal">
+                                    {filteredExpenses.length === 0 ? (
+                                        <tr><td colSpan="3" className="px-4 py-10 text-center text-slate-300 text-xs uppercase tracking-widest font-normal">No Expenses Recorded</td></tr>
+                                    ) : (
+                                        filteredExpenses.map((item, index) => (
+                                            <tr key={index} className="hover:bg-slate-50 transition-colors text-[13px] text-slate-600">
+                                                <td className="px-4 py-1.5 text-[10px] text-slate-400 border-r border-slate-100">{index + 1}</td>
+                                                <td className="px-4 py-1.5 border-r border-slate-100">
+                                                    <div className="font-normal">{item.ledgerName}</div>
+                                                    <div className="text-[10px] text-slate-400 uppercase tracking-tighter">{item.groupName}</div>
+                                                </td>
+                                                <td className="px-4 py-1.5 text-right tabular-nums text-rose-600">
+                                                    {item.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                    {/* Vertical Spacer */}
+                                    {[...Array(Math.max(0, 12 - filteredExpenses.length))].map((_, i) => (
+                                        <tr key={`empty-exp-${i}`} className="h-9">
+                                            <td className="border-r border-slate-100"></td>
+                                            <td className="border-r border-slate-100"></td>
+                                            <td></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr className="bg-gradient-to-r from-emerald-800 to-teal-900 border-t border-slate-300">
+                                        <td className="px-4 py-3 font-normal text-emerald-50 border-r border-white/10 uppercase text-xs" colSpan="2">Total Operating Expenses</td>
+                                        <td className="px-4 py-3 text-right tabular-nums text-white font-normal text-sm">
+                                            {data.totalExpenses.toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* FINAL SUMMARY ROW */}
+                    <div className="p-0.5 bg-gradient-to-r from-emerald-800 to-teal-900 rounded-xl overflow-hidden shadow-xl ring-1 ring-white/10">
+                        <div className="bg-white/5 backdrop-blur-md px-8 py-6 flex justify-between items-center">
+                            <div>
+                                <span className="block text-emerald-300/60 uppercase text-[10px] tracking-[0.2em] font-normal mb-1">Statement Summary</span>
+                                <h3 className="text-emerald-50 text-xl font-normal tracking-tight">
+                                    {data.isProfitable ? 'Operational Surplus (Net Profit)' : 'Operational Deficit (Net Loss)'}
+                                </h3>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-3xl font-normal text-white tabular-nums tracking-tighter">
+                                    <span className="text-sm mr-2 opacity-60">₹</span>
+                                    {Math.abs(data.netProfit).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                </span>
+                                <p className="text-[10px] text-emerald-300/50 uppercase tracking-widest mt-1">Reflected in Retained Earnings</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="text-center text-[10px] text-slate-300 uppercase tracking-[0.3em] font-normal pt-4 no-print">
+                        Computer Generated Document - Professional Accounting Mode
+                    </div>
+                </div>
+            ) : (
+                <div className="text-center py-20 text-slate-300 text-xs font-normal uppercase tracking-widest">No Analysis Available</div>
+            )}
+
+            <style jsx global>{`
+                @media print {
+                    .no-print { display: none !important; }
+                    body { background: white !important; margin: 0; padding: 0.5in; }
+                    .bg-gradient-to-r { background: #064e3b !important; -webkit-print-color-adjust: exact; }
+                    .text-emerald-50, .text-white { color: white !important; -webkit-print-color-adjust: exact; }
+                    .border-slate-300 { border-color: #cbd5e1 !important; }
+                    .grid { display: flex !important; flex-direction: row !important; gap: 20px !important; }
+                    .grid > div { flex: 1 !important; }
+                }
+            `}</style>
+        </div>
+    );
+}
