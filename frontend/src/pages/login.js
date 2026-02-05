@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import api from '@/lib/api';
 import { FiLock, FiUser, FiArrowRight, FiCheckCircle } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const router = useRouter();

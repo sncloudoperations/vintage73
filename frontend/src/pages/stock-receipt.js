@@ -3,7 +3,7 @@ import api from '@/lib/api';
 import { FiDownload, FiCheckCircle, FiPackage, FiInfo, FiClock, FiPrinter } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function StockReceipt() {
   const [incomingTransfers, setIncomingTransfers] = useState([]);

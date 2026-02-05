@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import api from '@/lib/api';
 import { MENU_STRUCTURE } from '@/lib/menuStructure';
 import { FiPlus, FiTrash2, FiUser, FiKey, FiEdit2 } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function Users() {
   const [users, setUsers] = useState([]);

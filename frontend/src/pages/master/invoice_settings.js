@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiSave, FiLayout, FiFileText, FiRefreshCw } from 'react-icons/fi';
 
 export default function InvoiceSettings() {

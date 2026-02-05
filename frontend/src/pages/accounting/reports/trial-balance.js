@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiBarChart2, FiDownload, FiCheckCircle, FiAlertCircle, FiSearch, FiFileText } from 'react-icons/fi';
 
 export default function TrialBalance() {
@@ -103,19 +103,19 @@ export default function TrialBalance() {
     return (
         <div className="p-4 bg-[#f8fafc] min-h-screen text-slate-700">
             {/* Premium Gradient Header */}
-            <header className="rounded-xl bg-gradient-to-r from-emerald-800 to-teal-900 p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-emerald-900/10 no-print">
+            <header className="rounded-xl bg-gradient-to-r from-primary-dark to-primary p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-primary-dark/10 no-print">
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
-                        <FiBarChart2 className="text-emerald-400" size={20} />
+                        <FiBarChart2 className="text-white" size={20} />
                     </div>
                     <div>
                         <h1 className="text-lg font-normal text-white leading-tight">Trial Balance</h1>
-                        <p className="text-emerald-300/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
+                        <p className="text-white/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
                     </div>
                     <div className="hidden md:block h-8 border-l border-white/10 mx-2" />
                     <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                         <div className="flex items-center gap-2">
-                            <span className="text-[9px] text-emerald-300/60 uppercase tracking-tighter">Period</span>
+                            <span className="text-[9px] text-white/60 uppercase tracking-tighter">Period</span>
                             <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded border border-white/10">
                                 <input
                                     type="date"
@@ -137,14 +137,14 @@ export default function TrialBalance() {
                             <input
                                 type="text"
                                 placeholder="Search ledgers..."
-                                className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-emerald-400 w-48 font-normal"
+                                className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-white/50 w-48 font-normal"
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                             />
                         </div>
                         <button
                             onClick={handleFilter}
-                            className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95"
+                            className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95"
                         >
                             Apply
                         </button>
@@ -155,7 +155,7 @@ export default function TrialBalance() {
                         onClick={handleExport}
                         className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition-all text-[11px] font-normal border border-white/10 backdrop-blur-sm shadow-sm"
                     >
-                        <FiDownload size={14} className="text-emerald-400" /> Export CSV
+                        <FiDownload size={14} className="text-white" /> Export CSV
                     </button>
                     <button
                         onClick={handleExportJSON}
@@ -168,10 +168,10 @@ export default function TrialBalance() {
 
             {/* Integrity Summary Row */}
             {data && (
-                <div className={`mb-6 px-4 py-3 border rounded-lg shadow-sm ${data.balanced ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                <div className={`mb-6 px-4 py-3 border rounded-lg shadow-sm ${data.balanced ? 'bg-primary-light/20 border-primary-light text-primary-dark' : 'bg-red-50 border-red-200 text-red-800'}`}>
                     <div className="flex justify-between items-center text-xs">
                         <div className="flex items-center gap-3">
-                            {data.balanced ? <FiCheckCircle className="text-emerald-600" size={18} /> : <FiAlertCircle className="text-rose-600" size={18} />}
+                            {data.balanced ? <FiCheckCircle className="text-primary-dark" size={18} /> : <FiAlertCircle className="text-rose-600" size={18} />}
                             <span className="font-normal uppercase tracking-wider">
                                 {data.balanced ? 'Trial Balance Equilibrium Maintained' : 'Accounting Variance Detected!'}
                             </span>
@@ -189,7 +189,7 @@ export default function TrialBalance() {
                                 <span className="text-[9px] opacity-60 uppercase">Total Credits</span>
                                 <span className="text-sm font-normal">₹{(data.totalCredit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                             </div>
-                            <div className={`flex flex-col items-end px-4 border-l ${data.balanced ? 'border-emerald-200' : 'border-red-200'}`}>
+                            <div className={`flex flex-col items-end px-4 border-l ${data.balanced ? 'border-primary-light' : 'border-red-200'}`}>
                                 <span className="text-[9px] opacity-60 uppercase">Net Closing</span>
                                 <span className="text-sm font-normal">₹{(data.totalClosing || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                             </div>
@@ -224,7 +224,7 @@ export default function TrialBalance() {
                                             <td className="px-4 py-1.5 text-[10px] text-slate-400 border-r border-slate-100">{index + 1}</td>
                                             <td className="px-4 py-1.5 border-r border-slate-100">
                                                 <div 
-                                                    className="font-normal text-slate-800 hover:text-emerald-600 hover:underline cursor-pointer transition-colors"
+                                                    className="font-normal text-slate-800 hover:text-primary hover:underline cursor-pointer transition-colors"
                                                     onClick={() => router.push(`/accounting/reports/ledger?ledgerId=${item.ledgerId}&startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`)}
                                                 >
                                                     {item.ledgerName}
@@ -236,7 +236,7 @@ export default function TrialBalance() {
                                                     item.groupType === 'ASSETS' ? 'border-blue-200 bg-blue-50 text-blue-600' :
                                                     item.groupType === 'LIABILITIES' ? 'border-rose-200 bg-rose-50 text-rose-600' :
                                                     item.groupType === 'EQUITY' ? 'border-purple-200 bg-purple-50 text-purple-600' :
-                                                    item.groupType === 'INCOME' ? 'border-emerald-200 bg-emerald-50 text-emerald-600' :
+                                                    item.groupType === 'INCOME' ? 'border-primary-light/50 bg-primary-light/20 text-primary-dark' :
                                                     item.groupType === 'EXPENSES' ? 'border-amber-200 bg-amber-50 text-amber-600' :
                                                     'border-slate-200 bg-slate-50 text-slate-600'
                                                 }`}>
@@ -252,7 +252,7 @@ export default function TrialBalance() {
                                             <td className="px-4 py-1.5 text-right tabular-nums border-r border-slate-100 font-normal text-slate-600">
                                                 {item.credit > 0 ? (item.credit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) : '-'}
                                             </td>
-                                            <td className={`px-4 py-1.5 text-right tabular-nums font-normal ${(item.closingBalance || 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                            <td className={`px-4 py-1.5 text-right tabular-nums font-normal ${(item.closingBalance || 0) >= 0 ? 'text-primary-dark' : 'text-rose-600'}`}>
                                                 {(item.closingBalance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
                                             </td>
                                         </tr>
@@ -272,8 +272,8 @@ export default function TrialBalance() {
                                 ))}
                             </tbody>
                             <tfoot>
-                                <tr className="bg-gradient-to-r from-emerald-800 to-teal-900 border-t border-slate-300">
-                                    <td className="px-4 py-3 font-normal text-emerald-50 border-r border-white/10 uppercase text-xs" colSpan="3">Grand Trial Totals</td>
+                                <tr className="bg-gradient-to-r from-primary-dark to-primary border-t border-slate-300">
+                                    <td className="px-4 py-3 font-normal text-white border-r border-white/10 uppercase text-xs" colSpan="3">Grand Trial Totals</td>
                                     <td className="px-4 py-3 text-right tabular-nums text-white font-normal text-sm border-r border-white/10">
                                         {(data.totalOpening || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
                                     </td>
@@ -309,8 +309,8 @@ export default function TrialBalance() {
                 @media print {
                     .no-print { display: none !important; }
                     body { background: white !important; margin: 0; padding: 0.5in; }
-                    .bg-gradient-to-r { background: #064e3b !important; -webkit-print-color-adjust: exact; }
-                    .text-emerald-50, .text-white { color: white !important; -webkit-print-color-adjust: exact; }
+                    .bg-gradient-to-r { background: var(--primary) !important; -webkit-print-color-adjust: exact; }
+                    .text-white { color: white !important; -webkit-print-color-adjust: exact; }
                     .border-slate-300 { border-color: #cbd5e1 !important; }
                     table { border-collapse: collapse !important; width: 100% !important; }
                 }

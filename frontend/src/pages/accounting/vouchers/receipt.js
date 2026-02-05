@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiDollarSign, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiCalendar, FiPrinter } from 'react-icons/fi';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import ProfessionalModal from '@/components/ProfessionalModal';

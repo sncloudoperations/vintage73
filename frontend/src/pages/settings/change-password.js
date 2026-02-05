@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiLock, FiKey, FiCheckCircle } from 'react-icons/fi';
 
 export default function ChangePassword() {

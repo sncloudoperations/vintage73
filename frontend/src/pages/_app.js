@@ -1,8 +1,11 @@
 import '@/styles/globals.css';
+import 'react-toastify/dist/ReactToastify.css';
 import Layout from '@/components/Layout';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Toaster } from 'react-hot-toast';
+import { ToastContainer } from 'react-toastify';
+import { TabProvider } from '@/context/TabContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -22,15 +25,25 @@ export default function App({ Component, pageProps }) {
   if (!mounted) return null; // Prevent hydration mismatch
 
   return (
-    <Layout>
-      <Component {...pageProps} />
-      <Toaster position="top-right" toastOptions={{
-        duration: 3000,
-        style: {
-          background: '#333',
-          color: '#fff',
-        },
-      }} />
-    </Layout>
+    <ThemeProvider>
+      <TabProvider>
+        <Layout>
+          <Component {...pageProps} />
+          <ToastContainer 
+            position="bottom-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+            style={{ zIndex: 99999 }}
+          />
+        </Layout>
+      </TabProvider>
+    </ThemeProvider>
   );
 }

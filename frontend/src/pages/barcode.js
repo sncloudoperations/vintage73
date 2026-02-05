@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
 import ReactBarcode from 'react-barcode';
 import { FiPrinter, FiSearch, FiBox, FiSettings, FiCheck, FiSave, FiGrid, FiAlignLeft, FiAlignCenter, FiAlignRight, FiLayout } from 'react-icons/fi';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function BarcodeGenerator() {
   const [products, setProducts] = useState([]);

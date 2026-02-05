@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiDownload, FiPrinter, FiFilter, FiSearch } from 'react-icons/fi';
 
 export default function LedgerReport() {

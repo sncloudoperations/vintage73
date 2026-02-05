@@ -71,10 +71,15 @@ model CompanyProfile {
   website            String?
   registrationNumber String?
   logoUrl            String?
+  dashboardImageUrl  String?
+  showOnlyLogoOnDashboard Boolean @default(true)
   currencyCode       String   @default("INR")
   currencySymbol     String   @default("₹")
   country            String   @default("India")
   taxSystem          String   @default("GST")
+  primaryColor       String   @default("#10b981")
+  secondaryColor     String   @default("#059669")
+  gradientType       String   @default("linear") // linear, none
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   invoiceSettings    Json?
@@ -571,6 +576,8 @@ model Voucher {
   createdBy       Int
   creator         User           @relation(fields: [createdBy], references: [id])
   entries         JournalEntry[]
+  payrolls        Payroll[]
+  salaryAdvances  SalaryAdvance[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 }

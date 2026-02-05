@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiImage, FiBriefcase, FiGlobe, FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
 
 export default function CompanyProfile() {

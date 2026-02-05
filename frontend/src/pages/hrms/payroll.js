@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiDollarSign, FiPrinter, FiX, FiFilter, FiUser, FiCalendar, FiFileText, FiCheckCircle } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
 

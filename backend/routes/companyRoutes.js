@@ -4,6 +4,6 @@ const companyController = require('../controllers/companyController');
 const upload = require('../middleware/uploadMiddleware');
 
 router.get('/', companyController.getCompanyProfile);
-router.post('/', upload.single('logo'), companyController.updateCompanyProfile);
+router.post('/', upload.fields([{ name: 'logo', maxCount: 1 }, { name: 'dashboardImage', maxCount: 1 }]), companyController.updateCompanyProfile);
 
 module.exports = router;

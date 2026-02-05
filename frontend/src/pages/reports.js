@@ -3,7 +3,7 @@ import api from '@/lib/api';
 import Link from 'next/link';
 import { FiDownload, FiFilter, FiCalendar, FiTrendingUp, FiTrendingDown, FiEye, FiPrinter, FiX } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import DynamicInvoice from '@/components/DynamicInvoice';
 
 export default function Reports() {

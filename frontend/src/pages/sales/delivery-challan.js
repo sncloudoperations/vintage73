@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
 import { FiPlus, FiTrash2, FiPrinter, FiTruck, FiPackage, FiSearch, FiEye } from 'react-icons/fi';
 import DeliveryChallanPrint from '@/components/DeliveryChallanPrint';

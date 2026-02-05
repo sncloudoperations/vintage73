@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiLayers, FiDownload, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 
 export default function BalanceSheet() {
@@ -31,19 +31,19 @@ export default function BalanceSheet() {
     return (
         <div className="p-4 bg-[#f8fafc] min-h-screen text-slate-700">
             {/* Premium Gradient Header */}
-            <header className="rounded-xl bg-gradient-to-r from-emerald-800 to-teal-900 p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-emerald-900/10 no-print">
+            <header className="rounded-xl bg-gradient-to-r from-primary-dark to-primary p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-primary-dark/10 no-print">
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
-                        <FiLayers className="text-emerald-400" size={20} />
+                        <FiLayers className="text-white" size={20} />
                     </div>
                     <div>
                         <h1 className="text-lg font-normal text-white leading-tight">Financial Balance Sheet</h1>
-                        <p className="text-emerald-300/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
+                        <p className="text-white/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
                     </div>
                     <div className="hidden md:block h-8 border-l border-white/10 mx-2" />
                     <div className="flex items-center gap-3">
                         <div className="flex flex-col">
-                            <span className="text-[9px] text-emerald-300/60 uppercase tracking-tighter">Reporting Date</span>
+                            <span className="text-[9px] text-white/60 uppercase tracking-tighter">Reporting Date</span>
                             <input
                                 type="date"
                                 className="bg-transparent border-none p-0 text-sm text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark]"
@@ -53,7 +53,7 @@ export default function BalanceSheet() {
                         </div>
                         <button
                             onClick={fetchBalanceSheet}
-                            className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95"
+                            className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95"
                         >
                             Update Report
                         </button>
@@ -63,7 +63,7 @@ export default function BalanceSheet() {
                     onClick={() => window.print()}
                     className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all text-xs font-normal border border-white/10 backdrop-blur-sm shadow-sm"
                 >
-                    <FiDownload size={14} className="text-emerald-400" /> Export PDF / Print
+                    <FiDownload size={14} className="text-white" /> Export PDF / Print
                 </button>
             </header>
 
@@ -72,7 +72,7 @@ export default function BalanceSheet() {
             ) : data ? (
                 <div className="overflow-x-auto text-[13px] font-normal">
                     {/* Integrity Summary Row */}
-                    <div className={`mb-4 px-4 py-2 border ${data.balanced ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                    <div className={`mb-4 px-4 py-2 border ${data.balanced ? 'bg-primary-light/20 border-primary-light text-primary-dark' : 'bg-red-50 border-red-200 text-red-800'}`}>
                         <div className="flex justify-between items-center text-xs">
                             <div className="flex items-center gap-2">
                                 {data.balanced ? <FiCheckCircle size={14} /> : <FiAlertCircle size={14} />}
@@ -89,7 +89,7 @@ export default function BalanceSheet() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border-t border-l border-slate-300 shadow-xl shadow-slate-200/50">
                         {/* ASSETS TABLE */}
                         <div className="border-r border-b border-slate-300">
-                            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 px-4 py-3 border-b border-slate-300 text-xs text-emerald-50 uppercase font-normal tracking-wider">
+                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider">
                                 Assets (Application of Funds)
                             </div>
                             <table className="w-full border-collapse">
@@ -120,8 +120,8 @@ export default function BalanceSheet() {
                                     ))}
                                 </tbody>
                                 <tfoot>
-                                    <tr className="bg-gradient-to-r from-emerald-800 to-teal-900 border-t border-slate-300">
-                                        <td className="px-4 py-3 font-normal text-emerald-50 border-r border-white/10 uppercase text-xs">Total Assets</td>
+                                    <tr className="bg-gradient-to-r from-primary-dark to-primary border-t border-slate-300">
+                                        <td className="px-4 py-3 font-normal text-white border-r border-white/10 uppercase text-xs">Total Assets</td>
                                         <td className="px-4 py-3 text-right tabular-nums text-white font-normal">
                                             {data.totalAssets.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                         </td>
@@ -132,7 +132,7 @@ export default function BalanceSheet() {
 
                         {/* LIABILITIES & EQUITY TABLE */}
                         <div className="border-r border-b border-slate-300">
-                            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 px-4 py-3 border-b border-slate-300 text-xs text-emerald-50 uppercase font-normal tracking-wider">
+                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider">
                                 Liabilities & Equity (Sources of Funds)
                             </div>
                             
@@ -173,7 +173,7 @@ export default function BalanceSheet() {
                                                 <div className="font-normal">{item.ledgerName}</div>
                                                 <div className="text-[10px] text-slate-400 uppercase tracking-tighter">{item.groupName}</div>
                                             </td>
-                                            <td className="px-4 py-1.5 text-right tabular-nums text-emerald-600">
+                                            <td className="px-4 py-1.5 text-right tabular-nums text-primary-dark">
                                                 {item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                             </td>
                                         </tr>
@@ -188,8 +188,8 @@ export default function BalanceSheet() {
                                     ))}
                                 </tbody>
                                 <tfoot>
-                                    <tr className="bg-gradient-to-r from-emerald-800 to-teal-900 border-t border-slate-300">
-                                        <td className="px-4 py-3 font-normal text-emerald-50 border-r border-white/10 uppercase text-xs">Total Lia + Eq</td>
+                                    <tr className="bg-gradient-to-r from-primary-dark to-primary border-t border-slate-300">
+                                        <td className="px-4 py-3 font-normal text-white border-r border-white/10 uppercase text-xs">Total Lia + Eq</td>
                                         <td className="px-4 py-3 text-right tabular-nums text-white font-normal">
                                             {(data.totalLiabilities + data.totalEquity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                         </td>

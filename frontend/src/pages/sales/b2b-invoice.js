@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
 import { FiPlus, FiTrash2, FiPrinter, FiTruck, FiFileText, FiSearch, FiChevronDown, FiChevronUp, FiList, FiFilter, FiEye, FiCalendar } from 'react-icons/fi';
 import GSTInvoicePrint from '@/components/GSTInvoicePrint';

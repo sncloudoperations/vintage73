@@ -15,9 +15,12 @@ exports.getBranches = async (req, res) => {
 // Get Single Branch
 exports.getBranchById = async (req, res) => {
   const { id } = req.params;
+  const branchId = parseInt(id);
+  if (isNaN(branchId)) return res.status(400).json({ message: 'Invalid Branch ID' });
+
   try {
     const branch = await prisma.branch.findUnique({
-      where: { id: parseInt(id) }
+      where: { id: branchId }
     });
     if (!branch) return res.status(404).json({ message: 'Branch not found' });
     res.json(branch);
@@ -42,10 +45,13 @@ exports.createBranch = async (req, res) => {
 // Update Branch
 exports.updateBranch = async (req, res) => {
   const { id } = req.params;
+  const branchId = parseInt(id);
+  if (isNaN(branchId)) return res.status(400).json({ message: 'Invalid Branch ID' });
+
   const { name, address, phone, email, isActive } = req.body;
   try {
     const branch = await prisma.branch.update({
-      where: { id: parseInt(id) },
+      where: { id: branchId },
       data: { name, address, phone, email, isActive }
     });
     res.json(branch);
@@ -57,14 +63,17 @@ exports.updateBranch = async (req, res) => {
 // Delete Branch
 exports.deleteBranch = async (req, res) => {
   const { id } = req.params;
+  const branchId = parseInt(id);
+  if (isNaN(branchId)) return res.status(400).json({ message: 'Invalid Branch ID' });
+
   try {
     // Check if branch has associated data
-    const usersCount = await prisma.user.count({ where: { branchId: parseInt(id) } });
+    const usersCount = await prisma.user.count({ where: { branchId: branchId } });
     if (usersCount > 0) {
       return res.status(400).json({ message: 'Cannot delete branch with assigned users' });
     }
     
-    await prisma.branch.delete({ where: { id: parseInt(id) } });
+    await prisma.branch.delete({ where: { id: branchId } });
     res.json({ message: 'Branch deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -74,10 +83,13 @@ exports.deleteBranch = async (req, res) => {
 // Update Invoice Settings for a Branch
 exports.updateInvoiceSettings = async (req, res) => {
   const { id } = req.params;
+  const branchId = parseInt(id);
+  if (isNaN(branchId)) return res.status(400).json({ message: 'Invalid Branch ID' });
+
   const { invoiceSettings } = req.body;
   try {
     const branch = await prisma.branch.update({
-      where: { id: parseInt(id) },
+      where: { id: branchId },
       data: { invoiceSettings }
     });
     res.json(branch);

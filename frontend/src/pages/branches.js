@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { FiPlus, FiEdit2, FiTrash2, FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function Branches() {
   const [branches, setBranches] = useState([]);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { FiPlus, FiTrash, FiSave, FiTruck, FiEye, FiRefreshCw } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import ConfirmationModal from '@/components/ConfirmationModal';
 
 export default function Purchase() {

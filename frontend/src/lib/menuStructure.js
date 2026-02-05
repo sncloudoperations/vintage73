@@ -3,7 +3,7 @@ import {
   FiHome, FiUsers, FiBox, FiShoppingBag, FiTruck, FiBarChart2, FiSettings, FiGrid,
   FiDollarSign, FiBook, FiPackage, FiBriefcase, FiCheckCircle, FiLayers, FiCreditCard, FiClock,
   FiDatabase, FiTarget, FiShoppingCart, FiUsers as FiUserGroup, FiArchive, FiFileText,
-  FiPieChart, FiClipboard, FiRefreshCw, FiList, FiActivity, FiCalendar, FiArrowDownLeft, FiArrowUpRight, FiKey
+  FiPieChart, FiClipboard, FiRefreshCw, FiList, FiActivity, FiCalendar, FiArrowDownLeft, FiArrowUpRight, FiKey, FiDroplet
 } from 'react-icons/fi';
 import { TbBarcode, TbReportAnalytics, TbReceipt } from 'react-icons/tb';
 
@@ -95,6 +95,8 @@ export const MENU_STRUCTURE = [
     items: [
       { name: 'GST Settings', icon: FiFileText, path: '/settings/gst-settings' },
       { name: 'Change Password', icon: FiKey, path: '/settings/change-password' },
+      { name: 'Screen Layout', icon: FiGrid, path: '/settings/screen-layout' },
+      { name: 'Theme Settings', icon: FiDroplet, path: '/settings/theme' },
     ]
   }
 ];

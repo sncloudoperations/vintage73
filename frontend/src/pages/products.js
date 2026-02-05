@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { FiPlus, FiPrinter, FiSearch, FiEdit, FiTrash2, FiBox } from 'react-icons/fi';
 import Barcode from 'react-barcode';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function Products() {
   const [products, setProducts] = useState([]);

@@ -3,7 +3,7 @@ import api from '@/lib/api';
 import { FiPlus, FiTrash, FiSend, FiTruck, FiInfo, FiX, FiPrinter } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function StockTransfer() {
   const [branches, setBranches] = useState([]);

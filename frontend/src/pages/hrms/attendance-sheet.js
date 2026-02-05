@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { FiFilter, FiCalendar, FiUsers, FiDownload, FiCheck, FiX, FiMinus } from 'react-icons/fi';
 
 export default function AttendanceSheet() {

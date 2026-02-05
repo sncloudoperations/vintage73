@@ -6,7 +6,7 @@ import {
 import { HiOutlineReceiptRefund } from 'react-icons/hi';
 import { TbBusinessplan } from 'react-icons/tb';
 import { useReactToPrint } from 'react-to-print';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import DynamicInvoice from '@/components/DynamicInvoice';
 
 export default function Dashboard() {
@@ -28,7 +28,17 @@ export default function Dashboard() {
   const fetchCompanyData = async () => {
     try {
       const storedUser = localStorage.getItem('user');
-      const branchId = storedUser ? JSON.parse(storedUser).branchId : null;
+      let branchId = null;
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          if (parsed && !isNaN(parseInt(parsed.branchId))) {
+             branchId = parseInt(parsed.branchId);
+          }
+        } catch (e) {
+          console.error("Error parsing stored user", e);
+        }
+      }
       
       const [compRes, branchRes] = await Promise.all([
         api.get('/company'),
@@ -52,7 +62,15 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       const storedUser = localStorage.getItem('user');
-      const branchId = storedUser ? JSON.parse(storedUser).branchId : null;
+      let branchId = null;
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          if (parsed && !isNaN(parseInt(parsed.branchId))) {
+             branchId = parseInt(parsed.branchId);
+          }
+        } catch (e) { console.error(e); }
+      }
       const res = await api.get('/dashboard/stats', { params: { branchId } });
       setData(res.data);
       if (storedUser) {
@@ -83,11 +101,20 @@ export default function Dashboard() {
 
   if (!data) return null;
 
+  // If "Screen Layout Only" is enabled, hide stats and just show existing background from Layout.js
+  if (companyProfile?.showOnlyLogoOnDashboard) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center pointer-events-none">
+            {/* Optional: Add a welcome message or clock if needed, otherwise clean slate */}
+        </div>
+      );
+  }
+
   return (
-    <div className="space-y-8 font-sans">
-      <header className="flex justify-between items-end">
+    <div className="space-y-8 font-sans relative">
+      <header className="flex justify-between items-end relative z-10">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Main Menu</h1>
           <p className="text-slate-500 mt-1">Welcome back, {userData?.name || userData?.username || 'User'}!</p>
         </div>
         <div className="text-sm text-slate-400 font-medium">

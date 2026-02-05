@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Sidebar from '@/components/Sidebar';
 import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
 import { FiX, FiPrinter, FiSearch, FiSave, FiAlertCircle, FiRefreshCw } from 'react-icons/fi';
 import DynamicInvoice from '@/components/DynamicInvoice';

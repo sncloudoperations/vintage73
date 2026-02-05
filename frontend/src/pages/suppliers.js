@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { FiPlus, FiTrash2, FiEdit2, FiTruck, FiMapPin, FiPhone, FiBox, FiSearch } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function Suppliers() {
   const [suppliers, setSuppliers] = useState([]);

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { FiCalendar, FiUser, FiDownload, FiDollarSign } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function SalesmanReport() {
     const [reportData, setReportData] = useState([]);

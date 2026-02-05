@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
 import { FiSearch, FiUser, FiX, FiPlus, FiTrash2, FiCreditCard, FiMonitor, FiShoppingCart, FiClock, FiCalendar, FiEdit2 } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import DynamicInvoice from '@/components/DynamicInvoice';
 
 export default function POS() {

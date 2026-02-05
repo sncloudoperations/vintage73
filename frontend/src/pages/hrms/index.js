@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { FiClock, FiCheckCircle, FiXCircle } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 export default function HRMSDashboard() {
   const [user, setUser] = useState(null);
