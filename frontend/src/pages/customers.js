@@ -60,10 +60,10 @@ export default function Customers() {
   };
 
   const openEdit = (customer) => {
-    setFormData({ 
-      name: customer.name, 
-      phone: customer.phone || '', 
-      email: customer.email || '', 
+    setFormData({
+      name: customer.name,
+      phone: customer.phone || '',
+      email: customer.email || '',
       address: customer.address || '',
       city: customer.city || '',
       state: customer.state || '',
@@ -87,7 +87,7 @@ export default function Customers() {
   // Verify GSTIN and fetch details
   const verifyGSTIN = async () => {
     const gstin = formData.gstin.trim().toUpperCase();
-    
+
     if (!gstin) {
       toast.error('Please enter a GSTIN number');
       return;
@@ -101,7 +101,7 @@ export default function Customers() {
     setVerifyingGST(true);
     try {
       const { data } = await api.get(`/gst/verify/${gstin}`);
-      
+
       if (data.valid) {
         // Auto-fill form with fetched data
         setFormData(prev => ({
@@ -114,9 +114,9 @@ export default function Customers() {
           pincode: data.pincode || prev.pincode,
           partyType: 'B2B'
         }));
-        
+
         setGstVerified(true);
-        
+
         if (data.manualEntry) {
           toast.success(`GSTIN verified! State: ${data.state}. Please enter other details manually.`);
         } else {
@@ -141,7 +141,7 @@ export default function Customers() {
     setGstVerified(false);
   };
 
-  const filteredCustomers = customers.filter(c => 
+  const filteredCustomers = customers.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (c.phone && c.phone.includes(searchQuery)) ||
     (c.gstin && c.gstin.includes(searchQuery.toUpperCase())) ||
@@ -155,19 +155,19 @@ export default function Customers() {
           <h1 className="text-3xl font-black text-slate-800 tracking-tight">Customers</h1>
           <p className="text-slate-500 text-sm">Manage your directory and view customer history</p>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <div className="relative group flex-1 sm:w-64">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
-            <input 
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
+            <input
               type="text"
               placeholder="Search name, phone, GSTIN..."
-              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm"
+              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button className="btn btn-primary px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-100 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95" onClick={() => { resetForm(); setShowModal(true); }}>
+          <button className="btn btn-primary px-6 py-2.5 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95" onClick={() => { resetForm(); setShowModal(true); }}>
             <FiPlus className="text-lg" /> Add Customer
           </button>
         </div>
@@ -178,7 +178,7 @@ export default function Customers() {
           <div key={customer.id} className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${customer.partyType === 'B2B' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${customer.partyType === 'B2B' ? 'bg-blue-50 text-blue-600' : 'bg-primary-light text-primary'}`}>
                   <FiUsers />
                 </div>
                 <div>
@@ -192,7 +192,7 @@ export default function Customers() {
                 <span className={`text-xs px-2 py-0.5 rounded ${customer.partyType === 'B2B' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>
                   {customer.partyType}
                 </span>
-                <button onClick={() => openEdit(customer)} className="p-1.5 text-slate-400 hover:text-emerald-600 rounded hover:bg-emerald-50"><FiEdit2 /></button>
+                <button onClick={() => openEdit(customer)} className="p-1.5 text-slate-400 hover:text-primary rounded hover:bg-primary-light"><FiEdit2 /></button>
                 <button onClick={() => handleDelete(customer.id)} className="p-1.5 text-slate-400 hover:text-red-600 rounded hover:bg-red-50"><FiTrash2 /></button>
               </div>
             </div>
@@ -202,8 +202,8 @@ export default function Customers() {
               )}
               {customer.address && <p className="flex items-start gap-2"><FiMapPin className="mt-0.5 text-slate-400" /> {customer.address}</p>}
               <div className="pt-3 mt-3 border-t border-slate-50 flex justify-between items-center text-xs">
-                 <span className="text-slate-400">Total Sales</span>
-                 <span className="font-bold text-slate-700">{customer._count?.sales || 0} Orders</span>
+                <span className="text-slate-400">Total Sales</span>
+                <span className="font-bold text-slate-700">{customer._count?.sales || 0} Orders</span>
               </div>
             </div>
           </div>
@@ -218,11 +218,11 @@ export default function Customers() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white">
-               <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Customer' : 'Add Customer'}</h2>
-               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+              <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Customer' : 'Add Customer'}</h2>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {/* GSTIN Verification Section */}
@@ -231,22 +231,21 @@ export default function Customers() {
                   🔍 GST Number Lookup
                 </label>
                 <div className="flex gap-2">
-                  <input 
-                    className="input flex-1 font-mono uppercase" 
+                  <input
+                    className="input flex-1 font-mono uppercase"
                     placeholder="Enter 15-digit GSTIN"
-                    value={formData.gstin} 
+                    value={formData.gstin}
                     onChange={e => handleGSTINChange(e.target.value)}
                     maxLength={15}
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={verifyGSTIN}
                     disabled={verifyingGST || formData.gstin.length !== 15}
-                    className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all ${
-                      gstVerified 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed'
-                    }`}
+                    className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all ${gstVerified
+                      ? 'bg-green-500 text-white'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed'
+                      }`}
                   >
                     {verifyingGST ? (
                       <><FiLoader className="animate-spin" /> Verifying...</>
@@ -265,41 +264,41 @@ export default function Customers() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="label">Business / Customer Name <span className="text-red-500">*</span></label>
-                  <input 
-                    required 
-                    className="input" 
-                    value={formData.name} 
-                    onChange={e => setFormData({...formData, name: e.target.value})} 
+                  <input
+                    required
+                    className="input"
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                     placeholder={gstVerified ? 'Auto-filled from GST' : 'Enter name'}
                   />
                 </div>
                 <div>
                   <label className="label">Phone</label>
-                  <input className="input" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                  <input className="input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
                 </div>
                 <div>
                   <label className="label">Email</label>
-                  <input type="email" className="input" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                  <input type="email" className="input" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
                 </div>
                 <div className="col-span-2">
                   <label className="label">Address</label>
-                  <textarea className="input" rows="2" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}></textarea>
+                  <textarea className="input" rows="2" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })}></textarea>
                 </div>
                 <div>
                   <label className="label">City</label>
-                  <input className="input" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} />
+                  <input className="input" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
                 </div>
                 <div>
                   <label className="label">State</label>
-                  <input className="input" value={formData.state} onChange={e => setFormData({...formData, state: e.target.value})} />
+                  <input className="input" value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} />
                 </div>
                 <div>
                   <label className="label">Pincode</label>
-                  <input className="input" value={formData.pincode} onChange={e => setFormData({...formData, pincode: e.target.value})} />
+                  <input className="input" value={formData.pincode} onChange={e => setFormData({ ...formData, pincode: e.target.value })} />
                 </div>
                 <div>
                   <label className="label">Party Type</label>
-                  <select className="input" value={formData.partyType} onChange={e => setFormData({...formData, partyType: e.target.value})}>
+                  <select className="input" value={formData.partyType} onChange={e => setFormData({ ...formData, partyType: e.target.value })}>
                     <option value="B2C">B2C (Consumer)</option>
                     <option value="B2B">B2B (Business)</option>
                     <option value="Unregistered">Unregistered</option>

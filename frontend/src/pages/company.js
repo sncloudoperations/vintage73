@@ -30,8 +30,8 @@ export default function CompanyProfile() {
 
       if (profileRes.data) {
         setFormData({
-            ...profileRes.data,
-            bankId: profileRes.data.bankId || ''
+          ...profileRes.data,
+          bankId: profileRes.data.bankId || ''
         });
       }
       setStates(statesRes.data);
@@ -54,7 +54,7 @@ export default function CompanyProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    
+
     try {
       const data = new FormData();
       Object.keys(formData).forEach(key => {
@@ -62,7 +62,7 @@ export default function CompanyProfile() {
           data.append(key, formData[key]);
         }
       });
-      
+
       if (logoFile) {
         data.append('logo', logoFile);
       }
@@ -70,7 +70,7 @@ export default function CompanyProfile() {
       const res = await api.post('/company', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
+
       setFormData(res.data);
       setLogoFile(null);
       setLogoPreview(null);
@@ -88,38 +88,38 @@ export default function CompanyProfile() {
     <div className="p-6 bg-slate-50 min-h-screen">
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800">Company Profile</h1>
-              <p className="text-slate-500 text-sm mt-1">Manage your business identity and billing details</p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">Company Profile</h1>
+            <p className="text-slate-500 text-sm mt-1">Manage your business identity and billing details</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Logo Section */}
           <div className="md:col-span-1">
             <div className="card bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center">
-                <h3 className="text-sm font-bold text-slate-700 mb-4 w-full text-center">Business Logo</h3>
-                <div className="relative group w-48 h-48 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden mb-4 hover:border-emerald-500 transition-colors">
-                    {(logoPreview || formData.logoUrl) ? (
-                        <img 
-                          src={logoPreview || formData.logoUrl} 
-                          alt="Logo" 
-                          className="w-full h-full object-contain p-4"
-                        />
-                    ) : (
-                        <div className="text-slate-400 text-center">
-                            <FiImage className="text-4xl mb-2 mx-auto" />
-                            <p className="text-xs font-semibold">Upload Logo</p>
-                        </div>
-                    )}
-                    <label className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer text-white text-sm font-bold">
-                        Change Logo
-                        <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-                    </label>
-                </div>
-                <p className="text-xs text-slate-500 text-center leading-relaxed max-w-[200px]">
-                    Recommended: Square PNG or JPG<br/>Max size: 2MB
-                </p>
+              <h3 className="text-sm font-bold text-slate-700 mb-4 w-full text-center">Business Logo</h3>
+              <div className="relative group w-48 h-48 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden mb-4 hover:border-primary transition-colors">
+                {(logoPreview || formData.logoUrl) ? (
+                  <img
+                    src={logoPreview || formData.logoUrl}
+                    alt="Logo"
+                    className="w-full h-full object-contain p-4"
+                  />
+                ) : (
+                  <div className="text-slate-400 text-center">
+                    <FiImage className="text-4xl mb-2 mx-auto" />
+                    <p className="text-xs font-semibold">Upload Logo</p>
+                  </div>
+                )}
+                <label className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer text-white text-sm font-bold">
+                  Change Logo
+                  <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                </label>
+              </div>
+              <p className="text-xs text-slate-500 text-center leading-relaxed max-w-[200px]">
+                Recommended: Square PNG or JPG<br />Max size: 2MB
+              </p>
             </div>
           </div>
 
@@ -130,10 +130,10 @@ export default function CompanyProfile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Company Legal Name <span className="text-red-500">*</span></label>
-                    <input 
-                      className="input w-full" 
-                      value={formData.companyName} 
-                      onChange={e => setFormData({...formData, companyName: e.target.value})} 
+                    <input
+                      className="input w-full"
+                      value={formData.companyName}
+                      onChange={e => setFormData({ ...formData, companyName: e.target.value })}
                       required
                       placeholder="e.g. Acme Corp Pvt Ltd"
                     />
@@ -141,50 +141,50 @@ export default function CompanyProfile() {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">GSTIN / Registration No.</label>
-                    <input 
-                      className="input w-full" 
-                      value={formData.registrationNumber} 
-                      onChange={e => setFormData({...formData, registrationNumber: e.target.value})} 
+                    <input
+                      className="input w-full"
+                      value={formData.registrationNumber}
+                      onChange={e => setFormData({ ...formData, registrationNumber: e.target.value })}
                       placeholder="e.g. 27ABCDE1234F1Z5"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Website</label>
-                    <input 
-                      className="input w-full" 
-                      value={formData.website || ''} 
-                      onChange={e => setFormData({...formData, website: e.target.value})} 
+                    <input
+                      className="input w-full"
+                      value={formData.website || ''}
+                      onChange={e => setFormData({ ...formData, website: e.target.value })}
                       placeholder="https://example.com"
                     />
                   </div>
 
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Business Address</label>
-                    <textarea 
-                      className="input w-full" 
-                      rows="3" 
-                      value={formData.address} 
-                      onChange={e => setFormData({...formData, address: e.target.value})} 
+                    <textarea
+                      className="input w-full"
+                      rows="3"
+                      value={formData.address}
+                      onChange={e => setFormData({ ...formData, address: e.target.value })}
                       placeholder="Street address, building, suite, etc."
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">City</label>
-                    <input 
-                      className="input w-full" 
-                      value={formData.city || ''} 
-                      onChange={e => setFormData({...formData, city: e.target.value})} 
+                    <input
+                      className="input w-full"
+                      value={formData.city || ''}
+                      onChange={e => setFormData({ ...formData, city: e.target.value })}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">State</label>
-                    <select 
-                      className="input w-full" 
-                      value={formData.state || ''} 
-                      onChange={e => setFormData({...formData, state: e.target.value})} 
+                    <select
+                      className="input w-full"
+                      value={formData.state || ''}
+                      onChange={e => setFormData({ ...formData, state: e.target.value })}
                     >
                       <option value="">Select State...</option>
                       {states.map(state => (
@@ -195,19 +195,19 @@ export default function CompanyProfile() {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
-                    <input 
-                      className="input w-full" 
-                      value={formData.phone} 
-                      onChange={e => setFormData({...formData, phone: e.target.value})} 
+                    <input
+                      className="input w-full"
+                      value={formData.phone}
+                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                    <input 
-                      className="input w-full" 
-                      value={formData.email} 
-                      onChange={e => setFormData({...formData, email: e.target.value})} 
+                    <input
+                      className="input w-full"
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
                     />
                   </div>
 
@@ -218,32 +218,32 @@ export default function CompanyProfile() {
                       <FiBriefcase /> Primary Bank (for Statements)
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Company Default Bank</label>
-                            <select 
-                                className="input w-full" 
-                                value={formData.bankId || ''} 
-                                onChange={e => setFormData({...formData, bankId: e.target.value})}
-                            >
-                                <option value="">Select Bank from Master...</option>
-                                {banks.map(bank => (
-                                    <option key={bank.id} value={bank.id}>{bank.name} - {bank.accountNumber}</option>
-                                ))}
-                            </select>
-                            <p className="text-[10px] text-slate-400 mt-1.5 italic">* This bank's details will appear as the "Source Bank" on your Salary Bank Statements.</p>
-                        </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Company Default Bank</label>
+                        <select
+                          className="input w-full"
+                          value={formData.bankId || ''}
+                          onChange={e => setFormData({ ...formData, bankId: e.target.value })}
+                        >
+                          <option value="">Select Bank from Master...</option>
+                          {banks.map(bank => (
+                            <option key={bank.id} value={bank.id}>{bank.name} - {bank.accountNumber}</option>
+                          ))}
+                        </select>
+                        <p className="text-[10px] text-slate-400 mt-1.5 italic">* This bank's details will appear as the "Source Bank" on your Salary Bank Statements.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-8 flex justify-end">
-                    <button 
-                      type="submit" 
-                      disabled={saving} 
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-semibold shadow-sm transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                      {saving ? 'Saving...' : 'Save Changes'}
-                    </button>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg font-semibold shadow-sm transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
                 </div>
               </div>
             </form>

@@ -106,7 +106,7 @@ export default function BankMaster() {
                         resetForm();
                         setIsModalOpen(true);
                     }}
-                    className="bg-emerald-600 text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-sm"
+                    className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
                 >
                     <FiPlus size={16} /> Add Bank
                 </button>
@@ -118,7 +118,7 @@ export default function BankMaster() {
                     <input
                         type="text"
                         placeholder="Search by name, IFSC or branch..."
-                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -160,7 +160,7 @@ export default function BankMaster() {
                                             <td className="text-slate-600">{bank.branchName || '-'}</td>
                                             <td className="text-slate-500 text-xs truncate max-w-[150px]">{bank.address || '-'}</td>
                                             <td className="text-center">
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${bank.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'}`}>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${bank.isActive ? 'bg-primary-light/10 text-primary border border-primary-light/20' : 'bg-red-50 text-red-600 border border-red-100'}`}>
                                                     {bank.isActive ? 'Active' : 'Inactive'}
                                                 </span>
                                             </td>
@@ -192,7 +192,7 @@ export default function BankMaster() {
             )}
 
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
                             <h2 className="text-xl font-bold text-slate-800 tracking-tight">
@@ -209,7 +209,7 @@ export default function BankMaster() {
                                     required
                                     type="text"
                                     placeholder="e.g. HDFC Bank"
-                                    className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 transition-all py-2.5 text-sm"
+                                    className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary-light/30 transition-all py-2.5 text-sm"
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 />
@@ -219,7 +219,7 @@ export default function BankMaster() {
                                 <input
                                     type="text"
                                     placeholder="123456789012"
-                                    className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 transition-all py-2.5 text-sm font-mono"
+                                    className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary-light/30 transition-all py-2.5 text-sm font-mono"
                                     value={formData.accountNumber}
                                     onChange={e => setFormData({ ...formData, accountNumber: e.target.value })}
                                 />
@@ -230,7 +230,7 @@ export default function BankMaster() {
                                     <input
                                         type="text"
                                         placeholder="HDFC0001234"
-                                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 transition-all py-2.5 text-sm font-mono uppercase"
+                                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary-light/30 transition-all py-2.5 text-sm font-mono uppercase"
                                         value={formData.ifscCode}
                                         onChange={e => setFormData({ ...formData, ifscCode: e.target.value })}
                                     />
@@ -240,7 +240,7 @@ export default function BankMaster() {
                                     <input
                                         type="text"
                                         placeholder="City Branch"
-                                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 transition-all py-2.5 text-sm"
+                                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary-light/30 transition-all py-2.5 text-sm"
                                         value={formData.branchName}
                                         onChange={e => setFormData({ ...formData, branchName: e.target.value })}
                                     />
@@ -251,7 +251,7 @@ export default function BankMaster() {
                                 <textarea
                                     rows="2"
                                     placeholder="Full street address..."
-                                    className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 transition-all py-2.5 text-sm resize-none"
+                                    className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary-light/30 transition-all py-2.5 text-sm resize-none"
                                     value={formData.address}
                                     onChange={e => setFormData({ ...formData, address: e.target.value })}
                                 />
@@ -260,7 +260,7 @@ export default function BankMaster() {
                                 <input
                                     type="checkbox"
                                     id="isActive"
-                                    className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                                    className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary"
                                     checked={formData.isActive}
                                     onChange={e => setFormData({ ...formData, isActive: e.target.checked })}
                                 />

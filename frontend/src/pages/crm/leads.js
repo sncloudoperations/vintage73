@@ -29,7 +29,7 @@ export default function Leads() {
         try {
             const res = await api.get('/users');
             setUsers(res.data);
-        } catch(err) { console.error(err); }
+        } catch (err) { console.error(err); }
     }
 
     const handleSubmit = async (e) => {
@@ -63,7 +63,7 @@ export default function Leads() {
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#10B981', // emerald-600
+            confirmButtonColor: '#10B981', // primary
             cancelButtonColor: '#EF4444', // red-500
             confirmButtonText: 'Yes, delete it!'
         });
@@ -82,18 +82,18 @@ export default function Leads() {
     const statusColors = {
         'NEW': 'bg-blue-100 text-blue-800',
         'CONTACTED': 'bg-amber-100 text-amber-800',
-        'QUALIFIED': 'bg-emerald-100 text-emerald-800',
+        'QUALIFIED': 'bg-primary-light/10 text-primary',
         'LOST': 'bg-red-100 text-red-800'
     };
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
-             <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-black text-slate-800 tracking-tight">Leads</h1>
                     <p className="text-slate-500 mt-1 font-medium">Manage potential clients</p>
                 </div>
-                <button 
+                <button
                     onClick={() => {
                         setEditingId(null);
                         setForm({ name: '', company: '', email: '', phone: '', source: '', status: 'NEW', notes: '' });
@@ -129,8 +129,8 @@ export default function Leads() {
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex flex-col gap-1">
-                                        {lead.email && <div className="flex items-center gap-2 text-slate-600"><FiMail className="text-slate-400"/> {lead.email}</div>}
-                                        {lead.phone && <div className="flex items-center gap-2 text-slate-600"><FiPhone className="text-slate-400"/> {lead.phone}</div>}
+                                        {lead.email && <div className="flex items-center gap-2 text-slate-600"><FiMail className="text-slate-400" /> {lead.email}</div>}
+                                        {lead.phone && <div className="flex items-center gap-2 text-slate-600"><FiPhone className="text-slate-400" /> {lead.phone}</div>}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">
@@ -141,17 +141,17 @@ export default function Leads() {
                                 </td>
                                 <td className="px-6 py-4">
                                     {lead.assignedUser ? (
-                                         <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-bold border border-emerald-200">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 rounded-full bg-primary-light/10 text-primary flex items-center justify-center text-[10px] font-bold border border-primary/20">
                                                 {lead.assignedUser.name?.[0] || 'U'}
                                             </div>
                                             <span className="text-slate-700 font-medium text-xs">{lead.assignedUser.name}</span>
-                                         </div>
+                                        </div>
                                     ) : <span className="text-slate-400 italic text-xs">Unassigned</span>}
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleEdit(lead)} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><FiEdit2 /></button>
+                                        <button onClick={() => handleEdit(lead)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary-light/10 rounded-lg transition-colors"><FiEdit2 /></button>
                                         <button onClick={() => handleDelete(lead.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><FiTrash2 /></button>
                                     </div>
                                 </td>
@@ -166,7 +166,7 @@ export default function Leads() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                             <h2 className="text-xl font-black text-slate-800">{editingId ? 'Edit Lead' : 'New Lead'}</h2>
@@ -176,28 +176,28 @@ export default function Leads() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Name</label>
-                                    <input required className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Full Names" />
+                                    <input required className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Full Names" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Company</label>
-                                    <input className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.company} onChange={e => setForm({...form, company: e.target.value})} placeholder="Org Name" />
+                                    <input className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} placeholder="Org Name" />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Email</label>
-                                    <input type="email" className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="alex@example.com" />
+                                    <input type="email" className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="alex@example.com" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone</label>
-                                    <input className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+91..." />
+                                    <input className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+91..." />
                                 </div>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Source</label>
-                                    <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.source} onChange={e => setForm({...form, source: e.target.value})}>
+                                    <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.source} onChange={e => setForm({ ...form, source: e.target.value })}>
                                         <option value="">Select Source</option>
                                         <option value="Website">Website</option>
                                         <option value="Referral">Referral</option>
@@ -207,7 +207,7 @@ export default function Leads() {
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Status</label>
-                                    <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+                                    <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
                                         <option value="NEW">New</option>
                                         <option value="CONTACTED">Contacted</option>
                                         <option value="QUALIFIED">Qualified</option>
@@ -218,7 +218,7 @@ export default function Leads() {
 
                             <div>
                                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Assigned To</label>
-                                <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.assignedTo || ''} onChange={e => setForm({...form, assignedTo: e.target.value})}>
+                                <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.assignedTo || ''} onChange={e => setForm({ ...form, assignedTo: e.target.value })}>
                                     <option value="">Unassigned</option>
                                     {users.map(u => (
                                         <option key={u.id} value={u.id}>{u.name || u.username}</option>
@@ -228,10 +228,10 @@ export default function Leads() {
 
                             <div>
                                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Notes</label>
-                                <textarea className="input w-full bg-slate-50 border-transparent focus:bg-white h-20" value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}></textarea>
+                                <textarea className="input w-full bg-slate-50 border-transparent focus:bg-white h-20" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}></textarea>
                             </div>
 
-                            <button type="submit" className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition">
+                            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-dark transition">
                                 {editingId ? 'Update Lead' : 'Create Lead'}
                             </button>
                         </form>

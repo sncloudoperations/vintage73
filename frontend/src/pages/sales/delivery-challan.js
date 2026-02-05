@@ -140,7 +140,7 @@ export default function DeliveryChallan() {
       };
 
       const { data } = await api.post('/delivery-challans', payload);
-      
+
       // Fetch print data
       const printRes = await api.get(`/delivery-challans/${data.id}/print`);
       setPrintData(printRes.data);
@@ -153,7 +153,7 @@ export default function DeliveryChallan() {
       setCustomerId('');
       setReasonForMovement('');
       setMode('list');
-      
+
       // Refresh list
       const res = await api.get('/delivery-challans');
       setChallans(res.data);
@@ -190,7 +190,7 @@ export default function DeliveryChallan() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -211,7 +211,7 @@ export default function DeliveryChallan() {
         {mode === 'list' ? (
           <button
             onClick={() => setMode('create')}
-            className="btn bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2"
+            className="btn bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2"
           >
             <FiPlus /> New Challan
           </button>
@@ -252,11 +252,10 @@ export default function DeliveryChallan() {
                     <select
                       value={challan.status}
                       onChange={(e) => handleStatusUpdate(challan.id, e.target.value)}
-                      className={`text-xs font-medium px-2 py-1 rounded ${
-                        challan.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                        challan.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                        'bg-yellow-100 text-yellow-700'
-                      }`}
+                      className={`text-xs font-medium px-2 py-1 rounded ${challan.status === 'delivered' ? 'bg-green-100 text-green-700' :
+                          challan.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                            'bg-yellow-100 text-yellow-700'
+                        }`}
                     >
                       <option value="pending">Pending</option>
                       <option value="in-transit">In Transit</option>
@@ -415,7 +414,7 @@ export default function DeliveryChallan() {
               <button
                 onClick={handleSave}
                 disabled={saving || items.length === 0}
-                className="btn bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
+                className="btn bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
               >
                 <FiPrinter size={18} />
                 {saving ? 'Saving...' : 'Save & Print'}

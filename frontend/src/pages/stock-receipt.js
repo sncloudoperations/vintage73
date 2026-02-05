@@ -15,7 +15,7 @@ export default function StockReceipt() {
 
   const stockPrintRef = useRef();
   const handlePrint = useReactToPrint({ contentRef: stockPrintRef });
-  
+
   // Filters
   const [filterBranchId, setFilterBranchId] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -31,7 +31,7 @@ export default function StockReceipt() {
     try {
       const { data } = await api.get('/company');
       setCompany(data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const fetchBranches = async () => {
@@ -48,10 +48,10 @@ export default function StockReceipt() {
     try {
       setLoading(true);
       const user = JSON.parse(localStorage.getItem('user'));
-      const { data } = await api.get('/transfers', { 
-        params: { branchId: user.branchId, type: 'incoming' } 
+      const { data } = await api.get('/transfers', {
+        params: { branchId: user.branchId, type: 'incoming' }
       });
-      
+
       if (activeTab === 'pending') {
         setIncomingTransfers(data.filter(t => t.status === 'PENDING'));
       } else {
@@ -78,9 +78,9 @@ export default function StockReceipt() {
 
   const filteredTransfers = incomingTransfers.filter(t => {
     const matchBranch = filterBranchId === '' || t.fromBranchId === parseInt(filterBranchId);
-    const date = new Date(t.createdAt).setHours(0,0,0,0);
-    const matchStart = startDate ? date >= new Date(startDate).setHours(0,0,0,0) : true;
-    const matchEnd = endDate ? date <= new Date(endDate).setHours(23,59,59,999) : true;
+    const date = new Date(t.createdAt).setHours(0, 0, 0, 0);
+    const matchStart = startDate ? date >= new Date(startDate).setHours(0, 0, 0, 0) : true;
+    const matchEnd = endDate ? date <= new Date(endDate).setHours(23, 59, 59, 999) : true;
     return matchBranch && matchStart && matchEnd;
   });
 
@@ -99,15 +99,15 @@ export default function StockReceipt() {
       </div>
 
       <div className="flex gap-4 mb-6 border-b border-slate-200 text-sm font-medium">
-        <button 
+        <button
           onClick={() => setActiveTab('pending')}
-          className={`pb-2 px-1 border-b-2 transition-colors ${activeTab === 'pending' ? 'border-orange-500 text-orange-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`pb-2 px-1 border-b-2 transition-colors ${activeTab === 'pending' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
           Pending Receipt
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('received')}
-          className={`pb-2 px-1 border-b-2 transition-colors ${activeTab === 'received' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`pb-2 px-1 border-b-2 transition-colors ${activeTab === 'received' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
           Received History
         </button>
@@ -129,7 +129,7 @@ export default function StockReceipt() {
           <label className="block text-xs font-bold text-slate-400 uppercase mb-2">To Date</label>
           <input type="date" className="input" value={endDate} onChange={e => setEndDate(e.target.value)} />
         </div>
-        <button 
+        <button
           onClick={() => { setFilterBranchId(''); setStartDate(''); setEndDate(''); }}
           className="text-slate-400 hover:text-red-500 font-bold text-xs flex items-center gap-1 pb-3 px-2 transition-colors uppercase"
         >
@@ -169,40 +169,40 @@ export default function StockReceipt() {
                   {t.remarks || 'No remarks'}
                 </td>
                 <td className="p-4">
-                   {t.status === 'RECEIVED' ? (
-                      <div className="flex flex-col text-xs">
-                        <span className="font-bold text-slate-700">{t.receivedBy?.name || 'Staff'}</span>
-                        <span className="text-slate-400">{t.receivedAt ? new Date(t.receivedAt).toLocaleString() : '-'}</span>
-                      </div>
-                   ) : (
-                      <span className="text-slate-300 italic text-[10px]">Awaiting...</span>
-                   )}
+                  {t.status === 'RECEIVED' ? (
+                    <div className="flex flex-col text-xs">
+                      <span className="font-bold text-slate-700">{t.receivedBy?.name || 'Staff'}</span>
+                      <span className="text-slate-400">{t.receivedAt ? new Date(t.receivedAt).toLocaleString() : '-'}</span>
+                    </div>
+                  ) : (
+                    <span className="text-slate-300 italic text-[10px]">Awaiting...</span>
+                  )}
                 </td>
                 <td className="p-4 text-right pr-6">
                   {t.status === 'PENDING' ? (
                     <div className="flex justify-end gap-2">
-                      <button 
-                        onClick={() => triggerPrint(t)} 
-                        className="text-emerald-600 hover:bg-emerald-50 px-3 py-2 rounded-xl text-[10px] font-bold uppercase transition-colors flex items-center gap-1 border border-emerald-100"
+                      <button
+                        onClick={() => triggerPrint(t)}
+                        className="text-primary hover:bg-primary-light/10 px-3 py-2 rounded-xl text-[10px] font-bold uppercase transition-colors flex items-center gap-1 border border-primary-light/20"
                       >
                         <FiPrinter /> Print
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleReceive(t.id)}
-                        className="bg-orange-600 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-orange-700 shadow-lg shadow-orange-100 transition-all active:scale-95"
+                        className="bg-primary text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all active:scale-95"
                       >
                         <FiPackage /> Receive
                       </button>
                     </div>
                   ) : (
                     <div className="flex justify-end gap-2 items-center">
-                       <button 
-                        onClick={() => triggerPrint(t)} 
-                        className="text-emerald-600 hover:bg-emerald-50 px-3 py-2 rounded-xl text-[10px] font-bold uppercase transition-colors flex items-center gap-1 border border-emerald-100"
+                      <button
+                        onClick={() => triggerPrint(t)}
+                        className="text-primary hover:bg-primary-light/10 px-3 py-2 rounded-xl text-[10px] font-bold uppercase transition-colors flex items-center gap-1 border border-primary-light/20"
                       >
                         <FiPrinter /> Print
                       </button>
-                      <div className="text-emerald-500 font-bold text-xs flex items-center gap-1">
+                      <div className="text-primary font-bold text-xs flex items-center gap-1">
                         <FiCheckCircle /> Received
                       </div>
                     </div>
@@ -213,99 +213,99 @@ export default function StockReceipt() {
             {filteredTransfers.length === 0 && !loading && (
               <tr>
                 <td colSpan="5" className="p-16 text-center">
-                   <div className="flex flex-col items-center gap-3">
-                      <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300">
-                         {activeTab === 'pending' ? <FiPackage size={32} /> : <FiClock size={32} />}
-                      </div>
-                      <p className="text-slate-400 italic">No {activeTab} transfers to display</p>
-                   </div>
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300">
+                      {activeTab === 'pending' ? <FiPackage size={32} /> : <FiClock size={32} />}
+                    </div>
+                    <p className="text-slate-400 italic">No {activeTab} transfers to display</p>
+                  </div>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-      
+
       {/* Printable Stock Transfer Challan (A4 Size) */}
       <div style={{ display: 'none' }}>
-          <div ref={stockPrintRef} className="p-10 text-black bg-white" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'sans-serif' }}>
-              <div className="text-center border-b-2 border-slate-900 pb-3 mb-6">
-                  {company?.logoUrl && (
-                      <img src={company.logoUrl} alt="Logo" className="h-16 mx-auto mb-2 object-contain" />
-                  )}
-                  <h1 className="text-xl font-black uppercase tracking-tighter">Stock Transfer Challan</h1>
-                  <h2 className="text-base font-bold mt-0.5 text-slate-700">{company?.companyName || 'BILLING SOFTWARE'}</h2>
-                  <p className="text-[9px] text-slate-500 uppercase tracking-widest">{company?.address || 'Inventory Management System'}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6 mb-6 text-[10px]">
-                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      <p className="font-black text-slate-400 uppercase text-[8px] mb-1 tracking-widest">Sending Branch</p>
-                      <p className="font-bold text-base text-slate-800">{selectedForPrint?.fromBranch?.name}</p>
-                      <p className="text-slate-500 mt-0.5">{selectedForPrint?.fromBranch?.address || 'Branch Address Not Set'}</p>
-                  </div>
-                  <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-                      <p className="font-black text-emerald-600 uppercase text-[8px] mb-1 tracking-widest">Receiving Branch</p>
-                      <p className="font-bold text-base text-slate-800">{selectedForPrint?.toBranch?.name}</p>
-                      <p className="text-slate-500 mt-0.5">{selectedForPrint?.toBranch?.address || 'Branch Address Not Set'}</p>
-                  </div>
-              </div>
-
-              <div className="flex justify-between items-end mb-4 pb-2 border-b border-slate-100">
-                  <div>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">Transfer ID</p>
-                      <p className="text-sm font-mono font-bold text-slate-800">#ST-{selectedForPrint?.id?.toString().padStart(6, '0')}</p>
-                  </div>
-                  <div className="text-right">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">Transfer Date</p>
-                      <p className="text-[11px] font-bold text-slate-800">{selectedForPrint?.createdAt ? new Date(selectedForPrint.createdAt).toLocaleString() : '-'}</p>
-                  </div>
-              </div>
-
-              <table className="w-full text-[11px] mb-6">
-                  <thead>
-                      <tr className="bg-slate-900 text-white">
-                          <th className="p-2 text-left rounded-l-md font-bold uppercase tracking-wider">Item Name</th>
-                          <th className="p-2 text-center w-24 rounded-r-md font-bold uppercase tracking-wider">Quantity</th>
-                      </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                      {selectedForPrint?.items?.map((item, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50/50">
-                              <td className="p-2 font-medium text-slate-700">{item.product?.name}</td>
-                              <td className="p-2 text-center font-bold text-slate-900">{item.quantity} units</td>
-                          </tr>
-                      ))}
-                  </tbody>
-              </table>
-
-              {selectedForPrint?.remarks && (
-                  <div className="mb-6 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Remarks</p>
-                      <p className="text-[10px] text-slate-600 italic">"{selectedForPrint.remarks}"</p>
-                  </div>
-              )}
-
-              {selectedForPrint?.status === 'RECEIVED' && (
-                  <div className="mt-auto grid grid-cols-2 gap-6 pt-6 border-t font-sans">
-                      <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase mb-3 tracking-widest text-center">Issued By (Sender)</p>
-                        <div className="h-12 border-b border-slate-200"></div>
-                      </div>
-                      <div className="text-right">
-                          <p className="text-[8px] font-black text-emerald-600 uppercase mb-1 tracking-widest">Received & Verified By</p>
-                          <p className="font-bold text-sm text-slate-800">{selectedForPrint.receivedBy?.name || 'Staff'}</p>
-                          <p className="text-[9px] text-slate-400 uppercase">
-                              {selectedForPrint.receivedAt ? new Date(selectedForPrint.receivedAt).toLocaleString() : '-'}
-                          </p>
-                      </div>
-                  </div>
-              )}
-
-              <div className="mt-8 text-center border-t pt-4">
-                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Electronic Stock Transfer Document - No Signature Required</p>
-              </div>
+        <div ref={stockPrintRef} className="p-10 text-black bg-white" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'sans-serif' }}>
+          <div className="text-center border-b-2 border-slate-900 pb-3 mb-6">
+            {company?.logoUrl && (
+              <img src={company.logoUrl} alt="Logo" className="h-16 mx-auto mb-2 object-contain" />
+            )}
+            <h1 className="text-xl font-black uppercase tracking-tighter">Stock Transfer Challan</h1>
+            <h2 className="text-base font-bold mt-0.5 text-slate-700">{company?.companyName || 'BILLING SOFTWARE'}</h2>
+            <p className="text-[9px] text-slate-500 uppercase tracking-widest">{company?.address || 'Inventory Management System'}</p>
           </div>
+
+          <div className="grid grid-cols-2 gap-6 mb-6 text-[10px]">
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <p className="font-black text-slate-400 uppercase text-[8px] mb-1 tracking-widest">Sending Branch</p>
+              <p className="font-bold text-base text-slate-800">{selectedForPrint?.fromBranch?.name}</p>
+              <p className="text-slate-500 mt-0.5">{selectedForPrint?.fromBranch?.address || 'Branch Address Not Set'}</p>
+            </div>
+            <div className="bg-primary-light/10 p-3 rounded-xl border border-primary-light/20">
+              <p className="font-black text-primary uppercase text-[8px] mb-1 tracking-widest">Receiving Branch</p>
+              <p className="font-bold text-base text-slate-800">{selectedForPrint?.toBranch?.name}</p>
+              <p className="text-slate-500 mt-0.5">{selectedForPrint?.toBranch?.address || 'Branch Address Not Set'}</p>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-end mb-4 pb-2 border-b border-slate-100">
+            <div>
+              <p className="text-[9px] font-bold text-slate-400 uppercase">Transfer ID</p>
+              <p className="text-sm font-mono font-bold text-slate-800">#ST-{selectedForPrint?.id?.toString().padStart(6, '0')}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[9px] font-bold text-slate-400 uppercase">Transfer Date</p>
+              <p className="text-[11px] font-bold text-slate-800">{selectedForPrint?.createdAt ? new Date(selectedForPrint.createdAt).toLocaleString() : '-'}</p>
+            </div>
+          </div>
+
+          <table className="w-full text-[11px] mb-6">
+            <thead>
+              <tr className="bg-slate-900 text-white">
+                <th className="p-2 text-left rounded-l-md font-bold uppercase tracking-wider">Item Name</th>
+                <th className="p-2 text-center w-24 rounded-r-md font-bold uppercase tracking-wider">Quantity</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {selectedForPrint?.items?.map((item, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/50">
+                  <td className="p-2 font-medium text-slate-700">{item.product?.name}</td>
+                  <td className="p-2 text-center font-bold text-slate-900">{item.quantity} units</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {selectedForPrint?.remarks && (
+            <div className="mb-6 p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <p className="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Remarks</p>
+              <p className="text-[10px] text-slate-600 italic">"{selectedForPrint.remarks}"</p>
+            </div>
+          )}
+
+          {selectedForPrint?.status === 'RECEIVED' && (
+            <div className="mt-auto grid grid-cols-2 gap-6 pt-6 border-t font-sans">
+              <div>
+                <p className="text-[8px] font-black text-slate-400 uppercase mb-3 tracking-widest text-center">Issued By (Sender)</p>
+                <div className="h-12 border-b border-slate-200"></div>
+              </div>
+              <div className="text-right">
+                <p className="text-[8px] font-black text-primary uppercase mb-1 tracking-widest">Received & Verified By</p>
+                <p className="font-bold text-sm text-slate-800">{selectedForPrint.receivedBy?.name || 'Staff'}</p>
+                <p className="text-[9px] text-slate-400 uppercase">
+                  {selectedForPrint.receivedAt ? new Date(selectedForPrint.receivedAt).toLocaleString() : '-'}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8 text-center border-t pt-4">
+            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Electronic Stock Transfer Document - No Signature Required</p>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -75,10 +75,10 @@ export default function SalaryAdvance() {
                 </span>
             );
         }
-        
+
         const styles = {
             PENDING: 'bg-amber-50 text-amber-700 border-amber-200',
-            APPROVED: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            APPROVED: 'bg-primary-light/10 text-primary border-primary-light/20',
             REJECTED: 'bg-red-50 text-red-700 border-red-200'
         };
         return (
@@ -101,7 +101,7 @@ export default function SalaryAdvance() {
             <header className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <FiDollarSign className="text-emerald-600" />
+                        <FiDollarSign className="text-primary" />
                         Salary Advance
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">Request and manage salary advances</p>
@@ -162,7 +162,7 @@ export default function SalaryAdvance() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <span className="font-bold text-emerald-600 text-base">
+                                            <span className="font-bold text-primary text-base">
                                                 {currencySymbol}{parseFloat(adv.amount).toFixed(2)}
                                             </span>
                                         </td>
@@ -201,7 +201,7 @@ export default function SalaryAdvance() {
                                                     <div className="flex justify-end gap-2">
                                                         <button
                                                             onClick={() => handleStatusUpdate(adv.id, 'APPROVED')}
-                                                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                                            className="p-2 text-primary hover:bg-primary-light/10 rounded-lg transition-colors"
                                                             title="Approve"
                                                         >
                                                             <FiCheck size={18} />
@@ -227,7 +227,7 @@ export default function SalaryAdvance() {
 
             {/* Request Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
                         <div className="p-6 border-b border-slate-100">
                             <h2 className="text-xl font-bold text-slate-800">Request Salary Advance</h2>
@@ -245,7 +245,7 @@ export default function SalaryAdvance() {
                                     min="0.01"
                                     className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-bold text-lg"
                                     value={formData.amount}
-                                    onChange={e => setFormData({...formData, amount: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, amount: e.target.value })}
                                     placeholder="0.00"
                                 />
                             </div>
@@ -258,7 +258,7 @@ export default function SalaryAdvance() {
                                     rows="4"
                                     className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all resize-none"
                                     value={formData.reason}
-                                    onChange={e => setFormData({...formData, reason: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, reason: e.target.value })}
                                     placeholder="Explain why you need the advance..."
                                 />
                             </div>

@@ -10,7 +10,7 @@ export default function CreditManagement() {
     const [showModal, setShowModal] = useState(false);
     const [companyProfile, setCompanyProfile] = useState(null);
     const [stats, setStats] = useState({ totalCredit: 0, todayCredit: 0 });
-    
+
     // Settlement State
     const [showSettleModal, setShowSettleModal] = useState(false);
     const [settleForm, setSettleForm] = useState({ amount: '', method: 'Cash', notes: '' });
@@ -27,7 +27,7 @@ export default function CreditManagement() {
             ]);
             setDebtors(credRes.data);
             setCompanyProfile(compRes.data);
-            
+
             // Calculate basic stats for display
             const total = credRes.data.reduce((acc, d) => acc + d.totalDebt, 0);
             setStats({ totalCredit: total, todayCredit: 0 }); // todayCredit can befetched if endpoint exists
@@ -56,7 +56,7 @@ export default function CreditManagement() {
         // Remove non-digits
         const cleanPhone = phone.replace(/\D/g, '');
         // Default to country code or assume valid
-        const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone; 
+        const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
         const message = `Hello ${name}, your outstanding balance is ₹${amount}. Please pay at your earliest convenience. Thank you.`;
         const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
@@ -85,7 +85,7 @@ export default function CreditManagement() {
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
-             <div className="mb-8">
+            <div className="mb-8">
                 <span className="text-3xl font-black text-slate-800 tracking-tight">{companyProfile?.currencySymbol || '₹'}{Number(stats.totalCredit).toFixed(0)}</span>
                 <p className="text-slate-500 mt-1 font-medium">Track outstanding payments and send reminders</p>
             </div>
@@ -114,16 +114,16 @@ export default function CreditManagement() {
                                 <td className="px-6 py-4 font-black text-red-600 text-base">{formatCurrency(c.totalDebt)}</td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex justify-end gap-2">
-                                        <button 
+                                        <button
                                             onClick={() => handleViewDetails(c.id)}
                                             className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                                             title="View Details"
                                         >
                                             <FiEye size={18} />
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => sendWhatsApp(c.phone, c.name, c.totalDebt)}
-                                            className="flex items-center gap-2 bg-emerald-500 text-white px-3 py-2 rounded-xl font-bold hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200 text-xs"
+                                            className="flex items-center gap-2 bg-primary text-white px-3 py-2 rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 text-xs"
                                         >
                                             <FiMessageCircle size={16} /> WhatsApp
                                         </button>
@@ -140,7 +140,7 @@ export default function CreditManagement() {
 
             {/* Detail Modal */}
             {showModal && selectedCustomer && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                             <div>
@@ -166,7 +166,7 @@ export default function CreditManagement() {
                                             <td className="px-4 py-3 text-slate-600">{new Date(sale.saleDate).toLocaleDateString()}</td>
                                             <td className="px-4 py-3 font-bold text-slate-700">{sale.invoiceNumber}</td>
                                             <td className="px-4 py-3 text-right font-medium">₹{sale.totalAmount}</td>
-                                            <td className="px-4 py-3 text-right text-emerald-600">₹{sale.paidAmount}</td>
+                                            <td className="px-4 py-3 text-right text-primary">₹{sale.paidAmount}</td>
                                             <td className="px-4 py-3 text-right font-bold text-red-600">₹{sale.balanceAmount}</td>
                                         </tr>
                                     ))}
@@ -178,13 +178,13 @@ export default function CreditManagement() {
                                 <span className="text-xs font-bold text-slate-400 uppercase">Total Outstanding</span>
                                 <p className="text-2xl font-black text-slate-800">₹{selectedCustomer.totalDebt}</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => sendWhatsApp(selectedCustomer.phone, selectedCustomer.name, selectedCustomer.totalDebt)}
-                                className="bg-emerald-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-emerald-700 flex items-center gap-2 text-sm"
+                                className="bg-primary text-white px-4 py-2 rounded-xl font-bold hover:bg-primary-dark flex items-center gap-2 text-sm"
                             >
                                 <FiMessageCircle /> WhatsApp
                             </button>
-                            <button 
+                            <button
                                 onClick={() => {
                                     setSettleForm({ amount: selectedCustomer.totalDebt, method: 'Cash', notes: '' });
                                     setShowSettleModal(true);
@@ -211,13 +211,13 @@ export default function CreditManagement() {
                                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Received Amount</label>
                                 <div className="relative">
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
-                                    <input 
+                                    <input
                                         autoFocus
-                                        type="number" 
+                                        type="number"
                                         required
-                                        className="input w-full pl-8 font-bold text-lg text-emerald-600" 
-                                        value={settleForm.amount} 
-                                        onChange={e => setSettleForm({...settleForm, amount: e.target.value})} 
+                                        className="input w-full pl-8 font-bold text-lg text-primary"
+                                        value={settleForm.amount}
+                                        onChange={e => setSettleForm({ ...settleForm, amount: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -225,11 +225,11 @@ export default function CreditManagement() {
                                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Payment Method</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {['Cash', 'UPI', 'Bank'].map(m => (
-                                        <button 
+                                        <button
                                             key={m}
                                             type="button"
-                                            onClick={() => setSettleForm({...settleForm, method: m})}
-                                            className={`py-2 text-xs font-bold rounded border ${settleForm.method === m ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-200'}`}
+                                            onClick={() => setSettleForm({ ...settleForm, method: m })}
+                                            className={`py-2 text-xs font-bold rounded border ${settleForm.method === m ? 'bg-primary text-white border-primary' : 'bg-white text-slate-600 border-slate-200'}`}
                                         >
                                             {m}
                                         </button>
@@ -238,9 +238,9 @@ export default function CreditManagement() {
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Notes</label>
-                                <input className="input w-full" placeholder="Reference No. etc" value={settleForm.notes} onChange={e => setSettleForm({...settleForm, notes: e.target.value})} />
+                                <input className="input w-full" placeholder="Reference No. etc" value={settleForm.notes} onChange={e => setSettleForm({ ...settleForm, notes: e.target.value })} />
                             </div>
-                            <button type="submit" className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition">
+                            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary-dark transition">
                                 Confirm Settlement
                             </button>
                         </form>

@@ -82,15 +82,15 @@ export default function Branches() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {branches.map(branch => (
           <div key={branch.id} className="card p-6 border-0 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
-            <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full transition-colors ${branch.isActive ? 'bg-emerald-50' : 'bg-slate-50'} group-hover:scale-110`}></div>
-            
+            <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full transition-colors ${branch.isActive ? 'bg-primary-light/10' : 'bg-slate-50'} group-hover:scale-110`}></div>
+
             <div className="relative">
               <div className="flex justify-between items-start mb-4">
-                <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${branch.isActive ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+                <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${branch.isActive ? 'bg-primary-light/10 text-primary border border-primary/20' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
                   {branch.isActive ? 'Active' : 'Inactive'}
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => openEditModal(branch)} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
+                  <button onClick={() => openEditModal(branch)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary-light/10 rounded-lg transition-colors">
                     <FiEdit2 size={16} />
                   </button>
                   <button onClick={() => handleDelete(branch.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -131,66 +131,69 @@ export default function Branches() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-               <h2 className="text-xl font-bold text-slate-800">{editingId ? 'Edit Branch' : 'Add New Branch'}</h2>
-               <button onClick={() => { setShowModal(false); setEditingId(null); }} className="text-slate-400 hover:text-slate-600">&times;</button>
+              <h2 className="text-xl font-bold text-slate-800">{editingId ? 'Edit Branch' : 'Add New Branch'}</h2>
+              <button onClick={() => { setShowModal(false); setEditingId(null); }} className="text-slate-400 hover:text-slate-600">&times;</button>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Branch Name</label>
-                <input 
-                  required 
-                  className="input" 
-                  placeholder="e.g. Downtown Branch" 
-                  value={formData.name} 
-                  onChange={e => setFormData({...formData, name: e.target.value})} 
+                <input
+                  required
+                  className="input"
+                  placeholder="e.g. Downtown Branch"
+                  value={formData.name}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
-                <textarea 
-                  className="input min-h-[80px]" 
-                  placeholder="Full address of the branch" 
-                  value={formData.address} 
-                  onChange={e => setFormData({...formData, address: e.target.value})} 
+                <textarea
+                  className="input min-h-[80px]"
+                  placeholder="Full address of the branch"
+                  value={formData.address}
+                  onChange={e => setFormData({ ...formData, address: e.target.value })}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
-                  <input 
-                    className="input" 
-                    placeholder="+91..." 
-                    value={formData.phone} 
-                    onChange={e => setFormData({...formData, phone: e.target.value})} 
+                  <input
+                    className="input"
+                    placeholder="+91..."
+                    value={formData.phone}
+                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                  <input 
+                  <input
                     type="email"
-                    className="input" 
-                    placeholder="branch@example.com" 
-                    value={formData.email} 
-                    onChange={e => setFormData({...formData, email: e.target.value})} 
+                    className="input"
+                    placeholder="branch@example.com"
+                    value={formData.email}
+                    onChange={e => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 py-2">
-                <input 
-                  type="checkbox" 
-                  id="isActive"
-                  checked={formData.isActive}
-                  onChange={e => setFormData({...formData, isActive: e.target.checked})}
-                  className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                />
-                <label htmlFor="isActive" className="text-sm font-medium text-slate-700 cursor-pointer">Branch is active</label>
+              <div className="flex items-center gap-2 py-2 mt-2">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={formData.isActive}
+                    onChange={e => setFormData({ ...formData, isActive: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                  <span className="ml-3 text-sm font-medium text-slate-700">Active Status</span>
+                </label>
               </div>
 
               <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">

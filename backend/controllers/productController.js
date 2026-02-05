@@ -6,13 +6,14 @@ exports.getAllProducts = async (req, res) => {
   try {
     const products = await prisma.product.findMany({
       include: {
+        category: true,
         stocks: branchId ? {
           where: { branchId: parseInt(branchId) }
         } : true
       },
       orderBy: { createdAt: 'desc' }
     });
-    
+
     // Map stock to a flat structure for frontend compatibility if branchId is provided
     const formattedProducts = products.map(p => ({
       ...p,
@@ -28,8 +29,8 @@ exports.getAllProducts = async (req, res) => {
 // Create Product
 exports.createProduct = async (req, res) => {
   try {
-    let { name, price, taxRate, taxType, taxPercent, hsnCode, warranty, description, barcode, hasBarcode, categoryName, minDiscount, maxDiscount, isTaxInclusive } = req.body;
-    
+    let { name, price, taxRate, taxType, taxPercent, hsnCode, warranty, description, barcode, hasBarcode, categoryName, categoryId, minDiscount, maxDiscount, isTaxInclusive } = req.body;
+
     // Handle Image Upload
     let imageUrl = null;
     if (req.file) {
@@ -49,7 +50,7 @@ exports.createProduct = async (req, res) => {
         name,
         categoryName,
         price: priceDecimal,
-        taxType, 
+        taxType,
         taxRate: taxRateDecimal,
         taxPercent: taxRateDecimal,
         hsnCode,
@@ -60,7 +61,8 @@ exports.createProduct = async (req, res) => {
         minDiscount: minDiscount ? parseFloat(minDiscount) : null,
         maxDiscount: maxDiscount ? parseFloat(maxDiscount) : null,
         isTaxInclusive: (isTaxInclusive === 'true' || isTaxInclusive === true) || false,
-        imageUrl: imageUrl
+        imageUrl: imageUrl,
+        categoryId: categoryId ? parseInt(categoryId) : null // Link to Category model
       }
     });
     res.status(201).json(product);
@@ -75,23 +77,24 @@ exports.createProduct = async (req, res) => {
 // Update Product
 exports.updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, price, taxRate, taxPercent, taxType, hsnCode, warranty, description, barcode, categoryName, minDiscount, maxDiscount, isTaxInclusive } = req.body;
-  
+  const { name, price, taxRate, taxPercent, taxType, hsnCode, warranty, description, barcode, categoryName, categoryId, minDiscount, maxDiscount, isTaxInclusive } = req.body;
+
   try {
     const dataToUpdate = {
-        name,
-        categoryName,
-        price: parseFloat(price),
-        taxRate: parseFloat(taxPercent || taxRate),
-        taxPercent: parseFloat(taxPercent || taxRate),
-        taxType,
-        hsnCode,
-        warranty: parseInt(warranty),
-        description,
-        barcode,
-        minDiscount: minDiscount ? parseFloat(minDiscount) : null,
-        maxDiscount: maxDiscount ? parseFloat(maxDiscount) : null,
-        isTaxInclusive: (isTaxInclusive === 'true' || isTaxInclusive === true) || false
+      name,
+      categoryName,
+      categoryId: categoryId ? parseInt(categoryId) : null,
+      price: parseFloat(price),
+      taxRate: parseFloat(taxPercent || taxRate),
+      taxPercent: parseFloat(taxPercent || taxRate),
+      taxType,
+      hsnCode,
+      warranty: parseInt(warranty),
+      description,
+      barcode,
+      minDiscount: minDiscount ? parseFloat(minDiscount) : null,
+      maxDiscount: maxDiscount ? parseFloat(maxDiscount) : null,
+      isTaxInclusive: (isTaxInclusive === 'true' || isTaxInclusive === true) || false
     };
 
     if (req.file) {

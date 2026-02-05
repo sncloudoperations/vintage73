@@ -61,7 +61,7 @@ export default function MissPunchRequests() {
     const getStatusBadge = (status) => {
         const styles = {
             PENDING: 'bg-amber-50 text-amber-700 border-amber-200',
-            APPROVED: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            APPROVED: 'bg-primary-light/10 text-primary border-primary/20',
             REJECTED: 'bg-red-50 text-red-700 border-red-200'
         };
         return (
@@ -78,7 +78,7 @@ export default function MissPunchRequests() {
             <header className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <FiClock className="text-emerald-600" />
+                        <FiClock className="text-primary" />
                         Miss Punch Requests
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">Request attendance corrections for missed punches</p>
@@ -149,7 +149,7 @@ export default function MissPunchRequests() {
                                                     <div className="flex justify-end gap-2">
                                                         <button
                                                             onClick={() => handleStatusUpdate(req.id, 'APPROVED')}
-                                                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                                            className="p-2 text-primary hover:bg-primary-light/10 rounded-lg transition-colors"
                                                             title="Approve"
                                                         >
                                                             <FiCheck size={18} />
@@ -175,7 +175,7 @@ export default function MissPunchRequests() {
 
             {/* Request Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
                         <div className="p-6 border-b border-slate-100">
                             <h2 className="text-xl font-bold text-slate-800">Request Miss Punch</h2>
@@ -191,7 +191,7 @@ export default function MissPunchRequests() {
                                     type="date"
                                     className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all"
                                     value={formData.date}
-                                    onChange={e => setFormData({...formData, date: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, date: e.target.value })}
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -203,7 +203,7 @@ export default function MissPunchRequests() {
                                         type="time"
                                         className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all"
                                         value={formData.checkInTime}
-                                        onChange={e => setFormData({...formData, checkInTime: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, checkInTime: e.target.value })}
                                     />
                                 </div>
                                 <div>
@@ -214,7 +214,7 @@ export default function MissPunchRequests() {
                                         type="time"
                                         className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all"
                                         value={formData.checkOutTime}
-                                        onChange={e => setFormData({...formData, checkOutTime: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, checkOutTime: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -227,7 +227,7 @@ export default function MissPunchRequests() {
                                     rows="3"
                                     className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all resize-none"
                                     value={formData.reason}
-                                    onChange={e => setFormData({...formData, reason: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, reason: e.target.value })}
                                     placeholder="Explain why you missed the punch..."
                                 />
                             </div>

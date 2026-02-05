@@ -1,0 +1,160 @@
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+async function main() {
+    console.log('Seeding Chart of Accounts...');
+
+    // 1. Define Standard Hierarchy
+    const hierarchy = [
+        {
+            name: 'Assets',
+            type: 'ASSETS',
+            isSystem: true,
+            children: [
+                {
+                    name: 'Current Assets',
+                    type: 'ASSETS',
+                    isSystem: true,
+                    ledgers: ['Cash Account', 'Bank Account', 'Petty Cash']
+                },
+                {
+                    name: 'Fixed Assets',
+                    type: 'ASSETS',
+                    isSystem: true,
+                    ledgers: ['Furniture & Fixtures', 'Machinery & Equipment', 'Computers']
+                }
+            ]
+        },
+        {
+            name: 'Liabilities',
+            type: 'LIABILITIES',
+            isSystem: true,
+            children: [
+                {
+                    name: 'Current Liabilities',
+                    type: 'LIABILITIES',
+                    isSystem: true,
+                    ledgers: ['Duties & Taxes', 'Sundry Creditors']
+                },
+                {
+                    name: 'Loans (Liability)',
+                    type: 'LIABILITIES',
+                    isSystem: true,
+                    ledgers: ['Bank OD A/c', 'Secured Loans']
+                }
+            ]
+        },
+        {
+            name: 'Income',
+            type: 'INCOME',
+            isSystem: true,
+            children: [
+                {
+                    name: 'Direct Income',
+                    type: 'INCOME',
+                    isSystem: true,
+                    ledgers: ['Sales Account', 'Professional Income']
+                },
+                {
+                    name: 'Indirect Income',
+                    type: 'INCOME',
+                    isSystem: true,
+                    ledgers: ['Discount Received', 'Interest Received']
+                }
+            ]
+        },
+        {
+            name: 'Expenses',
+            type: 'EXPENSES',
+            isSystem: true,
+            children: [
+                {
+                    name: 'Direct Expenses',
+                    type: 'EXPENSES',
+                    isSystem: true,
+                    ledgers: ['Purchase Account', 'Wages', 'Freight Changes']
+                },
+                {
+                    name: 'Indirect Expenses',
+                    type: 'EXPENSES',
+                    isSystem: true,
+                    ledgers: ['Rent', 'Salaries', 'Electricity', 'Telephone', 'Discount Allowed']
+                }
+            ]
+        },
+        {
+            name: 'Equity',
+            type: 'EQUITY',
+            isSystem: true,
+            children: [
+                {
+                    name: 'Capital Account',
+                    type: 'EQUITY',
+                    isSystem: true,
+                    ledgers: ['Capital Account', 'Drawings']
+                }
+            ]
+        }
+    ];
+
+    for (const rootGroup of hierarchy) {
+        // Create Root Group
+        const root = await prisma.accountGroup.upsert({
+            where: { name: rootGroup.name },
+            update: {},
+            create: {
+                name: rootGroup.name,
+                groupType: rootGroup.type,
+                isSystem: rootGroup.isSystem
+            }
+        });
+
+        console.log(`Created/Checked Root Group: ${root.name}`);
+
+        if (rootGroup.children) {
+            for (const childGroup of rootGroup.children) {
+                // Create Child Group
+                const child = await prisma.accountGroup.upsert({
+                    where: { name: childGroup.name },
+                    update: {},
+                    create: {
+                        name: childGroup.name,
+                        groupType: childGroup.type,
+                        isSystem: childGroup.isSystem,
+                        parentId: root.id
+                    }
+                });
+
+                console.log(`  - Group: ${child.name}`);
+
+                if (childGroup.ledgers) {
+                    for (const ledgerName of childGroup.ledgers) {
+                        // Create Ledger
+                        await prisma.ledger.upsert({
+                            where: { name: ledgerName },
+                            update: {},
+                            create: {
+                                name: ledgerName,
+                                groupId: child.id,
+                                balanceType: ['ASSETS', 'EXPENSES'].includes(rootGroup.type) ? 'DEBIT' : 'CREDIT',
+                                isSystem: true // Mark as system ledger
+                            }
+                        });
+                        console.log(`    - Ledger: ${ledgerName}`);
+                    }
+                }
+            }
+        }
+    }
+
+    console.log('Seeding completed.');
+}
+
+main()
+    .catch((e) => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });

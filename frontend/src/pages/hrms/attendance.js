@@ -45,7 +45,7 @@ export default function AttendanceCalendar() {
         data.forEach(record => {
             if (record.status === 'PRESENT') present++;
             if (record.status === 'HALF_DAY') halfDay++;
-            
+
             if (record.checkIn && record.checkOut) {
                 const diff = new Date(record.checkOut) - new Date(record.checkIn);
                 hours += diff / (1000 * 60 * 60);
@@ -71,7 +71,7 @@ export default function AttendanceCalendar() {
         const month = date.getMonth();
         const daysInMonth = getDaysInMonth(year, month);
         const firstDay = getFirstDayOfMonth(year, month);
-        
+
         const days = [];
         const today = new Date();
 
@@ -85,7 +85,7 @@ export default function AttendanceCalendar() {
             const currentDayDate = new Date(year, month, day);
             // reset hours for comparison
             const dateString = currentDayDate.toISOString().split('T')[0];
-            
+
             // Find attendance record for this day
             // Note: DB date might be datetime. We need to match YYYY-MM-DD.
             // Find attendance record for this day
@@ -96,26 +96,26 @@ export default function AttendanceCalendar() {
 
             // Find leave record for this day
             const leave = leaveData.find(l => {
-                const s = new Date(l.startDate); s.setHours(0,0,0,0);
-                const e = new Date(l.endDate); e.setHours(0,0,0,0);
+                const s = new Date(l.startDate); s.setHours(0, 0, 0, 0);
+                const e = new Date(l.endDate); e.setHours(0, 0, 0, 0);
                 return currentDayDate >= s && currentDayDate <= e;
             });
 
-            const isToday = currentDayDate.getDate() === today.getDate() && 
-                           currentDayDate.getMonth() === today.getMonth() && 
-                           currentDayDate.getFullYear() === today.getFullYear();
+            const isToday = currentDayDate.getDate() === today.getDate() &&
+                currentDayDate.getMonth() === today.getMonth() &&
+                currentDayDate.getFullYear() === today.getFullYear();
 
             const isWeekend = currentDayDate.getDay() === 0 || currentDayDate.getDay() === 6; // Sun or Sat
 
             // Determine Background Color
             let bgClass = '';
             let customStyle = {};
-            
-            if (isToday) bgClass = 'bg-emerald-50/30';
-            
+
+            if (isToday) bgClass = 'bg-primary-light/10';
+
             if (leave) {
                 // If leave exists, use its color with opacity
-                customStyle = { backgroundColor: `${leave.leaveType?.color}20`, borderColor: leave.leaveType?.color }; 
+                customStyle = { backgroundColor: `${leave.leaveType?.color}20`, borderColor: leave.leaveType?.color };
             } else if (!record && !isWeekend && currentDayDate < today) {
                 bgClass = 'bg-red-50/50';
             }
@@ -123,21 +123,20 @@ export default function AttendanceCalendar() {
             days.push(
                 <div key={day} className={`h-24 border border-slate-100 p-2 relative group transition-all hover:bg-slate-50 ${bgClass}`} style={customStyle}>
                     <div className="flex justify-between items-start">
-                        <span className={`text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-emerald-600 text-white' : isWeekend ? 'text-red-400' : 'text-slate-700'}`}>
+                        <span className={`text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-primary text-white' : isWeekend ? 'text-red-400' : 'text-slate-700'}`}>
                             {day}
                         </span>
-                        
+
                         <div className="flex flex-col items-end gap-1">
                             {record && (
-                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                                    record.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' : 
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${record.status === 'PRESENT' ? 'bg-green-100 text-green-700' :
                                     record.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
-                                }`}>
+                                    }`}>
                                     {record.status}
                                 </span>
                             )}
                             {leave && (
-                                <span 
+                                <span
                                     className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white shadow-sm"
                                     style={{ backgroundColor: leave.leaveType?.color || '#3B82F6' }}
                                 >
@@ -146,27 +145,27 @@ export default function AttendanceCalendar() {
                             )}
                         </div>
                     </div>
-                
+
                     {record ? (
                         <div className="mt-2 space-y-1">
                             {record.checkIn && (
                                 <div className="text-xs text-slate-500 flex items-center gap-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                                    {new Date(record.checkIn).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                                    {new Date(record.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                             )}
-                             {record.checkOut && (
+                            {record.checkOut && (
                                 <div className="text-xs text-slate-500 flex items-center gap-1">
                                     <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
-                                    {new Date(record.checkOut).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                                    {new Date(record.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                             )}
                         </div>
-                    ) : ( 
+                    ) : (
                         !isWeekend && !leave && currentDayDate < today && (
-                             <div className="mt-4 flex justify-center">
+                            <div className="mt-4 flex justify-center">
                                 <span className="text-[10px] text-red-500 font-black tracking-widest bg-red-100 px-2 py-0.5 rounded-full">ABSENT</span>
-                             </div>
+                            </div>
                         )
                     )}
                 </div>
@@ -178,21 +177,21 @@ export default function AttendanceCalendar() {
 
     return (
         <div className="p-6 max-w-6xl mx-auto font-sans">
-             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                     <h1 className="text-2xl font-bold text-slate-800">My Attendance</h1>
-                     <p className="text-slate-500 text-sm mt-1">Track your daily check-ins and work hours</p>
+                    <h1 className="text-2xl font-bold text-slate-800">My Attendance</h1>
+                    <p className="text-slate-500 text-sm mt-1">Track your daily check-ins and work hours</p>
                 </div>
 
                 {/* Legend/Stats */}
                 <div className="flex gap-4 text-sm">
                     <div className="flex flex-col items-center bg-white border border-slate-100 p-3 rounded-lg shadow-sm min-w-[100px]">
-                        <span className="text-2xl font-bold text-emerald-600">{stats.present}</span>
+                        <span className="text-2xl font-bold text-primary">{stats.present}</span>
                         <span className="text-slate-400 text-xs font-medium uppercase">Present</span>
                     </div>
                     <div className="flex flex-col items-center bg-white border border-slate-100 p-3 rounded-lg shadow-sm min-w-[100px]">
                         <span className="text-2xl font-bold text-slate-700">{stats.totalHours}</span>
-                         <span className="text-slate-400 text-xs font-medium uppercase">Total Hrs</span>
+                        <span className="text-slate-400 text-xs font-medium uppercase">Total Hrs</span>
                     </div>
                 </div>
             </div>
@@ -204,7 +203,7 @@ export default function AttendanceCalendar() {
                         <FiChevronLeft size={20} />
                     </button>
                     <h2 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                        <FiCalendar className="text-emerald-600 mb-0.5" />
+                        <FiCalendar className="text-primary mb-0.5" />
                         {date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                     </h2>
                     <button onClick={handleNextMonth} className="p-2 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200 hover:shadow-sm text-slate-600">
@@ -224,9 +223,9 @@ export default function AttendanceCalendar() {
                 {/* Calendar Grid */}
                 <div className="grid grid-cols-7 bg-white">
                     {loading ? (
-                         <div className="col-span-7 h-64 flex items-center justify-center text-slate-400">
+                        <div className="col-span-7 h-64 flex items-center justify-center text-slate-400">
                             Loading calendar...
-                         </div>
+                        </div>
                     ) : renderCalendarDays()}
                 </div>
             </div>

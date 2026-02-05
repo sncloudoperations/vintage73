@@ -58,10 +58,10 @@ export default function Suppliers() {
   };
 
   const openEdit = (supplier) => {
-    setFormData({ 
-      name: supplier.name, 
-      phone: supplier.phone || '', 
-      email: supplier.email || '', 
+    setFormData({
+      name: supplier.name,
+      phone: supplier.phone || '',
+      email: supplier.email || '',
       address: supplier.address || '',
       gstNumber: supplier.gstNumber || '',
       contactPerson: supplier.contactPerson || ''
@@ -77,7 +77,7 @@ export default function Suppliers() {
     setCurrentId(null);
   };
 
-  const filteredSuppliers = suppliers.filter(s => 
+  const filteredSuppliers = suppliers.filter(s =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (s.contactPerson && s.contactPerson.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (s.gstNumber && s.gstNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -91,19 +91,19 @@ export default function Suppliers() {
           <h1 className="text-3xl font-black text-slate-800 tracking-tight">Suppliers</h1>
           <p className="text-slate-500 text-sm">Manage product vendors and supply chain</p>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <div className="relative group flex-1 sm:w-64">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-            <input 
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
+            <input
               type="text"
               placeholder="Search vendor, contact or GST..."
-              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-sm"
+              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button className="btn btn-primary px-6 py-2.5 rounded-xl shadow-lg shadow-blue-100 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95" onClick={() => { resetForm(); setShowModal(true); }}>
+          <button className="btn btn-primary px-6 py-2.5 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95" onClick={() => { resetForm(); setShowModal(true); }}>
             <FiPlus className="text-lg" /> Add Supplier
           </button>
         </div>
@@ -130,8 +130,8 @@ export default function Suppliers() {
                 <td className="text-sm text-slate-600">{supplier.gstNumber || '-'}</td>
                 <td className="text-sm text-slate-500 truncate max-w-xs">{supplier.address}</td>
                 <td className="text-right flex justify-end gap-2">
-                   <button onClick={() => openEdit(supplier)} className="p-1.5 text-slate-400 hover:text-blue-600 rounded hover:bg-blue-50"><FiEdit2 /></button>
-                   <button onClick={() => handleDelete(supplier.id)} className="p-1.5 text-slate-400 hover:text-red-600 rounded hover:bg-red-50"><FiTrash2 /></button>
+                  <button onClick={() => openEdit(supplier)} className="p-1.5 text-slate-400 hover:text-primary rounded hover:bg-primary-light"><FiEdit2 /></button>
+                  <button onClick={() => handleDelete(supplier.id)} className="p-1.5 text-slate-400 hover:text-red-600 rounded hover:bg-red-50"><FiTrash2 /></button>
                 </td>
               </tr>
             ))}
@@ -148,37 +148,37 @@ export default function Suppliers() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
-             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-               <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Supplier' : 'Add Supplier'}</h2>
-               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">&times;</button>
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Supplier' : 'Add Supplier'}</h2>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">&times;</button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="label">Supplier Name</label>
-                  <input required className="input" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                  <input required className="input" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 </div>
                 <div>
-                   <label className="label">Contact Person</label>
-                   <input className="input" value={formData.contactPerson} onChange={e => setFormData({...formData, contactPerson: e.target.value})} />
+                  <label className="label">Contact Person</label>
+                  <input className="input" value={formData.contactPerson} onChange={e => setFormData({ ...formData, contactPerson: e.target.value })} />
                 </div>
                 <div>
                   <label className="label">GST Number</label>
-                  <input className="input" value={formData.gstNumber} onChange={e => setFormData({...formData, gstNumber: e.target.value})} />
+                  <input className="input" value={formData.gstNumber} onChange={e => setFormData({ ...formData, gstNumber: e.target.value })} />
                 </div>
                 <div>
                   <label className="label">Phone</label>
-                  <input className="input" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                  <input className="input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
                 </div>
                 <div>
                   <label className="label">Email</label>
-                  <input type="email" className="input" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                  <input type="email" className="input" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
                 </div>
                 <div className="col-span-2">
                   <label className="label">Address</label>
-                  <textarea className="input" rows="2" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}></textarea>
+                  <textarea className="input" rows="2" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })}></textarea>
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">

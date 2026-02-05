@@ -8,11 +8,11 @@ export default function SalaryProcessing() {
     const [users, setUsers] = useState([]);
     const [companyProfile, setCompanyProfile] = useState(null);
     const [processingMode, setProcessingMode] = useState('individual'); // 'individual' or 'bulk'
-    const [processingData, setProcessingData] = useState({ 
-        userId: '', 
-        fromDate: '', 
-        toDate: '', 
-        allowances: '0', 
+    const [processingData, setProcessingData] = useState({
+        userId: '',
+        fromDate: '',
+        toDate: '',
+        allowances: '0',
         deductions: '0',
         month: '',
         year: new Date().getFullYear().toString()
@@ -20,7 +20,7 @@ export default function SalaryProcessing() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [recentProcessed, setRecentProcessed] = useState([]);
     const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0, processing: false });
-    
+
     // Confirmation Modal State
     const [confirmModal, setConfirmModal] = useState({
         isOpen: false,
@@ -28,7 +28,7 @@ export default function SalaryProcessing() {
         title: '',
         message: '',
         confirmText: 'Confirm',
-        onConfirm: () => {},
+        onConfirm: () => { },
         details: []
     });
 
@@ -79,7 +79,7 @@ export default function SalaryProcessing() {
 
     const fetchCompanyProfile = async () => {
         try {
-            const res = await api.get('/company'); 
+            const res = await api.get('/company');
             setCompanyProfile(res.data);
         } catch (err) {
             console.error("Failed to fetch company profile:", err);
@@ -113,10 +113,10 @@ export default function SalaryProcessing() {
             };
             await api.post('/hrms/payroll/generate', payload);
             toast.success("Salary Processed Successfully!");
-            setProcessingData({ 
-                userId: '', fromDate: '', toDate: '', 
-                allowances: '0', deductions: '0', 
-                month: '', year: new Date().getFullYear().toString() 
+            setProcessingData({
+                userId: '', fromDate: '', toDate: '',
+                allowances: '0', deductions: '0',
+                month: '', year: new Date().getFullYear().toString()
             });
             fetchRecentProcessed();
         } catch (err) {
@@ -231,7 +231,7 @@ export default function SalaryProcessing() {
         <div className="p-6 max-w-7xl mx-auto">
             <header className="mb-8">
                 <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                    <FiDollarSign className="text-emerald-600" />
+                    <FiDollarSign className="text-primary" />
                     Salary Processing
                 </h1>
                 <p className="text-slate-500 text-sm mt-1">Process employee salaries with custom date ranges</p>
@@ -239,15 +239,15 @@ export default function SalaryProcessing() {
 
             {/* Processing Mode Selector */}
             <div className="mb-6 flex bg-slate-100 p-1 rounded-xl gap-1 w-fit">
-                <button 
+                <button
                     onClick={() => setProcessingMode('individual')}
-                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${processingMode === 'individual' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${processingMode === 'individual' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                     Individual Processing
                 </button>
-                <button 
+                <button
                     onClick={() => setProcessingMode('bulk')}
-                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${processingMode === 'bulk' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${processingMode === 'bulk' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                     Bulk Processing (All Employees)
                 </button>
@@ -258,7 +258,7 @@ export default function SalaryProcessing() {
                 <div className="mb-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                            <FiLoader className="text-emerald-600 animate-spin" size={20} />
+                            <FiLoader className="text-primary animate-spin" size={20} />
                             <span className="font-bold text-slate-800">Processing Salaries...</span>
                         </div>
                         <span className="text-sm font-medium text-slate-600">
@@ -266,8 +266,8 @@ export default function SalaryProcessing() {
                         </span>
                     </div>
                     <div className="relative w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div 
-                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-300 ease-out rounded-full shadow-sm"
+                        <div
+                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary-dark transition-all duration-300 ease-out rounded-full shadow-sm"
                             style={{ width: `${progressPercentage}%` }}
                         >
                             <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
@@ -283,7 +283,7 @@ export default function SalaryProcessing() {
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                             <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                                <FiPlus className="text-emerald-500" /> 
+                                <FiPlus className="text-primary" />
                                 {processingMode === 'individual' ? 'Process Individual' : 'Process All Employees'}
                             </h2>
                         </div>
@@ -291,11 +291,11 @@ export default function SalaryProcessing() {
                             {processingMode === 'individual' && (
                                 <div>
                                     <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Employee</label>
-                                    <select 
+                                    <select
                                         required
                                         className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
                                         value={processingData.userId}
-                                        onChange={e => setProcessingData({...processingData, userId: e.target.value})}
+                                        onChange={e => setProcessingData({ ...processingData, userId: e.target.value })}
                                     >
                                         <option value="">Select Employee</option>
                                         {users.map(u => (
@@ -325,22 +325,22 @@ export default function SalaryProcessing() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">From Date</label>
-                                    <input 
+                                    <input
                                         required
                                         type="date"
                                         className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
                                         value={processingData.fromDate}
-                                        onChange={e => setProcessingData({...processingData, fromDate: e.target.value})}
+                                        onChange={e => setProcessingData({ ...processingData, fromDate: e.target.value })}
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">To Date</label>
-                                    <input 
+                                    <input
                                         required
                                         type="date"
                                         className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
                                         value={processingData.toDate}
-                                        onChange={e => setProcessingData({...processingData, toDate: e.target.value})}
+                                        onChange={e => setProcessingData({ ...processingData, toDate: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -350,17 +350,17 @@ export default function SalaryProcessing() {
                                 <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
                                     <div className="flex justify-between items-center pb-2 border-b border-slate-200">
                                         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Calculation Summary</h3>
-                                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Attendance Driven</span>
+                                        <span className="text-[10px] font-bold text-primary bg-primary-light/10 px-2 py-0.5 rounded-full">Attendance Driven</span>
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
                                             <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Days</p>
                                             <p className="text-lg font-black text-slate-800">{preview.calculation.totalDays}</p>
                                         </div>
                                         <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                                            <p className="text-[10px] text-emerald-500 font-bold uppercase mb-1">Payable Days</p>
-                                            <p className="text-lg font-black text-emerald-600">{preview.calculation.payableDays}</p>
+                                            <p className="text-[10px] text-primary font-bold uppercase mb-1">Payable Days</p>
+                                            <p className="text-lg font-black text-primary">{preview.calculation.payableDays}</p>
                                         </div>
                                     </div>
 
@@ -393,7 +393,7 @@ export default function SalaryProcessing() {
 
                             {processingMode === 'individual' && loadingPreview && (
                                 <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                                    <FiLoader className="mx-auto text-emerald-500 animate-spin mb-2" size={24} />
+                                    <FiLoader className="mx-auto text-primary animate-spin mb-2" size={24} />
                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Calculating...</p>
                                 </div>
                             )}
@@ -402,12 +402,12 @@ export default function SalaryProcessing() {
                                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
                                     Allowances ({companyProfile?.currencySymbol || '₹'})
                                 </label>
-                                <input 
+                                <input
                                     type="number"
                                     step="0.01"
                                     className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
                                     value={processingData.allowances}
-                                    onChange={e => setProcessingData({...processingData, allowances: e.target.value})}
+                                    onChange={e => setProcessingData({ ...processingData, allowances: e.target.value })}
                                 />
                             </div>
 
@@ -415,17 +415,17 @@ export default function SalaryProcessing() {
                                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
                                     Deductions ({companyProfile?.currencySymbol || '₹'})
                                 </label>
-                                <input 
+                                <input
                                     type="number"
                                     step="0.01"
                                     className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
                                     value={processingData.deductions}
-                                    onChange={e => setProcessingData({...processingData, deductions: e.target.value})}
+                                    onChange={e => setProcessingData({ ...processingData, deductions: e.target.value })}
                                 />
                             </div>
 
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 disabled={isSubmitting || bulkProgress.processing}
                                 className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black hover:shadow-xl hover:shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -457,10 +457,10 @@ export default function SalaryProcessing() {
                             ) : (
                                 <div className="space-y-3">
                                     {recentProcessed.map(p => (
-                                        <div key={p.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-emerald-200 transition-colors group">
+                                        <div key={p.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-primary/30 transition-colors group">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                                                    <FiCheckCircle className="text-emerald-600" />
+                                                <div className="w-10 h-10 rounded-full bg-primary-light/10 flex items-center justify-center">
+                                                    <FiCheckCircle className="text-primary" />
                                                 </div>
                                                 <div>
                                                     <div className="font-bold text-slate-800">{p.user?.name || 'Unknown'}</div>
@@ -475,26 +475,26 @@ export default function SalaryProcessing() {
                                             </div>
                                             <div className="flex items-center gap-4">
                                                 <div className="text-right">
-                                                    <div className="font-bold text-emerald-600">
+                                                    <div className="font-bold text-primary">
                                                         {companyProfile?.currencySymbol || '₹'}{parseFloat(p.netSalary).toFixed(2)}
                                                     </div>
-                                                    <div className={`text-[10px] font-black uppercase tracking-widest ${p.status === 'GENERATED' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                                    <div className={`text-[10px] font-black uppercase tracking-widest ${p.status === 'GENERATED' ? 'text-amber-500' : 'text-primary'}`}>
                                                         {p.status}
                                                     </div>
                                                 </div>
-                                                
+
                                                 {/* Actions */}
                                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {p.status === 'GENERATED' && (
                                                         <>
-                                                            <button 
+                                                            <button
                                                                 onClick={() => handleApprovePayroll(p)}
-                                                                className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                                                className="p-2 bg-primary-light/10 text-primary rounded-lg hover:bg-primary hover:text-white transition-all shadow-sm"
                                                                 title="Approve for Payment"
                                                             >
                                                                 <FiCheckCircle size={14} />
                                                             </button>
-                                                            <button 
+                                                            <button
                                                                 onClick={() => handleDeletePayroll(p)}
                                                                 className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm"
                                                                 title="Delete Payroll"

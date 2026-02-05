@@ -7,7 +7,7 @@ import { FiPlus, FiMoreHorizontal, FiDollarSign, FiCalendar, FiUser, FiArrowRigh
 const STAGES = {
     'PROSPECTING': { label: 'Prospecting', color: 'bg-blue-50/50 border-blue-200 text-blue-700', bar: 'bg-blue-500' },
     'NEGOTIATION': { label: 'Negotiation', color: 'bg-amber-50/50 border-amber-200 text-amber-700', bar: 'bg-amber-500' },
-    'WON': { label: 'Won', color: 'bg-emerald-50/50 border-emerald-200 text-emerald-700', bar: 'bg-emerald-500' },
+    'WON': { label: 'Won', color: 'bg-primary-light/10 border-primary/20 text-primary', bar: 'bg-primary' },
     'LOST': { label: 'Lost', color: 'bg-red-50/50 border-red-200 text-red-700', bar: 'bg-red-500' }
 };
 
@@ -35,11 +35,11 @@ export default function Deals() {
     };
 
     const fetchLeads = async () => {
-        try { const res = await api.get('/crm/leads'); setLeads(res.data); } catch(err) { console.error(err); }
+        try { const res = await api.get('/crm/leads'); setLeads(res.data); } catch (err) { console.error(err); }
     }
 
     const fetchUsers = async () => {
-        try { const res = await api.get('/users'); setUsers(res.data); } catch(err) { console.error(err); }
+        try { const res = await api.get('/users'); setUsers(res.data); } catch (err) { console.error(err); }
     }
 
     const onDragEnd = async (result) => {
@@ -48,7 +48,7 @@ export default function Deals() {
 
         if (source.droppableId !== destination.droppableId) {
             // Optimistic Update
-            const updatedDeals = deals.map(d => 
+            const updatedDeals = deals.map(d =>
                 d.id.toString() === draggableId ? { ...d, stage: destination.droppableId } : d
             );
             setDeals(updatedDeals);
@@ -75,7 +75,7 @@ export default function Deals() {
                 toast.success("Deal created");
             }
             setShowModal(false);
-            fetchDeals(); 
+            fetchDeals();
         } catch (err) { toast.error("Failed to save deal"); }
     };
 
@@ -96,15 +96,15 @@ export default function Deals() {
 
     return (
         <div className="p-8 h-[calc(100vh-64px)] overflow-hidden flex flex-col bg-slate-50/50">
-             <div className="flex justify-between items-center mb-8 flex-shrink-0">
+            <div className="flex justify-between items-center mb-8 flex-shrink-0">
                 <div>
                     <h1 className="text-3xl font-black text-slate-800 tracking-tight">Pipeline</h1>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                         <p className="text-slate-500 font-medium text-sm">Real-time Opportunity Tracking</p>
                     </div>
                 </div>
-                <button 
+                <button
                     onClick={() => {
                         setEditingId(null);
                         setForm({ title: '', value: '', stage: 'PROSPECTING', leadId: '', assignedTo: '', probability: 50 });
@@ -157,7 +157,7 @@ export default function Deals() {
                                                                 {...provided.dragHandleProps}
                                                                 onClick={() => handleEdit(deal)}
                                                                 style={{ ...provided.draggableProps.style }}
-                                                                className={`bg-white p-4 rounded-2xl border border-slate-100 cursor-grab active:cursor-grabbing group hover:border-emerald-200 transition-all ${snapshot.isDragging ? 'shadow-2xl rotate-2 scale-105 z-50 ring-2 ring-emerald-500/20' : 'shadow-sm hover:shadow-md'}`}
+                                                                className={`bg-white p-4 rounded-2xl border border-slate-100 cursor-grab active:cursor-grabbing group hover:border-primary/30 transition-all ${snapshot.isDragging ? 'shadow-2xl rotate-2 scale-105 z-50 ring-2 ring-primary/20' : 'shadow-sm hover:shadow-md'}`}
                                                             >
                                                                 {/* Card Content */}
                                                                 <div className="flex justify-between items-start mb-2">
@@ -172,12 +172,12 @@ export default function Deals() {
 
                                                                 {/* Probability Bar */}
                                                                 <div className="w-full h-1.5 bg-slate-100 rounded-full mb-4 overflow-hidden">
-                                                                    <div 
-                                                                        className={`h-full rounded-full ${deal.probability > 75 ? 'bg-emerald-500' : deal.probability > 40 ? 'bg-amber-500' : 'bg-red-500'}`} 
+                                                                    <div
+                                                                        className={`h-full rounded-full ${deal.probability > 75 ? 'bg-primary' : deal.probability > 40 ? 'bg-amber-500' : 'bg-red-500'}`}
                                                                         style={{ width: `${deal.probability}%` }}
                                                                     ></div>
                                                                 </div>
-                                                                
+
                                                                 <div className="flex items-center justify-between pt-3 border-t border-slate-50">
                                                                     {deal.assignedUser ? (
                                                                         <div className="flex items-center gap-1.5 ring-2 ring-white rounded-full bg-slate-50 pr-2">
@@ -207,9 +207,9 @@ export default function Deals() {
                 </div>
             </DragDropContext>
 
-             {/* Modal */}
-             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+            {/* Modal */}
+            {showModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                             <h2 className="text-xl font-black text-slate-800">{editingId ? 'Edit Deal' : 'New Deal'}</h2>
@@ -218,20 +218,20 @@ export default function Deals() {
                         <form onSubmit={handleSubmit} className="p-6 space-y-5">
                             <div>
                                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5 ml-1">Deal Title</label>
-                                <input required className="input w-full bg-slate-50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all font-semibold" value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="e.g. Website Redesign" />
+                                <input required className="input w-full bg-slate-50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all font-semibold" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Website Redesign" />
                             </div>
-                            
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5 ml-1">Value</label>
                                     <div className="relative">
-                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
-                                         <input type="number" required className="input w-full bg-slate-50 border-slate-200 focus:bg-white pl-8 font-bold text-emerald-600" value={form.value} onChange={e => setForm({...form, value: e.target.value})} placeholder="0.00" />
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
+                                        <input type="number" required className="input w-full bg-slate-50 border-slate-200 focus:bg-white pl-8 font-bold text-primary" value={form.value} onChange={e => setForm({ ...form, value: e.target.value })} placeholder="0.00" />
                                     </div>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5 ml-1">Stage</label>
-                                    <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.stage} onChange={e => setForm({...form, stage: e.target.value})}>
+                                    <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.stage} onChange={e => setForm({ ...form, stage: e.target.value })}>
                                         {Object.entries(STAGES).map(([key, config]) => (
                                             <option key={key} value={key}>{config.label}</option>
                                         ))}
@@ -241,7 +241,7 @@ export default function Deals() {
 
                             <div>
                                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5 ml-1">Related Lead</label>
-                                <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.leadId} onChange={e => setForm({...form, leadId: e.target.value})}>
+                                <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.leadId} onChange={e => setForm({ ...form, leadId: e.target.value })}>
                                     <option value="">Select Lead</option>
                                     {leads.map(l => (
                                         <option key={l.id} value={l.id}>{l.name} ({l.company || 'No Company'})</option>
@@ -251,7 +251,7 @@ export default function Deals() {
 
                             <div>
                                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5 ml-1">Assigned To</label>
-                                <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.assignedTo} onChange={e => setForm({...form, assignedTo: e.target.value})}>
+                                <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.assignedTo} onChange={e => setForm({ ...form, assignedTo: e.target.value })}>
                                     <option value="">Unassigned</option>
                                     {users.map(u => (
                                         <option key={u.id} value={u.id}>{u.name || u.username}</option>
@@ -259,12 +259,12 @@ export default function Deals() {
                                 </select>
                             </div>
 
-                             <div>
+                            <div>
                                 <div className="flex justify-between items-center mb-1.5 ml-1">
                                     <label className="block text-xs font-bold text-slate-400 uppercase">Probability</label>
-                                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{form.probability}%</span>
+                                    <span className="text-xs font-bold text-primary bg-primary-light/10 px-2 py-0.5 rounded-full">{form.probability}%</span>
                                 </div>
-                                <input type="range" min="0" max="100" step="10" className="w-full accent-emerald-600 h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer" value={form.probability} onChange={e => setForm({...form, probability: e.target.value})} />
+                                <input type="range" min="0" max="100" step="10" className="w-full accent-primary h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer" value={form.probability} onChange={e => setForm({ ...form, probability: e.target.value })} />
                             </div>
 
                             <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-[0.98]">

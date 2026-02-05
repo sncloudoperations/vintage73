@@ -3,6 +3,7 @@ const router = express.Router();
 const accountingController = require('../controllers/accountingController');
 const accountingReportsController = require('../controllers/accountingReportsController');
 const authMiddleware = require('../middleware/authMiddleware');
+const checkFinancialYear = require('../middleware/checkFinancialYear');
 
 // ==================== ACCOUNT GROUPS ====================
 router.get('/groups', accountingController.getAccountGroups);
@@ -15,15 +16,15 @@ router.put('/ledgers/:id', accountingController.updateLedger);
 router.delete('/ledgers/:id', accountingController.deleteLedger);
 
 // ==================== VOUCHERS ====================
-router.post('/vouchers/payment', authMiddleware, accountingController.createPaymentVoucher);
-router.post('/vouchers/receipt', authMiddleware, accountingController.createReceiptVoucher);
-router.post('/vouchers/journal', authMiddleware, accountingController.createJournalEntry);
-router.post('/vouchers/contra', authMiddleware, accountingController.createContraEntry);
+router.post('/vouchers/payment', authMiddleware, checkFinancialYear, accountingController.createPaymentVoucher);
+router.post('/vouchers/receipt', authMiddleware, checkFinancialYear, accountingController.createReceiptVoucher);
+router.post('/vouchers/journal', authMiddleware, checkFinancialYear, accountingController.createJournalEntry);
+router.post('/vouchers/contra', authMiddleware, checkFinancialYear, accountingController.createContraEntry);
 router.get('/vouchers', accountingController.getVouchers);
 router.get('/vouchers/:id', accountingController.getVoucher);
-router.put('/vouchers/:id', authMiddleware, accountingController.updateVoucher);
-router.delete('/vouchers/:id', authMiddleware, accountingController.deleteVoucher);
-router.post('/vouchers/:id/cancel', authMiddleware, accountingController.cancelVoucher);
+router.put('/vouchers/:id', authMiddleware, checkFinancialYear, accountingController.updateVoucher);
+router.delete('/vouchers/:id', authMiddleware, checkFinancialYear, accountingController.deleteVoucher);
+router.post('/vouchers/:id/cancel', authMiddleware, checkFinancialYear, accountingController.cancelVoucher);
 
 // ==================== REPORTS ====================
 router.get('/reports/trial-balance', accountingReportsController.getTrialBalance);

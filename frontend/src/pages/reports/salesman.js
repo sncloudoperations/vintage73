@@ -34,12 +34,12 @@ export default function SalesmanReport() {
         try {
             setLoading(true);
             const queryBranchId = selectedBranch === 'all' ? undefined : selectedBranch;
-            
+
             // We can reuse the sales endpoint and aggregate on client side for now, 
             // or better, create a specific agg endpoint.
             // For speed, let's fetch sales and aggregate here client-side as dataset size permits.
             // Ideally, a dedicated endpoint `/reports/salesman` should be created.
-            
+
             // Re-using getAllSales params
             const params = { branchId: queryBranchId };
             if (startDate) params.startDate = startDate;
@@ -50,7 +50,7 @@ export default function SalesmanReport() {
             }
 
             const { data } = await api.get('/sales', { params });
-            
+
             // Client-Side Aggregation
             const agg = {};
             data.forEach(sale => {
@@ -87,20 +87,20 @@ export default function SalesmanReport() {
             {/* Filters */}
             <div className="card mb-6 border-0 shadow-sm bg-white p-6 rounded-xl">
                 <div className="flex flex-wrap gap-6 items-end">
-                    
+
                     {user?.role === 'admin' && (
                         <div>
-                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 tracking-wider">Branch</label>
-                             <select 
-                                 className="input py-2 border rounded-lg px-3 min-w-[150px]"
-                                 value={selectedBranch}
-                                 onChange={(e) => setSelectedBranch(e.target.value)}
-                             >
-                                 <option value="all">All Branches</option>
-                                 {branches.map(b => (
-                                     <option key={b.id} value={b.id}>{b.name}</option>
-                                 ))}
-                             </select>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 tracking-wider">Branch</label>
+                            <select
+                                className="input py-2 border rounded-lg px-3 min-w-[150px]"
+                                value={selectedBranch}
+                                onChange={(e) => setSelectedBranch(e.target.value)}
+                            >
+                                <option value="all">All Branches</option>
+                                {branches.map(b => (
+                                    <option key={b.id} value={b.id}>{b.name}</option>
+                                ))}
+                            </select>
                         </div>
                     )}
 
@@ -112,8 +112,8 @@ export default function SalesmanReport() {
                         <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 tracking-wider">To</label>
                         <input type="date" className="input py-2 border rounded-lg px-3" value={endDate} onChange={e => setEndDate(e.target.value)} />
                     </div>
-                    
-                    <button className="text-sm font-bold text-emerald-600 hover:text-emerald-700 pb-2" onClick={() => { setStartDate(''); setEndDate(''); }}>Reset</button>
+
+                    <button className="text-sm font-bold text-primary hover:text-primary-dark pb-2" onClick={() => { setStartDate(''); setEndDate(''); }}>Reset</button>
                 </div>
             </div>
 
@@ -130,22 +130,22 @@ export default function SalesmanReport() {
                                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{d.salesCount} Sales Completed</p>
                             </div>
                         </div>
-                        
+
                         <div className="space-y-4">
                             <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
                                 <span className="text-sm font-medium text-slate-600">Total Revenue</span>
                                 <span className="font-black text-slate-800 text-lg">₹{d.totalRevenue.toFixed(2)}</span>
                             </div>
-                            <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex justify-between items-center">
-                                <span className="text-sm font-bold text-emerald-700 uppercase tracking-tight flex items-center gap-2">
-                                   <FiDollarSign /> Incentive Earned
+                            <div className="p-4 bg-primary-light/10 rounded-xl border border-primary/20 flex justify-between items-center">
+                                <span className="text-sm font-bold text-primary-dark uppercase tracking-tight flex items-center gap-2">
+                                    <FiDollarSign /> Incentive Earned
                                 </span>
-                                <span className="font-black text-emerald-600 text-xl">₹{d.totalIncentive.toFixed(2)}</span>
+                                <span className="font-black text-primary text-xl">₹{d.totalIncentive.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
                 ))}
-                
+
                 {reportData.length === 0 && (
                     <div className="col-span-full py-12 text-center text-slate-400 italic bg-white rounded-xl border border-dashed border-slate-200">
                         No sales data found with assigned salesmen for the selected period.

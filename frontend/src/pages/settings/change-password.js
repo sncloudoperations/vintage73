@@ -13,7 +13,7 @@ export default function ChangePassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.newPassword !== formData.confirmPassword) {
       return toast.error('New passwords do not match');
     }
@@ -51,7 +51,7 @@ export default function ChangePassword() {
       <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
         <div className="p-8 border-b border-slate-50 bg-slate-50/50">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+            <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/30">
               <FiKey size={24} />
             </div>
             <div>
@@ -70,7 +70,7 @@ export default function ChangePassword() {
                 <input
                   required
                   type="password"
-                  className="input w-full pl-11 bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium"
+                  className="input w-full pl-11 bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all font-medium"
                   placeholder="Enter current password"
                   value={formData.currentPassword}
                   onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
@@ -86,7 +86,7 @@ export default function ChangePassword() {
                   <input
                     required
                     type="password"
-                    className="input w-full pl-11 bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium"
+                    className="input w-full pl-11 bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all font-medium"
                     placeholder="Min. 6 characters"
                     value={formData.newPassword}
                     onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
@@ -101,7 +101,7 @@ export default function ChangePassword() {
                   <input
                     required
                     type="password"
-                    className="input w-full pl-11 bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium"
+                    className="input w-full pl-11 bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all font-medium"
                     placeholder="Repeat new password"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}

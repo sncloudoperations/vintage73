@@ -19,15 +19,15 @@ export default function LeavesPage() {
                 <h1 className="text-2xl font-bold text-slate-800">Leaves Management</h1>
                 {isAdmin && (
                     <div className="flex bg-slate-100 rounded-lg p-1">
-                        <button 
+                        <button
                             onClick={() => setActiveTab('my-leaves')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'my-leaves' ? 'bg-white shadow text-emerald-600' : 'text-slate-500'}`}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'my-leaves' ? 'bg-white shadow text-primary' : 'text-slate-500'}`}
                         >
                             My Leaves
                         </button>
-                        <button 
-                             onClick={() => setActiveTab('manage')}
-                             className={`px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'manage' ? 'bg-white shadow text-emerald-600' : 'text-slate-500'}`}
+                        <button
+                            onClick={() => setActiveTab('manage')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'manage' ? 'bg-white shadow text-primary' : 'text-slate-500'}`}
                         >
                             Approve Requests
                         </button>
@@ -47,7 +47,7 @@ function MyLeaves({ user }) {
     const [formData, setFormData] = useState({ startDate: '', endDate: '', reason: '', leaveTypeId: '', isHalfDay: false });
 
     useEffect(() => {
-        if(user) {
+        if (user) {
             fetchLeaves();
             fetchLeaveTypes();
         }
@@ -57,14 +57,14 @@ function MyLeaves({ user }) {
         try {
             const res = await api.get(`/hrms/leaves?userId=${user.id}`);
             setLeaves(res.data);
-        } catch(err) { console.error(err); }
+        } catch (err) { console.error(err); }
     };
 
     const fetchLeaveTypes = async () => {
         try {
             const res = await api.get('/hrms/leave-types');
             setLeaveTypes(res.data);
-        } catch(err) { console.error(err); }
+        } catch (err) { console.error(err); }
     };
 
     const handleSubmit = async (e) => {
@@ -84,7 +84,7 @@ function MyLeaves({ user }) {
             setShowForm(false);
             setFormData({ startDate: '', endDate: '', reason: '', leaveTypeId: '', isHalfDay: false });
             fetchLeaves();
-        } catch(err) {
+        } catch (err) {
             toast.error(err.response?.data?.error || "Failed to apply");
         }
     };
@@ -92,9 +92,9 @@ function MyLeaves({ user }) {
     return (
         <div className="space-y-6">
             <div className="flex justify-end">
-                <button 
+                <button
                     onClick={() => setShowForm(!showForm)}
-                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition"
+                    className="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-dark transition"
                 >
                     {showForm ? 'Cancel' : 'Apply for Leave'}
                 </button>
@@ -105,54 +105,61 @@ function MyLeaves({ user }) {
                     <h3 className="text-lg font-bold mb-4">New Leave Request</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                             <label className="block text-sm font-medium text-slate-700 mb-1">Leave Type</label>
-                             <select required className="p-2 border rounded w-full"
-                                value={formData.leaveTypeId} onChange={e => setFormData({...formData, leaveTypeId: e.target.value})}
-                             >
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Leave Type</label>
+                            <select required className="p-2 border rounded w-full"
+                                value={formData.leaveTypeId} onChange={e => setFormData({ ...formData, leaveTypeId: e.target.value })}
+                            >
                                 <option value="">Select Type</option>
                                 {leaveTypes.map(t => (
                                     <option key={t.id} value={t.id}>
                                         {t.name} ({t.isPaid ? 'Paid' : 'Unpaid'} - Limit: {t.monthlyLimit || '∞'})
                                     </option>
                                 ))}
-                             </select>
+                            </select>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
-                             <input type="checkbox" id="halfDay" 
-                                checked={formData.isHalfDay} onChange={e => setFormData({...formData, isHalfDay: e.target.checked})}
-                             />
-                             <label htmlFor="halfDay" className="text-sm font-medium">Half Day</label>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    id="halfDay"
+                                    className="sr-only peer"
+                                    checked={formData.isHalfDay}
+                                    onChange={e => setFormData({ ...formData, isHalfDay: e.target.checked })}
+                                />
+                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                                <span className="ml-3 text-sm font-medium text-slate-700">Half Day</span>
+                            </label>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
-                                <input required type="date" className="p-2 border rounded w-full" 
+                                <input required type="date" className="p-2 border rounded w-full"
                                     value={formData.startDate} onChange={e => {
                                         setFormData(prev => ({
-                                            ...prev, 
+                                            ...prev,
                                             startDate: e.target.value,
-                                            endDate: prev.isHalfDay ? e.target.value : prev.endDate 
+                                            endDate: prev.isHalfDay ? e.target.value : prev.endDate
                                         }))
                                     }}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">End Date</label>
-                                <input required type="date" className="p-2 border rounded w-full" 
-                                    value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})}
+                                <input required type="date" className="p-2 border rounded w-full"
+                                    value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })}
                                     disabled={formData.isHalfDay}
                                 />
                             </div>
                         </div>
                         <div>
-                             <label className="block text-sm font-medium text-slate-700 mb-1">Reason</label>
-                             <textarea required className="p-2 border rounded w-full" rows="3"
-                                value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})}
-                             ></textarea>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Reason</label>
+                            <textarea required className="p-2 border rounded w-full" rows="3"
+                                value={formData.reason} onChange={e => setFormData({ ...formData, reason: e.target.value })}
+                            ></textarea>
                         </div>
-                        <button type="submit" className="w-full bg-emerald-600 text-white py-2 rounded font-bold">Submit Request</button>
+                        <button type="submit" className="w-full bg-primary text-white py-2 rounded font-bold">Submit Request</button>
                     </form>
                 </div>
             )}
@@ -208,7 +215,7 @@ function ManageLeaves() {
         try {
             const res = await api.get(`/hrms/leaves`); // gets all
             setLeaves(res.data);
-        } catch(err) { console.error(err); }
+        } catch (err) { console.error(err); }
     };
 
     const updateStatus = async (id, status) => {
@@ -217,14 +224,14 @@ function ManageLeaves() {
             await api.put(`/hrms/leaves/${id}/status`, { status, approvedById: user.id });
             toast.success(`Request ${status}`);
             fetchLeaves();
-        } catch(err) {
-             toast.error("Failed to update");
+        } catch (err) {
+            toast.error("Failed to update");
         }
     };
 
     return (
         <div className="space-y-6">
-             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100">
                         <tr>
@@ -244,15 +251,15 @@ function ManageLeaves() {
                                 </td>
                                 <td className="px-6 py-3">
                                     {l.leaveType ? (
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${l.leaveType.isPaid ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${l.leaveType.isPaid ? 'bg-primary-light/10 text-primary border-primary-light/20' : 'bg-red-50 text-red-700 border-red-100'}`}>
                                             {l.leaveType.name}
                                         </span>
                                     ) : <span className="text-slate-400 text-xs">Other</span>}
                                     {l.isHalfDay && <div className="mt-1"><span className="px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-100 text-[10px] rounded font-bold uppercase">Half Day</span></div>}
                                 </td>
                                 <td className="px-6 py-3 text-slate-700">
-                                     {new Date(l.startDate).toLocaleDateString()}
-                                     {!l.isHalfDay && l.startDate !== l.endDate && ` - ${new Date(l.endDate).toLocaleDateString()}`}
+                                    {new Date(l.startDate).toLocaleDateString()}
+                                    {!l.isHalfDay && l.startDate !== l.endDate && ` - ${new Date(l.endDate).toLocaleDateString()}`}
                                 </td>
                                 <td className="px-6 py-3 text-slate-600">{l.reason}</td>
                                 <td className="px-6 py-3">
@@ -261,7 +268,7 @@ function ManageLeaves() {
                                 <td className="px-6 py-3 space-x-2">
                                     {l.status === 'PENDING' && (
                                         <>
-                                            <button onClick={() => updateStatus(l.id, 'APPROVED')} className="text-emerald-600 hover:text-emerald-700 font-bold text-xs uppercase">Approve</button>
+                                            <button onClick={() => updateStatus(l.id, 'APPROVED')} className="text-primary hover:text-primary-dark font-bold text-xs uppercase">Approve</button>
                                             <button onClick={() => updateStatus(l.id, 'REJECTED')} className="text-red-600 hover:text-red-700 font-bold text-xs uppercase">Reject</button>
                                         </>
                                     )}
@@ -278,7 +285,7 @@ function ManageLeaves() {
 function StatusBadge({ status }) {
     const colors = {
         'PENDING': 'bg-amber-100 text-amber-700',
-        'APPROVED': 'bg-emerald-100 text-emerald-700',
+        'APPROVED': 'bg-primary-light/10 text-primary',
         'REJECTED': 'bg-red-100 text-red-700'
     };
     return (

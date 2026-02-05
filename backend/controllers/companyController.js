@@ -4,9 +4,9 @@ const prisma = require('../utils/prismaClient');
 exports.getCompanyProfile = async (req, res) => {
   try {
     let company = await prisma.companyProfile.findFirst({
-        include: { bank: true }
+      include: { bank: true }
     });
-    
+
     // If no company profile exists, create a default one
     if (!company) {
       console.log('No company profile found, creating default...');
@@ -31,7 +31,7 @@ exports.getCompanyProfile = async (req, res) => {
       });
       console.log('Default company profile created.');
     }
-    
+
     res.json(company);
   } catch (error) {
     console.error('Company profile fetch error:', error);
@@ -43,14 +43,14 @@ exports.getCompanyProfile = async (req, res) => {
 // Update Company Profile
 exports.updateCompanyProfile = async (req, res) => {
   console.log('Update Body:', req.body);
-  
+
   // Extract fields - undefined if not present in JSON/FormData
-  const { 
+  const {
     companyName, address, city, state, pincode, phone, email, website, registrationNumber,
     currencyCode, currencySymbol, country, taxSystem, bankId,
     primaryColor, secondaryColor, gradientType
   } = req.body;
-  
+
   let logoUrl = req.body.logoUrl;
   let dashboardImageUrl = req.body.dashboardImageUrl;
 
@@ -79,11 +79,11 @@ exports.updateCompanyProfile = async (req, res) => {
     if (email !== undefined) data.email = email;
     if (website !== undefined) data.website = website;
     if (registrationNumber !== undefined) data.registrationNumber = registrationNumber;
-    
+
     // Theme & Settings
-    if (primaryColor !== undefined) data.primaryColor = primaryColor;
-    if (secondaryColor !== undefined) data.secondaryColor = secondaryColor;
-    if (gradientType !== undefined) data.gradientType = gradientType;
+    if (primaryColor) data.primaryColor = primaryColor;
+    if (secondaryColor) data.secondaryColor = secondaryColor;
+    if (gradientType) data.gradientType = gradientType;
     if (currencyCode !== undefined) data.currencyCode = currencyCode;
     if (currencySymbol !== undefined) data.currencySymbol = currencySymbol;
     if (country !== undefined) data.country = country;
@@ -91,16 +91,21 @@ exports.updateCompanyProfile = async (req, res) => {
 
     // Computed / Boolean fields
     if (req.body.showOnlyLogoOnDashboard !== undefined) {
-       data.showOnlyLogoOnDashboard = req.body.showOnlyLogoOnDashboard === 'true' || req.body.showOnlyLogoOnDashboard === true;
+      data.showOnlyLogoOnDashboard = req.body.showOnlyLogoOnDashboard === 'true' || req.body.showOnlyLogoOnDashboard === true;
     }
 
     if (bankId !== undefined) {
-        data.bankId = bankId ? parseInt(bankId) : null;
+      data.bankId = bankId ? parseInt(bankId) : null;
     }
 
     // Images
     if (logoUrl !== undefined) data.logoUrl = logoUrl;
     if (dashboardImageUrl !== undefined) data.dashboardImageUrl = dashboardImageUrl;
+
+    // Explicit removal flags
+    if (req.body.removeDashboardImage === 'true' || req.body.removeDashboardImage === true) {
+      data.dashboardImageUrl = null;
+    }
 
     if (company) {
       const updated = await prisma.companyProfile.update({
@@ -115,7 +120,7 @@ exports.updateCompanyProfile = async (req, res) => {
       // If we did fell through to create, we might fail validation if companyName missing.
       // Let's assume update path.
       if (!data.companyName) data.companyName = 'New Company'; // Fallback
-      
+
       const newCompany = await prisma.companyProfile.create({
         data,
       });

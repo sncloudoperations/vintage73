@@ -31,7 +31,7 @@ export default function AttendanceSheet() {
             const month = date.getMonth() + 1;
             const year = date.getFullYear();
             const res = await api.get(`/hrms/attendance/bulk?month=${month}&year=${year}`);
-            
+
             let filteredData = res.data;
             if (filters.departmentId) {
                 filteredData = filteredData.filter(u => u.employeeProfile?.departmentId === parseInt(filters.departmentId));
@@ -50,13 +50,13 @@ export default function AttendanceSheet() {
     const getStatus = (user, day) => {
         const currentDate = new Date(date.getFullYear(), date.getMonth(), day);
         const dateStr = currentDate.toISOString().split('T')[0];
-        
+
         const att = user.attendance?.find(a => new Date(a.date).toISOString().split('T')[0] === dateStr);
         if (att) return att.status;
 
         const leave = user.leaveRequests?.find(l => {
-            const s = new Date(l.startDate); s.setHours(0,0,0,0);
-            const e = new Date(l.endDate); e.setHours(0,0,0,0);
+            const s = new Date(l.startDate); s.setHours(0, 0, 0, 0);
+            const e = new Date(l.endDate); e.setHours(0, 0, 0, 0);
             return currentDate >= s && currentDate <= e;
         });
         if (leave) return leave.leaveType?.name || 'LEAVE';
@@ -69,7 +69,7 @@ export default function AttendanceSheet() {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'PRESENT': return 'text-emerald-500 bg-emerald-50';
+            case 'PRESENT': return 'text-primary bg-primary-light/10';
             case 'HALF_DAY': return 'text-amber-500 bg-amber-50';
             case 'ABSENT': return 'text-red-500 bg-red-50';
             case 'WEEKEND': return 'text-slate-400 bg-slate-50';
@@ -85,17 +85,17 @@ export default function AttendanceSheet() {
                     <p className="text-slate-500 text-sm mt-1">Monthly overview of employee attendance</p>
                 </div>
                 <div className="flex gap-3">
-                    <select 
+                    <select
                         className="input bg-white border-slate-200"
                         value={filters.departmentId}
-                        onChange={e => setFilters({...filters, departmentId: e.target.value})}
+                        onChange={e => setFilters({ ...filters, departmentId: e.target.value })}
                     >
                         <option value="">All Departments</option>
                         {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                     </select>
-                    <input 
-                        type="month" 
-                        className="input bg-white border-slate-200" 
+                    <input
+                        type="month"
+                        className="input bg-white border-slate-200"
                         value={`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`}
                         onChange={e => {
                             const [y, m] = e.target.value.split('-');
@@ -138,10 +138,10 @@ export default function AttendanceSheet() {
                                         return (
                                             <td key={d} className={`p-1 border-l border-slate-100 text-center`}>
                                                 <div className={`w-7 h-7 mx-auto rounded-lg flex items-center justify-center text-[8px] font-black ${getStatusColor(status)} shadow-sm`}>
-                                                    {status === 'PRESENT' ? <FiCheck size={12} /> : 
-                                                     status === 'ABSENT' ? <FiX size={12} /> :
-                                                     status === 'HALF_DAY' ? <FiMinus size={12} /> :
-                                                     status === 'WEEKEND' ? '' : status.charAt(0)}
+                                                    {status === 'PRESENT' ? <FiCheck size={12} /> :
+                                                        status === 'ABSENT' ? <FiX size={12} /> :
+                                                            status === 'HALF_DAY' ? <FiMinus size={12} /> :
+                                                                status === 'WEEKEND' ? '' : status.charAt(0)}
                                                 </div>
                                             </td>
                                         );
@@ -155,9 +155,9 @@ export default function AttendanceSheet() {
 
             <div className="mt-6 flex flex-wrap justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-widest gap-4">
                 <div className="flex gap-6">
-                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-emerald-100 text-emerald-500 flex items-center justify-center"><FiCheck size={10}/></div> Present</div>
-                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-red-100 text-red-500 flex items-center justify-center"><FiX size={10}/></div> Absent</div>
-                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-amber-100 text-amber-500 flex items-center justify-center"><FiMinus size={10}/></div> Half Day</div>
+                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-primary-light/10 text-primary flex items-center justify-center"><FiCheck size={10} /></div> Present</div>
+                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-red-100 text-red-500 flex items-center justify-center"><FiX size={10} /></div> Absent</div>
+                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-amber-100 text-amber-500 flex items-center justify-center"><FiMinus size={10} /></div> Half Day</div>
                     <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-blue-100 text-blue-500"></div> Leave</div>
                 </div>
                 <div className="italic text-[10px] normal-case">* Sundays and Saturdays are marked as Weekend by default. Any blank working day is automatically docked.</div>

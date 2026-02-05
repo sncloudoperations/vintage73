@@ -3,32 +3,32 @@ import api from '@/lib/api';
 import { FiUsers, FiDollarSign, FiBriefcase, FiTrendingUp } from 'react-icons/fi';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement,
 } from 'chart.js';
 
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
 );
 
 export default function CRMDashboard() {
-    const [stats, setStats] = useState({ 
-        totalLeads: 0, 
-        newLeads: 0, 
+    const [stats, setStats] = useState({
+        totalLeads: 0,
+        newLeads: 0,
         totalPipelineValue: 0,
-        dealStages: {} 
+        dealStages: {}
     });
     const [loading, setLoading] = useState(true);
 
@@ -95,7 +95,7 @@ export default function CRMDashboard() {
                 </div>
 
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                    <div className="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center text-xl">
                         <FiTrendingUp />
                     </div>
                     <div>
@@ -103,7 +103,7 @@ export default function CRMDashboard() {
                         <h3 className="text-2xl font-black text-slate-800">{stats.newLeads}</h3>
                     </div>
                 </div>
-                
+
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center text-xl">
                         <FiDollarSign />
@@ -115,13 +115,13 @@ export default function CRMDashboard() {
                 </div>
 
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                     <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                    <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
                         <FiBriefcase />
                     </div>
                     <div>
                         <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Active Deals</p>
                         <h3 className="text-2xl font-black text-slate-800">
-                             {Object.entries(stats.dealStages).reduce((acc, [k, v]) => k !== 'LOST' && k !== 'WON' ? acc + v : acc, 0)}
+                            {Object.entries(stats.dealStages).reduce((acc, [k, v]) => k !== 'LOST' && k !== 'WON' ? acc + v : acc, 0)}
                         </h3>
                     </div>
                 </div>
@@ -129,23 +129,23 @@ export default function CRMDashboard() {
 
             {/* Charts Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                     <h3 className="text-lg font-bold text-slate-800 mb-6">Deals by Stage</h3>
                     <div className="h-64 flex justify-center">
                         {loading ? <p>Loading...</p> : (
-                             Object.keys(stats.dealStages).length > 0 ? 
-                             <Doughnut data={stageData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }} /> :
-                             <p className="text-slate-400 self-center">No deals data available</p>
+                            Object.keys(stats.dealStages).length > 0 ?
+                                <Doughnut data={stageData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }} /> :
+                                <p className="text-slate-400 self-center">No deals data available</p>
                         )}
                     </div>
-                 </div>
+                </div>
 
-                 {/* Recent Activity Placeholder - To be implemented */}
-                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                {/* Recent Activity Placeholder - To be implemented */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                     <h3 className="text-lg font-bold text-slate-800 mb-6">Quick Actions</h3>
                     <div className="grid grid-cols-2 gap-4">
-                        <a href="/crm/leads" className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50 transition-all group cursor-pointer block">
-                            <div className="font-bold text-slate-700 group-hover:text-emerald-700">Add New Lead</div>
+                        <a href="/crm/leads" className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-primary/20 hover:bg-primary-light transition-all group cursor-pointer block">
+                            <div className="font-bold text-slate-700 group-hover:text-primary-dark">Add New Lead</div>
                             <div className="text-xs text-slate-400 mt-1"> Capture a new potential client</div>
                         </a>
                         <a href="/crm/deals" className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition-all group cursor-pointer block">
@@ -153,7 +153,7 @@ export default function CRMDashboard() {
                             <div className="text-xs text-slate-400 mt-1"> Start a new sales loop</div>
                         </a>
                     </div>
-                 </div>
+                </div>
             </div>
         </div>
     );

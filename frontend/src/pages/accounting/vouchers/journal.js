@@ -14,13 +14,13 @@ export default function JournalEntry() {
         narration: '',
         reference: ''
     });
-    
+
     // Grid Entries State: Unified array of objects
     const [entries, setEntries] = useState([
         { ledgerId: '', debitAmount: '', creditAmount: '', description: '' },
         { ledgerId: '', debitAmount: '', creditAmount: '', description: '' }
     ]);
-    
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // History State
@@ -74,14 +74,14 @@ export default function JournalEntry() {
 
     const updateEntry = (index, field, value) => {
         const updated = [...entries];
-        
+
         // If updating debit, clear credit and vice versa
         if (field === 'debitAmount' && value !== '') {
             updated[index].creditAmount = '';
         } else if (field === 'creditAmount' && value !== '') {
             updated[index].debitAmount = '';
         }
-        
+
         updated[index][field] = value;
         setEntries(updated);
     };
@@ -93,7 +93,7 @@ export default function JournalEntry() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!isBalanced) {
             toast.error(`Voucher is not balanced. Current Difference: ₹${difference.toFixed(2)}`);
             return;
@@ -137,13 +137,13 @@ export default function JournalEntry() {
                 });
                 toast.success(`Journal entry ${res.data.voucherNumber} created successfully!`);
             }
-            
+
             const savedVoucher = res.data;
             if (window.confirm('Journal entry saved. Do you want to print the voucher?')) {
                 const fullVoucher = await api.get(`/accounting/vouchers/${savedVoucher.id}`);
                 setPrintVoucher(fullVoucher.data);
             }
-            
+
             resetForm();
             setActiveTab('history');
             fetchHistory();
@@ -175,7 +175,7 @@ export default function JournalEntry() {
             narration: v.narration || '',
             reference: v.reference || ''
         });
-        
+
         // Map original API entries back to grid format
         const gridEntries = v.entries.map(e => ({
             ledgerId: e.debitLedgerId || e.creditLedgerId,
@@ -207,16 +207,16 @@ export default function JournalEntry() {
     return (
         <div className="max-w-[1600px] mx-auto p-4 md:p-6 min-h-screen bg-slate-50/50">
             {printVoucher && (
-                <VoucherPrint 
-                    voucher={printVoucher} 
-                    onClose={() => setPrintVoucher(null)} 
+                <VoucherPrint
+                    voucher={printVoucher}
+                    onClose={() => setPrintVoucher(null)}
                 />
             )}
 
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg transform -rotate-1">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-lg transform -rotate-1">
                             <FiBook className="text-white" size={20} />
                         </div>
                         Journal Voucher
@@ -226,14 +226,14 @@ export default function JournalEntry() {
 
                 <div className="flex bg-white/80 backdrop-blur-sm p-1 rounded-xl border border-slate-200 shadow-sm w-fit">
                     <button
-                        onClick={() => { setActiveTab('create'); if(!editId) resetForm(); }}
-                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'create' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+                        onClick={() => { setActiveTab('create'); if (!editId) resetForm(); }}
+                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'create' ? 'bg-primary text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
                     >
                         <FiPlus size={14} /> {editId ? 'EDIT VOUCHER' : 'NEW VOUCHER'}
                     </button>
                     <button
                         onClick={() => setActiveTab('history')}
-                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'history' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'history' ? 'bg-primary text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
                     >
                         <FiList size={14} /> HISTORY
                     </button>
@@ -244,7 +244,7 @@ export default function JournalEntry() {
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
                         {/* Status Bar */}
-                        <div className={`px-6 py-2 flex justify-between items-center ${isBalanced ? 'bg-emerald-600' : 'bg-red-600'} transition-colors duration-500`}>
+                        <div className={`px-6 py-2 flex justify-between items-center ${isBalanced ? 'bg-primary' : 'bg-red-600'} transition-colors duration-500`}>
                             <div className="flex items-center gap-4">
                                 <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Transaction Status:</span>
                                 <span className="text-xs font-bold text-white uppercase tracking-wider">
@@ -264,15 +264,15 @@ export default function JournalEntry() {
                                 <div>
                                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Voucher Date</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-emerald-600 transition-colors">
-                                            <FiCalendar size={18} className="text-slate-400 group-focus-within:text-emerald-500" />
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-primary transition-colors">
+                                            <FiCalendar size={18} className="text-slate-400 group-focus-within:text-primary" />
                                         </div>
                                         <input
                                             required
                                             type="date"
-                                            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-semibold transition-all"
+                                            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm font-semibold transition-all"
                                             value={formData.date}
-                                            onChange={e => setFormData({...formData, date: e.target.value})}
+                                            onChange={e => setFormData({ ...formData, date: e.target.value })}
                                         />
                                     </div>
                                 </div>
@@ -280,9 +280,9 @@ export default function JournalEntry() {
                                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Reference No. (Optional)</label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-semibold transition-all"
+                                        className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm font-semibold transition-all"
                                         value={formData.reference}
-                                        onChange={e => setFormData({...formData, reference: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, reference: e.target.value })}
                                         placeholder="Ex: BN-1002"
                                     />
                                 </div>
@@ -298,13 +298,13 @@ export default function JournalEntry() {
                             </div>
 
                             {/* Entry Table Grid */}
-                            <div className="border border-emerald-200 rounded-lg overflow-hidden mb-6 shadow-sm">
+                            <div className="border border-primary-light rounded-lg overflow-hidden mb-6 shadow-sm">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-emerald-900">
+                                        <tr className="bg-primary-dark">
                                             <th className="px-5 py-3 text-[10px] font-bold text-white uppercase tracking-wider w-[40%]">Account Particulars</th>
-                                            <th className="px-5 py-3 text-[10px] font-bold text-white uppercase tracking-wider w-[18%] text-right bg-emerald-800/80">Debit (Dr)</th>
-                                            <th className="px-5 py-3 text-[10px] font-bold text-white uppercase tracking-wider w-[18%] text-right bg-emerald-800/80">Credit (Cr)</th>
+                                            <th className="px-5 py-3 text-[10px] font-bold text-white uppercase tracking-wider w-[18%] text-right bg-primary-dark/80">Debit (Dr)</th>
+                                            <th className="px-5 py-3 text-[10px] font-bold text-white uppercase tracking-wider w-[18%] text-right bg-primary-dark/80">Credit (Cr)</th>
                                             <th className="px-5 py-3 text-[10px] font-bold text-white uppercase tracking-wider w-[18%]">Line Narration</th>
                                             <th className="px-5 py-3 text-center w-[6%] text-white/40">#</th>
                                         </tr>
@@ -318,7 +318,7 @@ export default function JournalEntry() {
                                                         <div className="flex flex-col gap-1">
                                                             <select
                                                                 required
-                                                                className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 rounded-lg text-sm font-semibold p-2 transition-all outline-none"
+                                                                className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary rounded-lg text-sm font-semibold p-2 transition-all outline-none"
                                                                 value={entry.ledgerId}
                                                                 onChange={e => updateEntry(idx, 'ledgerId', e.target.value)}
                                                             >
@@ -329,7 +329,7 @@ export default function JournalEntry() {
                                                             </select>
                                                             {selectedLedger && (
                                                                 <div className="flex items-center gap-2 pl-2">
-                                                                    <div className={`w-1.5 h-1.5 rounded-full ${selectedLedger.currentBalance >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                                                    <div className={`w-1.5 h-1.5 rounded-full ${selectedLedger.currentBalance >= 0 ? 'bg-primary' : 'bg-red-500'}`} />
                                                                     <span className="text-[10px] font-semibold text-slate-400">
                                                                         Balance: ₹{Math.abs(selectedLedger.currentBalance).toFixed(2)} {selectedLedger.currentBalance >= 0 ? 'Dr' : 'Cr'}
                                                                     </span>
@@ -350,13 +350,13 @@ export default function JournalEntry() {
                                                             />
                                                         </div>
                                                     </td>
-                                                    <td className="px-3 py-2 bg-emerald-50/10 group-hover:bg-emerald-50/30 transition-colors">
+                                                    <td className="px-3 py-2 bg-primary-light/10 group-hover:bg-primary-light/30 transition-colors">
                                                         <div className="relative">
-                                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-emerald-300">₹</span>
+                                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-primary-light">₹</span>
                                                             <input
                                                                 type="number"
                                                                 step="0.01"
-                                                                className="w-full pl-5 pr-2 py-2 bg-transparent border border-transparent focus:border-emerald-500 focus:ring-0 rounded-lg text-sm font-bold text-emerald-600 text-right tabular-nums transition-all outline-none"
+                                                                className="w-full pl-5 pr-2 py-2 bg-transparent border border-transparent focus:border-primary focus:ring-0 rounded-lg text-sm font-bold text-primary text-right tabular-nums transition-all outline-none"
                                                                 value={entry.creditAmount}
                                                                 onChange={e => updateEntry(idx, 'creditAmount', e.target.value)}
                                                                 placeholder="0.00"
@@ -366,7 +366,7 @@ export default function JournalEntry() {
                                                     <td className="px-3 py-2 border-x border-slate-100">
                                                         <input
                                                             type="text"
-                                                            className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 rounded-lg text-[11px] font-medium text-slate-600 p-2 transition-all outline-none italic"
+                                                            className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary rounded-lg text-[11px] font-medium text-slate-600 p-2 transition-all outline-none italic"
                                                             value={entry.description}
                                                             onChange={e => updateEntry(idx, 'description', e.target.value)}
                                                             placeholder="Line narration..."
@@ -387,7 +387,7 @@ export default function JournalEntry() {
                                         })}
                                     </tbody>
                                     <tfoot>
-                                        <tr className="bg-emerald-900 text-white">
+                                        <tr className="bg-primary-dark text-white">
                                             <td className="px-5 py-3">
                                                 <button
                                                     type="button"
@@ -397,22 +397,22 @@ export default function JournalEntry() {
                                                     <FiPlus size={12} /> Add Line Item
                                                 </button>
                                             </td>
-                                            <td className="px-5 py-3 text-right bg-emerald-800/80">
+                                            <td className="px-5 py-3 text-right bg-primary-dark/80">
                                                 <div className="flex flex-col text-right">
                                                     <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">Total DR</span>
                                                     <span className="text-sm font-bold tabular-nums">₹{totalDebit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-5 py-3 text-right bg-emerald-800/80">
+                                            <td className="px-5 py-3 text-right bg-primary-dark/80">
                                                 <div className="flex flex-col text-right">
                                                     <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">Total CR</span>
                                                     <span className="text-sm font-bold tabular-nums">₹{totalCredit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                                 </div>
                                             </td>
-                                            <td colSpan="2" className="px-5 py-3 bg-emerald-950/20">
+                                            <td colSpan="2" className="px-5 py-3 bg-primary-darker/20">
                                                 <div className="flex flex-col items-center">
                                                     <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">Difference</span>
-                                                    <span className={`text-sm font-bold tabular-nums ${difference === 0 ? 'text-emerald-400' : 'text-orange-400'}`}>
+                                                    <span className={`text-sm font-bold tabular-nums ${difference === 0 ? 'text-primary' : 'text-orange-400'}`}>
                                                         ₹{difference.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                                     </span>
                                                 </div>
@@ -428,9 +428,9 @@ export default function JournalEntry() {
                                 <textarea
                                     required
                                     rows="2"
-                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-semibold text-slate-800 transition-all resize-none italic"
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm font-semibold text-slate-800 transition-all resize-none italic"
                                     value={formData.narration}
-                                    onChange={e => setFormData({...formData, narration: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, narration: e.target.value })}
                                     placeholder="Enter the overall purpose or description of this journal entry..."
                                 />
                             </div>
@@ -440,17 +440,17 @@ export default function JournalEntry() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !isBalanced}
-                                    className="w-full md:w-auto px-8 py-4 bg-emerald-600 text-white rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-emerald-700 hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    className="w-full md:w-auto px-8 py-4 bg-primary text-white rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-primary-dark hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
                                     <FiSave size={18} />
                                     {isSubmitting ? 'PROCESSING...' : (editId ? 'UPDATE VOUCHER' : 'POST JOURNAL ENTRY')}
                                 </button>
-                                
+
                                 <div className="hidden md:block flex-grow" />
-                                
+
                                 <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full ${isBalanced ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]'}`} />
-                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isBalanced ? 'text-emerald-600' : 'text-red-500'}`}>
+                                    <div className={`w-2 h-2 rounded-full ${isBalanced ? 'bg-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]'}`} />
+                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isBalanced ? 'text-primary' : 'text-red-500'}`}>
                                         {isBalanced ? 'Integrity Check Passed' : 'Manual Balancing Required'}
                                     </span>
                                 </div>
@@ -459,9 +459,9 @@ export default function JournalEntry() {
                     </div>
 
                     {/* Pro Tip */}
-                    <div className="bg-emerald-950 rounded-xl p-3 flex items-center gap-3 border-l-4 border-emerald-500 shadow-sm">
-                        <div className="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500 font-bold text-xs ring-1 ring-emerald-500/20">!</div>
-                        <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">
+                    <div className="bg-primary-dark rounded-xl p-3 flex items-center gap-3 border-l-4 border-primary shadow-sm">
+                        <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-xs ring-1 ring-primary/20">!</div>
+                        <p className="text-[10px] font-semibold text-primary-light uppercase tracking-wider">
                             Journal entries must balance to zero. Ensure total debits equal total credits before posting.
                         </p>
                     </div>
@@ -484,7 +484,7 @@ export default function JournalEntry() {
                                     {historyLoading ? (
                                         <tr>
                                             <td colSpan="5" className="px-6 py-12 text-center text-slate-400">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-500 border-t-transparent mx-auto mb-3"></div>
+                                                <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-3"></div>
                                                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Syncing Registry...</span>
                                             </td>
                                         </tr>
@@ -514,7 +514,7 @@ export default function JournalEntry() {
                                                     <div className="flex flex-col gap-1 max-w-sm">
                                                         <div className="flex flex-wrap gap-1">
                                                             {v.entries.map((e, idx) => (
-                                                                <span key={idx} className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${e.debitLedgerId ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}>
+                                                                <span key={idx} className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${e.debitLedgerId ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-primary-light text-primary border border-primary-light'}`}>
                                                                     {e.debitLedger?.name || e.creditLedger?.name}
                                                                 </span>
                                                             ))}
@@ -533,14 +533,14 @@ export default function JournalEntry() {
                                                     <div className="flex items-center justify-center gap-2">
                                                         <button
                                                             onClick={() => setPrintVoucher(v)}
-                                                            className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+                                                            className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary-light rounded transition-colors"
                                                             title="Print Voucher"
                                                         >
                                                             <FiPrinter size={14} />
                                                         </button>
                                                         <button
                                                             onClick={() => handleEdit(v)}
-                                                            className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+                                                            className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary-light rounded transition-colors"
                                                             title="Adjustment / Edit"
                                                         >
                                                             <FiEdit2 size={14} />

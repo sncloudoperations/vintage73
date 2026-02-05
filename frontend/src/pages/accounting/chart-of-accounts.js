@@ -70,7 +70,7 @@ export default function ChartOfAccounts() {
 
     const handleDelete = async (id) => {
         if (!confirm('Are you sure you want to delete this ledger?')) return;
-        
+
         try {
             await api.delete(`/accounting/ledgers/${id}`);
             toast.success('Ledger deleted successfully');
@@ -139,7 +139,7 @@ export default function ChartOfAccounts() {
                             resetForm();
                             setIsModalOpen(true);
                         }}
-                        className="bg-emerald-600 text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-sm"
+                        className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
                     >
                         <FiPlus size={16} /> Add Ledger
                     </button>
@@ -153,7 +153,7 @@ export default function ChartOfAccounts() {
                     <input
                         type="text"
                         placeholder="Search ledgers or groups..."
-                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -203,14 +203,13 @@ export default function ChartOfAccounts() {
                                                 {ledger.group?.name || '-'}
                                             </td>
                                             <td>
-                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                                    ledger.group?.groupType === 'ASSETS' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${ledger.group?.groupType === 'ASSETS' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
                                                     ledger.group?.groupType === 'LIABILITIES' ? 'bg-red-50 text-red-700 border border-red-100' :
-                                                    ledger.group?.groupType === 'EQUITY' ? 'bg-purple-50 text-purple-700 border border-purple-100' :
-                                                    ledger.group?.groupType === 'INCOME' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                                                    ledger.group?.groupType === 'EXPENSES' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
-                                                    'bg-slate-50 text-slate-700'
-                                                }`}>
+                                                        ledger.group?.groupType === 'EQUITY' ? 'bg-purple-50 text-purple-700 border border-purple-100' :
+                                                            ledger.group?.groupType === 'INCOME' ? 'bg-primary-light/10 text-primary border border-primary/20' :
+                                                                ledger.group?.groupType === 'EXPENSES' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
+                                                                    'bg-slate-50 text-slate-700'
+                                                    }`}>
                                                     {ledger.group?.groupType || '-'}
                                                 </span>
                                             </td>
@@ -218,16 +217,15 @@ export default function ChartOfAccounts() {
                                                 ₹{parseFloat(ledger.openingBalance).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </td>
                                             <td className="text-right font-mono font-semibold">
-                                                <span className={parseFloat(ledger.currentBalance || 0) >= 0 ? 'text-emerald-600' : 'text-red-600'}>
+                                                <span className={parseFloat(ledger.currentBalance || 0) >= 0 ? 'text-primary' : 'text-red-600'}>
                                                     ₹{parseFloat(ledger.currentBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                 </span>
                                             </td>
                                             <td className="text-center">
-                                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                                                    ledger.balanceType === 'DEBIT' 
-                                                        ? 'bg-blue-50 text-blue-700 border border-blue-100' 
-                                                        : 'bg-green-50 text-green-700 border border-green-100'
-                                                }`}>
+                                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${ledger.balanceType === 'DEBIT'
+                                                    ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                                                    : 'bg-green-50 text-green-700 border border-green-100'
+                                                    }`}>
                                                     {ledger.balanceType === 'DEBIT' ? 'Dr' : 'Cr'}
                                                 </span>
                                             </td>
@@ -240,13 +238,15 @@ export default function ChartOfAccounts() {
                                                     >
                                                         <FiEdit2 size={14} />
                                                     </button>
-                                                    <button
-                                                        onClick={() => handleDelete(ledger.id)}
-                                                        className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
-                                                        title="Delete"
-                                                    >
-                                                        <FiTrash2 size={14} />
-                                                    </button>
+                                                    {!ledger.isSystem && (
+                                                        <button
+                                                            onClick={() => handleDelete(ledger.id)}
+                                                            className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                            title="Delete"
+                                                        >
+                                                            <FiTrash2 size={14} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -270,7 +270,7 @@ export default function ChartOfAccounts() {
                             </div>
                             <div>
                                 <span className="text-slate-500">Total Current Balance: </span>
-                                <span className="font-bold text-emerald-600">
+                                <span className="font-bold text-primary">
                                     ₹{ledgers.reduce((sum, l) => sum + parseFloat(l.currentBalance || 0), 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
@@ -281,7 +281,7 @@ export default function ChartOfAccounts() {
 
             {/* Add/Edit Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
                     <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full">
                         <div className="p-6 border-b border-slate-200">
                             <h2 className="text-xl font-bold text-slate-800">
@@ -296,9 +296,9 @@ export default function ChartOfAccounts() {
                                 <input
                                     required
                                     type="text"
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                     value={formData.name}
-                                    onChange={e => setFormData({...formData, name: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 />
                             </div>
                             <div>
@@ -307,9 +307,9 @@ export default function ChartOfAccounts() {
                                 </label>
                                 <select
                                     required
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                     value={formData.groupId}
-                                    onChange={e => setFormData({...formData, groupId: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, groupId: e.target.value })}
                                 >
                                     <option value="">Select Group</option>
                                     {groups.map(group => (
@@ -327,9 +327,9 @@ export default function ChartOfAccounts() {
                                     <input
                                         type="number"
                                         step="0.01"
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                         value={formData.openingBalance}
-                                        onChange={e => setFormData({...formData, openingBalance: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, openingBalance: e.target.value })}
                                     />
                                 </div>
                                 <div>
@@ -337,9 +337,9 @@ export default function ChartOfAccounts() {
                                         Balance Type
                                     </label>
                                     <select
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                         value={formData.balanceType}
-                                        onChange={e => setFormData({...formData, balanceType: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, balanceType: e.target.value })}
                                     >
                                         <option value="DEBIT">Debit</option>
                                         <option value="CREDIT">Credit</option>
@@ -352,9 +352,9 @@ export default function ChartOfAccounts() {
                                 </label>
                                 <textarea
                                     rows="2"
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                                     value={formData.description}
-                                    onChange={e => setFormData({...formData, description: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
                                 />
                             </div>
                             <div className="flex gap-3 pt-4">
@@ -370,7 +370,7 @@ export default function ChartOfAccounts() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold text-sm hover:bg-emerald-700 transition-all"
+                                    className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm hover:bg-primary-dark transition-all"
                                 >
                                     {editingId ? 'Update' : 'Create'} Ledger
                                 </button>

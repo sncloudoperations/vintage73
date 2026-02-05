@@ -10,7 +10,7 @@ export default function PayrollPage() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
-    
+
     // Filters
     const [filters, setFilters] = useState({
         userId: '',
@@ -82,7 +82,7 @@ export default function PayrollPage() {
 
     const fetchCompanyProfile = async () => {
         try {
-            const res = await api.get('/company'); 
+            const res = await api.get('/company');
             setCompanyProfile(res.data);
         } catch (err) {
             console.error("Failed to fetch company profile:", err);
@@ -94,18 +94,18 @@ export default function PayrollPage() {
             <header className="flex justify-between items-end">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                        <FiFileText className="text-emerald-600" />
+                        <FiFileText className="text-primary" />
                         Payroll Management
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">Manage and view salary history</p>
                 </div>
                 <div className="flex gap-3">
                     {payrolls.length > 0 && filters.month && filters.year && (
-                        <button 
+                        <button
                             onClick={() => setShowBankStatement(true)}
                             className="bg-white text-slate-700 border border-slate-200 px-5 py-2 rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
                         >
-                            <FiCreditCard className="text-emerald-500" /> Bank Statement
+                            <FiCreditCard className="text-primary" /> Bank Statement
                         </button>
                     )}
                 </div>
@@ -118,10 +118,10 @@ export default function PayrollPage() {
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                             <FiUser size={10} /> Employee
                         </label>
-                        <select 
+                        <select
                             className="input-select w-full bg-slate-50 border-slate-200 text-xs font-bold"
                             value={filters.userId}
-                            onChange={e => setFilters({...filters, userId: e.target.value})}
+                            onChange={e => setFilters({ ...filters, userId: e.target.value })}
                         >
                             <option value="">All Employees</option>
                             {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
@@ -132,10 +132,10 @@ export default function PayrollPage() {
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                         <FiCalendar size={10} /> Month
                     </label>
-                    <select 
+                    <select
                         className="input-select w-full bg-slate-50 border-slate-200 text-xs font-bold"
                         value={filters.month}
-                        onChange={e => setFilters({...filters, month: e.target.value})}
+                        onChange={e => setFilters({ ...filters, month: e.target.value })}
                     >
                         <option value="">All Months</option>
                         {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(m => (
@@ -147,21 +147,21 @@ export default function PayrollPage() {
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                         <FiCalendar size={10} /> Year
                     </label>
-                    <input 
+                    <input
                         type="number"
                         className="input w-full bg-slate-50 border-slate-200 text-xs font-bold"
                         value={filters.year}
-                        onChange={e => setFilters({...filters, year: e.target.value})}
+                        onChange={e => setFilters({ ...filters, year: e.target.value })}
                     />
                 </div>
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                         <FiFilter size={10} /> Status
                     </label>
-                    <select 
+                    <select
                         className="input-select w-full bg-slate-50 border-slate-200 text-xs font-bold"
                         value={filters.status}
-                        onChange={e => setFilters({...filters, status: e.target.value})}
+                        onChange={e => setFilters({ ...filters, status: e.target.value })}
                     >
                         <option value="">All Statuses</option>
                         <option value="GENERATED">Generated</option>
@@ -169,7 +169,7 @@ export default function PayrollPage() {
                         <option value="PAID">Paid</option>
                     </select>
                 </div>
-                <button 
+                <button
                     onClick={fetchPayroll}
                     className="h-10 bg-slate-100 text-slate-600 rounded-xl px-4 flex items-center justify-center gap-2 hover:bg-slate-200 transition-all text-xs font-black uppercase tracking-widest"
                 >
@@ -217,7 +217,7 @@ export default function PayrollPage() {
                                         <td className="text-right font-mono text-slate-600">
                                             {companyProfile?.currencySymbol || '₹'}{Number(p.basicSalary).toLocaleString()}
                                         </td>
-                                        <td className="text-right font-mono text-emerald-600">
+                                        <td className="text-right font-mono text-primary">
                                             +{Number(p.allowances).toLocaleString()}
                                         </td>
                                         <td className="text-right font-mono text-red-400">
@@ -227,18 +227,17 @@ export default function PayrollPage() {
                                             {companyProfile?.currencySymbol || '₹'}{Number(p.netSalary).toLocaleString()}
                                         </td>
                                         <td className="text-center">
-                                            <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                                                p.status === 'PAID' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                            <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${p.status === 'PAID' ? 'bg-primary-light/10 text-primary border-primary-light/20' :
                                                 p.status === 'APPROVED' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                                'bg-amber-50 text-amber-600 border-amber-100'
-                                            }`}>
+                                                    'bg-amber-50 text-amber-600 border-amber-100'
+                                                }`}>
                                                 {p.status}
                                             </span>
                                         </td>
                                         <td className="text-center">
-                                            <button 
+                                            <button
                                                 onClick={() => setSelectedPayroll(p)}
-                                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+                                                className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary-light/10 rounded transition-colors"
                                                 title="View Pay Slip"
                                             >
                                                 <FiPrinter size={16} />
@@ -260,7 +259,7 @@ export default function PayrollPage() {
                         <div className="flex gap-8">
                             <div className="flex flex-col items-end">
                                 <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider">Total Allowances</span>
-                                <span className="font-mono font-bold text-emerald-600 text-sm">
+                                <span className="font-mono font-bold text-primary text-sm">
                                     {companyProfile?.currencySymbol || '₹'}{payrolls.reduce((sum, p) => sum + Number(p.allowances), 0).toLocaleString()}
                                 </span>
                             </div>
@@ -283,7 +282,7 @@ export default function PayrollPage() {
 
             {/* Payslip Modal */}
             {selectedPayroll && (
-                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh] border border-slate-200">
                         <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-white">
                             <div className="flex items-center gap-3">
@@ -348,9 +347,9 @@ export default function PayrollPage() {
                                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Days</p>
                                                 <p className="text-slate-900 font-black text-lg">{selectedPayroll.totalDays}</p>
                                             </div>
-                                            <div className="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50">
-                                                <p className="text-[9px] font-black text-emerald-600/60 uppercase tracking-widest mb-1">Present</p>
-                                                <p className="text-emerald-700 font-black text-lg">{selectedPayroll.presentDays}</p>
+                                            <div className="bg-primary-light/10 p-3 rounded-xl border border-primary-light/20">
+                                                <p className="text-[9px] font-black text-primary/60 uppercase tracking-widest mb-1">Present</p>
+                                                <p className="text-primary font-black text-lg">{selectedPayroll.presentDays}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -429,12 +428,12 @@ export default function PayrollPage() {
             )}
             {/* Bank Statement Modal */}
             {showBankStatement && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
                     <div className="bg-white rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh] border border-slate-200">
                         <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-                                    <FiCreditCard className="text-emerald-600 text-xl" />
+                                <div className="w-10 h-10 rounded-xl bg-primary-light/10 border border-primary-light/20 flex items-center justify-center">
+                                    <FiCreditCard className="text-primary text-xl" />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-slate-800 text-lg tracking-tight">Salary Statement for Bank</h3>
@@ -479,7 +478,7 @@ export default function PayrollPage() {
                                         )}
                                         <div className="text-[10px] font-bold text-slate-500 space-y-1">
                                             <p>Date: {new Date().toLocaleDateString()}</p>
-                                            <p>Document No: BS-{filters.month?.substring(0,3).toUpperCase()}-{filters.year}</p>
+                                            <p>Document No: BS-{filters.month?.substring(0, 3).toUpperCase()}-{filters.year}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -509,7 +508,7 @@ export default function PayrollPage() {
                                         ))}
                                         <tr className="bg-slate-100 font-black">
                                             <td colSpan="5" className="border border-slate-300 p-3 text-right text-sm uppercase">Total Payable Amount</td>
-                                            <td className="border border-slate-300 p-3 text-right text-sm">{companyProfile?.currencySymbol || '₹'}{payrolls.reduce((s,p) => s + Number(p.netSalary), 0).toLocaleString()}</td>
+                                            <td className="border border-slate-300 p-3 text-right text-sm">{companyProfile?.currencySymbol || '₹'}{payrolls.reduce((s, p) => s + Number(p.netSalary), 0).toLocaleString()}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -518,7 +517,7 @@ export default function PayrollPage() {
                                 <div className="mb-16">
                                     <p className="text-xs text-slate-500 font-black uppercase mb-1 tracking-widest">Total Amount in Words</p>
                                     <p className="border-b border-slate-300 pb-2 text-sm font-bold italic text-slate-700">
-                                        Only {payrolls.reduce((s,p) => s + Number(p.netSalary), 0).toLocaleString()} {companyProfile?.currencyName || 'Rupees'}
+                                        Only {payrolls.reduce((s, p) => s + Number(p.netSalary), 0).toLocaleString()} {companyProfile?.currencyName || 'Rupees'}
                                     </p>
                                 </div>
 

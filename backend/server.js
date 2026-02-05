@@ -43,7 +43,11 @@ app.use('/api/gst-settings', require('./routes/gstSettingsRoutes'));
 app.use('/api/gst', require('./routes/gstRoutes'));
 app.use('/api/b2b', require('./routes/b2bRoutes'));
 app.use('/api/delivery-challans', require('./routes/deliveryChallanRoutes'));
+app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/banks', require('./routes/bankRoutes'));
+app.use('/api/financial-years', require('./routes/financialYearRoutes'));
+app.use('/api/quotations', require('./routes/quotationRoutes'));
+app.use('/api/reports/gst', require('./routes/gstReportRoutes'));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -51,13 +51,13 @@ export default function Login() {
       {/* Left Side: Branding (Visible on desktop) */}
       <div className="hidden lg:flex flex-1 bg-white relative overflow-hidden items-center justify-center border-r border-slate-100 p-16">
         <div className="relative z-10 w-full h-full flex items-center justify-center animate-fade-in">
-          <img 
-            src="/login-branding.png" 
-            alt="Quick POS Branding" 
+          <img
+            src="/login-branding.png"
+            alt="Quick POS Branding"
             className="max-w-full max-h-full object-contain drop-shadow-sm"
           />
         </div>
-        
+
         <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/5 rounded-full blur-[100px] -mr-48 -mt-48 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-400/5 rounded-full blur-[80px] -ml-32 -mb-32 pointer-events-none"></div>
       </div>
@@ -92,12 +92,12 @@ export default function Login() {
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                   <FiUser className="text-slate-400 group-focus-within:text-green-600 transition-colors" />
                 </div>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-900 text-sm focus:outline-none focus:border-green-600 focus:ring-4 focus:ring-green-600/5 transition-all placeholder:text-slate-400"
                   placeholder="Enter your username"
-                  value={formData.username} 
-                  onChange={e => setFormData({...formData, username: e.target.value})}
+                  value={formData.username}
+                  onChange={e => setFormData({ ...formData, username: e.target.value })}
                   required
                 />
               </div>
@@ -109,24 +109,31 @@ export default function Login() {
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                   <FiLock className="text-slate-400 group-focus-within:text-green-600 transition-colors" />
                 </div>
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-900 text-sm focus:outline-none focus:border-green-600 focus:ring-4 focus:ring-green-600/5 transition-all placeholder:text-slate-400"
                   placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
-                  value={formData.password} 
-                  onChange={e => setFormData({...formData, password: e.target.value})}
+                  value={formData.password}
+                  onChange={e => setFormData({ ...formData, password: e.target.value })}
                   required
                 />
               </div>
             </div>
 
             <div className="flex items-center space-x-2 py-1">
-              <input type="checkbox" id="remember" className="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-600" />
-              <label htmlFor="remember" className="text-sm text-slate-600 cursor-pointer">Remember for 30 days</label>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="remember"
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-600/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-green-600"></div>
+                <span className="ml-3 text-sm text-slate-600">Remember for 30 days</span>
+              </label>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               className="group w-full bg-[#152e25] hover:bg-[#1a382d] disabled:bg-slate-400 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-slate-200"
             >

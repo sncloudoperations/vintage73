@@ -8,7 +8,7 @@ export default function CashBookReport() {
     const [ledgerInfo, setLedgerInfo] = useState(null);
     const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(false);
-    
+
     // Date Filtering (Default to current month)
     const date = new Date();
     const [startDate, setStartDate] = useState(new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0]);
@@ -35,7 +35,7 @@ export default function CashBookReport() {
             // Only need to do this once, but for simplicity finding it dynamically
             const ledgersRes = await api.get('/accounting/ledgers?search=Cash');
             const cashLedger = ledgersRes.data.find(l => l.name.toLowerCase() === 'cash');
-            
+
             if (!cashLedger) {
                 toast.error("Cash ledger not found");
                 return;
@@ -65,16 +65,16 @@ export default function CashBookReport() {
             toast.error("No data to export");
             return;
         }
-        
+
         const csvContent = [
             ['Date', 'Voucher No', 'Particulars', 'Debit', 'Credit', 'Balance'],
             // Opening Balance Row
             [
-                startDate, 
-                '-', 
-                'By Balance b/d (Opening)', 
-                '-', 
-                '-', 
+                startDate,
+                '-',
+                'By Balance b/d (Opening)',
+                '-',
+                '-',
                 `${ledgerInfo?.openingBalance} ${ledgerInfo?.balanceType === 'DEBIT' ? 'Dr' : 'Cr'}`
             ],
             // Transactions
@@ -88,12 +88,12 @@ export default function CashBookReport() {
             ]),
             // Closing Balance Row
             [
-                endDate, 
-                '-', 
-                'Total Closing Balance', 
-                '-', 
-                '-', 
-                `${transactions.length > 0 ? Math.abs(transactions[transactions.length-1].balance) : ledgerInfo?.openingBalance} ${transactions.length > 0 ? (transactions[transactions.length-1].balance >= 0 ? 'Dr' : 'Cr') : (ledgerInfo?.balanceType === 'DEBIT' ? 'Dr' : 'Cr')}`
+                endDate,
+                '-',
+                'Total Closing Balance',
+                '-',
+                '-',
+                `${transactions.length > 0 ? Math.abs(transactions[transactions.length - 1].balance) : ledgerInfo?.openingBalance} ${transactions.length > 0 ? (transactions[transactions.length - 1].balance >= 0 ? 'Dr' : 'Cr') : (ledgerInfo?.balanceType === 'DEBIT' ? 'Dr' : 'Cr')}`
             ]
         ].map(row => row.join(',')).join('\n');
 
@@ -145,14 +145,14 @@ export default function CashBookReport() {
                     }
                 }
             `}</style>
-            
+
             {/* Controls (Hidden in Print) */}
             <div className="mb-6 flex justify-between items-end print:hidden">
                 <div className="flex gap-4 items-end">
                     <div>
                         <label className="block text-xs font-bold text-slate-500 mb-1">From Date</label>
-                        <input 
-                            type="date" 
+                        <input
+                            type="date"
                             className="border border-slate-300 rounded px-3 py-1.5 text-sm"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
@@ -160,28 +160,28 @@ export default function CashBookReport() {
                     </div>
                     <div>
                         <label className="block text-xs font-bold text-slate-500 mb-1">To Date</label>
-                        <input 
-                            type="date" 
+                        <input
+                            type="date"
                             className="border border-slate-300 rounded px-3 py-1.5 text-sm"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
                         />
                     </div>
-                    <button 
+                    <button
                         onClick={fetchCashReport}
-                        className="bg-emerald-600 text-white px-4 py-1.5 rounded text-sm font-semibold hover:bg-emerald-700 flex items-center gap-2"
+                        className="bg-primary text-white px-4 py-1.5 rounded text-sm font-semibold hover:bg-primary-dark flex items-center gap-2"
                     >
                         <FiFilter /> Filter
                     </button>
-                    <button 
-                         onClick={handleExport}
-                         className="border border-slate-300 text-slate-700 px-4 py-1.5 rounded text-sm font-semibold hover:bg-slate-50 flex items-center gap-2"
-                     >
-                         <FiDownload /> Excel
-                     </button>
+                    <button
+                        onClick={handleExport}
+                        className="border border-slate-300 text-slate-700 px-4 py-1.5 rounded text-sm font-semibold hover:bg-slate-50 flex items-center gap-2"
+                    >
+                        <FiDownload /> Excel
+                    </button>
                 </div>
                 <div>
-                     <button 
+                    <button
                         onClick={handlePrint}
                         className="bg-slate-800 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-slate-900 flex items-center gap-2 shadow-sm"
                     >
@@ -222,7 +222,7 @@ export default function CashBookReport() {
                             <td className="border border-slate-300 px-3 py-2 text-right">-</td>
                             <td className="border border-slate-300 px-3 py-2 text-right">-</td>
                             <td className="border border-slate-300 px-3 py-2 text-right font-bold text-slate-800">
-                                ₹{ledgerInfo?.openingBalance?.toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                ₹{ledgerInfo?.openingBalance?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                 <span className="text-[10px] ml-1 text-slate-500">{ledgerInfo?.balanceType === 'DEBIT' ? 'Dr' : 'Cr'}</span>
                             </td>
                         </tr>
@@ -243,14 +243,14 @@ export default function CashBookReport() {
                                         <div className="text-[11px] text-slate-500 font-normal italic mt-0.5">{tx.narration}</div>
                                     )}
                                 </td>
-                                <td className="border border-slate-300 px-3 py-2 text-right text-emerald-700">
-                                    {tx.debit > 0 ? `₹${tx.debit.toLocaleString('en-IN', {minimumFractionDigits: 2})}` : '-'}
+                                <td className="border border-slate-300 px-3 py-2 text-right text-primary">
+                                    {tx.debit > 0 ? `₹${tx.debit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-'}
                                 </td>
                                 <td className="border border-slate-300 px-3 py-2 text-right text-red-700">
-                                    {tx.credit > 0 ? `₹${tx.credit.toLocaleString('en-IN', {minimumFractionDigits: 2})}` : '-'}
+                                    {tx.credit > 0 ? `₹${tx.credit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-'}
                                 </td>
                                 <td className="border border-slate-300 px-3 py-2 text-right font-mono text-slate-700 bg-slate-50/50">
-                                    ₹{Math.abs(tx.balance).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                                    ₹{Math.abs(tx.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                     <span className="text-[10px] ml-1 text-slate-400">{tx.balance >= 0 ? 'Dr' : 'Cr'}</span>
                                 </td>
                             </tr>
@@ -266,27 +266,27 @@ export default function CashBookReport() {
                         )}
                     </tbody>
                     <tfoot>
-                         {/* Closing Balance Row */}
-                         <tr className="bg-slate-100 font-bold border-t-2 border-slate-800 text-slate-900">
+                        {/* Closing Balance Row */}
+                        <tr className="bg-slate-100 font-bold border-t-2 border-slate-800 text-slate-900">
                             <td className="border border-slate-300 px-3 py-3" colSpan="3">Total Closing Balance</td>
-                             <td className="border border-slate-300 px-3 py-3 text-right">
+                            <td className="border border-slate-300 px-3 py-3 text-right">
                                 {/* Optional: Total Debits */}
-                             </td>
-                             <td className="border border-slate-300 px-3 py-3 text-right">
+                            </td>
+                            <td className="border border-slate-300 px-3 py-3 text-right">
                                 {/* Optional: Total Credits */}
-                             </td>
-                             <td className="border border-slate-300 px-3 py-3 text-right text-base">
-                                {transactions.length > 0 
-                                    ? `₹${Math.abs(transactions[transactions.length-1].balance).toLocaleString('en-IN', {minimumFractionDigits: 2})}`
-                                    : `₹${ledgerInfo?.openingBalance?.toLocaleString('en-IN', {minimumFractionDigits: 2})}`
+                            </td>
+                            <td className="border border-slate-300 px-3 py-3 text-right text-base">
+                                {transactions.length > 0
+                                    ? `₹${Math.abs(transactions[transactions.length - 1].balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                                    : `₹${ledgerInfo?.openingBalance?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
                                 }
-                                 <span className="text-xs ml-1 text-slate-600">
-                                     {transactions.length > 0 
-                                        ? (transactions[transactions.length-1].balance >= 0 ? 'Dr' : 'Cr')
+                                <span className="text-xs ml-1 text-slate-600">
+                                    {transactions.length > 0
+                                        ? (transactions[transactions.length - 1].balance >= 0 ? 'Dr' : 'Cr')
                                         : (ledgerInfo?.balanceType === 'DEBIT' ? 'Dr' : 'Cr')
-                                     }
-                                 </span>
-                             </td>
+                                    }
+                                </span>
+                            </td>
                         </tr>
                     </tfoot>
                 </table>

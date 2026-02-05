@@ -15,7 +15,7 @@ export default function B2BInvoice() {
 
   // Tab State
   const [activeTab, setActiveTab] = useState('create'); // 'create' or 'history'
-  
+
   // Invoice History
   const [invoices, setInvoices] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -130,7 +130,7 @@ export default function B2BInvoice() {
   const taxType = company?.state?.toLowerCase() === placeOfSupply?.toLowerCase() ? 'INTRA' : 'INTER';
 
   // Filter products by search
-  const filteredProducts = products.filter(p => 
+  const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
     (p.hsnCode && p.hsnCode.includes(productSearch)) ||
     (p.barcode && p.barcode.includes(productSearch))
@@ -175,7 +175,7 @@ export default function B2BInvoice() {
     const netPrice = item.unitPrice - discountAmount;
     const taxable = netPrice * item.quantity;
     const tax = (taxable * item.taxRate) / 100;
-    
+
     return {
       subTotal: acc.subTotal + taxable,
       taxAmount: acc.taxAmount + tax,
@@ -222,13 +222,13 @@ export default function B2BInvoice() {
       };
 
       const { data } = await api.post('/b2b/invoices', payload);
-      
+
       // Fetch print data
       const printRes = await api.get(`/b2b/invoices/${data.sale.id}/print`);
       setLastInvoice(printRes.data);
 
       toast.success('Invoice created successfully!');
-      
+
       // Show E-Way Bill prompt if required
       if (data.ewayRequired) {
         setShowEwayModal(true);
@@ -333,7 +333,7 @@ export default function B2BInvoice() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -343,30 +343,28 @@ export default function B2BInvoice() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-            <FiFileText className="text-blue-600" size={20} />
+          <div className="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center">
+            <FiFileText className="text-primary" size={20} />
           </div>
           <div>
             <h1 className="text-xl font-bold text-slate-800">B2B Tax Invoice</h1>
             <p className="text-sm text-slate-500">Create GST-compliant invoice for registered parties</p>
           </div>
         </div>
-        
+
         {/* Tab Switch */}
         <div className="flex bg-slate-100 rounded-lg p-1">
           <button
             onClick={() => setActiveTab('create')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === 'create' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-600 hover:text-slate-800'
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'create' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-800'
+              }`}
           >
             <FiPlus className="inline mr-1" /> New Invoice
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === 'history' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-600 hover:text-slate-800'
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'history' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-800'
+              }`}
           >
             <FiList className="inline mr-1" /> Invoice History
           </button>
@@ -387,7 +385,7 @@ export default function B2BInvoice() {
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Search by name, HSN, barcode..."
-                  className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-primary"
                 />
               </div>
             </div>
@@ -399,14 +397,14 @@ export default function B2BInvoice() {
                   <div
                     key={product.id}
                     onClick={() => addItem(product)}
-                    className="p-3 hover:bg-emerald-50 rounded-lg cursor-pointer flex justify-between items-center"
+                    className="p-3 hover:bg-primary-light rounded-lg cursor-pointer flex justify-between items-center"
                   >
                     <div>
                       <div className="font-medium text-slate-700">{product.name}</div>
                       <div className="text-xs text-slate-400">HSN: {product.hsnCode || 'N/A'} | GST: {product.taxRate}%</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-emerald-600">₹{product.price}</div>
+                      <div className="font-bold text-primary">₹{product.price}</div>
                       <div className="text-xs text-slate-400">Stock: {product.stock || 0}</div>
                     </div>
                   </div>
@@ -470,7 +468,7 @@ export default function B2BInvoice() {
                 </div>
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-slate-600 mb-1">Tax Type</label>
-                  <div className={`font-bold text-lg ${taxType === 'INTER' ? 'text-orange-600' : 'text-emerald-600'}`}>
+                  <div className={`font-bold text-lg ${taxType === 'INTER' ? 'text-orange-600' : 'text-primary'}`}>
                     {taxType === 'INTER' ? 'IGST' : 'CGST + SGST'}
                   </div>
                 </div>
@@ -491,7 +489,7 @@ export default function B2BInvoice() {
                 </div>
                 {showTransport ? <FiChevronUp /> : <FiChevronDown />}
               </button>
-              
+
               {showTransport && (
                 <div className="px-4 pb-4 grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div>
@@ -525,7 +523,7 @@ export default function B2BInvoice() {
               <div className="p-4 border-b border-slate-100">
                 <h3 className="font-semibold text-slate-700">Invoice Items</h3>
               </div>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-slate-50 text-slate-600">
@@ -643,7 +641,7 @@ export default function B2BInvoice() {
                   </div>
                   <div className="flex justify-between pt-2 border-t border-slate-200">
                     <span className="font-bold text-slate-700">Grand Total:</span>
-                    <span className="font-bold text-lg text-emerald-600">₹{grandTotal.toFixed(2)}</span>
+                    <span className="font-bold text-lg text-primary">₹{grandTotal.toFixed(2)}</span>
                   </div>
                   {ewayRequired && (
                     <div className="text-xs text-orange-600 text-right">⚠️ E-Way Bill Required</div>
@@ -655,7 +653,7 @@ export default function B2BInvoice() {
                 <button
                   onClick={handleSave}
                   disabled={saving || items.length === 0}
-                  className="btn bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
+                  className="btn bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
                 >
                   <FiPrinter size={18} />
                   {saving ? 'Saving...' : 'Save & Print'}
@@ -721,7 +719,7 @@ export default function B2BInvoice() {
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             {historyLoading ? (
               <div className="flex items-center justify-center h-32">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
               </div>
             ) : (
               <table className="w-full text-sm">
@@ -753,9 +751,8 @@ export default function B2BInvoice() {
                         )}
                       </td>
                       <td className="p-4 text-center">
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          inv.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                        }`}>
+                        <span className={`text-xs px-2 py-1 rounded ${inv.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                          }`}>
                           {inv.status}
                         </span>
                       </td>
@@ -763,7 +760,7 @@ export default function B2BInvoice() {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => handleViewInvoice(inv.id)}
-                            className="text-emerald-600 hover:text-emerald-800 p-1 bg-emerald-50 rounded"
+                            className="text-primary hover:text-primary-dark p-1 bg-primary-light rounded"
                             title="Print Invoice"
                           >
                             <FiPrinter size={16} />
@@ -795,7 +792,7 @@ export default function B2BInvoice() {
 
       {/* E-Way Bill Modal */}
       {showEwayModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <h3 className="text-lg font-bold text-slate-800 mb-4">E-Way Bill Required</h3>
             <p className="text-sm text-slate-500 mb-4">Invoice value exceeds ₹{settings?.ewayBillThreshold}. Please enter E-Way Bill number.</p>

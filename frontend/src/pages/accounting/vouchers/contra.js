@@ -18,7 +18,7 @@ export default function ContraEntry() {
         reference: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
+
     // History State
     const [vouchers, setVouchers] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
@@ -115,7 +115,7 @@ export default function ContraEntry() {
         setEditId(v.id);
         const debitEntry = v.entries.find(e => e.debitLedgerId);
         const creditEntry = v.entries.find(e => e.creditLedgerId);
-        
+
         setFormData({
             date: new Date(v.date).toISOString().split('T')[0],
             fromAccount: creditEntry?.creditLedgerId || '',
@@ -149,8 +149,8 @@ export default function ContraEntry() {
     };
 
     // Filter cash and bank ledgers
-    const cashBankLedgers = ledgers.filter(l => 
-        (l.group?.name === 'Bank Accounts' || l.group?.name === 'Cash-in-Hand' || l.group?.name === 'Current Assets') && 
+    const cashBankLedgers = ledgers.filter(l =>
+        (l.group?.name === 'Bank Accounts' || l.group?.name === 'Cash-in-Hand' || l.group?.name === 'Current Assets') &&
         (l.name.toLowerCase().includes('cash') || l.name.toLowerCase().includes('bank') || l.name.toLowerCase().includes('paytm') || l.name.toLowerCase().includes('upi'))
     );
 
@@ -160,16 +160,16 @@ export default function ContraEntry() {
     return (
         <div className="max-w-6xl mx-auto p-4 md:p-6 animate-in fade-in duration-500">
             {printVoucher && (
-                <VoucherPrint 
-                    voucher={printVoucher} 
-                    onClose={() => setPrintVoucher(null)} 
+                <VoucherPrint
+                    voucher={printVoucher}
+                    onClose={() => setPrintVoucher(null)}
                 />
             )}
 
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center shadow-md">
+                        <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-md">
                             <FiRefreshCw className="text-white" size={20} />
                         </div>
                         Contra Entry
@@ -179,14 +179,14 @@ export default function ContraEntry() {
 
                 <div className="flex bg-slate-100 p-1 rounded-lg w-fit shadow-inner">
                     <button
-                        onClick={() => { setActiveTab('create'); if(!editId) resetForm(); }}
-                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'create' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                        onClick={() => { setActiveTab('create'); if (!editId) resetForm(); }}
+                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'create' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                     >
                         <FiPlus /> {editId ? 'EDIT ENTRY' : 'NEW ENTRY'}
                     </button>
                     <button
                         onClick={() => setActiveTab('history')}
-                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'history' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'history' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                     >
                         <FiList /> HISTORY
                     </button>
@@ -197,7 +197,7 @@ export default function ContraEntry() {
                 <div className="space-y-4">
                     <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
                         {/* Status / Header Bar */}
-                        <div className={`px-6 py-2 flex justify-between items-center ${editId ? 'bg-blue-600' : 'bg-emerald-900'} transition-colors`}>
+                        <div className={`px-6 py-2 flex justify-between items-center ${editId ? 'bg-blue-600' : 'bg-primary-dark'} transition-colors`}>
                             <div className="flex items-center gap-4">
                                 <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Type:</span>
                                 <span className="text-xs font-bold text-white uppercase tracking-wider">
@@ -216,15 +216,15 @@ export default function ContraEntry() {
                                 <div>
                                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Voucher Date</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-emerald-600 transition-colors">
-                                            <FiCalendar size={18} className="text-slate-400 group-focus-within:text-emerald-500" />
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-primary transition-colors">
+                                            <FiCalendar size={18} className="text-slate-400 group-focus-within:text-primary" />
                                         </div>
                                         <input
                                             required
                                             type="date"
-                                            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-semibold transition-all"
+                                            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm font-semibold transition-all"
                                             value={formData.date}
-                                            onChange={e => setFormData({...formData, date: e.target.value})}
+                                            onChange={e => setFormData({ ...formData, date: e.target.value })}
                                         />
                                     </div>
                                 </div>
@@ -232,24 +232,24 @@ export default function ContraEntry() {
                                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Reference No. (Optional)</label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-semibold transition-all font-mono"
+                                        className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm font-semibold transition-all font-mono"
                                         value={formData.reference}
-                                        onChange={e => setFormData({...formData, reference: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, reference: e.target.value })}
                                         placeholder="EX: BK-1002, IMPS, etc."
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-blue-600">Transfer Amount (₹)</label>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-primary">Transfer Amount (₹)</label>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-blue-400">₹</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-primary">₹</span>
                                         <input
                                             required
                                             type="number"
                                             step="0.01"
                                             min="0.01"
-                                            className="w-full pl-8 pr-4 py-3 bg-blue-50/30 border border-blue-100 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent focus:bg-white text-lg font-bold text-blue-600 tabular-nums transition-all"
+                                            className="w-full pl-8 pr-4 py-3 bg-primary-light/30 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent focus:bg-white text-lg font-bold text-primary tabular-nums transition-all"
                                             value={formData.amount}
-                                            onChange={e => setFormData({...formData, amount: e.target.value})}
+                                            onChange={e => setFormData({ ...formData, amount: e.target.value })}
                                             placeholder="0.00"
                                         />
                                     </div>
@@ -264,7 +264,7 @@ export default function ContraEntry() {
                                         </label>
                                         {selectedFromAccount && (
                                             <div className="flex items-center gap-2">
-                                                <div className={`w-1.5 h-1.5 rounded-full ${selectedFromAccount.currentBalance >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                                <div className={`w-1.5 h-1.5 rounded-full ${selectedFromAccount.currentBalance >= 0 ? 'bg-primary' : 'bg-red-500'}`} />
                                                 <span className="text-[10px] font-bold text-slate-500">
                                                     Bal: ₹{Math.abs(selectedFromAccount.currentBalance).toFixed(2)} {selectedFromAccount.currentBalance >= 0 ? 'Dr' : 'Cr'}
                                                 </span>
@@ -275,7 +275,7 @@ export default function ContraEntry() {
                                         required
                                         className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-transparent rounded-lg text-sm font-semibold p-3 transition-all outline-none"
                                         value={formData.fromAccount}
-                                        onChange={e => setFormData({...formData, fromAccount: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, fromAccount: e.target.value })}
                                     >
                                         <option value="">Select Source Account...</option>
                                         {cashBankLedgers.map(ledger => (
@@ -298,7 +298,7 @@ export default function ContraEntry() {
                                         </label>
                                         {selectedToAccount && (
                                             <div className="flex items-center gap-2">
-                                                <div className={`w-1.5 h-1.5 rounded-full ${selectedToAccount.currentBalance >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                                <div className={`w-1.5 h-1.5 rounded-full ${selectedToAccount.currentBalance >= 0 ? 'bg-primary' : 'bg-red-500'}`} />
                                                 <span className="text-[10px] font-bold text-slate-500">
                                                     Bal: ₹{Math.abs(selectedToAccount.currentBalance).toFixed(2)} {selectedToAccount.currentBalance >= 0 ? 'Dr' : 'Cr'}
                                                 </span>
@@ -309,7 +309,7 @@ export default function ContraEntry() {
                                         required
                                         className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-transparent rounded-lg text-sm font-semibold p-3 transition-all outline-none"
                                         value={formData.toAccount}
-                                        onChange={e => setFormData({...formData, toAccount: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, toAccount: e.target.value })}
                                     >
                                         <option value="">Select Destination Account...</option>
                                         {cashBankLedgers.map(ledger => (
@@ -329,7 +329,7 @@ export default function ContraEntry() {
                                     rows="2"
                                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent focus:bg-white text-sm font-semibold text-slate-800 transition-all resize-none italic"
                                     value={formData.narration}
-                                    onChange={e => setFormData({...formData, narration: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, narration: e.target.value })}
                                     placeholder="E.g. Cash deposited in bank, internal fund transfer, etc..."
                                 />
                             </div>
@@ -356,8 +356,8 @@ export default function ContraEntry() {
                         </form>
                     </div>
 
-                    <div className="bg-slate-800 rounded-xl p-3 flex items-center gap-3 border-l-4 border-blue-500">
-                        <div className="w-6 h-6 rounded bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold text-xs">!</div>
+                    <div className="bg-slate-800 rounded-xl p-3 flex items-center gap-3 border-l-4 border-primary">
+                        <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">!</div>
                         <p className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">
                             Contra entries are internal transfers. They do not affect the net worth of the business, only its liquidity distribution.
                         </p>
@@ -381,7 +381,7 @@ export default function ContraEntry() {
                                     {historyLoading ? (
                                         <tr>
                                             <td colSpan="5" className="px-6 py-12 text-center text-slate-400">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-3"></div>
+                                                <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-3"></div>
                                                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Syncing Registry...</span>
                                             </td>
                                         </tr>
@@ -413,11 +413,11 @@ export default function ContraEntry() {
                                                     <td className="px-6 py-4">
                                                         <div className="flex flex-col gap-1">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100 uppercase tracking-tighter">Debit To:</span> 
+                                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary-light text-primary border border-primary-light uppercase tracking-tighter">Debit To:</span>
                                                                 <span className="text-[11px] font-bold text-slate-700">{debitEntry?.debitLedger?.name || 'Unknown'}</span>
                                                             </div>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-600 border border-red-100 uppercase tracking-tighter">Credit From:</span> 
+                                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-600 border border-red-100 uppercase tracking-tighter">Credit From:</span>
                                                                 <span className="text-[11px] font-bold text-slate-700">{creditEntry?.creditLedger?.name || 'Unknown'}</span>
                                                             </div>
                                                             <p className="text-[10px] font-medium text-slate-500 italic truncate max-w-sm mt-1" title={v.narration}>
@@ -433,7 +433,7 @@ export default function ContraEntry() {
                                                             {v.status === 'CANCELLED' ? (
                                                                 <span className="mt-1 px-1.5 py-0.5 rounded bg-red-100 text-red-600 text-[8px] font-bold uppercase tracking-widest ring-1 ring-red-200">Reversed</span>
                                                             ) : (
-                                                                <span className="mt-1 px-1.5 py-0.5 rounded bg-blue-100 text-blue-600 text-[8px] font-bold uppercase tracking-widest ring-1 ring-blue-200">Balanced</span>
+                                                                <span className="mt-1 px-1.5 py-0.5 rounded bg-primary-light text-primary text-[8px] font-bold uppercase tracking-widest ring-1 ring-primary/20">Balanced</span>
                                                             )}
                                                         </div>
                                                     </td>
@@ -441,7 +441,7 @@ export default function ContraEntry() {
                                                         <div className="flex items-center justify-center gap-2">
                                                             <button
                                                                 onClick={() => setPrintVoucher(v)}
-                                                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+                                                                className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary-light rounded transition-colors"
                                                                 title="Print"
                                                             >
                                                                 <FiPrinter size={14} />

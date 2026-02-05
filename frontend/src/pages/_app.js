@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }) {
     // Basic Auth Check
     const token = localStorage.getItem('token');
     const publicPaths = ['/login', '/setup'];
-    
+
     if (!token && !publicPaths.includes(router.pathname)) {
       router.push('/login');
     }
@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }) {
       <TabProvider>
         <Layout>
           <Component {...pageProps} />
-          <ToastContainer 
+          <ToastContainer
             position="bottom-right"
             autoClose={3000}
             hideProgressBar={false}
@@ -39,7 +39,7 @@ export default function App({ Component, pageProps }) {
             pauseOnFocusLoss
             draggable
             pauseOnHover
-            theme="colored"
+            theme="light"
             style={{ zIndex: 99999 }}
           />
         </Layout>

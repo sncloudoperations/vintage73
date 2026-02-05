@@ -26,9 +26,24 @@
     0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
   /* Toastify Theme Overrides */
-  --toastify-color-success: var(--primary);
-  --toastify-color-info: var(--primary-light);
-  --toastify-color-progress-success: var(--primary-dark);
+  --toastify-color-light: #ffffff;
+  --toastify-text-color-light: var(--primary-dark);
+  --toastify-color-progress-light: var(--primary);
+  --toastify-color-progress-success: var(--primary);
+  --toastify-color-progress-error: var(--danger);
+  --toastify-icon-color-success: var(--primary);
+  --toastify-icon-color-error: var(--danger);
+}
+
+/* Force specific colors for different toast types if needed, 
+   but variables above handle most. 
+   Additional overrides for specificity: 
+*/
+.Toastify__toast--success {
+    border-left: 4px solid var(--primary);
+}
+.Toastify__toast--error {
+    border-left: 4px solid var(--danger);
 }
 
 * {
