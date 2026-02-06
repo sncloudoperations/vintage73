@@ -13,6 +13,7 @@ export default function Users() {
     username: '', name: '', password: '', role: 'staff', branchId: '', allowedModules: [], incentivePercentage: 0,
     designation: '', department: '', joiningDate: '', basicSalary: 0, labourRule: '', nationalId: '',
     employeeCode: '', bankName: '', accountNumber: '', ifscCode: '', branchName: '',
+    terminalIds: [],
     autoCode: true
   });
   const [editingId, setEditingId] = useState(null);
@@ -21,6 +22,7 @@ export default function Users() {
   const [designations, setDesignations] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [banks, setBanks] = useState([]);
+  const [terminals, setTerminals] = useState([]);
   const [activeTab, setActiveTab] = useState('general');
   const router = useRouter();
 
@@ -33,7 +35,17 @@ export default function Users() {
     fetchDesignations();
     fetchDepartments();
     fetchBankMaster();
+    fetchTerminals();
   }, []);
+
+  const fetchTerminals = async () => {
+    try {
+      const { data } = await api.get('/terminals');
+      setTerminals(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchCompanyProfile = async () => {
     try {
@@ -108,6 +120,7 @@ export default function Users() {
         username: '', name: '', password: '', role: 'staff', branchId: '', allowedModules: [], incentivePercentage: 0,
         designation: '', department: '', joiningDate: '', basicSalary: 0, labourRule: '', nationalId: '',
         employeeCode: '', bankName: '', accountNumber: '', ifscCode: '', branchName: '',
+        terminalIds: [],
         autoCode: true
       });
       fetchUsers();
@@ -138,6 +151,7 @@ export default function Users() {
       accountNumber: user.employeeProfile?.accountNumber || '',
       ifscCode: user.employeeProfile?.ifscCode || '',
       branchName: user.employeeProfile?.branchName || '',
+      terminalIds: user.terminals?.map(t => t.id) || [],
       autoCode: !user.employeeProfile?.employeeCode
     });
     setShowModal(true);
@@ -196,6 +210,7 @@ export default function Users() {
                 <th>Designation</th>
                 <th>Department</th>
                 <th>Access</th>
+                <th>Terminals</th>
                 <th>Joined Date</th>
                 <th className="text-right">Actions</th>
               </tr>
@@ -255,6 +270,14 @@ export default function Users() {
                       {(!user.allowedModules || user.allowedModules.length === 0) && <span className="text-slate-400 text-xs">-</span>}
                     </div>
                   </td>
+                  <td>
+                    <div className="flex flex-wrap gap-1">
+                      {user.terminals && user.terminals.map(t => (
+                        <span key={t.id} className="px-2 py-0.5 bg-green-50 text-green-600 text-[10px] rounded border border-green-100 font-bold">{t.name}</span>
+                      ))}
+                      {(!user.terminals || user.terminals.length === 0) && <span className="text-slate-400 text-xs">-</span>}
+                    </div>
+                  </td>
                   <td className="text-slate-500">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
@@ -287,354 +310,390 @@ export default function Users() {
       </div>
 
       {/* Add User Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-left">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/30 flex-shrink-0">
-              <div>
-                <h2 className="text-xl font-bold text-slate-800 tracking-tight">{editingId ? 'Edit User' : 'Add New User'}</h2>
-                <p className="text-slate-500 text-[11px] font-medium mt-0.5 uppercase tracking-wider">{editingId ? 'Modify existing account' : 'Setup system access for staff'}</p>
-              </div>
-              <button onClick={() => { setShowModal(false); setEditingId(null); }} className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 transition-all">
-                <FiPlus className="rotate-45 text-xl" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex flex-col h-full">
-              {/* Tabs */}
-              <div className="flex gap-6 border-b border-slate-100 mb-6 sticky top-0 bg-white z-10">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('general')}
-                  className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'general' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
-                >
-                  General Info
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('access')}
-                  className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'access' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
-                >
-                  User Access
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('salary')}
-                  className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'salary' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
-                >
-                  Salary & Info
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('bank')}
-                  className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'bank' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
-                >
-                  Bank Details
+      {
+        showModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-left">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/30 flex-shrink-0">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">{editingId ? 'Edit User' : 'Add New User'}</h2>
+                  <p className="text-slate-500 text-[11px] font-medium mt-0.5 uppercase tracking-wider">{editingId ? 'Modify existing account' : 'Setup system access for staff'}</p>
+                </div>
+                <button onClick={() => { setShowModal(false); setEditingId(null); }} className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 transition-all">
+                  <FiPlus className="rotate-45 text-xl" />
                 </button>
               </div>
 
-              {/* General Tab */}
-              <div className={activeTab === 'general' ? 'block' : 'hidden'}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                  <div className="space-y-4">
+              <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex flex-col h-full">
+                {/* Tabs */}
+                <div className="flex gap-6 border-b border-slate-100 mb-6 sticky top-0 bg-white z-10">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('general')}
+                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'general' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                  >
+                    General Info
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('access')}
+                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'access' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                  >
+                    User Access
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('salary')}
+                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'salary' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                  >
+                    Salary & Info
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('bank')}
+                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'bank' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                  >
+                    Bank Details
+                  </button>
+                </div>
+
+                {/* General Tab */}
+                <div className={activeTab === 'general' ? 'block' : 'hidden'}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Full Name</label>
+                        <input
+                          required
+                          className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm"
+                          placeholder="e.g. John Doe"
+                          value={formData.name}
+                          onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Username</label>
+                        <div className="relative">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">@</span>
+                          <input
+                            required
+                            className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm pl-8"
+                            placeholder="johndoe"
+                            value={formData.username}
+                            onChange={e => setFormData({ ...formData, username: e.target.value })}
+                          />
+                        </div>
+                      </div>
+
+                      {!editingId && (
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Initial Password</label>
+                          <input
+                            required
+                            type="password"
+                            className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm"
+                            placeholder="••••••••"
+                            value={formData.password}
+                            onChange={e => setFormData({ ...formData, password: e.target.value })}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Assigned Branch</label>
+                        <select
+                          className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal py-2.5 text-sm"
+                          value={formData.branchId}
+                          onChange={e => setFormData({ ...formData, branchId: e.target.value })}
+                        >
+                          <option value="">Global / No Branch</option>
+                          {branches.map(b => (
+                            <option key={b.id} value={b.id}>{b.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Incentive (%)</label>
+                        <input
+                          type="number"
+                          max="100"
+                          step="0.1"
+                          className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal py-2.5 text-sm"
+                          placeholder="e.g. 5"
+                          value={formData.incentivePercentage}
+                          onChange={e => setFormData({ ...formData, incentivePercentage: e.target.value })}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">System Role</label>
+                        <div className="flex gap-2">
+                          {['staff', 'admin'].map(r => (
+                            <button
+                              key={r}
+                              type="button"
+                              onClick={() => setFormData({ ...formData, role: r })}
+                              className={`flex-1 py-2 px-3 rounded-lg border transition-all font-bold uppercase text-[9px] tracking-widest ${formData.role === r ? 'border-primary bg-primary-light text-primary-dark' : 'border-slate-100 text-slate-400 hover:border-slate-200'}`}
+                            >
+                              {r}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Access Tab */}
+                <div className={activeTab === 'access' ? 'block' : 'hidden'}>
+                  <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <div className="w-1 h-3 bg-primary rounded-full"></div>
+                      Module Permissions
+                    </label>
+
+                    {/* Dashboard separate */}
+                    <div className="mb-3">
+                      <label className="relative inline-flex items-center cursor-pointer p-2.5 rounded-lg border transition-all hover:bg-slate-50 border-slate-200">
+                        <input
+                          type="checkbox"
+                          checked={formData.allowedModules?.includes(dashboardModule)}
+                          onChange={() => toggleModule(dashboardModule)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                        <span className={`ml-3 text-[10px] font-bold tracking-tight uppercase ${formData.allowedModules?.includes(dashboardModule) ? 'text-primary-dark' : 'text-slate-500'}`}>DASHBOARD</span>
+                      </label>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {MENU_STRUCTURE.map(group => (
+                        <div key={group.title} className="bg-white p-2.5 rounded-lg border border-slate-200">
+                          <div className="flex items-center gap-2 mb-1.5 pb-1.5 border-b border-slate-100">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={formData.allowedModules?.includes(group.title)}
+                                onChange={() => toggleModule(group.title)}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                            </label>
+                            <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
+                          </div>
+
+                          <div className="space-y-0.5">
+                            {group.items.map(item => {
+                              const permissionKey = `${group.title}:${item.name}`;
+                              const isParentSelected = formData.allowedModules?.includes(group.title);
+                              const isSelected = formData.allowedModules?.includes(permissionKey);
+
+                              return (
+                                <label key={permissionKey} className={`flex items-center gap-2 cursor-pointer px-1 py-0.5 rounded hover:bg-slate-50 transition-colors ${isParentSelected ? 'opacity-50' : ''}`}>
+                                  <div className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected || isParentSelected}
+                                      onChange={() => toggleModule(permissionKey)}
+                                      disabled={isParentSelected}
+                                      className="sr-only peer"
+                                    />
+                                    <div className="w-7 h-4 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                                  </div>
+                                  <span className={`text-[11px] ${isSelected || isParentSelected ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>{item.name}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Terminal Selection */}
+                    <div className="mt-4 bg-white p-3 rounded-lg border border-slate-200">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <div className="w-1 h-3 bg-green-500 rounded-full"></div>
+                        Authorized Terminals
+                      </label>
+                      <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-2">
+                        {terminals.filter(t =>
+                          t.isActive &&
+                          (!formData.branchId || t.branchId === parseInt(formData.branchId))
+                        ).map(t => (
+                          <label key={t.id} className={`flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer ${formData.terminalIds?.includes(t.id) ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-100'}`}>
+                            <input
+                              type="checkbox"
+                              className="accent-green-500"
+                              checked={formData.terminalIds?.includes(t.id)}
+                              onChange={(e) => {
+                                const current = formData.terminalIds || [];
+                                if (e.target.checked) {
+                                  setFormData({ ...formData, terminalIds: [...current, t.id] });
+                                } else {
+                                  setFormData({ ...formData, terminalIds: current.filter(id => id !== t.id) });
+                                }
+                              }}
+                            />
+                            <div>
+                              <div className={`text-xs font-bold ${formData.terminalIds?.includes(t.id) ? 'text-green-700' : 'text-slate-600'}`}>{t.name}</div>
+                              <div className="text-[10px] text-slate-400 font-mono">{t.terminalCode}</div>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Salary & Labour Tab */}
+                <div className={activeTab === 'salary' ? 'block' : 'hidden'}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Full Name</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex justify-between">
+                        Employee Code
+                        <div className="flex items-center gap-1 cursor-pointer select-none" onClick={() => setFormData({ ...formData, autoCode: !formData.autoCode, employeeCode: !formData.autoCode ? '' : formData.employeeCode })}>
+                          <div className={`w-3 h-3 rounded-full border-2 ${formData.autoCode ? 'bg-primary border-primary' : 'bg-white border-slate-300'}`}></div>
+                          <span className="text-[9px]">AUTO</span>
+                        </div>
+                      </label>
                       <input
-                        required
-                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm"
-                        placeholder="e.g. John Doe"
-                        value={formData.name}
-                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        disabled={formData.autoCode}
+                        className={`input w-full transition-all font-normal text-sm py-2.5 ${formData.autoCode ? 'bg-slate-100 text-slate-400 italic' : 'bg-slate-50 border-slate-100'}`}
+                        placeholder={formData.autoCode ? "Auto-generated" : "Custom Code"}
+                        value={formData.employeeCode}
+                        onChange={e => setFormData({ ...formData, employeeCode: e.target.value })}
                       />
                     </div>
-
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Username</label>
-                      <div className="relative">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">@</span>
-                        <input
-                          required
-                          className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm pl-8"
-                          placeholder="johndoe"
-                          value={formData.username}
-                          onChange={e => setFormData({ ...formData, username: e.target.value })}
-                        />
-                      </div>
-                    </div>
-
-                    {!editingId && (
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Initial Password</label>
-                        <input
-                          required
-                          type="password"
-                          className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm"
-                          placeholder="••••••••"
-                          value={formData.password}
-                          onChange={e => setFormData({ ...formData, password: e.target.value })}
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Assigned Branch</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Designation</label>
                       <select
-                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal py-2.5 text-sm"
-                        value={formData.branchId}
-                        onChange={e => setFormData({ ...formData, branchId: e.target.value })}
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        value={formData.designation}
+                        onChange={e => setFormData({ ...formData, designation: e.target.value })}
                       >
-                        <option value="">Global / No Branch</option>
-                        {branches.map(b => (
-                          <option key={b.id} value={b.id}>{b.name}</option>
+                        <option value="">Select Designation</option>
+                        {designations.map(d => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
                         ))}
                       </select>
                     </div>
-
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Incentive (%)</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Department</label>
+                      <select
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        value={formData.department}
+                        onChange={e => setFormData({ ...formData, department: e.target.value })}
+                      >
+                        <option value="">Select Department</option>
+                        {departments.map(d => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Joining Date</label>
+                      <input
+                        type="date"
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        value={formData.joiningDate}
+                        onChange={e => setFormData({ ...formData, joiningDate: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Basic Salary ({companyProfile?.currencySymbol || '₹'})</label>
                       <input
                         type="number"
-                        max="100"
-                        step="0.1"
-                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal py-2.5 text-sm"
-                        placeholder="e.g. 5"
-                        value={formData.incentivePercentage}
-                        onChange={e => setFormData({ ...formData, incentivePercentage: e.target.value })}
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        value={formData.basicSalary}
+                        onChange={e => setFormData({ ...formData, basicSalary: e.target.value })}
                       />
                     </div>
-
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">System Role</label>
-                      <div className="flex gap-2">
-                        {['staff', 'admin'].map(r => (
-                          <button
-                            key={r}
-                            type="button"
-                            onClick={() => setFormData({ ...formData, role: r })}
-                            className={`flex-1 py-2 px-3 rounded-lg border transition-all font-bold uppercase text-[9px] tracking-widest ${formData.role === r ? 'border-primary bg-primary-light text-primary-dark' : 'border-slate-100 text-slate-400 hover:border-slate-200'}`}
-                          >
-                            {r}
-                          </button>
-                        ))}
-                      </div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                        {companyProfile?.country === 'India' ? 'Labour Rule (ESI/PF)' :
+                          companyProfile?.country === 'UAE' ? 'Labour Rule (WPS/MOL)' : 'Labour Rule'}
+                      </label>
+                      <input
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        placeholder="e.g. Category A"
+                        value={formData.labourRule}
+                        onChange={e => setFormData({ ...formData, labourRule: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                        {companyProfile?.country === 'India' ? 'Aadhar / PAN' :
+                          companyProfile?.country === 'UAE' ? 'Emirates ID / Labor Card' : 'National ID'}
+                      </label>
+                      <input
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        placeholder="ID Number"
+                        value={formData.nationalId}
+                        onChange={e => setFormData({ ...formData, nationalId: e.target.value })}
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Access Tab */}
-              <div className={activeTab === 'access' ? 'block' : 'hidden'}>
-                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <div className="w-1 h-3 bg-primary rounded-full"></div>
-                    Module Permissions
-                  </label>
-
-                  {/* Dashboard separate */}
-                  <div className="mb-3">
-                    <label className="relative inline-flex items-center cursor-pointer p-2.5 rounded-lg border transition-all hover:bg-slate-50 border-slate-200">
+                {/* Bank Details Tab */}
+                <div className={activeTab === 'bank' ? 'block' : 'hidden'}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Bank Name</label>
                       <input
-                        type="checkbox"
-                        checked={formData.allowedModules?.includes(dashboardModule)}
-                        onChange={() => toggleModule(dashboardModule)}
-                        className="sr-only peer"
+                        type="text"
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        value={formData.bankName}
+                        onChange={e => setFormData({ ...formData, bankName: e.target.value })}
+                        placeholder="e.g. HDFC Bank"
                       />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                      <span className={`ml-3 text-[10px] font-bold tracking-tight uppercase ${formData.allowedModules?.includes(dashboardModule) ? 'text-primary-dark' : 'text-slate-500'}`}>DASHBOARD</span>
-                    </label>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {MENU_STRUCTURE.map(group => (
-                      <div key={group.title} className="bg-white p-2.5 rounded-lg border border-slate-200">
-                        <div className="flex items-center gap-2 mb-1.5 pb-1.5 border-b border-slate-100">
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={formData.allowedModules?.includes(group.title)}
-                              onChange={() => toggleModule(group.title)}
-                              className="sr-only peer"
-                            />
-                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                          </label>
-                          <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
-                        </div>
-
-                        <div className="space-y-0.5">
-                          {group.items.map(item => {
-                            const permissionKey = `${group.title}:${item.name}`;
-                            const isParentSelected = formData.allowedModules?.includes(group.title);
-                            const isSelected = formData.allowedModules?.includes(permissionKey);
-
-                            return (
-                              <label key={permissionKey} className={`flex items-center gap-2 cursor-pointer px-1 py-0.5 rounded hover:bg-slate-50 transition-colors ${isParentSelected ? 'opacity-50' : ''}`}>
-                                <div className="relative inline-flex items-center cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected || isParentSelected}
-                                    onChange={() => toggleModule(permissionKey)}
-                                    disabled={isParentSelected}
-                                    className="sr-only peer"
-                                  />
-                                  <div className="w-7 h-4 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                                </div>
-                                <span className={`text-[11px] ${isSelected || isParentSelected ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>{item.name}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Account Number</label>
+                      <input
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5 font-mono"
+                        placeholder="1234567890"
+                        value={formData.accountNumber}
+                        onChange={e => setFormData({ ...formData, accountNumber: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">IFSC / Routing Code</label>
+                      <input
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5 uppercase font-mono"
+                        placeholder="HDFC0001234"
+                        value={formData.ifscCode}
+                        onChange={e => setFormData({ ...formData, ifscCode: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Bank Branch</label>
+                      <input
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        placeholder="Branch Name"
+                        value={formData.branchName}
+                        onChange={e => setFormData({ ...formData, branchName: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Salary & Labour Tab */}
-              <div className={activeTab === 'salary' ? 'block' : 'hidden'}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex justify-between">
-                      Employee Code
-                      <div className="flex items-center gap-1 cursor-pointer select-none" onClick={() => setFormData({ ...formData, autoCode: !formData.autoCode, employeeCode: !formData.autoCode ? '' : formData.employeeCode })}>
-                        <div className={`w-3 h-3 rounded-full border-2 ${formData.autoCode ? 'bg-primary border-primary' : 'bg-white border-slate-300'}`}></div>
-                        <span className="text-[9px]">AUTO</span>
-                      </div>
-                    </label>
-                    <input
-                      disabled={formData.autoCode}
-                      className={`input w-full transition-all font-normal text-sm py-2.5 ${formData.autoCode ? 'bg-slate-100 text-slate-400 italic' : 'bg-slate-50 border-slate-100'}`}
-                      placeholder={formData.autoCode ? "Auto-generated" : "Custom Code"}
-                      value={formData.employeeCode}
-                      onChange={e => setFormData({ ...formData, employeeCode: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Designation</label>
-                    <select
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
-                      value={formData.designation}
-                      onChange={e => setFormData({ ...formData, designation: e.target.value })}
-                    >
-                      <option value="">Select Designation</option>
-                      {designations.map(d => (
-                        <option key={d.id} value={d.id}>{d.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Department</label>
-                    <select
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
-                      value={formData.department}
-                      onChange={e => setFormData({ ...formData, department: e.target.value })}
-                    >
-                      <option value="">Select Department</option>
-                      {departments.map(d => (
-                        <option key={d.id} value={d.id}>{d.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Joining Date</label>
-                    <input
-                      type="date"
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
-                      value={formData.joiningDate}
-                      onChange={e => setFormData({ ...formData, joiningDate: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Basic Salary ({companyProfile?.currencySymbol || '₹'})</label>
-                    <input
-                      type="number"
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
-                      value={formData.basicSalary}
-                      onChange={e => setFormData({ ...formData, basicSalary: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                      {companyProfile?.country === 'India' ? 'Labour Rule (ESI/PF)' :
-                        companyProfile?.country === 'UAE' ? 'Labour Rule (WPS/MOL)' : 'Labour Rule'}
-                    </label>
-                    <input
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
-                      placeholder="e.g. Category A"
-                      value={formData.labourRule}
-                      onChange={e => setFormData({ ...formData, labourRule: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                      {companyProfile?.country === 'India' ? 'Aadhar / PAN' :
-                        companyProfile?.country === 'UAE' ? 'Emirates ID / Labor Card' : 'National ID'}
-                    </label>
-                    <input
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
-                      placeholder="ID Number"
-                      value={formData.nationalId}
-                      onChange={e => setFormData({ ...formData, nationalId: e.target.value })}
-                    />
-                  </div>
+                <div className="flex justify-end gap-3 mt-8">
+                  <button type="button" className="px-4 py-2 font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase text-[10px]" onClick={() => { setShowModal(false); setEditingId(null); }}>Cancel</button>
+                  <button type="submit" className="bg-slate-900 text-white font-bold px-8 py-2.5 rounded-lg hover:bg-black hover:shadow-lg transition-all active:scale-95 text-xs uppercase tracking-widest">
+                    {editingId ? 'Save Changes' : 'Create Account'}
+                  </button>
                 </div>
-              </div>
+              </form>
+            </div>
+          </div >
+        )
+      }
 
-              {/* Bank Details Tab */}
-              <div className={activeTab === 'bank' ? 'block' : 'hidden'}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Bank Name</label>
-                    <input
-                      type="text"
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
-                      value={formData.bankName}
-                      onChange={e => setFormData({ ...formData, bankName: e.target.value })}
-                      placeholder="e.g. HDFC Bank"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Account Number</label>
-                    <input
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5 font-mono"
-                      placeholder="1234567890"
-                      value={formData.accountNumber}
-                      onChange={e => setFormData({ ...formData, accountNumber: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">IFSC / Routing Code</label>
-                    <input
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5 uppercase font-mono"
-                      placeholder="HDFC0001234"
-                      value={formData.ifscCode}
-                      onChange={e => setFormData({ ...formData, ifscCode: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Bank Branch</label>
-                    <input
-                      className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
-                      placeholder="Branch Name"
-                      value={formData.branchName}
-                      onChange={e => setFormData({ ...formData, branchName: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-8">
-                <button type="button" className="px-4 py-2 font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase text-[10px]" onClick={() => { setShowModal(false); setEditingId(null); }}>Cancel</button>
-                <button type="submit" className="bg-slate-900 text-white font-bold px-8 py-2.5 rounded-lg hover:bg-black hover:shadow-lg transition-all active:scale-95 text-xs uppercase tracking-widest">
-                  {editingId ? 'Save Changes' : 'Create Account'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-    </div>
+    </div >
   );
 }

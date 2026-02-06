@@ -60,7 +60,12 @@ exports.login = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { username },
-      include: { branch: true }
+      include: {
+        branch: true,
+        terminals: {
+          select: { id: true, terminalCode: true, name: true }
+        }
+      }
     });
 
     if (!user) {
@@ -71,6 +76,75 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    // Terminal Access Control (Skip for Admin to prevent lockout)
+    if (user.role !== 'admin') {
+      const terminalLockSetting = await prisma.systemSetting.findUnique({
+        where: { key: 'TERMINAL_LOCK' }
+      });
+
+      const isTerminalLockActive = terminalLockSetting && terminalLockSetting.value === 'true';
+      const { terminalCode } = req.body;
+
+      if (isTerminalLockActive && !terminalCode) {
+        return res.status(403).json({ message: 'STRICT_TERMINAL_LOCK: This system requires terminal authorization. Please register this device.' });
+      }
+
+      if (terminalCode) {
+        const terminal = await prisma.terminal.findUnique({
+          where: { terminalCode },
+          include: { users: { select: { id: true, username: true } } }
+        });
+
+        // Strict User-Terminal Mapping Check
+        if (terminal) {
+          // Rule 1: If THIS terminal is restricted to specific users, check if current user is one of them
+          if (terminal.users && terminal.users.length > 0) {
+            const isUserAuthorizedOnThisTerminal = terminal.users.some(u => u.id === user.id);
+            if (!isUserAuthorizedOnThisTerminal) {
+              return res.status(403).json({
+                message: `ACCESS_DENIED: This terminal is restricted to specific users. Your account is not authorized on this device.`
+              });
+            }
+          }
+
+          // Rule 2: If THIS user is restricted to specific terminals, check if current terminal is one of them
+          if (user.terminals && user.terminals.length > 0) {
+            const isTerminalAuthorizedForThisUser = user.terminals.some(t => t.terminalCode === terminalCode);
+            if (!isTerminalAuthorizedForThisUser) {
+              return res.status(403).json({
+                message: `ACCESS_DENIED: Your account is restricted to specific terminals. This device (${terminal.name}) is not in your authorized list.`
+              });
+            }
+          }
+
+          if (isTerminalLockActive && !terminal.isActive) {
+            return res.status(403).json({ message: 'STRICT_TERMINAL_LOCK: This device is registered but not authorized yet. Please contact administrator.' });
+          }
+
+          // Update last used
+          await prisma.terminal.update({
+            where: { id: terminal.id },
+            data: { lastUsed: new Date(), ipAddress: req.ip }
+          });
+        } else if (isTerminalLockActive) {
+          // Device not registered at all
+          return res.status(403).json({ message: 'STRICT_TERMINAL_LOCK: This device is not registered. Please register it first.' });
+        }
+      }
+    } else if (req.body.terminalCode) {
+      // Still update last used for Admins if terminal is registered
+      const terminal = await prisma.terminal.findUnique({
+        where: { terminalCode: req.body.terminalCode }
+      });
+      if (terminal) {
+        await prisma.terminal.update({
+          where: { id: terminal.id },
+          data: { lastUsed: new Date(), ipAddress: req.ip }
+        });
+      }
+    }
+
     // Generate JWT
     const token = jwt.sign(
       { userId: user.id, username: user.username, role: user.role, branchId: user.branchId },

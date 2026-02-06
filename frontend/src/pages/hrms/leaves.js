@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function LeavesPage() {
     const [activeTab, setActiveTab] = useState('my-leaves');
@@ -106,16 +107,15 @@ function MyLeaves({ user }) {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Leave Type</label>
-                            <select required className="p-2 border rounded w-full"
-                                value={formData.leaveTypeId} onChange={e => setFormData({ ...formData, leaveTypeId: e.target.value })}
-                            >
-                                <option value="">Select Type</option>
-                                {leaveTypes.map(t => (
-                                    <option key={t.id} value={t.id}>
-                                        {t.name} ({t.isPaid ? 'Paid' : 'Unpaid'} - Limit: {t.monthlyLimit || '∞'})
-                                    </option>
-                                ))}
-                            </select>
+                            <SearchableSelect
+                                options={leaveTypes.map(t => ({
+                                    value: t.id,
+                                    label: `${t.name} (${t.isPaid ? 'Paid' : 'Unpaid'} - Limit: ${t.monthlyLimit || '∞'})`
+                                }))}
+                                value={formData.leaveTypeId}
+                                onChange={val => setFormData({ ...formData, leaveTypeId: val })}
+                                placeholder="Select Leave Type"
+                            />
                         </div>
 
                         <div className="flex items-center gap-2">

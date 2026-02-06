@@ -3,6 +3,7 @@ import api from '@/lib/api';
 import { FiPlus, FiTrash, FiSave, FiTruck, FiEye, FiRefreshCw } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function Purchase() {
   const [activeTab, setActiveTab] = useState('entry'); // 'entry' | 'history'
@@ -235,12 +236,12 @@ export default function Purchase() {
           <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Select Supplier</label>
-              <select className="input w-full p-2 border rounded-lg" value={supplier} onChange={e => setSupplier(e.target.value)}>
-                <option value="">-- Choose Supplier --</option>
-                {suppliers.map(s => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
+              <SearchableSelect
+                options={suppliers.map(s => ({ value: s.id, label: s.name }))}
+                value={supplier}
+                onChange={val => setSupplier(val)}
+                placeholder="-- Choose Supplier --"
+              />
               <div className="text-xs text-slate-400 mt-1">
                 Supplier not in list? <a href="/suppliers" className="text-primary hover:underline">Add new supplier</a>
               </div>
@@ -250,16 +251,12 @@ export default function Purchase() {
             {user?.role === 'admin' && !user?.branchId && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Select Branch</label>
-                <select
-                  className="input w-full p-2 border rounded-lg"
+                <SearchableSelect
+                  options={branches.map(b => ({ value: b.id, label: b.name }))}
                   value={selectedBranch}
-                  onChange={e => setSelectedBranch(e.target.value)}
-                >
-                  <option value="">-- Choose Branch --</option>
-                  {branches.map(b => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
-                  ))}
-                </select>
+                  onChange={val => setSelectedBranch(val)}
+                  placeholder="-- Choose Branch --"
+                />
                 <div className="text-xs text-slate-400 mt-1">Req. for Inventory</div>
               </div>
             )}
@@ -292,7 +289,7 @@ export default function Purchase() {
             </div>
           </div>
 
-          <div className="table-container mb-6 overflow-x-auto">
+          <div className="table-container mb-6 overflow-x-auto min-h-[400px] pb-32">
             <table className="table-modern w-full">
               <thead>
                 <tr className="bg-slate-50 text-left">
@@ -306,18 +303,18 @@ export default function Purchase() {
               </thead>
               <tbody>
                 {rows.map((row, index) => (
-                  <tr key={index} className="border-b border-slate-100 last:border-0">
-                    <td className="p-2">
-                      <select
-                        className="input w-full p-2 border rounded"
+                  <tr key={index} className="border-b border-slate-100 last:border-0 relative focus-within:z-50">
+                    <td className="p-2 relative">
+                      <SearchableSelect
+                        options={products.map(p => ({
+                          value: p.id,
+                          label: `${p.name} ${p.barcode ? `[${p.barcode}]` : ''} (Stock: ${p.stock})`
+                        }))}
                         value={row.productId}
-                        onChange={e => handleRowChange(index, 'productId', e.target.value)}
-                      >
-                        <option value="">Select Product...</option>
-                        {products.map(p => (
-                          <option key={p.id} value={p.id}>{p.name} (Stock: {p.stock})</option>
-                        ))}
-                      </select>
+                        onChange={val => handleRowChange(index, 'productId', val)}
+                        placeholder="Select Product..."
+                        className="min-w-[300px]"
+                      />
                     </td>
                     <td className="p-2">
                       <input type="number" min="1" className="input w-full p-2 border rounded" value={row.quantity} onChange={e => handleRowChange(index, 'quantity', e.target.value)} />

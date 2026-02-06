@@ -5,6 +5,7 @@ import { FiBook, FiPlus, FiTrash2, FiSave, FiList, FiEdit2, FiCalendar, FiPrinte
 import ConfirmationModal from '@/components/ConfirmationModal';
 import ProfessionalModal from '@/components/ProfessionalModal';
 import VoucherPrint from '@/components/VoucherPrint';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function JournalEntry() {
     const [ledgers, setLedgers] = useState([]);
@@ -298,7 +299,7 @@ export default function JournalEntry() {
                             </div>
 
                             {/* Entry Table Grid */}
-                            <div className="border border-primary-light rounded-lg overflow-hidden mb-6 shadow-sm">
+                            <div className="border border-primary-light rounded-lg mb-6 shadow-sm">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="bg-primary-dark">
@@ -316,17 +317,13 @@ export default function JournalEntry() {
                                                 <tr key={idx} className="group hover:bg-slate-50/50 transition-colors">
                                                     <td className="px-3 py-2">
                                                         <div className="flex flex-col gap-1">
-                                                            <select
-                                                                required
-                                                                className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary rounded-lg text-sm font-semibold p-2 transition-all outline-none"
+                                                            <SearchableSelect
+                                                                options={ledgers.map(l => ({ value: l.id, label: `${l.name} (${l.group?.name})` }))}
                                                                 value={entry.ledgerId}
-                                                                onChange={e => updateEntry(idx, 'ledgerId', e.target.value)}
-                                                            >
-                                                                <option value="">Select Account...</option>
-                                                                {ledgers.map(l => (
-                                                                    <option key={l.id} value={l.id}>{l.name} ({l.group?.name})</option>
-                                                                ))}
-                                                            </select>
+                                                                onChange={val => updateEntry(idx, 'ledgerId', val)}
+                                                                placeholder="Select Account..."
+                                                                className="h-10"
+                                                            />
                                                             {selectedLedger && (
                                                                 <div className="flex items-center gap-2 pl-2">
                                                                     <div className={`w-1.5 h-1.5 rounded-full ${selectedLedger.currentBalance >= 0 ? 'bg-primary' : 'bg-red-500'}`} />

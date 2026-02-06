@@ -15,6 +15,9 @@ exports.getUsers = async (req, res) => {
         allowedModules: true,
         incentivePercentage: true,
         createdAt: true,
+        terminals: {
+          select: { id: true, name: true, terminalCode: true }
+        },
         employeeProfile: {
           include: {
             designation: true,
@@ -32,10 +35,10 @@ exports.getUsers = async (req, res) => {
 
 // Create new user
 exports.createUser = async (req, res) => {
-  const { 
+  const {
     username, password, name, role, allowedModules, branchId, incentivePercentage,
     designation, department, joiningDate, basicSalary, labourRule, nationalId,
-    employeeCode, bankName, accountNumber, ifscCode, branchName
+    employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds
   } = req.body;
   try {
     const existingUser = await prisma.user.findUnique({ where: { username } });
@@ -52,7 +55,7 @@ exports.createUser = async (req, res) => {
         where: { employeeCode: { startsWith: 'EMP' } },
         orderBy: { employeeCode: 'desc' }
       });
-      
+
       if (lastEmployee && lastEmployee.employeeCode) {
         const lastNum = parseInt(lastEmployee.employeeCode.replace('EMP', ''));
         finalEmployeeCode = `EMP${(lastNum + 1).toString().padStart(3, '0')}`;
@@ -60,7 +63,7 @@ exports.createUser = async (req, res) => {
         finalEmployeeCode = 'EMP001';
       }
     }
-    
+
     // Handle designation - either use existing ID or create new
     let designationId = null;
     if (designation) {
@@ -76,7 +79,7 @@ exports.createUser = async (req, res) => {
         designationId = newDesignation.id;
       }
     }
-    
+
     // Handle department - either use existing ID or create new
     let departmentId = null;
     if (department) {
@@ -92,7 +95,7 @@ exports.createUser = async (req, res) => {
         departmentId = newDepartment.id;
       }
     }
-    
+
     const user = await prisma.user.create({
       data: {
         username,
@@ -102,6 +105,7 @@ exports.createUser = async (req, res) => {
         allowedModules: allowedModules || [],
         branchId: branchId ? parseInt(branchId) : null,
         incentivePercentage: incentivePercentage ? parseFloat(incentivePercentage) : 0,
+        terminals: terminalIds && Array.isArray(terminalIds) ? { connect: terminalIds.map(id => ({ id: parseInt(id) })) } : undefined,
         employeeProfile: {
           create: {
             designationId,
@@ -141,7 +145,7 @@ exports.deleteUser = async (req, res) => {
 exports.updatePassword = async (req, res) => {
   const { id } = req.params;
   const { newPassword } = req.body;
-  
+
   if (!newPassword || newPassword.length < 6) {
     return res.status(400).json({ message: 'Password must be at least 6 characters' });
   }
@@ -161,12 +165,12 @@ exports.updatePassword = async (req, res) => {
 // Update user details (Role/Modules)
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { 
+  const {
     name, role, allowedModules, branchId, incentivePercentage,
     designation, department, joiningDate, basicSalary, labourRule, nationalId,
-    employeeCode, bankName, accountNumber, ifscCode, branchName
+    employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds
   } = req.body;
-  
+
   try {
     // Handle designation - either use existing ID or create new
     let designationId = null;
@@ -182,7 +186,7 @@ exports.updateUser = async (req, res) => {
         designationId = newDesignation.id;
       }
     }
-    
+
     // Handle department - either use existing ID or create new
     let departmentId = null;
     if (department) {
@@ -197,7 +201,7 @@ exports.updateUser = async (req, res) => {
         departmentId = newDepartment.id;
       }
     }
-    
+
     const user = await prisma.user.update({
       where: { id: parseInt(id) },
       data: {
@@ -206,6 +210,9 @@ exports.updateUser = async (req, res) => {
         allowedModules: allowedModules,
         branchId: branchId ? parseInt(branchId) : null,
         incentivePercentage: incentivePercentage ? parseFloat(incentivePercentage) : 0,
+        terminals: {
+          set: terminalIds && Array.isArray(terminalIds) ? terminalIds.map(id => ({ id: parseInt(id) })) : []
+        },
         employeeProfile: {
           upsert: {
             create: {

@@ -48,19 +48,31 @@ export default function CreditManagement() {
         }
     };
 
-    const sendWhatsApp = (phone, name, amount) => {
+    const sendWhatsApp = async (phone, name, amount, pendingInvoices) => {
         if (!phone) {
             toast.error("Phone number not available");
             return;
         }
-        // Remove non-digits
-        const cleanPhone = phone.replace(/\D/g, '');
-        // Default to country code or assume valid
-        const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
-        const message = `Hello ${name}, your outstanding balance is ₹${amount}. Please pay at your earliest convenience. Thank you.`;
-        const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
+        const wsSettings = await api.get('/whatsapp/settings').then(r => r.data).catch(() => null);
+        if (!wsSettings || !wsSettings.isActive || !wsSettings.apiKey) {
+            return toast.error("WhatsApp integration is not configured or is inactive");
+        }
+
+        let msg = wsSettings.creditTemplate || 'Hello [[customer_name]], your outstanding balance is [[total_amount]]. Please pay at your earliest convenience. Thank you.';
+
+        msg = msg.replace(/\[\[customer_name\]\]/g, name)
+            .replace(/\[\[total_amount\]\]/g, `₹${parseFloat(amount).toFixed(2)}`)
+            .replace(/\[\[pending_invoices\]\]/g, pendingInvoices || 'N/A')
+            .replace(/\[\[company_name\]\]/g, companyProfile?.companyName || 'Our Store');
+
+        try {
+            await api.post('/whatsapp/send', { mobile: phone, message: msg });
+            toast.success('WhatsApp Reminder Sent!');
+        } catch (wsErr) {
+            console.error('WhatsApp failed:', wsErr);
+            toast.error('Failed to send WhatsApp');
+        }
     };
 
     const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
@@ -122,7 +134,7 @@ export default function CreditManagement() {
                                             <FiEye size={18} />
                                         </button>
                                         <button
-                                            onClick={() => sendWhatsApp(c.phone, c.name, c.totalDebt)}
+                                            onClick={() => sendWhatsApp(c.phone, c.name, c.totalDebt, c.pendingInvoices)}
                                             className="flex items-center gap-2 bg-primary text-white px-3 py-2 rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 text-xs"
                                         >
                                             <FiMessageCircle size={16} /> WhatsApp
@@ -178,21 +190,23 @@ export default function CreditManagement() {
                                 <span className="text-xs font-bold text-slate-400 uppercase">Total Outstanding</span>
                                 <p className="text-2xl font-black text-slate-800">₹{selectedCustomer.totalDebt}</p>
                             </div>
-                            <button
-                                onClick={() => sendWhatsApp(selectedCustomer.phone, selectedCustomer.name, selectedCustomer.totalDebt)}
-                                className="bg-primary text-white px-4 py-2 rounded-xl font-bold hover:bg-primary-dark flex items-center gap-2 text-sm"
-                            >
-                                <FiMessageCircle /> WhatsApp
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setSettleForm({ amount: selectedCustomer.totalDebt, method: 'Cash', notes: '' });
-                                    setShowSettleModal(true);
-                                }}
-                                className="bg-slate-900 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-800 shadow-lg text-sm"
-                            >
-                                Settle Payment
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => sendWhatsApp(selectedCustomer.phone, selectedCustomer.name, selectedCustomer.totalDebt, selectedCustomer.sales.length)}
+                                    className="bg-primary text-white px-4 py-2 rounded-xl font-bold hover:bg-primary-dark flex items-center gap-2 text-sm"
+                                >
+                                    <FiMessageCircle /> WhatsApp
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setSettleForm({ amount: selectedCustomer.totalDebt, method: 'Cash', notes: '' });
+                                        setShowSettleModal(true);
+                                    }}
+                                    className="bg-slate-900 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-800 shadow-lg text-sm"
+                                >
+                                    Settle Payment
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

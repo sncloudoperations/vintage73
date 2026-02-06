@@ -1,9 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const accountingController = require('../controllers/accountingController');
+const postingSetupController = require('../controllers/postingSetupController');
 const accountingReportsController = require('../controllers/accountingReportsController');
 const authMiddleware = require('../middleware/authMiddleware');
 const checkFinancialYear = require('../middleware/checkFinancialYear');
+
+// ==================== POSTING SETUP ====================
+console.log('Registering Posting Setup Routes...');
+router.get('/posting-setup/metadata', postingSetupController.getSchemaMetadata);
+router.get('/posting-setup', postingSetupController.getAllPostings);
+router.post('/posting-setup/bulk', postingSetupController.bulkUpsertPostings);
+router.post('/posting-setup', postingSetupController.upsertPosting);
+router.delete('/posting-setup/:id', postingSetupController.deletePosting);
 
 // ==================== ACCOUNT GROUPS ====================
 router.get('/groups', accountingController.getAccountGroups);
@@ -28,6 +37,7 @@ router.post('/vouchers/:id/cancel', authMiddleware, checkFinancialYear, accounti
 
 // ==================== REPORTS ====================
 router.get('/reports/trial-balance', accountingReportsController.getTrialBalance);
+router.post('/bulk-post', authMiddleware, accountingController.bulkPostTransactions);
 router.get('/reports/profit-loss', accountingReportsController.getProfitLoss);
 router.get('/reports/balance-sheet', accountingReportsController.getBalanceSheet);
 router.get('/reports/ledger-statement', accountingReportsController.getLedgerStatement);

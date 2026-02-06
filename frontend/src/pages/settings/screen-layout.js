@@ -56,8 +56,8 @@ export default function ScreenLayoutSettings() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Allow submit if file selected OR just changing settings
-    if (!selectedFile && !currentImage && !showLogoOnly) return;
+    // Allow submit as long as we have a current image or are just changing the toggle
+    // Removing the strict early return that required an image to be present
 
     setLoading(true);
     const formData = new FormData();

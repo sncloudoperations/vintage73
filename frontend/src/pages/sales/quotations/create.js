@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Layout from '@/components/Layout';
 import api from '@/lib/api';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
@@ -70,11 +69,13 @@ export default function CreateQuotation() {
         const newItem = {
             productId: product.id,
             name: product.name,
+            hsnCode: product.hsnCode || '',
             quantity: 1,
             unitPrice: basePrice,
             taxRate: taxRate,
             taxAmount: (basePrice * taxRate / 100),
             discountAmount: 0,
+            discountPercent: 0,
             total: basePrice + (basePrice * taxRate / 100)
         };
 
@@ -88,13 +89,23 @@ export default function CreateQuotation() {
 
     const updateItem = (index, field, value) => {
         const newItems = [...formData.items];
-        const item = { ...newItems[index], [field]: Number(value) };
+        const item = { ...newItems[index] };
+
+        if (field === 'discountPercent') {
+            item.discountPercent = parseFloat(value) || 0;
+            item.discountAmount = (item.unitPrice * item.discountPercent) / 100;
+        } else if (field === 'discountAmount') {
+            item.discountAmount = parseFloat(value) || 0;
+            item.discountPercent = (item.discountAmount / item.unitPrice) * 100;
+        } else {
+            item[field] = Number(value);
+        }
 
         // Recalculate
         const baseTotal = item.quantity * item.unitPrice;
         const tax = baseTotal * (item.taxRate / 100);
         item.taxAmount = tax;
-        item.total = baseTotal + tax - item.discountAmount;
+        item.total = baseTotal + tax - (item.discountAmount * item.quantity);
 
         newItems[index] = item;
         setFormData({ ...formData, items: newItems });
@@ -125,8 +136,26 @@ export default function CreateQuotation() {
                 return;
             }
 
+            // Clean data before sending (remove hsnCode if not in schema, though extra fields are usually ignored or we can keep it if backend handles it)
+            // Backend Prisma create will fail if we send extra fields not in schema? 
+            // Prisma usually complains about unknown fields. We should sanitize `items` before sending.
+
+            const payloadItems = formData.items.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                taxRate: item.taxRate,
+                taxAmount: item.taxAmount,
+                discountAmount: item.discountAmount,
+                discountPercent: item.discountPercent,
+                total: item.total
+            }));
+
             await api.post('/quotations', {
                 ...formData,
+                customerId: parseInt(formData.customerId),
+                items: payloadItems,
+                taxType: 'INTRA', // Default for new quotations, can be refined later if needed
                 branchId
             });
             toast.success('Quotation created!');
@@ -139,7 +168,7 @@ export default function CreateQuotation() {
     };
 
     return (
-        <Layout>
+        <>
             <div className="p-6 max-w-5xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">New Quotation</h1>
@@ -208,7 +237,7 @@ export default function CreateQuotation() {
                                     onClick={() => addItem(prod)}
                                 >
                                     <span className="font-medium">{prod.name}</span>
-                                    <span className="text-gray-500">₹{prod.price} | Stock: {prod.stock || 0}</span>
+                                    <span className="text-gray-500">HSN: {prod.hsnCode} | ₹{prod.price}</span>
                                 </div>
                             ))}
                         </div>
@@ -220,8 +249,10 @@ export default function CreateQuotation() {
                             <thead>
                                 <tr className="border-b border-gray-200 text-sm font-medium text-gray-500">
                                     <th className="pb-3">Product</th>
+                                    <th className="pb-3 w-20">HSN</th>
                                     <th className="pb-3 w-24">Qty</th>
                                     <th className="pb-3 w-32">Price</th>
+                                    <th className="pb-3 w-32">Discount</th>
                                     <th className="pb-3 w-20">Tax %</th>
                                     <th className="pb-3 w-32">Total</th>
                                     <th className="pb-3 w-10"></th>
@@ -231,6 +262,7 @@ export default function CreateQuotation() {
                                 {formData.items.map((item, index) => (
                                     <tr key={index}>
                                         <td className="py-3 pr-4">{item.name}</td>
+                                        <td className="py-3 text-sm text-gray-500">{item.hsnCode}</td>
                                         <td className="py-3">
                                             <input
                                                 type="number"
@@ -248,6 +280,30 @@ export default function CreateQuotation() {
                                                 onChange={e => updateItem(index, 'unitPrice', e.target.value)}
                                             />
                                         </td>
+                                        <td className="py-3">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-1">
+                                                    <input
+                                                        type="number"
+                                                        className="input w-16 px-1 py-1 text-xs"
+                                                        placeholder="%"
+                                                        value={item.discountPercent}
+                                                        onChange={e => updateItem(index, 'discountPercent', e.target.value)}
+                                                    />
+                                                    <span className="text-[10px] text-gray-400">%</span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <input
+                                                        type="number"
+                                                        className="input w-16 px-1 py-1 text-xs"
+                                                        placeholder="Amt"
+                                                        value={item.discountAmount}
+                                                        onChange={e => updateItem(index, 'discountAmount', e.target.value)}
+                                                    />
+                                                    <span className="text-[10px] text-gray-400">₹</span>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td className="py-3 text-sm text-gray-600">{item.taxRate}%</td>
                                         <td className="py-3 font-bold">₹{item.total.toFixed(2)}</td>
                                         <td className="py-3 text-right">
@@ -260,7 +316,7 @@ export default function CreateQuotation() {
                             </tbody>
                             <tfoot>
                                 <tr className="border-t-2 border-gray-100">
-                                    <td colSpan="4" className="text-right py-4 font-bold text-gray-600">Grand Total:</td>
+                                    <td colSpan="5" className="text-right py-4 font-bold text-gray-600">Grand Total:</td>
                                     <td colSpan="2" className="py-4 text-xl font-bold text-blue-600">
                                         ₹{calculateGrandTotal().toFixed(2)}
                                     </td>
@@ -281,6 +337,7 @@ export default function CreateQuotation() {
                     />
                 </div>
             </div>
-        </Layout>
+        </>
     );
 }
+

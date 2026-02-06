@@ -1,9 +1,10 @@
-// Server Entry Point
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const http = require("http");
+const path = require('path');
+const { initSocket } = require("./utils/socket");
 const authRoutes = require('./routes/authRoutes');
-// const productRoutes = require('./routes/productRoutes');
 
 dotenv.config();
 
@@ -12,8 +13,10 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, '../frontend/public/uploads')));
+
+const server = http.createServer(app);
+initSocket(server);
 
 // Routes
 app.get("/", (req, res) => {
@@ -48,7 +51,12 @@ app.use('/api/banks', require('./routes/bankRoutes'));
 app.use('/api/financial-years', require('./routes/financialYearRoutes'));
 app.use('/api/quotations', require('./routes/quotationRoutes'));
 app.use('/api/reports/gst', require('./routes/gstReportRoutes'));
+app.use('/api/whatsapp', require('./routes/whatsappRoutes'));
+app.use('/api/terminals', require('./routes/terminalRoutes'));
+app.use('/api/accounting/reconciliation', require('./routes/bankReconciliationRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

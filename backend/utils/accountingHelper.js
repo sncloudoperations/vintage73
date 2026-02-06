@@ -1,4 +1,5 @@
 const prisma = require('./prismaClient');
+const { evaluateFormula } = require('./accountingUtils');
 
 /**
  * Ensure a ledger exists for a given name and group.
@@ -9,7 +10,7 @@ const prisma = require('./prismaClient');
  */
 async function ensureLedger(tx, name, groupName) {
   const client = tx || prisma;
-  
+
   // 1. Find the group first
   const group = await client.accountGroup.findFirst({
     where: { name: groupName }
@@ -48,7 +49,7 @@ async function postVoucher(tx, params, entries) {
   // Generate Voucher Number (Simple timestamp/random based for now to avoid concurrency issues in helper, 
   // or re-use the logic from accountingController if extracted. 
   // Let's use a simpler unique string here or copying logic.)
-  
+
   // Quick Voucher Number Logic
   const prefix = type.substring(0, 3).toUpperCase();
   const timestamp = Date.now().toString().slice(-8); // Short timestamp
@@ -59,7 +60,7 @@ async function postVoucher(tx, params, entries) {
   const totalDebit = entries
     .filter(e => e.type === 'DEBIT')
     .reduce((sum, e) => sum + e.amount, 0);
-  
+
   const totalCredit = entries
     .filter(e => e.type === 'CREDIT')
     .reduce((sum, e) => sum + e.amount, 0);
@@ -93,7 +94,115 @@ async function postVoucher(tx, params, entries) {
   return voucher;
 }
 
+/**
+ * Get configured ledger ID for a specific transaction role.
+ * Falls back to hardcoded defaults if not configured in TransactionPosting.
+ * @param {Object} tx - Prisma Transaction Client
+ * @param {string} transactionType - e.g. 'SALES'
+ * @param {string} role - e.g. 'MAIN_ACCOUNT'
+ * @param {string} defaultLedgerName - Fallback name
+ * @param {string} defaultGroupName - Fallback group
+ * @returns {Promise<Object>} - Ledger object
+ */
+async function getLedgerByRole(tx, transactionType, role, defaultLedgerName, defaultGroupName) {
+  const client = tx || prisma;
+
+  const setup = await client.transactionPosting.findUnique({
+    where: {
+      transactionType_role: {
+        transactionType,
+        role
+      }
+    },
+    include: { ledger: true }
+  });
+
+  if (setup && setup.ledger) {
+    // Return setup with ledger attached
+    return {
+      id: setup.ledger.id,
+      name: setup.ledger.name,
+      ledger: setup.ledger,
+      targetTable: setup.targetTable,
+      postingMethod: setup.postingMethod,
+      amountField: setup.amountField,
+      customFormula: setup.customFormula
+    };
+  }
+
+  // Fallback to ensuring the default ledger exists
+  const ledger = await ensureLedger(tx, defaultLedgerName, defaultGroupName);
+  return {
+    id: ledger.id,
+    name: ledger.name,
+    ledger: ledger,
+    postingMethod: 'SUM',
+    amountField: null,
+    customFormula: null
+  };
+}
+
+// evaluateFormula moved to accountingUtils.js to break circular dependency
+
+const { postTransaction } = require('../services/dynamicPostingService');
+
+/**
+ * Centralized logic for Sale posting.
+ */
+async function processSalePosting(tx, sale, userId) {
+  const { invoiceNumber, grandTotal, finalPaidAmount, paymentMethod, saleDate } = sale;
+
+  // 1. Dynamic Posting for the Sale itself (Ledger Setup handles Dr/Cr for Customers, Sales, Taxes, etc.)
+  await postTransaction(tx, 'SALES', sale, userId, invoiceNumber, `Sales Invoice #${invoiceNumber}`);
+
+  // 2. Handle Receipt if paid (Optional: this could also be a dynamic 'PAYMENT' posting rule)
+  if (finalPaidAmount > 0) {
+    const payMethod = paymentMethod || 'Cash';
+    let role = 'CASH';
+    let defaultLedger = 'Cash';
+    let defaultGroup = 'Cash-in-Hand';
+
+    if (payMethod.toLowerCase().includes('online') || payMethod.toLowerCase().includes('bank') || payMethod.toLowerCase().includes('card')) {
+      role = 'BANK';
+      defaultLedger = 'Bank Account';
+      defaultGroup = 'Bank Accounts';
+    }
+
+    const assetLedger = await getLedgerByRole(tx, 'PAYMENT', role, defaultLedger, defaultGroup);
+
+    // We can use postTransaction here too if we want it setup driven
+    // For now, let's keep the receipt simple or use the service with 'PAYMENT' type
+    const customerLedger = await ensureLedger(tx, sale.customer ? sale.customer.name : 'Walk-in Customer', 'Sundry Debtors');
+
+    await postVoucher(tx, {
+      type: 'RECEIPT',
+      date: saleDate ? new Date(saleDate) : new Date(),
+      amount: finalPaidAmount,
+      narration: `Payment for #${invoiceNumber}`,
+      reference: invoiceNumber,
+      createdBy: userId
+    }, [
+      { ledgerId: assetLedger.id, type: 'DEBIT', amount: finalPaidAmount },
+      { ledgerId: customerLedger.id, type: 'CREDIT', amount: finalPaidAmount }
+    ]);
+  }
+}
+
+/**
+ * Centralized logic for Purchase posting.
+ */
+async function processPurchasePosting(tx, purchase, userId) {
+  const reference = purchase.invoiceNumber || `PUR-${purchase.id}`;
+
+  // Dynamic Posting based on setup
+  await postTransaction(tx, 'PURCHASE', purchase, userId, reference, `Purchase Bill #${reference}`);
+}
+
 module.exports = {
   ensureLedger,
-  postVoucher
+  postVoucher,
+  getLedgerByRole,
+  evaluateFormula,
+  processSalePosting,
+  processPurchasePosting
 };

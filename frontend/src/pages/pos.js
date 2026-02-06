@@ -4,6 +4,8 @@ import api from '@/lib/api';
 import { FiSearch, FiUser, FiX, FiPlus, FiTrash2, FiCreditCard, FiMonitor, FiShoppingCart, FiClock, FiCalendar, FiEdit2 } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
+import { getTerminalId, checkTerminalAccess } from '@/lib/terminal';
+import SearchableSelect from '@/components/SearchableSelect';
 import DynamicInvoice from '@/components/DynamicInvoice';
 
 export default function POS() {
@@ -12,6 +14,7 @@ export default function POS() {
 
     // Parse user from localStorage safely at top level for UI use
     const [user, setUser] = useState(null);
+    const [terminal, setTerminal] = useState(null);
     const [branches, setBranches] = useState([]);
     const [selectedBranch, setSelectedBranch] = useState('');
 
@@ -22,7 +25,18 @@ export default function POS() {
             setUser(parsed);
             setCashier(parsed);
         }
+
+        // Fetch terminal details
+        checkTerminalAccess().then(res => {
+            if (res.authorized && res.terminal) {
+                setTerminal(res.terminal);
+                if (res.terminal.branchId) {
+                    setSelectedBranch(res.terminal.branchId);
+                }
+            }
+        });
     }, []);
+
 
     // Fetch branches for Admin to populate selector
     useEffect(() => {
@@ -71,6 +85,41 @@ export default function POS() {
 
     // Round Off State
     const [roundOff, setRoundOff] = useState(0);
+
+    // Restore POS state on mount or when user changes
+    useEffect(() => {
+        if (user?.id) {
+            const storedPosState = localStorage.getItem(`pos_state_${user.id}`);
+            if (storedPosState) {
+                try {
+                    const parsed = JSON.parse(storedPosState);
+                    setCart(parsed.cart || []);
+                    setCustomerId(parsed.customerId || '');
+                    setCustomerName(parsed.customerName || '');
+                    setSalesmanId(parsed.salesmanId || '');
+                    setSaleDate(parsed.saleDate || new Date().toISOString().split('T')[0]);
+                    setRoundOff(parsed.roundOff || 0);
+                } catch (e) {
+                    console.error('Failed to restore POS state:', e);
+                }
+            }
+        }
+    }, [user?.id]);
+
+    // Save POS state whenever it changes
+    useEffect(() => {
+        if (user?.id) {
+            const stateToStore = {
+                cart,
+                customerId,
+                customerName,
+                salesmanId,
+                saleDate,
+                roundOff
+            };
+            localStorage.setItem(`pos_state_${user.id}`, JSON.stringify(stateToStore));
+        }
+    }, [cart, customerId, customerName, salesmanId, saleDate, roundOff, user?.id]);
 
     // Fetch Data
     useEffect(() => {
@@ -449,6 +498,7 @@ export default function POS() {
                 })),
                 paymentMethod: finalPayments.length === 1 ? finalPayments[0].method : 'Split',
                 paidAmount: finalPaidAmount,
+                terminalId: terminal?.id,
                 roundOffAmount: roundOff,
                 payments: finalPayments,
                 salesmanId: salesmanId ? parseInt(salesmanId) : null
@@ -465,7 +515,29 @@ export default function POS() {
             setSearch('');
             setRoundOff(0);
             setSalesmanId(cashier?.id || ''); // Reset to cashier
+            localStorage.removeItem(`pos_state_${user?.id}`);
             toast.success('Sale Completed Successfully!');
+
+            // WhatsApp Integration
+            const wsSettings = await api.get('/whatsapp/settings').then(r => r.data).catch(() => null);
+            if (wsSettings && wsSettings.isActive && wsSettings.apiKey && (customerId || customerName)) {
+                const customer = customers.find(c => c.id === customerId);
+                const phone = customer?.phone || '';
+                if (phone) {
+                    let msg = wsSettings.salesTemplate || 'Hello [[customer_name]], your invoice [[bill_no]] for [[total_amount]] is ready.';
+                    msg = msg.replace(/\[\[customer_name\]\]/g, customerName || customer?.name || 'Customer')
+                        .replace(/\[\[bill_no\]\]/g, res.data.invoiceNumber)
+                        .replace(/\[\[total_amount\]\]/g, `₹${total.toFixed(2)}`)
+                        .replace(/\[\[company_name\]\]/g, companyProfile?.companyName || 'Our Store');
+
+                    try {
+                        await api.post('/whatsapp/send', { mobile: phone, message: msg });
+                        toast.info('WhatsApp Invoice Sent!');
+                    } catch (wsErr) {
+                        console.error('WhatsApp failed:', wsErr);
+                    }
+                }
+            }
         } catch (err) {
             console.error(err);
             toast.error(err.response?.data?.error || 'Checkout Failed');
@@ -476,7 +548,10 @@ export default function POS() {
         try {
 
             const { data } = await api.get('/sales', {
-                params: { branchId: user?.branchId }
+                params: {
+                    branchId: user?.branchId,
+                    terminalId: terminal?.id
+                }
             });
             setSalesHistory(data);
         } catch (err) {
@@ -581,16 +656,13 @@ export default function POS() {
                             {user?.role === 'admin' && !user.branchId ? (
                                 <div className="w-40 ml-auto">
                                     <label className="block text-[10px] text-slate-400 font-bold uppercase mb-1 text-right">Branch / Terminal</label>
-                                    <select
-                                        className="w-full text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded p-1 outline-none focus:border-primary"
+                                    <SearchableSelect
+                                        options={branches.map(b => ({ value: b.id, label: b.name }))}
                                         value={selectedBranch}
-                                        onChange={e => setSelectedBranch(e.target.value)}
-                                    >
-                                        <option value="">Select Branch</option>
-                                        {branches.map(b => (
-                                            <option key={b.id} value={b.id}>{b.name}</option>
-                                        ))}
-                                    </select>
+                                        onChange={val => setSelectedBranch(val)}
+                                        placeholder="Select Branch"
+                                        className="h-8 text-xs font-bold"
+                                    />
                                 </div>
                             ) : (
                                 <>
@@ -605,16 +677,12 @@ export default function POS() {
                     <div className="grid grid-cols-2 gap-3">
                         <div>
                             <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Salesman</label>
-                            <select
-                                className="w-full text-sm font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded p-1.5 outline-none focus:border-primary"
+                            <SearchableSelect
+                                options={availableSalesmen.map(s => ({ value: s.id, label: s.name }))}
                                 value={salesmanId}
-                                onChange={e => setSalesmanId(e.target.value)}
-                            >
-                                <option value="">Select Salesman</option>
-                                {availableSalesmen.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name}</option>
-                                ))}
-                            </select>
+                                onChange={val => setSalesmanId(val)}
+                                placeholder="Select Salesman"
+                            />
                         </div>
                         <div ref={dropdownRef} className="relative">
                             <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Customer</label>
@@ -993,6 +1061,31 @@ export default function POS() {
                                                 <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${selectedHistorySale.isReturn ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
                                                     {selectedHistorySale.isReturn ? 'Return' : selectedHistorySale.status}
                                                 </span>
+                                                <button
+                                                    onClick={async () => {
+                                                        const wsSettings = await api.get('/whatsapp/settings').then(r => r.data).catch(() => null);
+                                                        if (!wsSettings?.apiKey) return toast.error('WhatsApp not configured');
+                                                        const phone = selectedHistorySale.customer?.phone;
+                                                        if (!phone) return toast.error('Customer phone missing');
+
+                                                        let msg = wsSettings.salesTemplate || '';
+                                                        msg = msg.replace(/\[\[customer_name\]\]/g, selectedHistorySale.customer?.name || 'Customer')
+                                                            .replace(/\[\[bill_no\]\]/g, selectedHistorySale.invoiceNumber)
+                                                            .replace(/\[\[total_amount\]\]/g, `₹${parseFloat(selectedHistorySale.totalAmount).toFixed(2)}`)
+                                                            .replace(/\[\[company_name\]\]/g, companyProfile?.companyName || 'Our Store');
+
+                                                        try {
+                                                            await api.post('/whatsapp/send', { mobile: phone, message: msg });
+                                                            toast.success('WhatsApp Sent!');
+                                                        } catch (err) {
+                                                            toast.error('WhatsApp failed');
+                                                        }
+                                                    }}
+                                                    className="ml-2 p-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                                                    title="Send WhatsApp"
+                                                >
+                                                    <FiMessageSquare />
+                                                </button>
                                             </div>
                                         </div>
 

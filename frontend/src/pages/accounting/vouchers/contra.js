@@ -5,6 +5,7 @@ import { FiRefreshCw, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiCalendar, FiP
 import ConfirmationModal from '@/components/ConfirmationModal';
 import ProfessionalModal from '@/components/ProfessionalModal';
 import VoucherPrint from '@/components/VoucherPrint';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function ContraEntry() {
     const [ledgers, setLedgers] = useState([]);
@@ -195,7 +196,7 @@ export default function ContraEntry() {
 
             {activeTab === 'create' ? (
                 <div className="space-y-4">
-                    <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-md border border-slate-200">
                         {/* Status / Header Bar */}
                         <div className={`px-6 py-2 flex justify-between items-center ${editId ? 'bg-blue-600' : 'bg-primary-dark'} transition-colors`}>
                             <div className="flex items-center gap-4">
@@ -271,19 +272,12 @@ export default function ContraEntry() {
                                             </div>
                                         )}
                                     </div>
-                                    <select
-                                        required
-                                        className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-transparent rounded-lg text-sm font-semibold p-3 transition-all outline-none"
+                                    <SearchableSelect
+                                        options={cashBankLedgers.map(l => ({ value: l.id, label: l.name }))}
                                         value={formData.fromAccount}
-                                        onChange={e => setFormData({ ...formData, fromAccount: e.target.value })}
-                                    >
-                                        <option value="">Select Source Account...</option>
-                                        {cashBankLedgers.map(ledger => (
-                                            <option key={ledger.id} value={ledger.id}>
-                                                {ledger.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={val => setFormData({ ...formData, fromAccount: val })}
+                                        placeholder="Select Source Account..."
+                                    />
                                     <p className="text-[10px] text-slate-400 mt-2 italic">Funds will be deducted from this ledger.</p>
                                 </div>
 
@@ -305,19 +299,12 @@ export default function ContraEntry() {
                                             </div>
                                         )}
                                     </div>
-                                    <select
-                                        required
-                                        className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-transparent rounded-lg text-sm font-semibold p-3 transition-all outline-none"
+                                    <SearchableSelect
+                                        options={cashBankLedgers.map(l => ({ value: l.id, label: l.name }))}
                                         value={formData.toAccount}
-                                        onChange={e => setFormData({ ...formData, toAccount: e.target.value })}
-                                    >
-                                        <option value="">Select Destination Account...</option>
-                                        {cashBankLedgers.map(ledger => (
-                                            <option key={ledger.id} value={ledger.id}>
-                                                {ledger.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={val => setFormData({ ...formData, toAccount: val })}
+                                        placeholder="Select Destination Account..."
+                                    />
                                     <p className="text-[10px] text-slate-400 mt-2 italic">Funds will be added to this ledger.</p>
                                 </div>
                             </div>

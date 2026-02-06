@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
-import { FiDollarSign, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiSearch, FiCalendar, FiPrinter } from 'react-icons/fi';
+import { FiDollarSign, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiSearch, FiCalendar, FiPrinter, FiX } from 'react-icons/fi';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import ProfessionalModal from '@/components/ProfessionalModal';
 import VoucherPrint from '@/components/VoucherPrint';
+import SearchableSelect from '@/components/SearchableSelect';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function PaymentVoucher() {
+    const { theme } = useTheme();
     const [ledgers, setLedgers] = useState([]);
     const [activeTab, setActiveTab] = useState('create');
     const [formData, setFormData] = useState({
@@ -196,7 +199,7 @@ export default function PaymentVoucher() {
 
             {activeTab === 'create' ? (
                 <div className="space-y-4">
-                    <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-md border border-slate-200">
                         {/* Status / Header Bar */}
                         <div className={`px-6 py-2 flex justify-between items-center ${editId ? 'bg-blue-600' : 'bg-primary-dark'} transition-colors`}>
                             <div className="flex items-center gap-4">
@@ -272,19 +275,12 @@ export default function PaymentVoucher() {
                                             </div>
                                         )}
                                     </div>
-                                    <select
-                                        required
-                                        className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-transparent rounded-lg text-sm font-semibold p-3 transition-all outline-none"
+                                    <SearchableSelect
+                                        options={cashBankLedgers.map(l => ({ value: l.id, label: l.name }))}
                                         value={formData.paymentAccount}
-                                        onChange={e => setFormData({ ...formData, paymentAccount: e.target.value })}
-                                    >
-                                        <option value="">Select Cash/Bank Ledger...</option>
-                                        {cashBankLedgers.map(ledger => (
-                                            <option key={ledger.id} value={ledger.id}>
-                                                {ledger.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={val => setFormData({ ...formData, paymentAccount: val })}
+                                        placeholder="Select Cash/Bank Ledger..."
+                                    />
                                     <p className="text-[10px] text-slate-400 mt-2 italic">The account from which funds are departing.</p>
                                 </div>
 
@@ -302,19 +298,12 @@ export default function PaymentVoucher() {
                                             </div>
                                         )}
                                     </div>
-                                    <select
-                                        required
-                                        className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-transparent rounded-lg text-sm font-semibold p-3 transition-all outline-none"
+                                    <SearchableSelect
+                                        options={expenseLedgers.map(l => ({ value: l.id, label: `${l.name} (${l.group?.name})` }))}
                                         value={formData.expenseAccount}
-                                        onChange={e => setFormData({ ...formData, expenseAccount: e.target.value })}
-                                    >
-                                        <option value="">Select Expense/Liability Ledger...</option>
-                                        {expenseLedgers.map(ledger => (
-                                            <option key={ledger.id} value={ledger.id}>
-                                                {ledger.name} ({ledger.group?.name})
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={val => setFormData({ ...formData, expenseAccount: val })}
+                                        placeholder="Select Expense/Liability Ledger..."
+                                    />
                                     <p className="text-[10px] text-slate-400 mt-2 italic">The account receiving the payment (Expense/Creditor).</p>
                                 </div>
                             </div>

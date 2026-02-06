@@ -3,6 +3,7 @@ import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiCalendar, FiDollarSign, FiUsers, FiCheckCircle, FiLoader, FiTrash2, FiFileText } from 'react-icons/fi';
 import ProfessionalModal from '@/components/ProfessionalModal';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function SalaryProcessing() {
     const [users, setUsers] = useState([]);
@@ -291,20 +292,15 @@ export default function SalaryProcessing() {
                             {processingMode === 'individual' && (
                                 <div>
                                     <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Employee</label>
-                                    <select
-                                        required
-                                        className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-semibold"
+                                    <SearchableSelect
+                                        options={users.map(u => ({
+                                            value: u.id,
+                                            label: `${u.name} (@${u.username})${u.employeeProfile?.basicSalary ? ` - ${companyProfile?.currencySymbol || '₹'}${u.employeeProfile.basicSalary}` : ' - No salary set'}`
+                                        }))}
                                         value={processingData.userId}
-                                        onChange={e => setProcessingData({ ...processingData, userId: e.target.value })}
-                                    >
-                                        <option value="">Select Employee</option>
-                                        {users.map(u => (
-                                            <option key={u.id} value={u.id}>
-                                                {u.name} (@{u.username})
-                                                {u.employeeProfile?.basicSalary ? ` - ${companyProfile?.currencySymbol || '₹'}${u.employeeProfile.basicSalary}` : ' - No salary set'}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={val => setProcessingData({ ...processingData, userId: val })}
+                                        placeholder="Select Employee"
+                                    />
                                 </div>
                             )}
 

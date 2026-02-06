@@ -1,5 +1,38 @@
 const prisma = require('./prismaClient');
 
+/**
+ * Safely evaluate a simple arithmetic formula using a context object
+ * @param {string} formula - e.g. "totalAmount * 0.1"
+ * @param {Object} context - { totalAmount: 100, ... }
+ * @returns {number|null}
+ */
+function evaluateFormula(formula, context) {
+    if (!formula) return null;
+    let expression = formula;
+
+    // 1. Replace variables from context
+    Object.keys(context).forEach(key => {
+        const value = parseFloat(context[key]) || 0;
+        // Use word boundary to avoid replacing partial names (e.g., 'tax' in 'taxAmount')
+        const regex = new RegExp(`\\b${key}\\b`, 'g');
+        expression = expression.replace(regex, value);
+    });
+
+    // 2. Security: Strip anything that isn't a number, operator, or parenthesis
+    // Allowed: 0-9, ., +, -, *, /, (, ), space
+    const sanitized = expression.replace(/[^0-9.\s\(\)\+\-\*\/]/g, '');
+
+    try {
+        // Use Function constructor for a slightly safer evaluation than eval()
+        // but still limited by our strict regex sanitizer above.
+        const result = new Function(`return ${sanitized}`)();
+        return typeof result === 'number' && !isNaN(result) ? result : null;
+    } catch (err) {
+        console.error(`Formula Evaluation Error [${formula}]:`, err.message);
+        return null;
+    }
+}
+
 // Helper: Ensure Group Exists (Recursive-ish for known types)
 async function ensureGroupExists(groupName) {
     let group = await prisma.accountGroup.findFirst({ where: { name: groupName } });
@@ -10,7 +43,7 @@ async function ensureGroupExists(groupName) {
         'Loans & Advances (Asset)': { parent: 'Current Assets', type: 'ASSETS' },
         'Current Assets': { parent: 'Assets', type: 'ASSETS' },
         'Assets': { parent: null, type: 'ASSETS' },
-        
+
         'Current Liabilities': { parent: 'Liabilities', type: 'LIABILITIES' },
         'Liabilities': { parent: null, type: 'LIABILITIES' },
 
@@ -83,7 +116,7 @@ async function getSourceBankLedger(companyProfile) {
 
 // 1. Handle Salary Advance Approval (Payment Voucher)
 // Entry: Dr Salary Advance - Employee (Asset), Cr Bank/Cash
-exports.handleSalaryAdvanceApproval = async (advanceId, userId) => {
+async function handleSalaryAdvanceApproval(advanceId, userId) {
     try {
         const advance = await prisma.salaryAdvance.findUnique({
             where: { id: advanceId },
@@ -94,7 +127,7 @@ exports.handleSalaryAdvanceApproval = async (advanceId, userId) => {
 
         const company = await prisma.companyProfile.findFirst();
         const creditLedger = await getSourceBankLedger(company);
-        
+
         // Debit: Employee Specific Advance Ledger
         const debitLedger = await getOrCreateLedger(`Salary Advance - ${advance.user.name}`, 'Loans & Advances (Asset)');
 
@@ -130,7 +163,7 @@ exports.handleSalaryAdvanceApproval = async (advanceId, userId) => {
 
 // 2. Handle Payroll Generation (Journal Voucher)
 // Entry: Dr Salary Expense (Gross), Cr Salary Payable - Employee (Net), Cr Salary Advance - Employee (Deduction)
-exports.handlePayrollGeneration = async (payrollId, userId) => {
+async function handlePayrollGeneration(payrollId, userId) {
     try {
         const payroll = await prisma.payroll.findUnique({
             where: { id: payrollId },
@@ -140,16 +173,16 @@ exports.handlePayrollGeneration = async (payrollId, userId) => {
         // Debit: Salary Expense (Generic is fine for Expense, or split by Dept?)
         // Standard: Generic Salary Expense
         const expenseLedger = await getOrCreateLedger('Salary Expense', 'Indirect Expenses');
-        
+
         // Credit: Salary Payable - Employee Specific
         const payableLedger = await getOrCreateLedger(`Salary Payable - ${payroll.user.name}`, 'Current Liabilities');
 
         // Entries
         const entries = [];
-        
+
         // 1. Dr Salary Expense (Basic + Allowances)
         const grossEarnings = Number(payroll.basicSalary) + Number(payroll.allowances);
-        
+
         entries.push({
             debitLedgerId: expenseLedger.id,
             amount: grossEarnings,
@@ -170,19 +203,19 @@ exports.handlePayrollGeneration = async (payrollId, userId) => {
         // 3. Cr Deductions (Generic Liability)
         const deductionAmount = Number(payroll.deductions);
         if (deductionAmount > 0) {
-             const deductionLedger = await getOrCreateLedger('Salary Deductions', 'Current Liabilities');
-             entries.push({
+            const deductionLedger = await getOrCreateLedger('Salary Deductions', 'Current Liabilities');
+            entries.push({
                 creditLedgerId: deductionLedger.id,
                 amount: deductionAmount,
                 description: `Deductions - ${payroll.user.name}`
-             });
+            });
         }
 
         // 4. Cr Salary Payable (Net Pay)
         const netPayable = Number(payroll.netSalary);
         entries.push({
             creditLedgerId: payableLedger.id,
-            amount: netPayable, 
+            amount: netPayable,
             description: `Salary Payable - ${payroll.user.name}`
         });
 
@@ -211,18 +244,18 @@ exports.handlePayrollGeneration = async (payrollId, userId) => {
 
 // 3. Handle Payroll Payment (Payment Voucher)
 // Entry: Dr Salary Payable - Employee, Cr Bank
-exports.handlePayrollPayment = async (payrollId, userId) => {
+async function handlePayrollPayment(payrollId, userId) {
     try {
         const payroll = await prisma.payroll.findUnique({
             where: { id: payrollId },
             include: { user: true }
         });
-        
+
         if (!payroll || payroll.status !== 'PAID') return;
 
         const company = await prisma.companyProfile.findFirst();
         const creditLedger = await getSourceBankLedger(company);
-        
+
         // Debit: Salary Payable - Employee Specific
         const debitLedger = await getOrCreateLedger(`Salary Payable - ${payroll.user.name}`, 'Current Liabilities');
 
@@ -252,23 +285,34 @@ exports.handlePayrollPayment = async (payrollId, userId) => {
 
 // Copied Sequence Generator (refactor later to shared utils)
 async function generateVoucherNumber(voucherType) {
-  const prefix = {
-    'PAYMENT': 'PAY', 'RECEIPT': 'REC', 'JOURNAL': 'JV',
-    'CONTRA': 'CON', 'SALES': 'SAL', 'PURCHASE': 'PUR'
-  }[voucherType] || 'VOU';
-  
-  const year = new Date().getFullYear().toString().slice(-2);
-  const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
-  
-  const lastVoucher = await prisma.voucher.findFirst({
-    where: { voucherNumber: { startsWith: `${prefix}${year}${month}` } },
-    orderBy: { voucherNumber: 'desc' }
-  });
-  
-  let sequence = 1;
-  if (lastVoucher) {
-    const lastSequence = parseInt(lastVoucher.voucherNumber.slice(-4));
-    sequence = lastSequence + 1;
-  }
-  return `${prefix}${year}${month}${sequence.toString().padStart(4, '0')}`;
+    const prefix = {
+        'PAYMENT': 'PAY', 'RECEIPT': 'REC', 'JOURNAL': 'JV',
+        'CONTRA': 'CON', 'SALES': 'SAL', 'PURCHASE': 'PUR'
+    }[voucherType] || 'VOU';
+
+    const year = new Date().getFullYear().toString().slice(-2);
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+
+    const lastVoucher = await prisma.voucher.findFirst({
+        where: { voucherNumber: { startsWith: `${prefix}${year}${month}` } },
+        orderBy: { voucherNumber: 'desc' }
+    });
+
+    let sequence = 1;
+    if (lastVoucher) {
+        const lastSequence = parseInt(lastVoucher.voucherNumber.slice(-4));
+        sequence = lastSequence + 1;
+    }
+    return `${prefix}${year}${month}${sequence.toString().padStart(4, '0')}`;
 }
+
+module.exports = {
+    ensureGroupExists,
+    getOrCreateLedger,
+    getSourceBankLedger,
+    handleSalaryAdvanceApproval,
+    handlePayrollGeneration,
+    handlePayrollPayment,
+    generateVoucherNumber,
+    evaluateFormula
+};

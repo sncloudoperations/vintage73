@@ -4,7 +4,8 @@ const prisma = new PrismaClient();
 // Create a new Quotation
 exports.createQuotation = async (req, res) => {
     try {
-        const { customerId, items, taxType, isTaxInclusive, notes, terms, validUntil, branchId } = req.body;
+        const { items, taxType, isTaxInclusive, notes, terms, validUntil, branchId } = req.body;
+        const customerId = req.body.customerId ? parseInt(req.body.customerId) : null;
 
         // Generate Quotation Number (QT-YYYYMMDD-XXXX)
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -33,7 +34,8 @@ exports.createQuotation = async (req, res) => {
                 total: item.total,
                 taxAmount: item.taxAmount,
                 taxRate: item.taxRate,
-                discountAmount: item.discountAmount
+                discountAmount: item.discountAmount,
+                discountPercent: item.discountPercent
             };
         });
 
@@ -124,9 +126,10 @@ exports.convertToSale = async (req, res) => {
             if (!quotation) throw new Error('Quotation not found');
             if (quotation.status === 'CONVERTED') throw new Error('Quotation already converted');
 
-            // Generate Invoice Number
+            // Generate Invoice Number (INV-YYYYMMDD-XXXX)
+            const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             const count = await tx.sale.count();
-            const invoiceNumber = `INV-${Date.now()}`; // Simple generator, can be improved
+            const invoiceNumber = `INV-${dateStr}-${(count + 1).toString().padStart(4, '0')}`;
 
             // Create Sale
             const sale = await tx.sale.create({
@@ -149,7 +152,8 @@ exports.convertToSale = async (req, res) => {
                             total: item.total,
                             taxAmount: item.taxAmount,
                             taxRate: item.taxRate,
-                            discountAmount: item.discountAmount
+                            discountAmount: item.discountAmount,
+                            discountPercent: item.discountPercent
                         }))
                     },
                     // Link to original quotation helps tracking? The query didn't have a field for it in Sale,
@@ -193,16 +197,7 @@ exports.convertToSale = async (req, res) => {
 
             // Deduct Stock (Since it's now a Sale)
             for (const item of quotation.items) {
-                await tx.product.update({
-                    where: { id: item.productId },
-                    data: {
-                        // Basic decrement on product, ideally should be on ProductStock per branch
-                        // But simplified for now as per `saleController` logic typically:
-                        // Assuming `ProductStock` model exists and is used:
-                    }
-                });
-
-                // Real stock deduction logic usually lives in ProductStock update:
+                // Real stock deduction logic lives in ProductStock update:
                 const stock = await tx.productStock.findUnique({
                     where: { branchId_productId: { branchId: quotation.branchId, productId: item.productId } }
                 });

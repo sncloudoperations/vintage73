@@ -3,8 +3,12 @@ import { useState, useEffect } from 'react';
 import TopNavigation from './TopNavigation';
 import TabBar from './TabBar';
 import { FiLogOut, FiMapPin, FiArrowLeft } from 'react-icons/fi';
-import api from '@/lib/api';
+import api, { getServerUrl } from '@/lib/api';
 import { useTheme } from '@/context/ThemeContext';
+import NotificationBell from './NotificationBell';
+import ChatSidebar from './ChatSidebar';
+import { initSocket, disconnectSocket } from '@/utils/socket';
+import { IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 
 export default function Layout({ children }) {
   const router = useRouter();
@@ -14,6 +18,8 @@ export default function Layout({ children }) {
   const [user, setUser] = useState(null);
   const [loginTime, setLoginTime] = useState('');
   const [branch, setBranch] = useState(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [totalUnread, setTotalUnread] = useState(0);
 
   useEffect(() => {
     // Company Profile is now managed by ThemeContext
@@ -22,6 +28,13 @@ export default function Layout({ children }) {
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       setUser(userData);
+      initSocket(userData.id);
+      fetchUnreadCount();
+
+      const socket = initSocket(userData.id);
+      socket.on('receive_message', () => {
+        fetchUnreadCount();
+      });
 
       // Fallback: Fetch branch name if missing from existing session
       if (userData.branchId && !userData.branchName) {
@@ -44,7 +57,19 @@ export default function Layout({ children }) {
     }
   }, [router.pathname]);
 
+  const fetchUnreadCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.get('/chat/conversations');
+      const total = res.data.reduce((sum, c) => sum + (c.unreadCount || 0), 0);
+      setTotalUnread(total);
+    } catch (error) {
+      console.error('Error fetching unread count:', error);
+    }
+  };
+
   const handleLogout = () => {
+    disconnectSocket();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     location.href = '/login'; // Force full reload to clear any context states if needed
@@ -56,7 +81,7 @@ export default function Layout({ children }) {
       {(router.pathname === '/' || router.pathname === '/dashboard') && theme.companyProfile?.dashboardImageUrl && (
         <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none mt-24 pb-12 px-6">
           <img
-            src={`http://localhost:5000${theme.companyProfile.dashboardImageUrl}`}
+            src={`${getServerUrl()}${theme.companyProfile.dashboardImageUrl}`}
             alt="Layout Background"
             className="h-[500px] w-auto max-w-5xl object-contain opacity-80 shadow-sm"
           />
@@ -64,7 +89,7 @@ export default function Layout({ children }) {
       )}
 
       {showNavigation && (
-        <div className="flex flex-col bg-white/90 backdrop-blur-sm border-b border-gray-200 relative z-50">
+        <div className="flex flex-col bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
           {/* 1. Global Header */}
           <header className="h-14 flex items-center justify-between px-6 border-b border-gray-100">
             {/* Left - Logo */}
@@ -106,6 +131,22 @@ export default function Layout({ children }) {
                   {(user?.name || user?.username || 'U').charAt(0).toUpperCase()}
                 </div>
 
+                <div className="flex items-center gap-2 ml-4">
+                  <button
+                    onClick={() => setIsChatOpen(true)}
+                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+                    title="Internal Chat"
+                  >
+                    <IoChatbubbleEllipsesOutline className="text-2xl text-gray-600 dark:text-gray-300" />
+                    {totalUnread > 0 && (
+                      <span className="absolute top-1 right-1 bg-blue-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-white dark:border-gray-800">
+                        {totalUnread}
+                      </span>
+                    )}
+                  </button>
+                  <NotificationBell />
+                </div>
+
                 <button
                   onClick={handleLogout}
                   className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all ml-2"
@@ -126,11 +167,13 @@ export default function Layout({ children }) {
       )}
 
       {/* 4. Main Content Area */}
-      <main className="flex-1 overflow-x-hidden p-6 relative z-10">
+      <main className="flex-1 overflow-x-hidden p-6 relative">
         <div className="max-w-[1920px] mx-auto">
           {children}
         </div>
       </main>
+      {/* 5. Right Sidebar Chat */}
+      <ChatSidebar isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   );
 }

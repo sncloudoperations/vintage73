@@ -12,16 +12,34 @@ async function main() {
             isSystem: true,
             children: [
                 {
+                    name: 'Cash-in-Hand',
+                    type: 'ASSETS',
+                    isSystem: true,
+                    ledgers: ['Cash Account', 'Petty Cash']
+                },
+                {
+                    name: 'Bank Accounts',
+                    type: 'ASSETS',
+                    isSystem: true,
+                    ledgers: ['Bank Account']
+                },
+                {
+                    name: 'Sundry Debtors',
+                    type: 'ASSETS',
+                    isSystem: true,
+                    ledgers: ['Walk-in Customer']
+                },
+                {
                     name: 'Current Assets',
                     type: 'ASSETS',
                     isSystem: true,
-                    ledgers: ['Cash Account', 'Bank Account', 'Petty Cash']
+                    ledgers: ['Stock-in-Hand']
                 },
                 {
                     name: 'Fixed Assets',
                     type: 'ASSETS',
                     isSystem: true,
-                    ledgers: ['Furniture & Fixtures', 'Machinery & Equipment', 'Computers']
+                    ledgers: ['Furniture & Fixtures', 'Machinery & Equipment']
                 }
             ]
         },
@@ -31,10 +49,16 @@ async function main() {
             isSystem: true,
             children: [
                 {
-                    name: 'Current Liabilities',
+                    name: 'Duties & Taxes',
                     type: 'LIABILITIES',
                     isSystem: true,
-                    ledgers: ['Duties & Taxes', 'Sundry Creditors']
+                    ledgers: ['Output CGST', 'Output SGST', 'Output IGST', 'Input CGST', 'Input SGST', 'Input IGST']
+                },
+                {
+                    name: 'Sundry Creditors',
+                    type: 'LIABILITIES',
+                    isSystem: true,
+                    ledgers: []
                 },
                 {
                     name: 'Loans (Liability)',
@@ -50,10 +74,10 @@ async function main() {
             isSystem: true,
             children: [
                 {
-                    name: 'Direct Income',
+                    name: 'Sales Accounts',
                     type: 'INCOME',
                     isSystem: true,
-                    ledgers: ['Sales Account', 'Professional Income']
+                    ledgers: ['Sales Account']
                 },
                 {
                     name: 'Indirect Income',
@@ -69,16 +93,22 @@ async function main() {
             isSystem: true,
             children: [
                 {
+                    name: 'Purchase Accounts',
+                    type: 'EXPENSES',
+                    isSystem: true,
+                    ledgers: ['Purchase Account']
+                },
+                {
                     name: 'Direct Expenses',
                     type: 'EXPENSES',
                     isSystem: true,
-                    ledgers: ['Purchase Account', 'Wages', 'Freight Changes']
+                    ledgers: ['Wages', 'Freight Changes']
                 },
                 {
                     name: 'Indirect Expenses',
                     type: 'EXPENSES',
                     isSystem: true,
-                    ledgers: ['Rent', 'Salaries', 'Electricity', 'Telephone', 'Discount Allowed']
+                    ledgers: ['Rent', 'Salaries', 'Electricity', 'Round Off']
                 }
             ]
         },
@@ -91,7 +121,7 @@ async function main() {
                     name: 'Capital Account',
                     type: 'EQUITY',
                     isSystem: true,
-                    ledgers: ['Capital Account', 'Drawings']
+                    ledgers: ['Owner\'s Capital', 'Drawings']
                 }
             ]
         }

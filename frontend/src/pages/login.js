@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import api from '@/lib/api';
-import { FiLock, FiUser, FiArrowRight, FiCheckCircle } from 'react-icons/fi';
+import api, { getServerUrl } from '@/lib/api';
+import { FiLock, FiUser, FiArrowRight } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import { useTheme } from '@/context/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getTerminalId } from '@/lib/terminal';
 
 export default function Login() {
   const router = useRouter();
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,7 +34,8 @@ export default function Login() {
     setError('');
 
     try {
-      const { data } = await api.post('/auth/login', formData);
+      const terminalCode = getTerminalId();
+      const { data } = await api.post('/auth/login', { ...formData, terminalCode });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       toast.success('Login Successful! Redirecting...');
@@ -44,58 +49,89 @@ export default function Login() {
     }
   };
 
+  const primaryColor = theme?.primaryColor || '#10b981';
+
   if (!isSetupChecked) return null;
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="min-h-screen flex bg-slate-50 overflow-hidden">
       {/* Left Side: Branding (Visible on desktop) */}
-      <div className="hidden lg:flex flex-1 bg-white relative overflow-hidden items-center justify-center border-r border-slate-100 p-16">
-        <div className="relative z-10 w-full h-full flex items-center justify-center animate-fade-in">
+      <motion.div
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="hidden lg:flex flex-1 bg-white relative overflow-hidden items-center justify-center border-r border-slate-100 p-16"
+      >
+        <motion.div
+          animate={{
+            y: [0, -15, 0],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="relative z-10 w-full h-full flex items-center justify-center"
+        >
           <img
-            src="/login-branding.png"
-            alt="Quick POS Branding"
-            className="max-w-full max-h-full object-contain drop-shadow-sm"
+            src={theme.companyProfile?.dashboardImageUrl ? `${getServerUrl()}${theme.companyProfile.dashboardImageUrl}` : "/login-branding.png"}
+            alt="Branding"
+            className="max-w-[70%] max-h-[70%] object-contain drop-shadow-2xl"
           />
-        </div>
-
-        <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/5 rounded-full blur-[100px] -mr-48 -mt-48 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-400/5 rounded-full blur-[80px] -ml-32 -mb-32 pointer-events-none"></div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Right Side: Login Form */}
-      <div className="w-full lg:w-[450px] flex items-center justify-center p-8 bg-white lg:bg-slate-50/50">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-[450px] flex items-center justify-center p-8 bg-white lg:bg-slate-50/50 relative">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="w-full max-w-md relative z-10"
+        >
           {/* Mobile Logo */}
           <div className="lg:hidden flex flex-col items-center mb-10">
-            <div className="w-14 h-14 bg-green-600 rounded-2xl flex items-center justify-center mb-4 shadow-xl shadow-green-100">
-              <FiLock className="text-white text-2xl" />
-            </div>
-            <h1 className="text-2xl font-bold text-slate-900">Quick POS</h1>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-xl shadow-green-100"
+              style={{ backgroundColor: primaryColor }}
+            >
+              <FiLock className="text-white text-3xl" />
+            </motion.div>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Quick POS</h1>
           </div>
 
           <div className="mb-10">
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h2>
-            <p className="text-slate-500">Please enter your details to sign in.</p>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">Welcome Back</h2>
+            <p className="text-slate-500 font-medium text-sm">Please enter your credentials to proceed.</p>
           </div>
 
-          {error && (
-            <div className="bg-red-50 text-red-600 text-sm p-4 rounded-xl mb-6 border border-red-100 flex items-center animate-shake">
-              <span className="mr-2 font-bold">!</span>
-              {error}
-            </div>
-          )}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: [0, -5, 5, -5, 5, 0], opacity: 1 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="bg-rose-50 text-rose-600 text-xs font-bold uppercase tracking-widest p-4 rounded-xl mb-6 border border-rose-100 flex items-center gap-3 shadow-sm"
+              >
+                <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-slate-700">Username</label>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Username</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <FiUser className="text-slate-400 group-focus-within:text-green-600 transition-colors" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FiUser className="text-slate-400 group-focus-within:text-[var(--primary)] transition-colors" style={{ color: 'var(--primary-dark)' }} />
                 </div>
                 <input
                   type="text"
-                  className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-900 text-sm focus:outline-none focus:border-green-600 focus:ring-4 focus:ring-green-600/5 transition-all placeholder:text-slate-400"
-                  placeholder="Enter your username"
+                  className="w-full bg-white border border-slate-100 rounded-xl pl-11 pr-4 py-3.5 text-slate-800 text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all placeholder:text-slate-300 shadow-sm"
+                  placeholder="Identify yourself"
                   value={formData.username}
                   onChange={e => setFormData({ ...formData, username: e.target.value })}
                   required
@@ -104,15 +140,15 @@ export default function Login() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-slate-700">Password</label>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Secret Key</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <FiLock className="text-slate-400 group-focus-within:text-green-600 transition-colors" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FiLock className="text-slate-400 group-focus-within:text-[var(--primary)] transition-colors" style={{ color: 'var(--primary-dark)' }} />
                 </div>
                 <input
                   type="password"
-                  className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-900 text-sm focus:outline-none focus:border-green-600 focus:ring-4 focus:ring-green-600/5 transition-all placeholder:text-slate-400"
-                  placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+                  className="w-full bg-white border border-slate-100 rounded-xl pl-11 pr-4 py-3.5 text-slate-800 text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all placeholder:text-slate-300 shadow-sm"
+                  placeholder="••••••••"
                   value={formData.password}
                   onChange={e => setFormData({ ...formData, password: e.target.value })}
                   required
@@ -127,49 +163,35 @@ export default function Login() {
                   id="remember"
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-600/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-green-600"></div>
-                <span className="ml-3 text-sm text-slate-600">Remember for 30 days</span>
+                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                <span className="ml-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Keep me signed in</span>
               </label>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="group w-full bg-[#152e25] hover:bg-[#1a382d] disabled:bg-slate-400 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-slate-200"
+              className="group w-full text-white font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-primary/20 disabled:opacity-50 text-[11px] uppercase tracking-[0.2em] relative overflow-hidden"
+              style={{
+                background: `linear-gradient(135deg, ${primaryColor} 0%, ${theme?.secondaryColor || primaryColor} 100%)`
+              }}
             >
-              <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <span>{loading ? 'Validating...' : 'Authenticate'}</span>
               {!loading && <FiArrowRight className="group-hover:translate-x-1 transition-transform" />}
-            </button>
+            </motion.button>
           </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-[11px] text-slate-400 uppercase tracking-wider">
-              &copy; {new Date().getFullYear()} SN Tech Business Solutions.
+          <div className="mt-12 text-center">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[3px] mb-1">
+              &copy; {new Date().getFullYear()} SN Tech Solutions
             </p>
-            <p className="text-[10px] text-slate-300 mt-1">
-              All Rights Reserved.
-            </p>
+            <div className="w-8 h-1 bg-slate-100 mx-auto rounded-full"></div>
           </div>
-        </div>
+        </motion.div>
       </div>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out forwards;
-        }
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-4px); }
-          75% { transform: translateX(4px); }
-        }
-        .animate-shake {
-          animation: shake 0.4s ease-in-out;
-        }
-      `}</style>
     </div>
   );
 }

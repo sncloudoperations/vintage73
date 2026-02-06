@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
-import { FiDollarSign, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiCalendar, FiPrinter } from 'react-icons/fi';
+import { FiDollarSign, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiCalendar, FiPrinter, FiMessageSquare } from 'react-icons/fi';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import ProfessionalModal from '@/components/ProfessionalModal';
 import VoucherPrint from '@/components/VoucherPrint';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function ReceiptVoucher() {
     const [ledgers, setLedgers] = useState([]);
@@ -77,6 +78,30 @@ export default function ReceiptVoucher() {
             } else {
                 res = await api.post('/accounting/vouchers/receipt', formData);
                 toast.success(`Receipt voucher ${res.data.voucherNumber} created successfully!`);
+
+                // WhatsApp Integration for Receipts
+                const wsSettings = await api.get('/whatsapp/settings').then(r => r.data).catch(() => null);
+                if (wsSettings && wsSettings.isActive && wsSettings.apiKey && selectedIncomeAccount) {
+                    // Try to find if this ledger is a customer
+                    const custRes = await api.get('/customers').catch(() => ({ data: [] }));
+                    const customer = custRes.data.find(c => c.name === selectedIncomeAccount.name);
+                    const phone = customer?.phone;
+
+                    if (phone) {
+                        let msg = wsSettings.paymentTemplate || 'Hello [[customer_name]], we have received your payment of [[total_amount]]. Reference: [[reference]].';
+                        msg = msg.replace(/\[\[customer_name\]\]/g, customer.name)
+                            .replace(/\[\[total_amount\]\]/g, `₹${parseFloat(formData.amount).toFixed(2)}`)
+                            .replace(/\[\[reference\]\]/g, res.data.voucherNumber || formData.reference || 'N/A')
+                            .replace(/\[\[company_name\]\]/g, 'Our Store');
+
+                        try {
+                            await api.post('/whatsapp/send', { mobile: phone, message: msg });
+                            toast.info('WhatsApp Receipt Sent!');
+                        } catch (wsErr) {
+                            console.error('WhatsApp failed:', wsErr);
+                        }
+                    }
+                }
             }
 
             const savedVoucher = res.data;
@@ -196,7 +221,7 @@ export default function ReceiptVoucher() {
 
             {activeTab === 'create' ? (
                 <div className="space-y-4">
-                    <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-md border border-slate-200">
                         {/* Status / Header Bar */}
                         <div className={`px-6 py-2 flex justify-between items-center ${editId ? 'bg-blue-600' : 'bg-primary-dark'} transition-colors`}>
                             <div className="flex items-center gap-4">
@@ -272,19 +297,12 @@ export default function ReceiptVoucher() {
                                             </div>
                                         )}
                                     </div>
-                                    <select
-                                        required
-                                        className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-transparent rounded-lg text-sm font-semibold p-3 transition-all outline-none"
+                                    <SearchableSelect
+                                        options={cashBankLedgers.map(l => ({ value: l.id, label: l.name }))}
                                         value={formData.receiptAccount}
-                                        onChange={e => setFormData({ ...formData, receiptAccount: e.target.value })}
-                                    >
-                                        <option value="">Select Cash/Bank Ledger...</option>
-                                        {cashBankLedgers.map(ledger => (
-                                            <option key={ledger.id} value={ledger.id}>
-                                                {ledger.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={val => setFormData({ ...formData, receiptAccount: val })}
+                                        placeholder="Select Cash/Bank Ledger..."
+                                    />
                                     <p className="text-[10px] text-slate-400 mt-2 italic">The account receiving the incoming funds.</p>
                                 </div>
 
@@ -302,19 +320,12 @@ export default function ReceiptVoucher() {
                                             </div>
                                         )}
                                     </div>
-                                    <select
-                                        required
-                                        className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-transparent rounded-lg text-sm font-semibold p-3 transition-all outline-none"
+                                    <SearchableSelect
+                                        options={incomeLedgers.map(l => ({ value: l.id, label: `${l.name} (${l.group?.name})` }))}
                                         value={formData.incomeAccount}
-                                        onChange={e => setFormData({ ...formData, incomeAccount: e.target.value })}
-                                    >
-                                        <option value="">Select Customer/Income Ledger...</option>
-                                        {incomeLedgers.map(ledger => (
-                                            <option key={ledger.id} value={ledger.id}>
-                                                {ledger.name} ({ledger.group?.name})
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={val => setFormData({ ...formData, incomeAccount: val })}
+                                        placeholder="Select Customer/Income Ledger..."
+                                    />
                                     <p className="text-[10px] text-slate-400 mt-2 italic">The account or entity providing the funds.</p>
                                 </div>
                             </div>
@@ -449,6 +460,36 @@ export default function ReceiptVoucher() {
                                                                 title="Edit"
                                                             >
                                                                 <FiEdit2 size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={async () => {
+                                                                    const wsSettings = await api.get('/whatsapp/settings').then(r => r.data).catch(() => null);
+                                                                    if (!wsSettings?.apiKey) return toast.error('WhatsApp not configured');
+
+                                                                    const creditEntry = v.entries.find(e => e.creditLedgerId);
+                                                                    const custRes = await api.get('/customers').catch(() => ({ data: [] }));
+                                                                    const customer = custRes.data.find(c => c.name === creditEntry?.creditLedger?.name);
+                                                                    const phone = customer?.phone;
+
+                                                                    if (!phone) return toast.error('Customer phone missing');
+
+                                                                    let msg = wsSettings.paymentTemplate || '';
+                                                                    msg = msg.replace(/\[\[customer_name\]\]/g, customer.name)
+                                                                        .replace(/\[\[total_amount\]\]/g, `₹${parseFloat(v.totalAmount).toFixed(2)}`)
+                                                                        .replace(/\[\[reference\]\]/g, v.voucherNumber)
+                                                                        .replace(/\[\[company_name\]\]/g, 'Our Store');
+
+                                                                    try {
+                                                                        await api.post('/whatsapp/send', { mobile: phone, message: msg });
+                                                                        toast.success('WhatsApp Sent!');
+                                                                    } catch (err) {
+                                                                        toast.error('WhatsApp failed');
+                                                                    }
+                                                                }}
+                                                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+                                                                title="Send WhatsApp"
+                                                            >
+                                                                <FiMessageSquare size={14} />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDeleteClick(v.id)}

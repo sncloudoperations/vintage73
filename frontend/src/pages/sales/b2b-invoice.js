@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
-import { FiPlus, FiTrash2, FiPrinter, FiTruck, FiFileText, FiSearch, FiChevronDown, FiChevronUp, FiList, FiFilter, FiEye, FiCalendar } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiPrinter, FiTruck, FiFileText, FiSearch, FiChevronDown, FiChevronUp, FiList, FiFilter, FiEye, FiCalendar, FiMessageSquare } from 'react-icons/fi';
 import GSTInvoicePrint from '@/components/GSTInvoicePrint';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function B2BInvoice() {
   const [customers, setCustomers] = useState([]);
@@ -236,10 +237,33 @@ export default function B2BInvoice() {
         setTimeout(() => handlePrint(), 100);
       }
 
-      // Reset form
+      // Reset form and capture values for WhatsApp
+      const savedCustomerId = customerId;
       setItems([]);
       setCustomerId('');
       setRoundOff(0);
+
+      // WhatsApp Integration for B2B Invoices
+      const wsSettings = await api.get('/whatsapp/settings').then(r => r.data).catch(() => null);
+      if (wsSettings && wsSettings.isActive && wsSettings.apiKey && savedCustomerId) {
+        const customer = customers.find(c => c.id === parseInt(savedCustomerId));
+        const phone = customer?.phone;
+
+        if (phone) {
+          let msg = wsSettings.salesTemplate || 'Hello [[customer_name]], your B2B invoice [[bill_no]] for [[total_amount]] is ready.';
+          msg = msg.replace(/\[\[customer_name\]\]/g, customer.name)
+            .replace(/\[\[bill_no\]\]/g, data.sale.invoiceNumber)
+            .replace(/\[\[total_amount\]\]/g, `₹${data.sale.totalAmount.toFixed(2)}`)
+            .replace(/\[\[company_name\]\]/g, 'Our Store');
+
+          try {
+            await api.post('/whatsapp/send', { mobile: phone, message: msg });
+            toast.info('WhatsApp Invoice Sent!');
+          } catch (wsErr) {
+            console.error('WhatsApp failed:', wsErr);
+          }
+        }
+      }
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.error || 'Failed to create invoice');
@@ -420,16 +444,12 @@ export default function B2BInvoice() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-slate-600 mb-1">Party (Customer)</label>
-                  <select
+                  <SearchableSelect
+                    options={customers.map(c => ({ value: c.id, label: `${c.name} - ${c.gstin}` }))}
                     value={customerId}
-                    onChange={(e) => setCustomerId(e.target.value)}
-                    className="input"
-                  >
-                    <option value="">Select Customer with GSTIN</option>
-                    {customers.map(c => (
-                      <option key={c.id} value={c.id}>{c.name} - {c.gstin}</option>
-                    ))}
-                  </select>
+                    onChange={val => setCustomerId(val)}
+                    placeholder="Select Customer with GSTIN"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-600 mb-1">Invoice Date</label>
@@ -455,16 +475,12 @@ export default function B2BInvoice() {
               <div className="mt-4 flex items-center gap-4">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-slate-600 mb-1">Place of Supply</label>
-                  <select
+                  <SearchableSelect
+                    options={states.map(s => ({ value: s.name, label: s.name }))}
                     value={placeOfSupply}
-                    onChange={(e) => setPlaceOfSupply(e.target.value)}
-                    className="input"
-                  >
-                    <option value="">Select State</option>
-                    {states.map(s => (
-                      <option key={s.id} value={s.name}>{s.name}</option>
-                    ))}
-                  </select>
+                    onChange={val => setPlaceOfSupply(val)}
+                    placeholder="Select State"
+                  />
                 </div>
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-slate-600 mb-1">Tax Type</label>
@@ -758,6 +774,32 @@ export default function B2BInvoice() {
                       </td>
                       <td className="p-4 text-center">
                         <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={async () => {
+                              const wsSettings = await api.get('/whatsapp/settings').then(r => r.data).catch(() => null);
+                              if (!wsSettings?.apiKey) return toast.error('WhatsApp not configured');
+
+                              const phone = inv.customer?.phone;
+                              if (!phone) return toast.error('Customer phone missing');
+
+                              let msg = wsSettings.salesTemplate || '';
+                              msg = msg.replace(/\[\[customer_name\]\]/g, inv.customer?.name || 'Customer')
+                                .replace(/\[\[bill_no\]\]/g, inv.invoiceNumber)
+                                .replace(/\[\[total_amount\]\]/g, `₹${parseFloat(inv.totalAmount).toFixed(2)}`)
+                                .replace(/\[\[company_name\]\]/g, 'Our Store');
+
+                              try {
+                                await api.post('/whatsapp/send', { mobile: phone, message: msg });
+                                toast.success('WhatsApp Sent!');
+                              } catch (err) {
+                                toast.error('WhatsApp failed');
+                              }
+                            }}
+                            className="text-emerald-500 hover:text-emerald-700 p-1"
+                            title="Send WhatsApp"
+                          >
+                            <FiMessageSquare size={16} />
+                          </button>
                           <button
                             onClick={() => handleViewInvoice(inv.id)}
                             className="text-primary hover:text-primary-dark p-1 bg-primary-light rounded"

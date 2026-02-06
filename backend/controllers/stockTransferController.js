@@ -1,21 +1,21 @@
 const prisma = require('../utils/prismaClient');
-const { ensureLedger, postVoucher } = require('../utils/accountingHelper');
+const { postTransaction } = require('../services/dynamicPostingService');
 
 exports.createTransfer = async (req, res) => {
   const { fromBranchId, toBranchId, items, remarks } = req.body;
   const user = req.user || { id: 1 };
-  
+
   try {
     const result = await prisma.$transaction(async (tx) => {
       // 1. Create Transfer Record
       let totalAmount = 0;
       const transferItems = [];
-      
+
       for (const item of items) {
         const quantity = parseInt(item.quantity) || 0;
         const unitCost = parseFloat(item.unitCost) || 0;
         const taxPercent = parseFloat(item.taxPercent || 0);
-        
+
         const subTotal = quantity * unitCost;
         const taxAmount = subTotal * (taxPercent / 100);
         const totalCost = subTotal + taxAmount;
@@ -60,20 +60,7 @@ exports.createTransfer = async (req, res) => {
 
       // 3. Accounting Integration (Sending)
       try {
-        const stockLedger = await ensureLedger(tx, 'Inventory Account', 'Stock-in-Hand');
-        const transitLedger = await ensureLedger(tx, 'Stock in Transit', 'Stock-in-Hand');
-
-        await postVoucher(tx, {
-          type: 'JOURNAL',
-          date: new Date(),
-          amount: totalAmount,
-          narration: `Stock Transfer #${transfer.id} from Branch ${fromBranchId} to ${toBranchId}`,
-          reference: `ST-${transfer.id}`,
-          createdBy: user.id
-        }, [
-          { ledgerId: transitLedger.id, type: 'DEBIT', amount: totalAmount },
-          { ledgerId: stockLedger.id, type: 'CREDIT', amount: totalAmount }
-        ]);
+        await postTransaction(tx, 'STOCK_TRANSFER', { ...transfer, items: transferItems, totalAmount }, user.id, `ST-${transfer.id}`, `Stock Transfer #${transfer.id}`);
       } catch (accErr) {
         console.error('Stock Transfer Accounting Error:', accErr);
       }
@@ -117,7 +104,7 @@ exports.getTransfers = async (req, res) => {
 exports.receiveTransfer = async (req, res) => {
   const { id } = req.params;
   const user = req.user || { id: 1 };
-  
+
   try {
     const result = await prisma.$transaction(async (tx) => {
       const transfer = await tx.stockTransfer.findUnique({
@@ -135,7 +122,7 @@ exports.receiveTransfer = async (req, res) => {
 
       await tx.stockTransfer.update({
         where: { id: parseInt(id) },
-        data: { 
+        data: {
           status: 'RECEIVED',
           receivedById: receivedById ? parseInt(receivedById) : null,
           receivedAt: new Date()
@@ -164,20 +151,7 @@ exports.receiveTransfer = async (req, res) => {
 
       // 3. Accounting Integration (Receiving)
       try {
-        const stockLedger = await ensureLedger(tx, 'Inventory Account', 'Stock-in-Hand');
-        const transitLedger = await ensureLedger(tx, 'Stock in Transit', 'Stock-in-Hand');
-
-        await postVoucher(tx, {
-          type: 'JOURNAL',
-          date: new Date(),
-          amount: totalAmount,
-          narration: `Stock Receipt #${transfer.id} at Branch ${transfer.toBranchId}`,
-          reference: `SR-${transfer.id}`,
-          createdBy: user.id
-        }, [
-          { ledgerId: stockLedger.id, type: 'DEBIT', amount: totalAmount },
-          { ledgerId: transitLedger.id, type: 'CREDIT', amount: totalAmount }
-        ]);
+        await postTransaction(tx, 'STOCK_RECEIPT', { ...transfer, totalAmount }, user.id, `SR-${transfer.id}`, `Stock Receipt #${transfer.id}`);
       } catch (accErr) {
         console.error('Stock Receipt Accounting Error:', accErr);
       }
@@ -208,7 +182,7 @@ exports.cancelTransfer = async (req, res) => {
 
       // 1. Update Status
       const totalAmount = transfer.items.reduce((sum, item) => sum + parseFloat(item.totalCost || 0), 0);
-      
+
       await tx.stockTransfer.update({
         where: { id: parseInt(id) },
         data: { status: 'CANCELLED' }
@@ -231,8 +205,8 @@ exports.cancelTransfer = async (req, res) => {
 
       // 3. Accounting Integration (Reversing)
       try {
-        const stockLedger = await ensureLedger(tx, 'Inventory Account', 'Stock-in-Hand');
-        const transitLedger = await ensureLedger(tx, 'Stock in Transit', 'Stock-in-Hand');
+        const stockLedger = await getLedgerByRole(tx, 'STOCK_TRANSFER', 'SOURCE_LEDGER', 'Inventory Account', 'Stock-in-Hand');
+        const transitLedger = await getLedgerByRole(tx, 'STOCK_TRANSFER', 'TRANSIT_LEDGER', 'Stock in Transit', 'Stock-in-Hand');
 
         await postVoucher(tx, {
           type: 'JOURNAL',

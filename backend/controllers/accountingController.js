@@ -1,4 +1,5 @@
 const prisma = require('../utils/prismaClient');
+const { processSalePosting, processPurchasePosting } = require('../utils/accountingHelper');
 
 // ==================== ACCOUNT GROUPS ====================
 
@@ -594,3 +595,124 @@ async function calculateLedgerBalance(ledgerId) {
 }
 
 exports.calculateLedgerBalance = calculateLedgerBalance;
+
+// ==================== BULK POSTING ====================
+
+/**
+ * Bulk Post Transactions for a given date range.
+ */
+exports.bulkPostTransactions = async (req, res) => {
+  try {
+    const { fromDate, toDate, transactionTypes } = req.body;
+    const userId = req.user ? req.user.id : 1;
+
+    if (!fromDate || !toDate) {
+      return res.status(400).json({ error: 'Please provide fromDate and toDate' });
+    }
+
+    const start = new Date(fromDate);
+    const end = new Date(toDate);
+    end.setHours(23, 59, 59, 999);
+
+    const results = {
+      sales: { total: 0, processed: 0, errors: [] },
+      purchases: { total: 0, processed: 0, errors: [] },
+      expenses: { total: 0, processed: 0, errors: [] },
+      payments: { total: 0, processed: 0, errors: [] }
+    };
+
+    // 1. Process Sales
+    if (!transactionTypes || transactionTypes.includes('SALES')) {
+      const sales = await prisma.sale.findMany({
+        where: { saleDate: { gte: start, lte: end } },
+        include: { customer: true }
+      });
+      results.sales.total = sales.length;
+
+      for (const sale of sales) {
+        try {
+          await prisma.$transaction(async (tx) => {
+            await tx.journalEntry.deleteMany({ where: { voucher: { reference: sale.invoiceNumber } } });
+            await tx.voucher.deleteMany({ where: { reference: sale.invoiceNumber } });
+            await processSalePosting(tx, sale, userId);
+          });
+          results.sales.processed++;
+        } catch (err) {
+          results.sales.errors.push({ id: sale.id, error: err.message });
+        }
+      }
+    }
+
+    // 2. Process Purchases
+    if (!transactionTypes || transactionTypes.includes('PURCHASE')) {
+      const purchases = await prisma.purchase.findMany({
+        where: { purchaseDate: { gte: start, lte: end } },
+        include: { supplier: true }
+      });
+      results.purchases.total = purchases.length;
+
+      for (const purchase of purchases) {
+        try {
+          await prisma.$transaction(async (tx) => {
+            const billRef = purchase.invoiceNumber || purchase.id.toString();
+            await tx.journalEntry.deleteMany({ where: { voucher: { reference: billRef } } });
+            await tx.voucher.deleteMany({ where: { reference: billRef } });
+            await processPurchasePosting(tx, purchase, userId);
+          });
+          results.purchases.processed++;
+        } catch (err) {
+          results.purchases.errors.push({ id: purchase.id, error: err.message });
+        }
+      }
+    }
+
+    // 3. Process Expenses
+    if (!transactionTypes || transactionTypes.includes('EXPENSE')) {
+      const expenses = await prisma.expense.findMany({
+        where: { date: { gte: start, lte: end } }
+      });
+      results.expenses.total = expenses.length;
+
+      for (const expense of expenses) {
+        try {
+          await prisma.$transaction(async (tx) => {
+            const expRef = `EXP-${expense.id}`;
+            await tx.journalEntry.deleteMany({ where: { voucher: { reference: expRef } } });
+            await tx.voucher.deleteMany({ where: { reference: expRef } });
+            await postTransaction(tx, 'EXPENSE', expense, userId, expRef, expense.title);
+          });
+          results.expenses.processed++;
+        } catch (err) {
+          results.expenses.errors.push({ id: expense.id, error: err.message });
+        }
+      }
+    }
+
+    // 4. Process Payments/Receipts
+    if (!transactionTypes || transactionTypes.includes('PAYMENT') || transactionTypes.includes('RECEIPT')) {
+      const payments = await prisma.payment.findMany({
+        where: { paymentDate: { gte: start, lte: end } },
+        include: { customer: true, supplier: true }
+      });
+      results.payments.total = payments.length;
+
+      for (const payment of payments) {
+        try {
+          await prisma.$transaction(async (tx) => {
+            const payRef = payment.reference || `PAY-${payment.id}`;
+            await tx.journalEntry.deleteMany({ where: { voucher: { reference: payRef } } });
+            await tx.voucher.deleteMany({ where: { reference: payRef } });
+            await postTransaction(tx, payment.type.toUpperCase(), payment, userId, payRef, payment.description);
+          });
+          results.payments.processed++;
+        } catch (err) {
+          results.payments.errors.push({ id: payment.id, error: err.message });
+        }
+      }
+    }
+
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

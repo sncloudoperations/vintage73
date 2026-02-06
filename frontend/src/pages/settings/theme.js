@@ -13,6 +13,7 @@ export default function ThemeSettings() {
         secondaryColor: '#059669',
         gradientType: 'linear'
     });
+    const [showLogoOnly, setShowLogoOnly] = useState(false);
 
     useEffect(() => {
         if (theme) {
@@ -21,6 +22,7 @@ export default function ThemeSettings() {
                 secondaryColor: theme.secondaryColor,
                 gradientType: theme.gradientType
             });
+            setShowLogoOnly(theme.companyProfile?.showOnlyLogoOnDashboard || false);
         }
     }, [theme]);
 
@@ -42,11 +44,18 @@ export default function ThemeSettings() {
             // 1. Persist to API
             // Since our updateCompanyProfile API is partial, we can just send the fields we want to update.
             await api.post('/company', {
-                ...localTheme
+                ...localTheme,
+                showOnlyLogoOnDashboard: showLogoOnly
             });
 
             // 2. Update Context (which updates CSS variables)
-            await updateTheme(localTheme);
+            await updateTheme({
+                ...localTheme,
+                companyProfile: {
+                    ...theme.companyProfile,
+                    showOnlyLogoOnDashboard: showLogoOnly
+                }
+            });
 
             toast.success('Theme updated successfully!');
         } catch (err) {
@@ -153,6 +162,30 @@ export default function ThemeSettings() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Dashboard Visibility */}
+                    <div className="card">
+                        <h3 className="text-sm font-bold text-slate-400 uppercase mb-4 flex items-center gap-2">
+                            <FiLayout /> Dashboard Visibility
+                        </h3>
+                        <div className="flex items-center gap-3 py-2">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={showLogoOnly}
+                                    onChange={(e) => setShowLogoOnly(e.target.checked)}
+                                />
+                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                                <span className="ml-3 text-sm font-medium text-slate-700 select-none">
+                                    Hide Dashboard Stats (Show Layout Only)
+                                </span>
+                            </label>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-2">
+                            If enabled, the main dashboard will only show your company logo/background image instead of financial statistics.
+                        </p>
                     </div>
                 </div>
 
