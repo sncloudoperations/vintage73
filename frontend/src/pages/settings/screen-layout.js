@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '@/lib/api';
+import api, { getServerUrl } from '@/lib/api';
 import { toast } from 'react-toastify';
 import { FiUpload, FiImage, FiSave } from 'react-icons/fi';
 import { useTheme } from '@/context/ThemeContext';
