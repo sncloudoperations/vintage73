@@ -57,7 +57,7 @@ const ChatPage = () => {
     const fetchConversations = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/conversations`, {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/conversations`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setConversations(res.data);
@@ -69,7 +69,7 @@ const ChatPage = () => {
     const fetchMessages = async (userId) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/messages/${userId}`, {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/messages/${userId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setMessages(res.data);
@@ -87,7 +87,7 @@ const ChatPage = () => {
     const markAsRead = async (senderId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/messages/read/${senderId}`, {}, {
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/messages/read/${senderId}`, {}, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             fetchConversations();
@@ -107,7 +107,7 @@ const ChatPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/messages`, formData, {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/messages`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -143,7 +143,7 @@ const ChatPage = () => {
         setIsSearching(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/messages/${selectedUser.id}/search?query=${query}`, {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/messages/${selectedUser.id}/search?query=${query}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setSearchResults(res.data);

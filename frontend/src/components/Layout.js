@@ -96,7 +96,7 @@ export default function Layout({ children }) {
             <div className="flex items-center gap-3">
               {theme.companyProfile?.logoUrl ? (
                 <img
-                  src={`http://localhost:5000${theme.companyProfile.logoUrl}`}
+                  src={`${getServerUrl()}${theme.companyProfile.logoUrl}`}
                   alt="Company Logo"
                   className="h-10 w-auto object-contain"
                 />

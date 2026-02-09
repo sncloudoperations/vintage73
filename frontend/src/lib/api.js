@@ -1,12 +1,7 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  if (typeof window !== 'undefined') {
-    // If accessing via IP (e.g. 192.168.x.x), use that same IP for the backend
-    const host = window.location.hostname;
-    return `http://${host}:5000/api`;
-  }
-  return 'http://127.0.0.1:5000/api';
+  return `${process.env.NEXT_PUBLIC_API_URL}/api`;
 };
 
 const api = axios.create({
@@ -14,7 +9,7 @@ const api = axios.create({
 });
 
 export const getServerUrl = () => {
-  return api.defaults.baseURL.replace('/api', '');
+  return process.env.NEXT_PUBLIC_API_URL;
 };
 
 api.interceptors.request.use((config) => {

@@ -107,7 +107,7 @@ export default function ScreenLayoutSettings() {
               {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
               ) : currentImage ? (
-                <img src={`http://localhost:5000${currentImage}`} alt="Current Layout" className="w-full h-full object-cover" />
+                <img src={`${getServerUrl()}${currentImage}`} alt="Current Layout" className="w-full h-full object-cover" />
               ) : (
                 <div className="text-center text-slate-400 p-4">
                   <FiImage className="mx-auto text-4xl mb-2 opacity-50" />

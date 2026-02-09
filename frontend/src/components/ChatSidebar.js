@@ -54,7 +54,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     const fetchConversations = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/conversations`, {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/conversations`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setConversations(res.data);
@@ -66,7 +66,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     const fetchMessages = async (userId) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/messages/${userId}`, {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/messages/${userId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setMessages(res.data);
@@ -84,7 +84,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     const markAsRead = async (senderId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/messages/read/${senderId}`, {}, {
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/messages/read/${senderId}`, {}, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             fetchConversations();
@@ -104,7 +104,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/messages`, formData, {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/messages`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -140,7 +140,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
         setIsSearching(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat/messages/${selectedUser.id}/search?query=${query}`, {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/messages/${selectedUser.id}/search?query=${query}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setSearchResults(res.data);
@@ -256,8 +256,8 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                                                 className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
                                             >
                                                 <div className={`max-w-[85%] p-3 rounded-2xl shadow-sm relative ${msg.senderId === user?.id
-                                                        ? 'text-white rounded-br-none'
-                                                        : 'bg-gray-100 text-gray-800 rounded-bl-none'
+                                                    ? 'text-white rounded-br-none'
+                                                    : 'bg-gray-100 text-gray-800 rounded-bl-none'
                                                     }`}
                                                     style={msg.senderId === user?.id ? { backgroundColor: theme.primaryColor || '#2563eb' } : {}}
                                                 >
