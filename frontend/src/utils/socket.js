@@ -7,11 +7,29 @@ let socket;
 export const initSocket = (userId) => {
     if (socket) return socket;
 
-    socket = io(SOCKET_URL);
+    socket = io(SOCKET_URL, {
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000,
+    });
 
     socket.on("connect", () => {
-        console.log("Connected to Socket.io server");
+        console.log("[SOCKET] Connected to server");
         socket.emit("join_room", userId);
+    });
+
+    socket.on("connect_error", (err) => {
+        console.error("[SOCKET] Connection Error:", err.message);
+    });
+
+    socket.on("reconnect_attempt", () => {
+        console.log("[SOCKET] Attempting to reconnect...");
+    });
+
+    socket.on("disconnect", (reason) => {
+        console.warn("[SOCKET] Disconnected:", reason);
     });
 
     return socket;

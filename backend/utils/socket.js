@@ -3,11 +3,16 @@ const { Server } = require("socket.io");
 let io;
 
 const initSocket = (server) => {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ["*"];
+
     io = new Server(server, {
         cors: {
-            origin: "*", // Adjust this in production for security
+            origin: process.env.NODE_ENV === 'production' ? allowedOrigins : "*",
             methods: ["GET", "POST"]
-        }
+        },
+        // Production stability settings
+        pingTimeout: 60000,
+        pingInterval: 25000,
     });
 
     io.on("connection", (socket) => {

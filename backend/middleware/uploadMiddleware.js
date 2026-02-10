@@ -2,10 +2,17 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../../frontend/public/uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// UPLOAD PATH: Use env variable or fallback to default
+const uploadDir = process.env.UPLOADS_PATH || path.join(__dirname, '../../frontend/public/uploads');
+
+// Ensure upload directory exists (robust check)
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log(`[UPLOAD] Created upload directory at: ${uploadDir}`);
+  }
+} catch (err) {
+  console.error(`[UPLOAD_ERROR] Failed to create upload directory: ${err.message}`);
 }
 
 // Configure Storage
@@ -23,19 +30,22 @@ const storage = multer.diskStorage({
 // File Filter
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|webp|gif|svg/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedTypes.test(file.mimetype);
+  const isExtensionValid = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const isMimetypeValid = allowedTypes.test(file.mimetype);
 
-  if (extname && mimetype) {
+  if (isExtensionValid && isMimetypeValid) {
     return cb(null, true);
   } else {
-    cb(new Error('Images only (jpeg, jpg, png, webp)!'));
+    cb(new Error('Invalid file type. Only images (jpeg, jpg, png, webp, gif, svg) are allowed.'));
   }
 };
 
-const upload = multer({ 
+const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: {
+    fileSize: 10 * 1024 * 1024, // Increased to 10MB for production flexibility
+    files: 5 // Limit number of files per request
+  },
   fileFilter: fileFilter
 });
 

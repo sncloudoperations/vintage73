@@ -3,17 +3,31 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const http = require("http");
 const path = require('path');
+const fs = require('fs');
 const { initSocket } = require("./utils/socket");
 const authRoutes = require('./routes/authRoutes');
 
 dotenv.config();
+
+const validateEnv = require("./utils/envValidator");
+validateEnv();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, '../frontend/public/uploads')));
+
+// UPLOADS CONFIGURATION
+const UPLOADS_PATH = process.env.UPLOADS_PATH || path.join(__dirname, '../frontend/public/uploads');
+
+// Ensure uploads directory exists
+if (!fs.existsSync(UPLOADS_PATH)) {
+  console.log(`Creating uploads directory at: ${UPLOADS_PATH}`);
+  fs.mkdirSync(UPLOADS_PATH, { recursive: true });
+}
+
+app.use('/uploads', express.static(UPLOADS_PATH));
 
 const server = http.createServer(app);
 initSocket(server);
@@ -21,6 +35,25 @@ initSocket(server);
 // Routes
 app.get("/", (req, res) => {
   res.send("Billing Software API is running...");
+});
+
+// Health Check Endpoint
+app.get("/api/health", async (req, res) => {
+  const prisma = require('./utils/prismaClient');
+  let dbStatus = 'connected';
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+  } catch (e) {
+    dbStatus = 'disconnected';
+  }
+
+  res.json({
+    status: dbStatus === 'connected' ? 'OK' : 'ERROR',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    database: dbStatus,
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 app.use('/api/auth', authRoutes);
@@ -58,5 +91,44 @@ app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('[GLOBAL_ERROR]', {
+    message: err.message,
+    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
+    path: req.path,
+    method: req.method
+  });
+
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+    error: true,
+    message: err.message || 'Internal Server Error',
+    code: err.code || 'INTERNAL_ERROR'
+  });
+});
+
+// Graceful Shutdown
+const shutdown = () => {
+  console.log('Shutting down gracefully...');
+  server.close(() => {
+    console.log('Server closed.');
+    const prisma = require('./utils/prismaClient');
+    prisma.$disconnect().then(() => {
+      console.log('Database disconnected.');
+      process.exit(0);
+    });
+  });
+
+  // Force exit after 10s
+  setTimeout(() => {
+    console.error('Forcing shutdown...');
+    process.exit(1);
+  }, 10000);
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

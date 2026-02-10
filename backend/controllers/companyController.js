@@ -2,7 +2,6 @@ const prisma = require('../utils/prismaClient');
 
 // Get Company Profile
 exports.getCompanyProfile = async (req, res) => {
-  console.log('--- DEBUG: getCompanyProfile called ---');
   try {
     let company = await prisma.companyProfile.findFirst({
       include: { bank: true }

@@ -61,8 +61,13 @@ export default function AttendanceSheet() {
         });
         if (leave) return leave.leaveType?.name || 'LEAVE';
 
-        const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
-        if (isWeekend) return 'WEEKEND';
+        const daysMap = {
+            'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3,
+            'Thursday': 4, 'Friday': 5, 'Saturday': 6
+        };
+        const offDay = daysMap[user.weeklyOff] ?? 0;
+        const isWeeklyOff = currentDate.getDay() === offDay;
+        if (isWeeklyOff && user.weeklyOff !== 'None') return 'WEEKEND';
 
         return 'ABSENT';
     };
@@ -72,7 +77,7 @@ export default function AttendanceSheet() {
             case 'PRESENT': return 'text-primary bg-primary-light/10';
             case 'HALF_DAY': return 'text-amber-500 bg-amber-50';
             case 'ABSENT': return 'text-red-500 bg-red-50';
-            case 'WEEKEND': return 'text-slate-400 bg-slate-50';
+            case 'WEEKEND': return 'text-slate-400 bg-slate-50 border border-slate-100/50';
             default: return 'text-blue-500 bg-blue-50'; // Leaves
         }
     };
@@ -160,7 +165,7 @@ export default function AttendanceSheet() {
                     <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-amber-100 text-amber-500 flex items-center justify-center"><FiMinus size={10} /></div> Half Day</div>
                     <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-blue-100 text-blue-500"></div> Leave</div>
                 </div>
-                <div className="italic text-[10px] normal-case">* Sundays and Saturdays are marked as Weekend by default. Any blank working day is automatically docked.</div>
+                <div className="italic text-[10px] normal-case">* Weekly Off is based on the day selected in User Master for each employee. Any blank working day is automatically docked.</div>
             </div>
         </div>
     );

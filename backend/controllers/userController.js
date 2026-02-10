@@ -14,6 +14,8 @@ exports.getUsers = async (req, res) => {
         branchId: true,
         allowedModules: true,
         incentivePercentage: true,
+        imageUrl: true,
+        weeklyOff: true,
         createdAt: true,
         terminals: {
           select: { id: true, name: true, terminalCode: true }
@@ -38,7 +40,8 @@ exports.createUser = async (req, res) => {
   const {
     username, password, name, role, allowedModules, branchId, incentivePercentage,
     designation, department, joiningDate, basicSalary, labourRule, nationalId,
-    employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds
+    employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds,
+    weeklyOff
   } = req.body;
   try {
     const existingUser = await prisma.user.findUnique({ where: { username } });
@@ -105,6 +108,8 @@ exports.createUser = async (req, res) => {
         allowedModules: allowedModules || [],
         branchId: branchId ? parseInt(branchId) : null,
         incentivePercentage: incentivePercentage ? parseFloat(incentivePercentage) : 0,
+        imageUrl: req.file ? '/uploads/' + req.file.filename : null,
+        weeklyOff: weeklyOff || 'Sunday',
         terminals: terminalIds && Array.isArray(terminalIds) ? { connect: terminalIds.map(id => ({ id: parseInt(id) })) } : undefined,
         employeeProfile: {
           create: {
@@ -168,7 +173,8 @@ exports.updateUser = async (req, res) => {
   const {
     name, role, allowedModules, branchId, incentivePercentage,
     designation, department, joiningDate, basicSalary, labourRule, nationalId,
-    employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds
+    employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds,
+    weeklyOff
   } = req.body;
 
   try {
@@ -210,6 +216,8 @@ exports.updateUser = async (req, res) => {
         allowedModules: allowedModules,
         branchId: branchId ? parseInt(branchId) : null,
         incentivePercentage: incentivePercentage ? parseFloat(incentivePercentage) : 0,
+        imageUrl: req.file ? '/uploads/' + req.file.filename : undefined,
+        weeklyOff: weeklyOff,
         terminals: {
           set: terminalIds && Array.isArray(terminalIds) ? terminalIds.map(id => ({ id: parseInt(id) })) : []
         },

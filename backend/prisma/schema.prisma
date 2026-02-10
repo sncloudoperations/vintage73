@@ -38,6 +38,8 @@ model User {
   sentMessages           ChatMessage[] @relation("SentMessages")
   receivedMessages       ChatMessage[] @relation("ReceivedMessages")
   notifications          Notification[]
+  imageUrl               String?
+  weeklyOff              String?  @default("Sunday")
 }
 
 model Branch {

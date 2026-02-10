@@ -2,63 +2,63 @@ const prisma = require('../utils/prismaClient');
 
 // Attendance
 exports.checkIn = async (req, res) => {
-  const { userId } = req.body;
-  try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const { userId } = req.body;
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-    // Check if already checked in
-    const existing = await prisma.attendance.findFirst({
-      where: {
-        userId,
-        date: { gte: today }
-      }
-    });
+        // Check if already checked in
+        const existing = await prisma.attendance.findFirst({
+            where: {
+                userId,
+                date: { gte: today }
+            }
+        });
 
-    if (existing) {
-      return res.status(400).json({ error: 'Already checked in for today' });
+        if (existing) {
+            return res.status(400).json({ error: 'Already checked in for today' });
+        }
+
+        const attendance = await prisma.attendance.create({
+            data: {
+                userId,
+                checkIn: new Date(),
+                status: 'PRESENT'
+            }
+        });
+
+        res.json(attendance);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    const attendance = await prisma.attendance.create({
-      data: {
-        userId,
-        checkIn: new Date(),
-        status: 'PRESENT'
-      }
-    });
-
-    res.json(attendance);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };
 
 exports.checkOut = async (req, res) => {
-  const { userId } = req.body;
-  try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const { userId } = req.body;
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-    const attendance = await prisma.attendance.findFirst({
-      where: {
-        userId,
-        date: { gte: today }
-      }
-    });
+        const attendance = await prisma.attendance.findFirst({
+            where: {
+                userId,
+                date: { gte: today }
+            }
+        });
 
-    if (!attendance) {
-      return res.status(400).json({ error: 'No check-in record found for today' });
+        if (!attendance) {
+            return res.status(400).json({ error: 'No check-in record found for today' });
+        }
+
+        const updated = await prisma.attendance.update({
+            where: { id: attendance.id },
+            data: { checkOut: new Date() }
+        });
+
+        res.json(updated);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    const updated = await prisma.attendance.update({
-      where: { id: attendance.id },
-      data: { checkOut: new Date() }
-    });
-
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };
 
 exports.getAttendanceStatus = async (req, res) => {
@@ -66,7 +66,7 @@ exports.getAttendanceStatus = async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         const attendance = await prisma.attendance.findFirst({
             where: {
                 userId: parseInt(userId),
@@ -83,7 +83,7 @@ exports.getAttendanceHistory = async (req, res) => {
     const { userId, month, year } = req.query;
     try {
         const where = { userId: parseInt(userId) };
-        const leaveWhere = { 
+        const leaveWhere = {
             userId: parseInt(userId),
             status: 'APPROVED'
         };
@@ -92,7 +92,7 @@ exports.getAttendanceHistory = async (req, res) => {
             const startDate = new Date(year, month - 1, 1);
             const endDate = new Date(year, month, 0); // Last day of month
             endDate.setHours(23, 59, 59, 999);
-            
+
             where.date = {
                 gte: startDate,
                 lte: endDate
@@ -127,9 +127,9 @@ exports.createLeaveType = async (req, res) => {
     const { name, isPaid, monthlyLimit, color } = req.body;
     try {
         const type = await prisma.leaveType.create({
-            data: { 
-                name, 
-                isPaid: isPaid ?? true, 
+            data: {
+                name,
+                isPaid: isPaid ?? true,
                 monthlyLimit: parseInt(monthlyLimit) || 0,
                 color: color || '#3B82F6'
             }
@@ -153,11 +153,11 @@ exports.updateLeaveType = async (req, res) => {
     try {
         const type = await prisma.leaveType.update({
             where: { id: parseInt(id) },
-            data: { 
-                name, 
-                isPaid, 
+            data: {
+                name,
+                isPaid,
                 monthlyLimit: parseInt(monthlyLimit) || 0,
-                color 
+                color
             }
         });
         res.json(type);
@@ -178,84 +178,84 @@ exports.deleteLeaveType = async (req, res) => {
 
 // Leaves
 exports.applyLeave = async (req, res) => {
-  const { userId, startDate, endDate, reason, leaveTypeId, isHalfDay } = req.body;
-  try {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    // 1. Calculate requested duration
-    let requestedDays = 0;
-    if (isHalfDay) {
-        requestedDays = 0.5;
-        // Optional: Ensure start == end for half day? 
-        // For now, if half day is checked, we assume it applies to the single day or the range is just treated as 0.5 overall (usually half day is for 1 day).
-        // Let's enforce start == end for half day to avoid confusion
-        if (startDate.split('T')[0] !== endDate.split('T')[0]) {
-             // return res.status(400).json({ error: "Half day can only be applied for a single date." });
-             // Or just let it be, but count as 0.5? Let's assume user knows. 
-             // Better: If isHalfDay, we ignore duration and take 0.5.
+    const { userId, startDate, endDate, reason, leaveTypeId, isHalfDay } = req.body;
+    try {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        // 1. Calculate requested duration
+        let requestedDays = 0;
+        if (isHalfDay) {
+            requestedDays = 0.5;
+            // Optional: Ensure start == end for half day? 
+            // For now, if half day is checked, we assume it applies to the single day or the range is just treated as 0.5 overall (usually half day is for 1 day).
+            // Let's enforce start == end for half day to avoid confusion
+            if (startDate.split('T')[0] !== endDate.split('T')[0]) {
+                // return res.status(400).json({ error: "Half day can only be applied for a single date." });
+                // Or just let it be, but count as 0.5? Let's assume user knows. 
+                // Better: If isHalfDay, we ignore duration and take 0.5.
+            }
+        } else {
+            const diffTime = Math.abs(end - start);
+            requestedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
         }
-    } else {
-        const diffTime = Math.abs(end - start);
-        requestedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
-    }
 
-    // 2. Check Limit if leaveTypeId provided
-    if (leaveTypeId) {
-        const type = await prisma.leaveType.findUnique({ where: { id: parseInt(leaveTypeId) } });
-        if (!type) return res.status(404).json({ error: "Invalid Leave Type" });
+        // 2. Check Limit if leaveTypeId provided
+        if (leaveTypeId) {
+            const type = await prisma.leaveType.findUnique({ where: { id: parseInt(leaveTypeId) } });
+            if (!type) return res.status(404).json({ error: "Invalid Leave Type" });
 
-        if (type.monthlyLimit > 0) {
-            // Count leaves taken/requested of this type in the START month
-            const startMonth = start.getMonth();
-            const startYear = start.getFullYear();
-            
-            const monthStart = new Date(startYear, startMonth, 1);
-            const monthEnd = new Date(startYear, startMonth + 1, 0);
+            if (type.monthlyLimit > 0) {
+                // Count leaves taken/requested of this type in the START month
+                const startMonth = start.getMonth();
+                const startYear = start.getFullYear();
 
-            const existingLeaves = await prisma.leaveRequest.findMany({
-                where: {
-                    userId,
-                    leaveTypeId: parseInt(leaveTypeId),
-                    status: { in: ['APPROVED', 'PENDING'] },
-                    startDate: { gte: monthStart, lte: monthEnd }
-                }
-            });
+                const monthStart = new Date(startYear, startMonth, 1);
+                const monthEnd = new Date(startYear, startMonth + 1, 0);
 
-            let usedDays = 0;
-            existingLeaves.forEach(l => {
-                if (l.isHalfDay) {
-                    usedDays += 0.5;
-                } else {
-                    const lStart = new Date(l.startDate);
-                    const lEnd = new Date(l.endDate);
-                    const lDiff = Math.abs(lEnd - lStart);
-                    usedDays += Math.ceil(lDiff / (1000 * 60 * 60 * 24)) + 1;
-                }
-            });
-
-            if (usedDays + requestedDays > type.monthlyLimit) {
-                return res.status(400).json({ 
-                    error: `Monthly limit exceeded. Limit: ${type.monthlyLimit}, Used: ${usedDays}, Requested: ${requestedDays}` 
+                const existingLeaves = await prisma.leaveRequest.findMany({
+                    where: {
+                        userId,
+                        leaveTypeId: parseInt(leaveTypeId),
+                        status: { in: ['APPROVED', 'PENDING'] },
+                        startDate: { gte: monthStart, lte: monthEnd }
+                    }
                 });
+
+                let usedDays = 0;
+                existingLeaves.forEach(l => {
+                    if (l.isHalfDay) {
+                        usedDays += 0.5;
+                    } else {
+                        const lStart = new Date(l.startDate);
+                        const lEnd = new Date(l.endDate);
+                        const lDiff = Math.abs(lEnd - lStart);
+                        usedDays += Math.ceil(lDiff / (1000 * 60 * 60 * 24)) + 1;
+                    }
+                });
+
+                if (usedDays + requestedDays > type.monthlyLimit) {
+                    return res.status(400).json({
+                        error: `Monthly limit exceeded. Limit: ${type.monthlyLimit}, Used: ${usedDays}, Requested: ${requestedDays}`
+                    });
+                }
             }
         }
-    }
 
-    const leave = await prisma.leaveRequest.create({
-      data: {
-        userId,
-        startDate: start,
-        endDate: end,
-        reason,
-        leaveTypeId: leaveTypeId ? parseInt(leaveTypeId) : null,
-        isHalfDay: !!isHalfDay
-      }
-    });
-    res.json(leave);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+        const leave = await prisma.leaveRequest.create({
+            data: {
+                userId,
+                startDate: start,
+                endDate: end,
+                reason,
+                leaveTypeId: leaveTypeId ? parseInt(leaveTypeId) : null,
+                isHalfDay: !!isHalfDay
+            }
+        });
+        res.json(leave);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
 exports.getLeaveRequests = async (req, res) => {
@@ -267,7 +267,7 @@ exports.getLeaveRequests = async (req, res) => {
 
         const leaves = await prisma.leaveRequest.findMany({
             where,
-            include: { 
+            include: {
                 user: { select: { name: true, username: true } },
                 leaveType: true
             },
@@ -280,25 +280,25 @@ exports.getLeaveRequests = async (req, res) => {
 };
 
 exports.updateLeaveStatus = async (req, res) => {
-  const { id } = req.params;
-  const { status, approvedById } = req.body; 
-  try {
-    const leave = await prisma.leaveRequest.update({
-      where: { id: parseInt(id) },
-      data: { 
-        status, 
-        approvedById: approvedById ? parseInt(approvedById) : undefined 
-      }
-    });
-    res.json(leave);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    const { id } = req.params;
+    const { status, approvedById } = req.body;
+    try {
+        const leave = await prisma.leaveRequest.update({
+            where: { id: parseInt(id) },
+            data: {
+                status,
+                approvedById: approvedById ? parseInt(approvedById) : undefined
+            }
+        });
+        res.json(leave);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
 // Payroll
 // Helper for payroll calculation
-const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary }) => {
+const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary, weeklyOff }) => {
     let basic = Number(basicSalary);
     let payableDays = 0;
     let totalDays = 0;
@@ -316,14 +316,14 @@ const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary }) =
         end.setHours(23, 59, 59, 999);
 
         totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
-        
+
         const attendance = await prisma.attendance.findMany({
             where: {
                 userId: parseInt(userId),
                 date: { gte: start, lte: end }
             }
         });
-        
+
         const leaves = await prisma.leaveRequest.findMany({
             where: {
                 userId: parseInt(userId),
@@ -334,15 +334,21 @@ const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary }) =
             include: { leaveType: true }
         });
 
-        // Strict Logic: Iterate through each day
         for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
             const dateStr = d.toISOString().split('T')[0];
-            const isWeekend = d.getDay() === 0 || d.getDay() === 6; // Sunday or Saturday
+
+            // Check if it's the weekly off day
+            const daysMap = {
+                'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3,
+                'Thursday': 4, 'Friday': 5, 'Saturday': 6
+            };
+            const offDay = daysMap[weeklyOff] ?? 0; // Default to Sunday
+            const isWeeklyOff = d.getDay() === offDay;
 
             const att = attendance.find(a => a.date.toISOString().split('T')[0] === dateStr);
             const leave = leaves.find(l => {
-                const s = new Date(l.startDate); s.setHours(0,0,0,0);
-                const e = new Date(l.endDate); e.setHours(0,0,0,0);
+                const s = new Date(l.startDate); s.setHours(0, 0, 0, 0);
+                const e = new Date(l.endDate); e.setHours(0, 0, 0, 0);
                 return d >= s && d <= e;
             });
 
@@ -364,8 +370,8 @@ const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary }) =
                 } else {
                     unpaidLeaveDays++;
                 }
-            } else if (isWeekend) {
-                // If no record and no leave on weekend, it's paid (Standard Holiday)
+            } else if (isWeeklyOff) {
+                // If no record and no leave on weekly off, it's paid (Standard Holiday)
                 payableDays += 1;
                 weekendDays++;
             } else {
@@ -397,19 +403,21 @@ exports.generatePayroll = async (req, res) => {
     const { userId, month, year, allowances, deductions, fromDate, toDate } = req.body;
     try {
         const profile = await prisma.employeeProfile.findUnique({
-             where: { userId: parseInt(userId) }
+            where: { userId: parseInt(userId) },
+            include: { user: { select: { weeklyOff: true } } }
         });
-        
-        if (!profile) return res.status(404).json({error: "Employee profile not found"});
-        
-        const calc = await calculatePayrollData({ 
-            userId, fromDate, toDate, basicSalary: profile.basicSalary 
+
+        if (!profile) return res.status(404).json({ error: "Employee profile not found" });
+
+        const calc = await calculatePayrollData({
+            userId, fromDate, toDate, basicSalary: profile.basicSalary,
+            weeklyOff: profile.user?.weeklyOff
         });
 
         const basic = calc.calculatedBasic;
         const allow = Number(allowances || 0);
         const deduc = Number(deductions || 0);
-        
+
         const approvedAdvances = await prisma.salaryAdvance.findMany({
             where: {
                 userId: parseInt(userId),
@@ -417,10 +425,10 @@ exports.generatePayroll = async (req, res) => {
                 deductedInPayroll: false
             }
         });
-        
+
         const totalAdvances = approvedAdvances.reduce((sum, adv) => sum + Number(adv.amount), 0);
         const net = basic + allow - deduc - totalAdvances;
-        
+
         const payroll = await prisma.payroll.create({
             data: {
                 userId: parseInt(userId),
@@ -435,19 +443,19 @@ exports.generatePayroll = async (req, res) => {
                 toDate: toDate ? new Date(toDate) : null
             }
         });
-        
+
         if (approvedAdvances.length > 0) {
             await prisma.salaryAdvance.updateMany({
                 where: { id: { in: approvedAdvances.map(a => a.id) } },
                 data: { deductedInPayroll: true, payrollId: payroll.id }
             });
         }
-        
+
         // Accounting Integration
         const accountingUtils = require('../utils/accountingUtils');
         await accountingUtils.handlePayrollGeneration(payroll.id, userId);
 
-        
+
         res.json({
             ...payroll,
             advancesDeducted: totalAdvances,
@@ -466,13 +474,15 @@ exports.getPayrollPreview = async (req, res) => {
         }
 
         const profile = await prisma.employeeProfile.findUnique({
-             where: { userId: parseInt(userId) }
+            where: { userId: parseInt(userId) },
+            include: { user: { select: { weeklyOff: true } } }
         });
-        
-        if (!profile) return res.status(404).json({error: "Employee profile not found"});
 
-        const calc = await calculatePayrollData({ 
-            userId, fromDate, toDate, basicSalary: profile.basicSalary 
+        if (!profile) return res.status(404).json({ error: "Employee profile not found" });
+
+        const calc = await calculatePayrollData({
+            userId, fromDate, toDate, basicSalary: profile.basicSalary,
+            weeklyOff: profile.user?.weeklyOff
         });
 
         // Also fetch pending advances
@@ -505,6 +515,7 @@ exports.getBulkAttendance = async (req, res) => {
         const users = await prisma.user.findMany({
             where: { employeeProfile: { isNot: null } },
             include: {
+                weeklyOff: true,
                 employeeProfile: {
                     include: { department: true }
                 },
@@ -643,7 +654,7 @@ exports.getEmployeeProfile = async (req, res) => {
         });
         res.json(profile || {});
     } catch (err) {
-        res.status(500).json({error: err.message});
+        res.status(500).json({ error: err.message });
     }
 }
 
@@ -661,6 +672,6 @@ exports.updateEmployeeProfile = async (req, res) => {
         });
         res.json(profile);
     } catch (err) {
-        res.status(500).json({error: err.message});
+        res.status(500).json({ error: err.message });
     }
 }

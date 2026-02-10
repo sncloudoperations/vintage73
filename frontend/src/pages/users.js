@@ -14,7 +14,10 @@ export default function Users() {
     designation: '', department: '', joiningDate: '', basicSalary: 0, labourRule: '', nationalId: '',
     employeeCode: '', bankName: '', accountNumber: '', ifscCode: '', branchName: '',
     terminalIds: [],
-    autoCode: true
+    weeklyOff: 'Sunday',
+    autoCode: true,
+    image: null,
+    imagePreview: null
   });
   const [editingId, setEditingId] = useState(null);
   const [branches, setBranches] = useState([]);
@@ -107,11 +110,26 @@ export default function Users() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const data = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (key === 'allowedModules' || key === 'terminalIds') {
+          formData[key].forEach(val => data.append(`${key}[]`, val));
+        } else if (key === 'image') {
+          if (formData[key]) data.append('image', formData[key]);
+        } else {
+          data.append(key, formData[key]);
+        }
+      });
+
       if (editingId) {
-        await api.put(`/users/${editingId}`, formData);
+        await api.put(`/users/${editingId}`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('User updated successfully');
       } else {
-        await api.post('/users', formData);
+        await api.post('/users', data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('User created successfully');
       }
       setShowModal(false);
@@ -121,7 +139,10 @@ export default function Users() {
         designation: '', department: '', joiningDate: '', basicSalary: 0, labourRule: '', nationalId: '',
         employeeCode: '', bankName: '', accountNumber: '', ifscCode: '', branchName: '',
         terminalIds: [],
-        autoCode: true
+        weeklyOff: 'Sunday',
+        autoCode: true,
+        image: null,
+        imagePreview: null
       });
       fetchUsers();
     } catch (err) {
@@ -152,7 +173,10 @@ export default function Users() {
       ifscCode: user.employeeProfile?.ifscCode || '',
       branchName: user.employeeProfile?.branchName || '',
       terminalIds: user.terminals?.map(t => t.id) || [],
-      autoCode: !user.employeeProfile?.employeeCode
+      weeklyOff: user.weeklyOff || 'Sunday',
+      autoCode: !user.employeeProfile?.employeeCode,
+      image: null,
+      imagePreview: user.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL}${user.imageUrl}` : null
     });
     setShowModal(true);
   };
@@ -220,8 +244,12 @@ export default function Users() {
                 <tr key={user.id}>
                   <td className="font-medium text-slate-700">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
-                        <FiUser />
+                      <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 overflow-hidden border border-slate-200">
+                        {user.imageUrl ? (
+                          <img src={`${process.env.NEXT_PUBLIC_API_URL}${user.imageUrl}`} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <FiUser />
+                        )}
                       </div>
                       <div>
                         <div className="font-bold text-slate-800">{user.name || 'No Name'}</div>
@@ -359,6 +387,37 @@ export default function Users() {
 
                 {/* General Tab */}
                 <div className={activeTab === 'general' ? 'block' : 'hidden'}>
+                  <div className="mb-6 flex flex-col items-center justify-center py-4 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                    <div className="relative group">
+                      <div className="w-24 h-24 rounded-full bg-white border-4 border-white shadow-md overflow-hidden flex items-center justify-center text-slate-300">
+                        {formData.imagePreview ? (
+                          <img src={formData.imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <FiUser size={40} />
+                        )}
+                      </div>
+                      <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full">
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              setFormData({
+                                ...formData,
+                                image: file,
+                                imagePreview: URL.createObjectURL(file)
+                              });
+                            }
+                          }}
+                        />
+                        <FiEdit2 size={20} />
+                      </label>
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-3">Profile Photo</p>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                     <div className="space-y-4">
                       <div>
@@ -552,6 +611,23 @@ export default function Users() {
                 {/* Salary & Labour Tab */}
                 <div className={activeTab === 'salary' ? 'block' : 'hidden'}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Weekly Off Day</label>
+                      <select
+                        className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
+                        value={formData.weeklyOff}
+                        onChange={e => setFormData({ ...formData, weeklyOff: e.target.value })}
+                      >
+                        <option value="Sunday">Sunday</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="None">None / No Off</option>
+                      </select>
+                    </div>
                     <div>
                       <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex justify-between">
                         Employee Code
