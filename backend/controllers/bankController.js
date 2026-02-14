@@ -1,48 +1,33 @@
-const prisma = require('../utils/prismaClient');
+const prisma = require('../config/prisma');
+const asyncHandler = require('../middleware/asyncHandler');
 
-exports.getBanks = async (req, res) => {
-  try {
-    const banks = await prisma.bank.findMany({
-      orderBy: { name: 'asc' }
-    });
-    res.json(banks);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+exports.getBanks = asyncHandler(async (req, res) => {
+  const banks = await prisma.bank.findMany({
+    orderBy: { name: 'asc' }
+  });
+  res.json(banks);
+});
 
-exports.createBank = async (req, res) => {
+exports.createBank = asyncHandler(async (req, res) => {
   const { name, accountNumber, ifscCode, branchName, address, isActive } = req.body;
-  try {
-    const bank = await prisma.bank.create({
-      data: { name, accountNumber, ifscCode, branchName, address, isActive: isActive ?? true }
-    });
-    res.status(201).json(bank);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  const bank = await prisma.bank.create({
+    data: { name, accountNumber, ifscCode, branchName, address, isActive: isActive ?? true }
+  });
+  res.status(201).json(bank);
+});
 
-exports.updateBank = async (req, res) => {
+exports.updateBank = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, accountNumber, ifscCode, branchName, address, isActive } = req.body;
-  try {
-    const bank = await prisma.bank.update({
-      where: { id: parseInt(id) },
-      data: { name, accountNumber, ifscCode, branchName, address, isActive }
-    });
-    res.json(bank);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  const bank = await prisma.bank.update({
+    where: { id: parseInt(id) },
+    data: { name, accountNumber, ifscCode, branchName, address, isActive }
+  });
+  res.json(bank);
+});
 
-exports.deleteBank = async (req, res) => {
+exports.deleteBank = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  try {
-    await prisma.bank.delete({ where: { id: parseInt(id) } });
-    res.json({ message: 'Bank deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  await prisma.bank.delete({ where: { id: parseInt(id) } });
+  res.json({ message: 'Bank deleted successfully' });
+});

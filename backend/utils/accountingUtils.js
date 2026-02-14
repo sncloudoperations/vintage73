@@ -1,4 +1,4 @@
-const prisma = require('./prismaClient');
+const prisma = require('../config/prisma');
 
 /**
  * Safely evaluate a simple arithmetic formula using a context object

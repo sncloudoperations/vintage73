@@ -1,57 +1,42 @@
-const prisma = require('../utils/prismaClient');
+const prisma = require('../config/prisma');
+const asyncHandler = require('../middleware/asyncHandler');
 
 // Get all suppliers
-exports.getSuppliers = async (req, res) => {
-  try {
-    const suppliers = await prisma.supplier.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        _count: {
-          select: { purchases: true }
-        }
+exports.getSuppliers = asyncHandler(async (req, res) => {
+  const suppliers = await prisma.supplier.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      _count: {
+        select: { purchases: true }
       }
-    });
-    res.json(suppliers);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+    }
+  });
+  res.json(suppliers);
+});
 
 // Create supplier
-exports.createSupplier = async (req, res) => {
+exports.createSupplier = asyncHandler(async (req, res) => {
   const { name, phone, email, address, gstNumber, contactPerson } = req.body;
-  try {
-    const supplier = await prisma.supplier.create({
-      data: { name, phone, email, address, gstNumber, contactPerson }
-    });
-    res.status(201).json(supplier);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  const supplier = await prisma.supplier.create({
+    data: { name, phone, email, address, gstNumber, contactPerson }
+  });
+  res.status(201).json(supplier);
+});
 
 // Update supplier
-exports.updateSupplier = async (req, res) => {
+exports.updateSupplier = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, phone, email, address, gstNumber, contactPerson } = req.body;
-  try {
-    const supplier = await prisma.supplier.update({
-      where: { id: parseInt(id) },
-      data: { name, phone, email, address, gstNumber, contactPerson }
-    });
-    res.json(supplier);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  const supplier = await prisma.supplier.update({
+    where: { id: parseInt(id) },
+    data: { name, phone, email, address, gstNumber, contactPerson }
+  });
+  res.json(supplier);
+});
 
 // Delete supplier
-exports.deleteSupplier = async (req, res) => {
+exports.deleteSupplier = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  try {
-    await prisma.supplier.delete({ where: { id: parseInt(id) } });
-    res.json({ message: 'Supplier deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  await prisma.supplier.delete({ where: { id: parseInt(id) } });
+  res.json({ message: 'Supplier deleted successfully' });
+});

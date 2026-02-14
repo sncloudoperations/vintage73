@@ -1,4 +1,4 @@
-const prisma = require('./utils/prismaClient');
+const prisma = require('./config/prisma');
 const { processPurchasePosting } = require('./utils/accountingHelper');
 
 async function verify() {

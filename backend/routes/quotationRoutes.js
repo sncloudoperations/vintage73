@@ -10,15 +10,17 @@ const {
 } = require('../controllers/quotationController');
 const protect = require('../middleware/authMiddleware');
 
+router.use(protect);
+
 router.route('/')
-    .post(protect, createQuotation)
-    .get(protect, getQuotations);
+    .post(createQuotation)
+    .get(getQuotations);
 
 router.route('/:id')
-    .get(protect, getQuotationById)
-    .put(protect, updateQuotation);
+    .get(getQuotationById)
+    .put(updateQuotation);
 
-router.post('/:id/convert', protect, convertToSale);
-router.post('/:id/advance', protect, recordAdvance);
+router.post('/:id/convert', convertToSale);
+router.post('/:id/advance', recordAdvance);
 
 module.exports = router;

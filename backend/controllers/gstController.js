@@ -1,5 +1,6 @@
-const prisma = require('../utils/prismaClient');
+const prisma = require('../config/prisma');
 const axios = require('axios');
+const asyncHandler = require('../middleware/asyncHandler');
 
 // Validate GSTIN format (basic validation)
 const validateGSTINFormat = (gstin) => {
@@ -46,44 +47,70 @@ const formatAddress = (addrObj) => {
 };
 
 // Verify GSTIN and fetch details
-exports.verifyGSTIN = async (req, res) => {
+exports.verifyGSTIN = asyncHandler(async (req, res) => {
+  const { gstin } = req.params;
+  
+  if (!gstin) {
+    res.status(400);
+    throw new Error('GSTIN is required');
+  }
+
+  const upperGSTIN = gstin.toUpperCase();
+  
+  // Basic format validation
+  if (!validateGSTINFormat(upperGSTIN)) {
+    return res.status(400).json({ 
+      error: 'Invalid GSTIN format. Must be 15 characters (e.g., 27AAPFU0939F1ZV)',
+      valid: false 
+    });
+  }
+
+  const state = getStateFromGSTIN(upperGSTIN);
+
+  // Try multiple APIs for GST verification
+  let gstData = null;
+
+  // Method 1: Try gstincheck.co.in API (free tier)
   try {
-    const { gstin } = req.params;
-    
-    if (!gstin) {
-      return res.status(400).json({ error: 'GSTIN is required' });
+    const apiKey = process.env.GSTIN_API_KEY || 'free';
+    const response = await axios.get(
+      `https://sheet.gstincheck.co.in/check/${apiKey}/${upperGSTIN}`,
+      { timeout: 8000 }
+    );
+
+    if (response.data && response.data.flag === true) {
+      const d = response.data.data;
+      gstData = {
+        legalName: d.lgnm,
+        tradeName: d.tradeNam || d.lgnm,
+        address: formatAddress(d.pradr?.addr) || d.pradr?.adr,
+        city: d.pradr?.addr?.dst || d.pradr?.addr?.loc || '',
+        state: d.pradr?.addr?.stcd || state,
+        pincode: d.pradr?.addr?.pncd || '',
+        status: d.sts,
+        taxpayerType: d.dty,
+        registrationDate: d.rgdt
+      };
     }
+  } catch (apiError) {
+    // API failed silently, will try next method
+  }
 
-    const upperGSTIN = gstin.toUpperCase();
-    
-    // Basic format validation
-    if (!validateGSTINFormat(upperGSTIN)) {
-      return res.status(400).json({ 
-        error: 'Invalid GSTIN format. Must be 15 characters (e.g., 27AAPFU0939F1ZV)',
-        valid: false 
-      });
-    }
-
-    const state = getStateFromGSTIN(upperGSTIN);
-
-    // Try multiple APIs for GST verification
-    let gstData = null;
-
-    // Method 1: Try gstincheck.co.in API (free tier)
+  // Method 2: Try alternate free API
+  if (!gstData) {
     try {
-      const apiKey = process.env.GSTIN_API_KEY || 'free';
       const response = await axios.get(
-        `https://sheet.gstincheck.co.in/check/${apiKey}/${upperGSTIN}`,
+        `https://appyflow.in/api/verifyGST?gstNo=${upperGSTIN}&key_secret=${process.env.APPYFLOW_KEY || 'demo'}`,
         { timeout: 8000 }
       );
 
-      if (response.data && response.data.flag === true) {
-        const d = response.data.data;
+      if (response.data && response.data.taxpayerInfo) {
+        const d = response.data.taxpayerInfo;
         gstData = {
           legalName: d.lgnm,
           tradeName: d.tradeNam || d.lgnm,
-          address: formatAddress(d.pradr?.addr) || d.pradr?.adr,
-          city: d.pradr?.addr?.dst || d.pradr?.addr?.loc || '',
+          address: d.pradr?.adr || '',
+          city: d.pradr?.addr?.dst || '',
           state: d.pradr?.addr?.stcd || state,
           pincode: d.pradr?.addr?.pncd || '',
           status: d.sts,
@@ -92,106 +119,70 @@ exports.verifyGSTIN = async (req, res) => {
         };
       }
     } catch (apiError) {
-      console.log('API 1 failed:', apiError.message);
+      // API failed silently
     }
+  }
 
-    // Method 2: Try alternate free API
-    if (!gstData) {
-      try {
-        const response = await axios.get(
-          `https://appyflow.in/api/verifyGST?gstNo=${upperGSTIN}&key_secret=${process.env.APPYFLOW_KEY || 'demo'}`,
-          { timeout: 8000 }
-        );
-
-        if (response.data && response.data.taxpayerInfo) {
-          const d = response.data.taxpayerInfo;
-          gstData = {
-            legalName: d.lgnm,
-            tradeName: d.tradeNam || d.lgnm,
-            address: d.pradr?.adr || '',
-            city: d.pradr?.addr?.dst || '',
-            state: d.pradr?.addr?.stcd || state,
-            pincode: d.pradr?.addr?.pncd || '',
-            status: d.sts,
-            taxpayerType: d.dty,
-            registrationDate: d.rgdt
-          };
-        }
-      } catch (apiError) {
-        console.log('API 2 failed:', apiError.message);
-      }
-    }
-
-    // If APIs returned data
-    if (gstData && gstData.legalName) {
-      return res.json({
-        valid: true,
-        gstin: upperGSTIN,
-        legalName: gstData.legalName,
-        tradeName: gstData.tradeName,
-        address: gstData.address,
-        city: gstData.city,
-        state: gstData.state || state,
-        pincode: gstData.pincode,
-        status: gstData.status,
-        taxpayerType: gstData.taxpayerType,
-        registrationDate: gstData.registrationDate,
-        manualEntry: false
-      });
-    }
-
-    // Fallback: Return validation with state info only
-    // This still allows user to proceed with manual entry
-    res.json({
+  // If APIs returned data
+  if (gstData && gstData.legalName) {
+    return res.json({
       valid: true,
       gstin: upperGSTIN,
-      state: state,
-      legalName: '',
-      tradeName: '',
-      address: '',
-      city: '',
-      pincode: '',
-      message: 'GSTIN format verified. State: ' + state + '. Enter business details manually or get API key for auto-fetch.',
-      manualEntry: true
+      legalName: gstData.legalName,
+      tradeName: gstData.tradeName,
+      address: gstData.address,
+      city: gstData.city,
+      state: gstData.state || state,
+      pincode: gstData.pincode,
+      status: gstData.status,
+      taxpayerType: gstData.taxpayerType,
+      registrationDate: gstData.registrationDate,
+      manualEntry: false
     });
-
-  } catch (error) {
-    console.error('GSTIN Verification Error:', error);
-    res.status(500).json({ error: error.message });
   }
-};
+
+  // Fallback: Return validation with state info only
+  // This still allows user to proceed with manual entry
+  res.json({
+    valid: true,
+    gstin: upperGSTIN,
+    state: state,
+    legalName: '',
+    tradeName: '',
+    address: '',
+    city: '',
+    pincode: '',
+    message: 'GSTIN format verified. State: ' + state + '. Enter business details manually or get API key for auto-fetch.',
+    manualEntry: true
+  });
+});
 
 // Search GST records in database
-exports.searchGSTIN = async (req, res) => {
-  try {
-    const { gstin } = req.query;
-    
-    if (!gstin || gstin.length < 3) {
-      return res.json([]);
-    }
-
-    // Check if we have this GSTIN in our customer database
-    const customers = await prisma.customer.findMany({
-      where: {
-        gstin: {
-          contains: gstin.toUpperCase()
-        }
-      },
-      select: {
-        id: true,
-        name: true,
-        gstin: true,
-        address: true,
-        city: true,
-        state: true,
-        pincode: true
-      },
-      take: 10
-    });
-
-    res.json(customers);
-  } catch (error) {
-    console.error('Search GSTIN Error:', error);
-    res.status(500).json({ error: error.message });
+exports.searchGSTIN = asyncHandler(async (req, res) => {
+  const { gstin } = req.query;
+  
+  if (!gstin || gstin.length < 3) {
+    return res.json([]);
   }
-};
+
+  // Check if we have this GSTIN in our customer database
+  const customers = await prisma.customer.findMany({
+    where: {
+      gstin: {
+        contains: gstin.toUpperCase()
+      }
+    },
+    select: {
+      id: true,
+      name: true,
+      gstin: true,
+      address: true,
+      city: true,
+      state: true,
+      pincode: true
+    },
+    take: 10
+  });
+
+  res.json(customers);
+});

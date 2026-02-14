@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const crmController = require('../controllers/crmController');
+const authMiddleware = require('../middleware/authMiddleware');
+
+router.use(authMiddleware);
 
 // Leads
 router.post('/leads', crmController.createLead);
