@@ -3,9 +3,11 @@ const router = express.Router();
 const stateController = require('../controllers/stateController');
 const authenticate = require('../middleware/authMiddleware');
 
-router.get('/', authenticate, stateController.getStates);
-router.post('/', authenticate, stateController.createState);
-router.put('/:id', authenticate, stateController.updateState);
-router.delete('/:id', authenticate, stateController.deleteState);
+router.use(authenticate);
+
+router.get('/', stateController.getStates);
+router.post('/', stateController.createState);
+router.put('/:id', stateController.updateState);
+router.delete('/:id', stateController.deleteState);
 
 module.exports = router;

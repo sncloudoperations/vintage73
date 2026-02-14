@@ -6,6 +6,8 @@ const path = require('path');
 const fs = require('fs');
 const { initSocket } = require("./utils/socket");
 const authRoutes = require('./routes/authRoutes');
+const errorHandler = require('./middleware/errorMiddleware');
+const prisma = require('./config/prisma'); // Singleton Prisma
 
 dotenv.config();
 
@@ -42,7 +44,6 @@ app.get("/", (req, res) => {
 
 // Health Check Endpoint
 app.get("/api/health", async (req, res) => {
-  const prisma = require('./utils/prismaClient');
   let dbStatus = 'connected';
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -93,27 +94,11 @@ app.use('/api/accounting/reconciliation', require('./routes/bankReconciliationRo
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
+// Global Error Handler (MUST be last)
+app.use(errorHandler);
+
 server.listen(PORT, () => {
   console.log(`[STARTUP] Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-});
-
-// Global Error Handler
-app.use((err, req, res, next) => {
-  const timestamp = new Date().toISOString();
-  console.error(`[GLOBAL_ERROR] [${timestamp}]`, {
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
-    path: req.path,
-    method: req.method
-  });
-
-  const statusCode = err.status || 500;
-  res.status(statusCode).json({
-    error: true,
-    message: err.message || 'Internal Server Error',
-    code: err.code || 'INTERNAL_ERROR',
-    timestamp
-  });
 });
 
 // Graceful Shutdown
@@ -121,7 +106,6 @@ const shutdown = () => {
   console.log('Shutting down gracefully...');
   server.close(() => {
     console.log('Server closed.');
-    const prisma = require('./utils/prismaClient');
     prisma.$disconnect().then(() => {
       console.log('Database disconnected.');
       process.exit(0);

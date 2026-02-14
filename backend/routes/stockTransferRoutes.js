@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const stockTransferController = require('../controllers/stockTransferController');
+const authMiddleware = require('../middleware/authMiddleware');
+
+router.use(authMiddleware);
 
 router.post('/', stockTransferController.createTransfer);
 router.get('/', stockTransferController.getTransfers);

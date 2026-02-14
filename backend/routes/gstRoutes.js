@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const gstController = require('../controllers/gstController');
+const authMiddleware = require('../middleware/authMiddleware');
+
+router.use(authMiddleware);
 
 // Verify GSTIN and fetch details
 router.get('/verify/:gstin', gstController.verifyGSTIN);

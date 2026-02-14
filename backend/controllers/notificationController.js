@@ -1,38 +1,34 @@
-const prisma = require('../utils/prismaClient');
+const prisma = require('../config/prisma');
+const asyncHandler = require('../middleware/asyncHandler');
 
 // Get user notifications
-exports.getNotifications = async (req, res) => {
+exports.getNotifications = asyncHandler(async (req, res) => {
     const userId = req.user.id;
 
-    try {
-        const notifications = await prisma.notification.findMany({
-            where: { userId },
-            orderBy: { createdAt: 'desc' },
-            take: 20 // Last 20 notifications
-        });
-        res.json(notifications);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+    const notifications = await prisma.notification.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 20 // Last 20 notifications
+    });
+    res.json(notifications);
+});
 
 // Mark notification as read
-exports.markAsRead = async (req, res) => {
+exports.markAsRead = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    try {
-        await prisma.notification.update({
-            where: { id: parseInt(id), userId },
-            data: { isRead: true }
-        });
-        res.json({ message: 'Notification marked as read' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+    await prisma.notification.update({
+        where: { id: parseInt(id), userId },
+        data: { isRead: true }
+    });
+    res.json({ message: 'Notification marked as read' });
+});
 
 // Create a new notification (Utility function for subsequent use)
+// This is an internal utility, but we keep it async. 
+// It doesn't need asyncHandler since it's not an Express route directly, 
+// but it's used within routes that are.
 exports.createNotification = async (userId, title, message, type = 'INFO', link = null) => {
     try {
         const notification = await prisma.notification.create({
@@ -48,7 +44,9 @@ exports.createNotification = async (userId, title, message, type = 'INFO', link 
         // Trigger socket alert
         const { getIO } = require('../utils/socket');
         const io = getIO();
-        io.to(`user_${userId}`).emit('new_notification', notification);
+        if (io) {
+            io.to(`user_${userId}`).emit('new_notification', notification);
+        }
 
         return notification;
     } catch (error) {

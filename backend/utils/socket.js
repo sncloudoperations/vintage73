@@ -13,32 +13,47 @@ const initSocket = (server) => {
         // Production stability settings
         pingTimeout: 60000,
         pingInterval: 25000,
+        connectTimeout: 45000,
+        allowEIO3: true // Support older clients if needed
     });
 
     io.on("connection", (socket) => {
-        console.log(`User connected: ${socket.id}`);
+        // Socket error handler
+        socket.on("error", (err) => {
+            console.error(`Socket error for ${socket.id}:`, err);
+        });
 
         socket.on("join_room", (userId) => {
-            socket.join(`user_${userId}`);
-            console.log(`User ${userId} joined room user_${userId}`);
+            try {
+                if (!userId) return;
+                socket.join(`user_${userId}`);
+            } catch (err) {
+                console.error(`Error joining room user_${userId}:`, err);
+            }
         });
 
         socket.on("send_message", (data) => {
-            // Data: { senderId, receiverId, message, createdAt }
-            const { receiverId } = data;
-            io.to(`user_${receiverId}`).emit("receive_message", data);
+            try {
+                // Data: { senderId, receiverId, message, createdAt }
+                const { receiverId } = data;
+                if (!receiverId) return;
 
-            // Also notify the receiver about a new notification if needed
-            io.to(`user_${receiverId}`).emit("new_notification", {
-                type: "MESSAGE",
-                title: "New Message",
-                message: data.message,
-                senderId: data.senderId
-            });
+                io.to(`user_${receiverId}`).emit("receive_message", data);
+
+                // Also notify the receiver about a new notification
+                io.to(`user_${receiverId}`).emit("new_notification", {
+                    type: "MESSAGE",
+                    title: "New Message",
+                    message: data.message,
+                    senderId: data.senderId
+                });
+            } catch (err) {
+                console.error("Error sending message via socket:", err);
+            }
         });
 
-        socket.on("disconnect", () => {
-            console.log("User disconnected", socket.id);
+        socket.on("disconnect", (reason) => {
+            // connection lost, etc.
         });
     });
 

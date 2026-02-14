@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const terminalController = require('../controllers/terminalController');
-// const { auth, admin } = require('../middleware/auth'); // Assuming middleware exists
+const authMiddleware = require('../middleware/authMiddleware');
 
-// For simplicity in this setup, I'll keep them open or use existing auth if available
-// Assuming existing auth pattern in the project
+router.use(authMiddleware);
 
 router.get('/', terminalController.getTerminals);
 router.post('/register', terminalController.registerTerminal);

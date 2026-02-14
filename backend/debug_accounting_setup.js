@@ -10,7 +10,7 @@ function log(msg) {
 log('Starting debug script...');
 
 try {
-  const prisma = require('./utils/prismaClient');
+  const prisma = require('./config/prisma');
   
   async function debugSetup() {
     log('--- Checking Account Groups ---');

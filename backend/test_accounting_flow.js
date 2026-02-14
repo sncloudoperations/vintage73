@@ -1,4 +1,4 @@
-const prisma = require('./utils/prismaClient');
+const prisma = require('./config/prisma');
 const { ensureLedger } = require('./utils/accountingHelper');
 
 // Mock request objects if we were calling controllers directly, 

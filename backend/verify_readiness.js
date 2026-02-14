@@ -41,17 +41,17 @@ if (serverContent.includes('origin: process.env.CORS_ORIGIN')) {
     console.error('❌ CORS Check Failed: Hardcoded or missing origin');
 }
 
-// 4. Check Prisma Exit Logic (Static Analysis)
-const prismaContent = fs.readFileSync('./utils/prismaClient.js', 'utf8');
-if (!prismaContent.includes('process.exit(1)')) {
-    console.log('✅ Prisma Resilience Verified (No process.exit found)');
-} else {
-    // It might differ if commented out, check if it's commented
-    if (prismaContent.match(/\/\/\s*process\.exit\(1\)/)) {
-         console.log('✅ Prisma Resilience Verified (process.exit commented out)');
+// 4. Check Prisma Config (Static Analysis)
+const prismaPath = './config/prisma.js';
+if (fs.existsSync(prismaPath)) {
+    const prismaContent = fs.readFileSync(prismaPath, 'utf8');
+    if (!prismaContent.includes('process.exit(1)')) {
+        console.log('✅ Prisma Resilience Verified (Singleton in config/prisma.js)');
     } else {
-         console.warn('⚠️ Prisma Check Warning: process.exit(1) might still be active. Check file manually.');
+        console.warn('⚠️ Prisma Check Warning: process.exit(1) might still be active in config/prisma.js');
     }
+} else {
+    console.error('❌ Prisma Config Missing: config/prisma.js not found');
 }
 
 console.log('--- Verification Complete ---');

@@ -1,156 +1,133 @@
-const prisma = require('../utils/prismaClient');
-const { processSalePosting, processPurchasePosting } = require('../utils/accountingHelper');
+const prisma = require('../config/prisma');
+const asyncHandler = require('../middleware/asyncHandler');
+const { processSalePosting, processPurchasePosting, postTransaction } = require('../utils/accountingHelper');
 
 // ==================== ACCOUNT GROUPS ====================
 
-exports.getAccountGroups = async (req, res) => {
-  try {
-    const groups = await prisma.accountGroup.findMany({
-      include: {
-        parent: true,
-        subGroups: true,
-        ledgers: true
-      },
-      orderBy: { name: 'asc' }
-    });
-    res.json(groups);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+exports.getAccountGroups = asyncHandler(async (req, res) => {
+  const groups = await prisma.accountGroup.findMany({
+    include: {
+      parent: true,
+      subGroups: true,
+      ledgers: true
+    },
+    orderBy: { name: 'asc' }
+  });
+  res.json(groups);
+});
 
-exports.createAccountGroup = async (req, res) => {
-  try {
-    const { name, groupType, parentId } = req.body;
+exports.createAccountGroup = asyncHandler(async (req, res) => {
+  const { name, groupType, parentId } = req.body;
 
-    const group = await prisma.accountGroup.create({
-      data: {
-        name,
-        groupType,
-        parentId: parentId ? parseInt(parentId) : null
-      }
-    });
+  const group = await prisma.accountGroup.create({
+    data: {
+      name,
+      groupType,
+      parentId: parentId ? parseInt(parentId) : null
+    }
+  });
 
-    res.json(group);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  res.json(group);
+});
 
 // ==================== LEDGERS ====================
 
-exports.getLedgers = async (req, res) => {
-  try {
-    const ledgers = await prisma.ledger.findMany({
-      include: {
-        group: true
-      },
-      orderBy: { name: 'asc' }
-    });
+exports.getLedgers = asyncHandler(async (req, res) => {
+  const ledgers = await prisma.ledger.findMany({
+    include: {
+      group: true
+    },
+    orderBy: { name: 'asc' }
+  });
 
-    // Calculate current balance for each ledger
-    const ledgersWithBalance = await Promise.all(
-      ledgers.map(async (ledger) => {
-        const balance = await calculateLedgerBalance(ledger.id);
-        return {
-          ...ledger,
-          currentBalance: balance
-        };
-      })
-    );
+  // Calculate current balance for each ledger
+  const ledgersWithBalance = await Promise.all(
+    ledgers.map(async (ledger) => {
+      const balance = await calculateLedgerBalance(ledger.id);
+      return {
+        ...ledger,
+        currentBalance: balance
+      };
+    })
+  );
 
-    res.json(ledgersWithBalance);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  res.json(ledgersWithBalance);
+});
 
-exports.createLedger = async (req, res) => {
-  try {
-    const { name, groupId, openingBalance, balanceType, description } = req.body;
+exports.createLedger = asyncHandler(async (req, res) => {
+  const { name, groupId, openingBalance, balanceType, description } = req.body;
 
-    const ledger = await prisma.ledger.create({
-      data: {
-        name,
-        groupId: parseInt(groupId),
-        openingBalance: parseFloat(openingBalance || 0),
-        balanceType: balanceType || 'DEBIT',
-        description,
-        isSystem: false // Manual ledgers are never system
-      },
-      include: {
-        group: true
-      }
-    });
-
-    res.json(ledger);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.updateLedger = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, groupId, openingBalance, balanceType, description, isActive } = req.body;
-
-    const ledger = await prisma.ledger.update({
-      where: { id: parseInt(id) },
-      data: {
-        name,
-        groupId: groupId ? parseInt(groupId) : undefined,
-        openingBalance: openingBalance !== undefined ? parseFloat(openingBalance) : undefined,
-        balanceType,
-        description,
-        isActive
-      },
-      include: {
-        group: true
-      }
-    });
-
-    res.json(ledger);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.deleteLedger = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    // Check if ledger has transactions
-    const debitCount = await prisma.journalEntry.count({
-      where: { debitLedgerId: parseInt(id) }
-    });
-
-    const creditCount = await prisma.journalEntry.count({
-      where: { creditLedgerId: parseInt(id) }
-    });
-
-    const ledger = await prisma.ledger.findUnique({
-      where: { id: parseInt(id) }
-    });
-
-    if (ledger.isSystem) {
-      return res.status(403).json({ error: 'Cannot delete system-defined ledger.' });
+  const ledger = await prisma.ledger.create({
+    data: {
+      name,
+      groupId: parseInt(groupId),
+      openingBalance: parseFloat(openingBalance || 0),
+      balanceType: balanceType || 'DEBIT',
+      description,
+      isSystem: false // Manual ledgers are never system
+    },
+    include: {
+      group: true
     }
+  });
 
-    if (debitCount > 0 || creditCount > 0) {
-      return res.status(400).json({
-        error: 'Cannot delete ledger with existing transactions. Deactivate it instead.'
-      });
+  res.json(ledger);
+});
+
+exports.updateLedger = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name, groupId, openingBalance, balanceType, description, isActive } = req.body;
+
+  const ledger = await prisma.ledger.update({
+    where: { id: parseInt(id) },
+    data: {
+      name,
+      groupId: groupId ? parseInt(groupId) : undefined,
+      openingBalance: openingBalance !== undefined ? parseFloat(openingBalance) : undefined,
+      balanceType,
+      description,
+      isActive
+    },
+    include: {
+      group: true
     }
+  });
 
-    await prisma.ledger.delete({
-      where: { id: parseInt(id) }
-    });
+  res.json(ledger);
+});
 
-    res.json({ message: 'Ledger deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+exports.deleteLedger = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Check if ledger has transactions
+  const debitCount = await prisma.journalEntry.count({
+    where: { debitLedgerId: parseInt(id) }
+  });
+
+  const creditCount = await prisma.journalEntry.count({
+    where: { creditLedgerId: parseInt(id) }
+  });
+
+  const ledger = await prisma.ledger.findUnique({
+    where: { id: parseInt(id) }
+  });
+
+  if (ledger.isSystem) {
+    res.status(403);
+    throw new Error('Cannot delete system-defined ledger.');
   }
-};
+
+  if (debitCount > 0 || creditCount > 0) {
+    res.status(400);
+    throw new Error('Cannot delete ledger with existing transactions. Deactivate it instead.');
+  }
+
+  await prisma.ledger.delete({
+    where: { id: parseInt(id) }
+  });
+
+  res.json({ message: 'Ledger deleted successfully' });
+});
 
 // ==================== VOUCHERS ====================
 
@@ -187,372 +164,340 @@ async function generateVoucherNumber(voucherType) {
 }
 
 // Create Payment Voucher
-exports.createPaymentVoucher = async (req, res) => {
-  try {
-    const { date, paymentAccount, expenseAccount, amount, narration, reference } = req.body;
-    const user = req.user;
+exports.createPaymentVoucher = asyncHandler(async (req, res) => {
+  const { date, paymentAccount, expenseAccount, amount, narration, reference } = req.body;
+  const user = req.user;
 
-    if (!paymentAccount || !expenseAccount || !amount) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
+  if (!paymentAccount || !expenseAccount || !amount) {
+    res.status(400);
+    throw new Error('Missing required fields');
+  }
 
-    const voucherNumber = await generateVoucherNumber('PAYMENT');
+  const voucherNumber = await generateVoucherNumber('PAYMENT');
 
-    const voucher = await prisma.voucher.create({
-      data: {
-        voucherNumber,
-        voucherType: 'PAYMENT',
-        date: new Date(date),
-        narration,
-        reference,
-        totalAmount: parseFloat(amount),
-        createdBy: user.id,
-        entries: {
-          create: [
-            {
-              debitLedgerId: parseInt(expenseAccount),
-              amount: parseFloat(amount),
-              description: narration
-            },
-            {
-              creditLedgerId: parseInt(paymentAccount),
-              amount: parseFloat(amount),
-              description: narration
-            }
-          ]
-        }
-      },
-      include: {
-        entries: {
-          include: {
-            debitLedger: true,
-            creditLedger: true
+  const voucher = await prisma.voucher.create({
+    data: {
+      voucherNumber,
+      voucherType: 'PAYMENT',
+      date: new Date(date),
+      narration,
+      reference,
+      totalAmount: parseFloat(amount),
+      createdBy: user.id,
+      entries: {
+        create: [
+          {
+            debitLedgerId: parseInt(expenseAccount),
+            amount: parseFloat(amount),
+            description: narration
+          },
+          {
+            creditLedgerId: parseInt(paymentAccount),
+            amount: parseFloat(amount),
+            description: narration
           }
+        ]
+      }
+    },
+    include: {
+      entries: {
+        include: {
+          debitLedger: true,
+          creditLedger: true
         }
       }
-    });
+    }
+  });
 
-    res.json(voucher);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  res.json(voucher);
+});
 
 // Create Receipt Voucher
-exports.createReceiptVoucher = async (req, res) => {
-  try {
-    const { date, receiptAccount, incomeAccount, amount, narration, reference } = req.body;
-    const user = req.user;
+exports.createReceiptVoucher = asyncHandler(async (req, res) => {
+  const { date, receiptAccount, incomeAccount, amount, narration, reference } = req.body;
+  const user = req.user;
 
-    if (!receiptAccount || !incomeAccount || !amount) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
+  if (!receiptAccount || !incomeAccount || !amount) {
+    res.status(400);
+    throw new Error('Missing required fields');
+  }
 
-    const voucherNumber = await generateVoucherNumber('RECEIPT');
+  const voucherNumber = await generateVoucherNumber('RECEIPT');
 
-    const voucher = await prisma.voucher.create({
-      data: {
-        voucherNumber,
-        voucherType: 'RECEIPT',
-        date: new Date(date),
-        narration,
-        reference,
-        totalAmount: parseFloat(amount),
-        createdBy: user.id,
-        entries: {
-          create: [
-            {
-              debitLedgerId: parseInt(receiptAccount),
-              amount: parseFloat(amount),
-              description: narration
-            },
-            {
-              creditLedgerId: parseInt(incomeAccount),
-              amount: parseFloat(amount),
-              description: narration
-            }
-          ]
-        }
-      },
-      include: {
-        entries: {
-          include: {
-            debitLedger: true,
-            creditLedger: true
+  const voucher = await prisma.voucher.create({
+    data: {
+      voucherNumber,
+      voucherType: 'RECEIPT',
+      date: new Date(date),
+      narration,
+      reference,
+      totalAmount: parseFloat(amount),
+      createdBy: user.id,
+      entries: {
+        create: [
+          {
+            debitLedgerId: parseInt(receiptAccount),
+            amount: parseFloat(amount),
+            description: narration
+          },
+          {
+            creditLedgerId: parseInt(incomeAccount),
+            amount: parseFloat(amount),
+            description: narration
           }
+        ]
+      }
+    },
+    include: {
+      entries: {
+        include: {
+          debitLedger: true,
+          creditLedger: true
         }
       }
-    });
+    }
+  });
 
-    res.json(voucher);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  res.json(voucher);
+});
 
 // Create Journal Entry
-exports.createJournalEntry = async (req, res) => {
-  try {
-    const { date, entries, narration, reference } = req.body;
-    const user = req.user;
+exports.createJournalEntry = asyncHandler(async (req, res) => {
+  const { date, entries, narration, reference } = req.body;
+  const user = req.user;
 
-    if (!entries || entries.length < 2) {
-      return res.status(400).json({ error: 'Journal entry must have at least 2 entries' });
-    }
+  if (!entries || entries.length < 2) {
+    res.status(400);
+    throw new Error('Journal entry must have at least 2 entries');
+  }
 
-    // Validate that total debits = total credits
-    const totalDebit = entries
-      .filter(e => e.type === 'DEBIT')
-      .reduce((sum, e) => sum + parseFloat(e.amount), 0);
+  // Validate that total debits = total credits
+  const totalDebit = entries
+    .filter(e => e.type === 'DEBIT')
+    .reduce((sum, e) => sum + parseFloat(e.amount), 0);
 
-    const totalCredit = entries
-      .filter(e => e.type === 'CREDIT')
-      .reduce((sum, e) => sum + parseFloat(e.amount), 0);
+  const totalCredit = entries
+    .filter(e => e.type === 'CREDIT')
+    .reduce((sum, e) => sum + parseFloat(e.amount), 0);
 
-    if (Math.abs(totalDebit - totalCredit) > 0.01) {
-      return res.status(400).json({
-        error: `Total debits (${totalDebit}) must equal total credits (${totalCredit})`
-      });
-    }
+  if (Math.abs(totalDebit - totalCredit) > 0.01) {
+    res.status(400);
+    throw new Error(`Total debits (${totalDebit}) must equal total credits (${totalCredit})`);
+  }
 
-    const voucherNumber = await generateVoucherNumber('JOURNAL');
+  const voucherNumber = await generateVoucherNumber('JOURNAL');
 
-    const journalEntries = entries.map(entry => ({
-      debitLedgerId: entry.type === 'DEBIT' ? parseInt(entry.ledgerId) : null,
-      creditLedgerId: entry.type === 'CREDIT' ? parseInt(entry.ledgerId) : null,
-      amount: parseFloat(entry.amount),
-      description: entry.description || narration
-    }));
+  const journalEntries = entries.map(entry => ({
+    debitLedgerId: entry.type === 'DEBIT' ? parseInt(entry.ledgerId) : null,
+    creditLedgerId: entry.type === 'CREDIT' ? parseInt(entry.ledgerId) : null,
+    amount: parseFloat(entry.amount),
+    description: entry.description || narration
+  }));
 
-    const voucher = await prisma.voucher.create({
-      data: {
-        voucherNumber,
-        voucherType: 'JOURNAL',
-        date: new Date(date),
-        narration,
-        reference,
-        totalAmount: totalDebit,
-        createdBy: user.id,
-        entries: {
-          create: journalEntries
-        }
-      },
-      include: {
-        entries: {
-          include: {
-            debitLedger: true,
-            creditLedger: true
-          }
+  const voucher = await prisma.voucher.create({
+    data: {
+      voucherNumber,
+      voucherType: 'JOURNAL',
+      date: new Date(date),
+      narration,
+      reference,
+      totalAmount: totalDebit,
+      createdBy: user.id,
+      entries: {
+        create: journalEntries
+      }
+    },
+    include: {
+      entries: {
+        include: {
+          debitLedger: true,
+          creditLedger: true
         }
       }
-    });
+    }
+  });
 
-    res.json(voucher);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  res.json(voucher);
+});
 
 // Create Contra Entry
-exports.createContraEntry = async (req, res) => {
-  try {
-    const { date, fromAccount, toAccount, amount, narration, reference } = req.body;
-    const user = req.user;
+exports.createContraEntry = asyncHandler(async (req, res) => {
+  const { date, fromAccount, toAccount, amount, narration, reference } = req.body;
+  const user = req.user;
 
-    if (!fromAccount || !toAccount || !amount) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
+  if (!fromAccount || !toAccount || !amount) {
+    res.status(400);
+    throw new Error('Missing required fields');
+  }
 
-    const voucherNumber = await generateVoucherNumber('CONTRA');
+  const voucherNumber = await generateVoucherNumber('CONTRA');
 
-    const voucher = await prisma.voucher.create({
-      data: {
-        voucherNumber,
-        voucherType: 'CONTRA',
-        date: new Date(date),
-        narration,
-        reference,
-        totalAmount: parseFloat(amount),
-        createdBy: user.id,
-        entries: {
-          create: [
-            {
-              debitLedgerId: parseInt(toAccount),
-              amount: parseFloat(amount),
-              description: narration
-            },
-            {
-              creditLedgerId: parseInt(fromAccount),
-              amount: parseFloat(amount),
-              description: narration
-            }
-          ]
-        }
-      },
-      include: {
-        entries: {
-          include: {
-            debitLedger: true,
-            creditLedger: true
+  const voucher = await prisma.voucher.create({
+    data: {
+      voucherNumber,
+      voucherType: 'CONTRA',
+      date: new Date(date),
+      narration,
+      reference,
+      totalAmount: parseFloat(amount),
+      createdBy: user.id,
+      entries: {
+        create: [
+          {
+            debitLedgerId: parseInt(toAccount),
+            amount: parseFloat(amount),
+            description: narration
+          },
+          {
+            creditLedgerId: parseInt(fromAccount),
+            amount: parseFloat(amount),
+            description: narration
           }
+        ]
+      }
+    },
+    include: {
+      entries: {
+        include: {
+          debitLedger: true,
+          creditLedger: true
         }
       }
-    });
+    }
+  });
 
-    res.json(voucher);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  res.json(voucher);
+});
 
 // Get all vouchers
-exports.getVouchers = async (req, res) => {
-  try {
-    const { voucherType, startDate, endDate, status } = req.query;
+exports.getVouchers = asyncHandler(async (req, res) => {
+  const { voucherType, startDate, endDate, status } = req.query;
 
-    const where = {};
-    if (voucherType) where.voucherType = voucherType;
-    if (status) where.status = status;
-    if (startDate && endDate) {
-      where.date = {
-        gte: new Date(startDate),
-        lte: new Date(endDate)
-      };
-    }
+  const where = {};
+  if (voucherType) where.voucherType = voucherType;
+  if (status) where.status = status;
+  if (startDate && endDate) {
+    where.date = {
+      gte: new Date(startDate),
+      lte: new Date(endDate)
+    };
+  }
 
-    const vouchers = await prisma.voucher.findMany({
-      where,
-      include: {
-        entries: {
-          include: {
-            debitLedger: true,
-            creditLedger: true
-          }
-        },
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            username: true
-          }
+  const vouchers = await prisma.voucher.findMany({
+    where,
+    include: {
+      entries: {
+        include: {
+          debitLedger: true,
+          creditLedger: true
         }
       },
-      orderBy: { date: 'desc' }
-    });
-
-    res.json(vouchers);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// Get single voucher
-exports.getVoucher = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const voucher = await prisma.voucher.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        entries: {
-          include: {
-            debitLedger: true,
-            creditLedger: true
-          }
-        },
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            username: true
-          }
+      creator: {
+        select: {
+          id: true,
+          name: true,
+          username: true
         }
       }
-    });
+    },
+    orderBy: { date: 'desc' }
+  });
 
-    if (!voucher) {
-      return res.status(404).json({ error: 'Voucher not found' });
+  res.json(vouchers);
+});
+
+// Get single voucher
+exports.getVoucher = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const voucher = await prisma.voucher.findUnique({
+    where: { id: parseInt(id) },
+    include: {
+      entries: {
+        include: {
+          debitLedger: true,
+          creditLedger: true
+        }
+      },
+      creator: {
+        select: {
+          id: true,
+          name: true,
+          username: true
+        }
+      }
     }
+  });
 
-    res.json(voucher);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  if (!voucher) {
+    res.status(404);
+    throw new Error('Voucher not found');
   }
-};
+
+  res.json(voucher);
+});
 
 // Cancel voucher
-exports.cancelVoucher = async (req, res) => {
-  try {
-    const { id } = req.params;
+exports.cancelVoucher = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    const voucher = await prisma.voucher.update({
-      where: { id: parseInt(id) },
-      data: { status: 'CANCELLED' }
-    });
+  const voucher = await prisma.voucher.update({
+    where: { id: parseInt(id) },
+    data: { status: 'CANCELLED' }
+  });
 
-    res.json(voucher);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  res.json(voucher);
+});
 
 // Update Voucher
-exports.updateVoucher = async (req, res) => {
+exports.updateVoucher = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { date, narration, reference, totalAmount, entries } = req.body;
 
-  try {
-    const result = await prisma.$transaction(async (tx) => {
-      // 1. Delete existing entries (Cascade is on schema, but explicit delete entries if needed)
-      // Actually with onDelete: Cascade, we just need to replace them.
-      // But Prisma doesn't have a "replace" for relations in update unless using disconnect/connect or deleteMany.
-      await tx.journalEntry.deleteMany({
-        where: { voucherId: parseInt(id) }
-      });
-
-      // 2. Update voucher record and create new entries
-      const voucher = await tx.voucher.update({
-        where: { id: parseInt(id) },
-        data: {
-          date: date ? new Date(date) : undefined,
-          narration,
-          reference,
-          totalAmount: totalAmount ? parseFloat(totalAmount) : undefined,
-          entries: {
-            create: entries.map(e => ({
-              debitLedgerId: e.debitLedgerId ? parseInt(e.debitLedgerId) : (e.type === 'DEBIT' ? parseInt(e.ledgerId) : null),
-              creditLedgerId: e.creditLedgerId ? parseInt(e.creditLedgerId) : (e.type === 'CREDIT' ? parseInt(e.ledgerId) : null),
-              amount: parseFloat(e.amount),
-              description: e.description || narration
-            }))
-          }
-        },
-        include: {
-          entries: true
-        }
-      });
-
-      return voucher;
+  const result = await prisma.$transaction(async (tx) => {
+    // 1. Delete existing entries (Cascade is on schema, but explicit delete entries if needed)
+    // Actually with onDelete: Cascade, we just need to replace them.
+    // But Prisma doesn't have a "replace" for relations in update unless using disconnect/connect or deleteMany.
+    await tx.journalEntry.deleteMany({
+      where: { voucherId: parseInt(id) }
     });
 
-    res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+    // 2. Update voucher record and create new entries
+    const voucher = await tx.voucher.update({
+      where: { id: parseInt(id) },
+      data: {
+        date: date ? new Date(date) : undefined,
+        narration,
+        reference,
+        totalAmount: totalAmount ? parseFloat(totalAmount) : undefined,
+        entries: {
+          create: entries.map(e => ({
+            debitLedgerId: e.debitLedgerId ? parseInt(e.debitLedgerId) : (e.type === 'DEBIT' ? parseInt(e.ledgerId) : null),
+            creditLedgerId: e.creditLedgerId ? parseInt(e.creditLedgerId) : (e.type === 'CREDIT' ? parseInt(e.ledgerId) : null),
+            amount: parseFloat(e.amount),
+            description: e.description || narration
+          }))
+        }
+      },
+      include: {
+        entries: true
+      }
+    });
+
+    return voucher;
+  });
+
+  res.json(result);
+});
 
 // Delete Voucher
-exports.deleteVoucher = async (req, res) => {
+exports.deleteVoucher = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  try {
-    await prisma.voucher.delete({
-      where: { id: parseInt(id) }
-    });
-    res.json({ message: 'Voucher deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  await prisma.voucher.delete({
+    where: { id: parseInt(id) }
+  });
+  res.json({ message: 'Voucher deleted successfully' });
+});
 
 // ==================== HELPER FUNCTIONS ====================
 
@@ -601,118 +546,115 @@ exports.calculateLedgerBalance = calculateLedgerBalance;
 /**
  * Bulk Post Transactions for a given date range.
  */
-exports.bulkPostTransactions = async (req, res) => {
-  try {
-    const { fromDate, toDate, transactionTypes } = req.body;
-    const userId = req.user ? req.user.id : 1;
+exports.bulkPostTransactions = asyncHandler(async (req, res) => {
+  const { fromDate, toDate, transactionTypes } = req.body;
+  const userId = req.user ? req.user.id : 1;
 
-    if (!fromDate || !toDate) {
-      return res.status(400).json({ error: 'Please provide fromDate and toDate' });
-    }
-
-    const start = new Date(fromDate);
-    const end = new Date(toDate);
-    end.setHours(23, 59, 59, 999);
-
-    const results = {
-      sales: { total: 0, processed: 0, errors: [] },
-      purchases: { total: 0, processed: 0, errors: [] },
-      expenses: { total: 0, processed: 0, errors: [] },
-      payments: { total: 0, processed: 0, errors: [] }
-    };
-
-    // 1. Process Sales
-    if (!transactionTypes || transactionTypes.includes('SALES')) {
-      const sales = await prisma.sale.findMany({
-        where: { saleDate: { gte: start, lte: end } },
-        include: { customer: true }
-      });
-      results.sales.total = sales.length;
-
-      for (const sale of sales) {
-        try {
-          await prisma.$transaction(async (tx) => {
-            await tx.journalEntry.deleteMany({ where: { voucher: { reference: sale.invoiceNumber } } });
-            await tx.voucher.deleteMany({ where: { reference: sale.invoiceNumber } });
-            await processSalePosting(tx, sale, userId);
-          });
-          results.sales.processed++;
-        } catch (err) {
-          results.sales.errors.push({ id: sale.id, error: err.message });
-        }
-      }
-    }
-
-    // 2. Process Purchases
-    if (!transactionTypes || transactionTypes.includes('PURCHASE')) {
-      const purchases = await prisma.purchase.findMany({
-        where: { purchaseDate: { gte: start, lte: end } },
-        include: { supplier: true }
-      });
-      results.purchases.total = purchases.length;
-
-      for (const purchase of purchases) {
-        try {
-          await prisma.$transaction(async (tx) => {
-            const billRef = purchase.invoiceNumber || purchase.id.toString();
-            await tx.journalEntry.deleteMany({ where: { voucher: { reference: billRef } } });
-            await tx.voucher.deleteMany({ where: { reference: billRef } });
-            await processPurchasePosting(tx, purchase, userId);
-          });
-          results.purchases.processed++;
-        } catch (err) {
-          results.purchases.errors.push({ id: purchase.id, error: err.message });
-        }
-      }
-    }
-
-    // 3. Process Expenses
-    if (!transactionTypes || transactionTypes.includes('EXPENSE')) {
-      const expenses = await prisma.expense.findMany({
-        where: { date: { gte: start, lte: end } }
-      });
-      results.expenses.total = expenses.length;
-
-      for (const expense of expenses) {
-        try {
-          await prisma.$transaction(async (tx) => {
-            const expRef = `EXP-${expense.id}`;
-            await tx.journalEntry.deleteMany({ where: { voucher: { reference: expRef } } });
-            await tx.voucher.deleteMany({ where: { reference: expRef } });
-            await postTransaction(tx, 'EXPENSE', expense, userId, expRef, expense.title);
-          });
-          results.expenses.processed++;
-        } catch (err) {
-          results.expenses.errors.push({ id: expense.id, error: err.message });
-        }
-      }
-    }
-
-    // 4. Process Payments/Receipts
-    if (!transactionTypes || transactionTypes.includes('PAYMENT') || transactionTypes.includes('RECEIPT')) {
-      const payments = await prisma.payment.findMany({
-        where: { paymentDate: { gte: start, lte: end } },
-        include: { customer: true, supplier: true }
-      });
-      results.payments.total = payments.length;
-
-      for (const payment of payments) {
-        try {
-          await prisma.$transaction(async (tx) => {
-            const payRef = payment.reference || `PAY-${payment.id}`;
-            await tx.journalEntry.deleteMany({ where: { voucher: { reference: payRef } } });
-            await tx.voucher.deleteMany({ where: { reference: payRef } });
-            await postTransaction(tx, payment.type.toUpperCase(), payment, userId, payRef, payment.description);
-          });
-          results.payments.processed++;
-        } catch (err) {
-          results.payments.errors.push({ id: payment.id, error: err.message });
-        }
-      }
-    }
-
-    res.json(results);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  if (!fromDate || !toDate) {
+    res.status(400);
+    throw new Error('Please provide fromDate and toDate');
   }
-};
+
+  const start = new Date(fromDate);
+  const end = new Date(toDate);
+  end.setHours(23, 59, 59, 999);
+
+  const results = {
+    sales: { total: 0, processed: 0, errors: [] },
+    purchases: { total: 0, processed: 0, errors: [] },
+    expenses: { total: 0, processed: 0, errors: [] },
+    payments: { total: 0, processed: 0, errors: [] }
+  };
+
+  // 1. Process Sales
+  if (!transactionTypes || transactionTypes.includes('SALES')) {
+    const sales = await prisma.sale.findMany({
+      where: { saleDate: { gte: start, lte: end } },
+      include: { customer: true }
+    });
+    results.sales.total = sales.length;
+
+    for (const sale of sales) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          await tx.journalEntry.deleteMany({ where: { voucher: { reference: sale.invoiceNumber } } });
+          await tx.voucher.deleteMany({ where: { reference: sale.invoiceNumber } });
+          await processSalePosting(tx, sale, userId);
+        });
+        results.sales.processed++;
+      } catch (err) {
+        results.sales.errors.push({ id: sale.id, error: err.message });
+      }
+    }
+  }
+
+  // 2. Process Purchases
+  if (!transactionTypes || transactionTypes.includes('PURCHASE')) {
+    const purchases = await prisma.purchase.findMany({
+      where: { purchaseDate: { gte: start, lte: end } },
+      include: { supplier: true }
+    });
+    results.purchases.total = purchases.length;
+
+    for (const purchase of purchases) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          const billRef = purchase.invoiceNumber || purchase.id.toString();
+          await tx.journalEntry.deleteMany({ where: { voucher: { reference: billRef } } });
+          await tx.voucher.deleteMany({ where: { reference: billRef } });
+          await processPurchasePosting(tx, purchase, userId);
+        });
+        results.purchases.processed++;
+      } catch (err) {
+        results.purchases.errors.push({ id: purchase.id, error: err.message });
+      }
+    }
+  }
+
+  // 3. Process Expenses
+  if (!transactionTypes || transactionTypes.includes('EXPENSE')) {
+    const expenses = await prisma.expense.findMany({
+      where: { date: { gte: start, lte: end } }
+    });
+    results.expenses.total = expenses.length;
+
+    for (const expense of expenses) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          const expRef = `EXP-${expense.id}`;
+          await tx.journalEntry.deleteMany({ where: { voucher: { reference: expRef } } });
+          await tx.voucher.deleteMany({ where: { reference: expRef } });
+          await postTransaction(tx, 'EXPENSE', expense, userId, expRef, expense.title);
+        });
+        results.expenses.processed++;
+      } catch (err) {
+        results.expenses.errors.push({ id: expense.id, error: err.message });
+      }
+    }
+  }
+
+  // 4. Process Payments/Receipts
+  if (!transactionTypes || transactionTypes.includes('PAYMENT') || transactionTypes.includes('RECEIPT')) {
+    const payments = await prisma.payment.findMany({
+      where: { paymentDate: { gte: start, lte: end } },
+      include: { customer: true, supplier: true }
+    });
+    results.payments.total = payments.length;
+
+    for (const payment of payments) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          const payRef = payment.reference || `PAY-${payment.id}`;
+          await tx.journalEntry.deleteMany({ where: { voucher: { reference: payRef } } });
+          await tx.voucher.deleteMany({ where: { reference: payRef } });
+          await postTransaction(tx, payment.type.toUpperCase(), payment, userId, payRef, payment.description);
+        });
+        results.payments.processed++;
+      } catch (err) {
+        results.payments.errors.push({ id: payment.id, error: err.message });
+      }
+    }
+  }
+
+  res.json(results);
+});
