@@ -14,8 +14,8 @@ exports.getUsers = asyncHandler(async (req, res) => {
       branchId: true,
       allowedModules: true,
       incentivePercentage: true,
-      imageUrl: true,
-      weeklyOff: true,
+      // imageUrl: true,
+      // weeklyOff: true,
       createdAt: true,
       terminals: {
         select: { id: true, name: true, terminalCode: true }
@@ -104,9 +104,9 @@ exports.createUser = asyncHandler(async (req, res) => {
       role: role || 'staff',
       allowedModules: allowedModules || [],
       branchId: branchId ? parseInt(branchId) : null,
-      incentivePercentage: incentivePercentage ? parseFloat(incentivePercentage) : 0,
-      imageUrl: req.file ? '/uploads/' + req.file.filename : null,
-      weeklyOff: weeklyOff || 'Sunday',
+      incentivePercentage: parseFloat(incentivePercentage) || 0,
+      // imageUrl: req.file ? '/uploads/' + req.file.filename : null,
+      // weeklyOff: weeklyOff || 'Sunday',
       terminals: terminalIds && Array.isArray(terminalIds) ? { connect: terminalIds.map(id => ({ id: parseInt(id) })) } : undefined,
       employeeProfile: {
         create: {
@@ -201,8 +201,8 @@ exports.updateUser = asyncHandler(async (req, res) => {
       allowedModules: allowedModules,
       branchId: branchId ? parseInt(branchId) : null,
       incentivePercentage: incentivePercentage ? parseFloat(incentivePercentage) : 0,
-      imageUrl: req.file ? '/uploads/' + req.file.filename : undefined,
-      weeklyOff: weeklyOff,
+      // imageUrl: req.file ? '/uploads/' + req.file.filename : undefined,
+      // weeklyOff: weeklyOff,
       terminals: {
         set: terminalIds && Array.isArray(terminalIds) ? terminalIds.map(id => ({ id: parseInt(id) })) : []
       },
