@@ -13,6 +13,11 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => {
     setMounted(true);
+    // Environment Check
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      console.warn('⚠️ CRITICAL: NEXT_PUBLIC_API_URL is not defined! API calls will fail.');
+    }
+
     // Basic Auth Check
     const token = localStorage.getItem('token');
     const publicPaths = ['/login', '/setup'];

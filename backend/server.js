@@ -15,7 +15,10 @@ validateEnv();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json());
 
 // UPLOADS CONFIGURATION
@@ -23,7 +26,7 @@ const UPLOADS_PATH = process.env.UPLOADS_PATH || path.join(__dirname, '../fronte
 
 // Ensure uploads directory exists
 if (!fs.existsSync(UPLOADS_PATH)) {
-  console.log(`Creating uploads directory at: ${UPLOADS_PATH}`);
+  console.log(`[INIT] Creating uploads directory at: ${UPLOADS_PATH}`);
   fs.mkdirSync(UPLOADS_PATH, { recursive: true });
 }
 
@@ -91,12 +94,13 @@ app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(`[STARTUP] Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error('[GLOBAL_ERROR]', {
+  const timestamp = new Date().toISOString();
+  console.error(`[GLOBAL_ERROR] [${timestamp}]`, {
     message: err.message,
     stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
     path: req.path,
@@ -107,7 +111,8 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({
     error: true,
     message: err.message || 'Internal Server Error',
-    code: err.code || 'INTERNAL_ERROR'
+    code: err.code || 'INTERNAL_ERROR',
+    timestamp
   });
 });
 
