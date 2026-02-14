@@ -1,7 +1,9 @@
 const requiredEnv = [
     'DATABASE_URL',
     'PORT',
-    'JWT_SECRET'
+    'JWT_SECRET',
+    'NODE_ENV',
+    'CORS_ORIGIN'
 ];
 
 function validateEnv() {
@@ -20,7 +22,11 @@ function validateEnv() {
     }
 
     if (!process.env.DATABASE_URL.startsWith('postgresql://')) {
-        console.error('WARNING: DATABASE_URL might be invalid (expected postgresql://)');
+        console.warn('WARNING: DATABASE_URL might be invalid (expected postgresql://)');
+    }
+
+    if (!['development', 'production', 'test'].includes(process.env.NODE_ENV)) {
+         console.warn(`WARNING: NODE_ENV is set to '${process.env.NODE_ENV}'. Expected 'development', 'production', or 'test'.`);
     }
 
     console.log('Environment variables validated successfully.');
