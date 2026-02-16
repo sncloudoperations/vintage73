@@ -133,7 +133,7 @@ async function postTransaction(tx, transactionType, data, userId, reference = ''
     const totalDebit = parseFloat(entries.filter(e => e.side === 'DEBIT').reduce((sum, e) => sum + e.amount, 0).toFixed(2));
     const totalCredit = parseFloat(entries.filter(e => e.side === 'CREDIT').reduce((sum, e) => sum + e.amount, 0).toFixed(2));
 
-    if (Math.abs(totalDebit - totalCredit) > 0.1) {
+    if (Math.abs(totalDebit - totalCredit) > 0.01) {
         console.error(`Balancing Error in Dynamic Posting (${transactionType}): Dr ${totalDebit} != Cr ${totalCredit}`, entries);
         // We might want to check for a 'ROUND_OFF' rule to absorb the difference
         const roundOffRule = rules.find(r => r.role === 'ROUND_OFF');

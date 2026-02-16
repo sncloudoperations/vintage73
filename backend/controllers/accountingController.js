@@ -34,22 +34,43 @@ exports.createAccountGroup = asyncHandler(async (req, res) => {
 
 exports.getLedgers = asyncHandler(async (req, res) => {
   const ledgers = await prisma.ledger.findMany({
-    include: {
-      group: true
-    },
+    include: { group: true },
     orderBy: { name: 'asc' }
   });
 
-  // Calculate current balance for each ledger
-  const ledgersWithBalance = await Promise.all(
-    ledgers.map(async (ledger) => {
-      const balance = await calculateLedgerBalance(ledger.id);
-      return {
-        ...ledger,
-        currentBalance: balance
-      };
+  // Optimize: Get all debit and credit sums for all ledgers in two queries
+  const [debitSums, creditSums] = await Promise.all([
+    prisma.journalEntry.groupBy({
+      by: ['debitLedgerId'],
+      _sum: { amount: true },
+      where: { voucher: { status: 'POSTED' } }
+    }),
+    prisma.journalEntry.groupBy({
+      by: ['creditLedgerId'],
+      _sum: { amount: true },
+      where: { voucher: { status: 'POSTED' } }
     })
-  );
+  ]);
+
+  const debitMap = new Map(debitSums.map(s => [s.debitLedgerId, Number(s._sum.amount || 0)]));
+  const creditMap = new Map(creditSums.map(s => [s.creditLedgerId, Number(s._sum.amount || 0)]));
+
+  const ledgersWithBalance = ledgers.map(ledger => {
+    const totalDebit = debitMap.get(ledger.id) || 0;
+    const totalCredit = creditMap.get(ledger.id) || 0;
+    
+    let balance = Number(ledger.openingBalance);
+    if (ledger.balanceType === 'DEBIT') {
+      balance = balance + totalDebit - totalCredit;
+    } else {
+      balance = balance + totalCredit - totalDebit;
+    }
+
+    return {
+      ...ledger,
+      currentBalance: balance
+    };
+  });
 
   res.json(ledgersWithBalance);
 });
@@ -508,28 +529,21 @@ async function calculateLedgerBalance(ledgerId) {
 
   if (!ledger) return 0;
 
-  // Get all debit entries
-  const debitEntries = await prisma.journalEntry.findMany({
-    where: {
-      debitLedgerId: ledgerId,
-      voucher: { status: 'POSTED' }
-    }
-  });
+  const [debitSum, creditSum] = await Promise.all([
+    prisma.journalEntry.aggregate({
+      _sum: { amount: true },
+      where: { debitLedgerId: ledgerId, voucher: { status: 'POSTED' } }
+    }),
+    prisma.journalEntry.aggregate({
+      _sum: { amount: true },
+      where: { creditLedgerId: ledgerId, voucher: { status: 'POSTED' } }
+    })
+  ]);
 
-  // Get all credit entries
-  const creditEntries = await prisma.journalEntry.findMany({
-    where: {
-      creditLedgerId: ledgerId,
-      voucher: { status: 'POSTED' }
-    }
-  });
+  const totalDebit = Number(debitSum._sum.amount || 0);
+  const totalCredit = Number(creditSum._sum.amount || 0);
 
-  const totalDebit = debitEntries.reduce((sum, e) => sum + parseFloat(e.amount), 0);
-  const totalCredit = creditEntries.reduce((sum, e) => sum + parseFloat(e.amount), 0);
-
-  // Calculate balance based on ledger type
-  let balance = parseFloat(ledger.openingBalance);
-
+  let balance = Number(ledger.openingBalance);
   if (ledger.balanceType === 'DEBIT') {
     balance = balance + totalDebit - totalCredit;
   } else {
