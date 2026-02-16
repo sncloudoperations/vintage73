@@ -10,9 +10,11 @@ export default function StockTransfer() {
   const [products, setProducts] = useState([]);
   const [rows, setRows] = useState([{ productId: '', quantity: 1, unitCost: 0, taxPercent: 0, total: 0 }]);
   const [toBranchId, setToBranchId] = useState('');
+  const [fromBranchId, setFromBranchId] = useState('');
   const [remarks, setRemarks] = useState('');
   const [outgoingTransfers, setOutgoingTransfers] = useState([]);
-  const [activeTab, setActiveTab] = useState('new'); // 'new' | 'history'
+  const [incomingTransfers, setIncomingTransfers] = useState([]);
+  const [activeTab, setActiveTab] = useState('new'); // 'new' | 'outgoing' | 'incoming'
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedForPrint, setSelectedForPrint] = useState(null);
   const [company, setCompany] = useState(null);
@@ -28,22 +30,45 @@ export default function StockTransfer() {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     setCurrentUser(user);
-    fetchInitialData(user.branchId);
+    if (user.branchId) setFromBranchId(user.branchId.toString());
+    fetchInitialData();
   }, []);
 
-  const fetchInitialData = async (branchId) => {
+  useEffect(() => {
+    if (fromBranchId) {
+      fetchProductsForBranch(fromBranchId);
+      fetchHistory(fromBranchId);
+      fetchIncoming(fromBranchId);
+      // Reset rows when changing source branch to prevent invalid product selection
+      setRows([{ productId: '', quantity: 1, unitCost: 0, taxPercent: 0, total: 0 }]);
+    } else {
+      setProducts([]);
+      setOutgoingTransfers([]);
+      setIncomingTransfers([]);
+    }
+  }, [fromBranchId]);
+
+  const fetchInitialData = async () => {
     try {
-      const [{ data: branchData }, { data: productData }, { data: companyData }] = await Promise.all([
+      const [{ data: branchData }, { data: companyData }] = await Promise.all([
         api.get('/branches'),
-        api.get('/products', { params: { branchId } }),
         api.get('/company')
       ]);
-      setBranches(branchData.filter(b => b.id !== branchId));
-      setProducts(productData);
+      setBranches(branchData);
       setCompany(companyData);
-      fetchHistory(branchId);
     } catch (err) {
       toast.error('Failed to load data');
+    }
+  };
+
+  const fetchProductsForBranch = async (branchId) => {
+    try {
+      const { data } = await api.get('/products', { params: { branchId } });
+      const availableProducts = data.filter(p => p.stock > 0);
+      setProducts(availableProducts);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load products for branch');
     }
   };
 
@@ -53,6 +78,17 @@ export default function StockTransfer() {
         params: { branchId, type: 'outgoing' }
       });
       setOutgoingTransfers(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchIncoming = async (branchId) => {
+    try {
+      const { data } = await api.get('/transfers', {
+        params: { branchId, type: 'incoming' }
+      });
+      setIncomingTransfers(data);
     } catch (err) {
       console.error(err);
     }
@@ -92,12 +128,14 @@ export default function StockTransfer() {
   };
 
   const handleSubmit = async () => {
+    if (!fromBranchId) return toast.error('Select origin branch');
     if (!toBranchId) return toast.error('Select destination branch');
+    if (fromBranchId === toBranchId) return toast.error('Source and destination branches cannot be the same');
     if (rows.some(r => !r.productId || r.quantity <= 0)) return toast.error('Check items and quantities');
 
     try {
       await api.post('/transfers', {
-        fromBranchId: currentUser.branchId,
+        fromBranchId,
         toBranchId,
         items: rows,
         remarks
@@ -106,8 +144,9 @@ export default function StockTransfer() {
       setRows([{ productId: '', quantity: 1, unitCost: 0, taxPercent: 0, total: 0 }]);
       setRemarks('');
       setToBranchId('');
-      fetchHistory(currentUser.branchId);
-      setActiveTab('history');
+      fetchHistory(fromBranchId);
+      fetchIncoming(fromBranchId);
+      setActiveTab('outgoing');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Transfer failed');
     }
@@ -118,9 +157,22 @@ export default function StockTransfer() {
     try {
       await api.put(`/transfers/${id}/cancel`);
       toast.success('Transfer cancelled');
-      fetchHistory(currentUser.branchId);
+      fetchHistory(fromBranchId);
+      fetchIncoming(fromBranchId);
     } catch (err) {
       toast.error('Failed to cancel');
+    }
+  };
+
+  const handleAccept = async (id) => {
+    if (!confirm('Accept this transfer? Stock will be added to your inventory.')) return;
+    try {
+      await api.put(`/transfers/${id}/receive`);
+      toast.success('Transfer accepted! Stock has been added to your inventory.');
+      fetchHistory(fromBranchId);
+      fetchIncoming(fromBranchId);
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to accept transfer');
     }
   };
 
@@ -154,114 +206,130 @@ export default function StockTransfer() {
           New Transfer
         </button>
         <button
-          onClick={() => setActiveTab('history')}
-          className={`pb-2 px-1 border-b-2 transition-colors ${activeTab === 'history' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          onClick={() => setActiveTab('outgoing')}
+          className={`pb-2 px-1 border-b-2 transition-colors ${activeTab === 'outgoing' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
           Outgoing History
+        </button>
+        <button
+          onClick={() => setActiveTab('incoming')}
+          className={`pb-2 px-1 border-b-2 transition-colors ${activeTab === 'incoming' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+        >
+          Incoming Transfers
         </button>
       </div>
 
       {activeTab === 'new' ? (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 max-w-4xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2 whitespace-nowrap">Destination Branch</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2 whitespace-nowrap">From Branch</label>
               <select
                 className="input w-full"
-                value={toBranchId}
-                onChange={e => setToBranchId(e.target.value)}
+                value={fromBranchId}
+                onChange={e => setFromBranchId(e.target.value)}
               >
-                <option value="">Select Target Branch...</option>
+                <option value="">Select Origin Branch...</option>
                 {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2 whitespace-nowrap">Remarks (Optional)</label>
-              <input
+              <label className="block text-sm font-semibold text-slate-700 mb-2 whitespace-nowrap">To Branch</label>
+              <select
                 className="input w-full"
-                placeholder="Internal notes..."
+                value={toBranchId}
+                onChange={e => setToBranchId(e.target.value)}
+                disabled={!fromBranchId}
+              >
+                <option value="">Select Destination...</option>
+                {branches.filter(b => b.id.toString() !== fromBranchId).map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Remarks</label>
+              <input
+                type="text"
+                className="input w-full"
+                placeholder="Optional notes..."
                 value={remarks}
                 onChange={e => setRemarks(e.target.value)}
               />
             </div>
           </div>
 
-          <table className="w-full text-sm mb-6">
-            <thead>
-              <tr className="text-left text-slate-500 border-b border-slate-100">
-                <th className="pb-3 px-2">Product</th>
-                <th className="pb-3 px-2 w-24">Qty</th>
-                <th className="pb-3 px-2 w-24">Cost</th>
-                <th className="pb-3 px-2 w-20">Tax %</th>
-                <th className="pb-3 px-2 w-28">Total</th>
-                <th className="pb-3 px-2 w-16 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {rows.map((row, index) => (
-                <tr key={index}>
-                  <td className="py-3 px-2">
-                    <select
-                      className="input w-full"
-                      value={row.productId}
-                      onChange={e => handleRowChange(index, 'productId', e.target.value)}
-                    >
-                      <option value="">Choose Product...</option>
-                      {products.map(p => (
-                        <option key={p.id} value={p.id}>{p.name} (Stk: {p.stock})</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="py-3 px-2">
-                    <input
-                      type="number"
-                      className="input w-full"
-                      min="1"
-                      value={row.quantity}
-                      onChange={e => handleRowChange(index, 'quantity', e.target.value)}
-                    />
-                  </td>
-                  <td className="py-3 px-2">
-                    <input
-                      type="number"
-                      className="input w-full"
-                      min="0"
-                      value={row.unitCost}
-                      onChange={e => handleRowChange(index, 'unitCost', e.target.value)}
-                    />
-                  </td>
-                  <td className="py-3 px-2">
-                    <input
-                      type="number"
-                      className="input w-full"
-                      min="0"
-                      value={row.taxPercent}
-                      onChange={e => handleRowChange(index, 'taxPercent', e.target.value)}
-                    />
-                  </td>
-                  <td className="py-3 px-2 font-bold text-slate-700">
-                    {row.total?.toFixed(2)}
-                  </td>
-                  <td className="py-3 px-2 text-center">
-                    <button onClick={() => handleRemoveRow(index)} className="text-red-400 hover:text-red-600 transition-colors">
+          <div className="space-y-3">
+            {rows.map((row, idx) => (
+              <div key={idx} className="grid grid-cols-12 gap-3 items-end">
+                <div className="col-span-4">
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Product</label>
+                  <select
+                    className="input w-full text-sm"
+                    value={row.productId}
+                    onChange={e => handleRowChange(idx, 'productId', e.target.value)}
+                  >
+                    <option value="">Select Product...</option>
+                    {products.map(p => <option key={p.id} value={p.id}>{p.name} (Stock: {p.stock})</option>)}
+                  </select>
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Qty</label>
+                  <input
+                    type="number"
+                    className="input w-full text-sm"
+                    value={row.quantity}
+                    onChange={e => handleRowChange(idx, 'quantity', e.target.value)}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Unit Cost</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="input w-full text-sm"
+                    value={row.unitCost}
+                    onChange={e => handleRowChange(idx, 'unitCost', e.target.value)}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Tax %</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="input w-full text-sm"
+                    value={row.taxPercent}
+                    onChange={e => handleRowChange(idx, 'taxPercent', e.target.value)}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Total</label>
+                  <p className="font-bold text-sm text-slate-700 py-2">{row.total.toFixed(2)}</p>
+                </div>
+                <div className="col-span-1 flex justify-end pb-2">
+                  {rows.length > 1 && (
+                    <button onClick={() => handleRemoveRow(idx)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
                       <FiTrash />
                     </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
 
-          <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-            <button onClick={handleAddRow} className="text-primary font-bold flex items-center gap-2 hover:bg-primary-light/10 px-4 py-2 rounded-xl transition-colors">
-              <FiPlus /> Add Another Item
-            </button>
-            <button onClick={handleSubmit} className="bg-primary text-white font-bold px-8 py-3 rounded-2xl flex items-center gap-2 hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all active:scale-95">
+          <button onClick={handleAddRow} className="mt-4 text-primary hover:bg-primary-light/10 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+            <FiPlus /> Add Item
+          </button>
+
+          <div className="mt-8 flex justify-end">
+            <button
+              onClick={handleSubmit}
+              disabled={!fromBranchId || !toBranchId || products.length === 0}
+              className="bg-primary text-white font-bold px-8 py-3 rounded-2xl flex items-center gap-2 hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <FiSend /> Initiate Transfer
             </button>
           </div>
         </div>
-      ) : (
+      ) : activeTab === 'outgoing' ? (
         <div className="space-y-4">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-wrap gap-4 items-end">
             <div className="flex-1 min-w-[200px]">
@@ -343,7 +411,61 @@ export default function StockTransfer() {
                   </tr>
                 ))}
                 {filteredHistory.length === 0 && (
-                  <tr><td colSpan="5" className="p-12 text-center text-slate-400 italic">No transfers match your filters</td></tr>
+                  <tr><td colSpan="6" className="p-12 text-center text-slate-400 italic">No transfers match your filters</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-widest border-b border-slate-100">
+                <tr>
+                  <th className="p-4 pl-6">Date</th>
+                  <th className="p-4">From Branch</th>
+                  <th className="p-4">Items</th>
+                  <th className="p-4 text-center">Status</th>
+                  <th className="p-4 text-right pr-6">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {incomingTransfers.map(t => (
+                  <tr key={t.id} className="hover:bg-slate-50/50">
+                    <td className="p-4 pl-6">{new Date(t.createdAt).toLocaleDateString()}</td>
+                    <td className="p-4 font-bold text-slate-700">{t.fromBranch?.name}</td>
+                    <td className="p-4 text-xs">
+                      {t.items.map(i => `${i.product.name} (x${i.quantity})`).join(', ')}
+                    </td>
+                    <td className="p-4 text-center">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${t.status === 'PENDING' ? 'bg-orange-100 text-orange-600' :
+                        t.status === 'RECEIVED' ? 'bg-primary-light/10 text-primary' :
+                          'bg-slate-100 text-slate-400'
+                        }`}>
+                        {t.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right pr-6 flex justify-end gap-2">
+                      <button
+                        onClick={() => triggerPrint(t)}
+                        className="text-primary hover:bg-primary-light/10 px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition-colors flex items-center gap-1"
+                      >
+                        <FiPrinter /> Print
+                      </button>
+                      {t.status === 'PENDING' && (
+                        <button
+                          onClick={() => handleAccept(t.id)}
+                          className="bg-primary text-white hover:bg-primary-dark px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-colors flex items-center gap-1"
+                        >
+                          <FiTruck /> Accept Transfer
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {incomingTransfers.length === 0 && (
+                  <tr><td colSpan="5" className="p-12 text-center text-slate-400 italic">No incoming transfers</td></tr>
                 )}
               </tbody>
             </table>
