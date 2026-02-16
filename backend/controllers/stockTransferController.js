@@ -83,15 +83,25 @@ exports.createTransfer = asyncHandler(async (req, res) => {
       }
     });
 
-    // 2. Deduct stock from sending branch
+    // 2. Validate & Deduct stock from sending branch
     for (const item of transferItems) {
-      await tx.productStock.update({
+      // Check current stock
+      const currentStock = await tx.productStock.findUnique({
         where: {
           branchId_productId: {
-            branchId: parseInt(fromBranchId),
+            branchId: fBranchId,
             productId: item.productId
           }
         },
+        include: { product: { select: { name: true } } }
+      });
+
+      if (!currentStock || currentStock.quantity < item.quantity) {
+        throw new Error(`Insufficient stock for product: ${currentStock?.product?.name || item.productId}. Available: ${currentStock?.quantity || 0}, Requested: ${item.quantity}`);
+      }
+
+      await tx.productStock.update({
+        where: { id: currentStock.id },
         data: {
           quantity: { decrement: item.quantity }
         }
@@ -154,14 +164,13 @@ exports.receiveTransfer = asyncHandler(async (req, res) => {
     }
 
     // 1. Update Transfer Status and Receipt Info
-    const { receivedById } = req.body;
     const totalAmount = transfer.items.reduce((sum, item) => sum + parseFloat(item.totalCost || 0), 0);
 
     await tx.stockTransfer.update({
       where: { id: parseInt(id) },
       data: {
         status: 'RECEIVED',
-        receivedById: receivedById ? parseInt(receivedById) : null,
+        receivedById: user.id,
         receivedAt: new Date()
       }
     });
@@ -261,7 +270,7 @@ exports.cancelTransfer = asyncHandler(async (req, res) => {
       // In `salesController`, they were imported from `../utils/accountingHelper`.
       // In `stockTransferController`, it seems they were used but maybe not imported?
       // I will add the import to be safe: `require('../utils/accountingHelper')`.
-      
+
       const { getLedgerByRole, postVoucher } = require('../utils/accountingHelper');
 
       const stockLedger = await getLedgerByRole(tx, 'STOCK_TRANSFER', 'SOURCE_LEDGER', 'Inventory Account', 'Stock-in-Hand');

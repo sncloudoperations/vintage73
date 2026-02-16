@@ -5,20 +5,22 @@ import { MENU_STRUCTURE } from '@/lib/menuStructure';
 import { FiPlus, FiTrash2, FiUser, FiKey, FiEdit2 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
+const getInitialFormState = () => ({
+  username: '', name: '', password: '', role: 'staff', branchId: '', allowedModules: [], incentivePercentage: 0,
+  designation: '', department: '', joiningDate: '', basicSalary: 0, labourRule: '', nationalId: '',
+  employeeCode: '', bankName: '', accountNumber: '', ifscCode: '', branchName: '',
+  terminalIds: [],
+  weeklyOff: 'Sunday',
+  autoCode: true,
+  image: null,
+  imagePreview: null
+});
+
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    username: '', name: '', password: '', role: 'staff', branchId: '', allowedModules: [], incentivePercentage: 0,
-    designation: '', department: '', joiningDate: '', basicSalary: 0, labourRule: '', nationalId: '',
-    employeeCode: '', bankName: '', accountNumber: '', ifscCode: '', branchName: '',
-    terminalIds: [],
-    weeklyOff: 'Sunday',
-    autoCode: true,
-    image: null,
-    imagePreview: null
-  });
+  const [formData, setFormData] = useState(getInitialFormState());
   const [editingId, setEditingId] = useState(null);
   const [branches, setBranches] = useState([]);
   const [companyProfile, setCompanyProfile] = useState(null);
@@ -134,16 +136,7 @@ export default function Users() {
       }
       setShowModal(false);
       setEditingId(null);
-      setFormData({
-        username: '', name: '', password: '', role: 'staff', branchId: '', allowedModules: [], incentivePercentage: 0,
-        designation: '', department: '', joiningDate: '', basicSalary: 0, labourRule: '', nationalId: '',
-        employeeCode: '', bankName: '', accountNumber: '', ifscCode: '', branchName: '',
-        terminalIds: [],
-        weeklyOff: 'Sunday',
-        autoCode: true,
-        image: null,
-        imagePreview: null
-      });
+      setFormData(getInitialFormState());
       fetchUsers();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save user');
@@ -210,6 +203,12 @@ export default function Users() {
 
   const dashboardModule = 'DASHBOARD';
 
+  const handleOpenAddUser = () => {
+    setFormData(getInitialFormState());
+    setEditingId(null);
+    setShowModal(true);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
@@ -217,7 +216,7 @@ export default function Users() {
           <h1 className="text-2xl font-bold text-slate-800">Users</h1>
           <p className="text-slate-500 text-sm mt-1">Manage system access and roles</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary" onClick={handleOpenAddUser}>
           <FiPlus className="text-lg" /> Add User
         </button>
       </div>
@@ -352,7 +351,7 @@ export default function Users() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex flex-col h-full">
+              <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex flex-col h-full" autoComplete="off">
                 {/* Tabs */}
                 <div className="flex gap-6 border-b border-slate-100 mb-6 sticky top-0 bg-white z-10">
                   <button
@@ -424,6 +423,8 @@ export default function Users() {
                         <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Full Name</label>
                         <input
                           required
+                          name="name"
+                          autoComplete="off"
                           className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm"
                           placeholder="e.g. John Doe"
                           value={formData.name}
@@ -434,10 +435,11 @@ export default function Users() {
                       <div>
                         <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Username</label>
                         <div className="relative">
-                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">@</span>
                           <input
                             required
-                            className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm pl-8"
+                            name="username"
+                            autoComplete="off"
+                            className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm"
                             placeholder="johndoe"
                             value={formData.username}
                             onChange={e => setFormData({ ...formData, username: e.target.value })}
@@ -451,6 +453,8 @@ export default function Users() {
                           <input
                             required
                             type="password"
+                            name="password"
+                            autoComplete="new-password"
                             className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm"
                             placeholder="••••••••"
                             value={formData.password}
