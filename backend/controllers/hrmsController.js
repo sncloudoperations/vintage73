@@ -481,7 +481,6 @@ exports.getBulkAttendance = asyncHandler(async (req, res) => {
     const users = await prisma.user.findMany({
         where: { employeeProfile: { isNot: null } },
         include: {
-            weeklyOff: true,
             employeeProfile: {
                 include: { department: true }
             },

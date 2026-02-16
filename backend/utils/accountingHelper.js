@@ -46,15 +46,8 @@ async function ensureLedger(tx, name, groupName) {
 async function postVoucher(tx, params, entries) {
   const { type, date, amount, narration, reference, createdBy } = params;
 
-  // Generate Voucher Number (Simple timestamp/random based for now to avoid concurrency issues in helper, 
-  // or re-use the logic from accountingController if extracted. 
-  // Let's use a simpler unique string here or copying logic.)
-
-  // Quick Voucher Number Logic
-  const prefix = type.substring(0, 3).toUpperCase();
-  const timestamp = Date.now().toString().slice(-8); // Short timestamp
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  const voucherNumber = `${prefix}-${timestamp}-${random}`;
+  const { generateVoucherNumber } = require('../services/dynamicPostingService');
+  const voucherNumber = await generateVoucherNumber(tx, type);
 
   // Validate Totals
   const totalDebit = entries
@@ -66,7 +59,7 @@ async function postVoucher(tx, params, entries) {
     .reduce((sum, e) => sum + e.amount, 0);
 
   // Allow small floating point diff
-  if (Math.abs(totalDebit - totalCredit) > 0.1) {
+  if (Math.abs(totalDebit - totalCredit) > 0.01) {
     throw new Error(`Accounting Error: Dr (${totalDebit}) != Cr (${totalCredit}) in ${type}`);
   }
 
