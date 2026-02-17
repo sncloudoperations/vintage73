@@ -3,6 +3,7 @@ import api from '@/lib/api';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { FiPlus, FiTrash2, FiSave, FiUser, FiCalendar } from 'react-icons/fi';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function CreateQuotation() {
     const router = useRouter();
@@ -21,9 +22,6 @@ export default function CreateQuotation() {
         items: []
     });
 
-    // Item Search State
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {
         fetchInitialData();
@@ -43,17 +41,6 @@ export default function CreateQuotation() {
         }
     };
 
-    useEffect(() => {
-        if (searchTerm.length > 1) {
-            const results = products.filter(p =>
-                p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                p.barcode?.includes(searchTerm)
-            );
-            setSearchResults(results.slice(0, 5));
-        } else {
-            setSearchResults([]);
-        }
-    }, [searchTerm, products]);
 
     const addItem = (product) => {
         const existingItem = formData.items.find(i => i.productId === product.id);
@@ -64,27 +51,45 @@ export default function CreateQuotation() {
 
         const basePrice = Number(product.price);
         const taxRate = Number(product.taxRate || 0);
-        // Simplified Logic: Assuming price is exclusive for calculation base, adjusted if inclusive
+        const isTaxInclusive = product.isTaxInclusive === true || product.isTaxInclusive === 'true';
+
+        let taxAmount = 0;
+        let total = 0;
+
+        if (isTaxInclusive) {
+            // Case 1: Inclusive
+            // Total is the price itself (approx, assuming 1 qty)
+            // subtotal = price / (1 + rate)
+            // tax = price - subtotal
+            total = basePrice;
+            const subTotal = basePrice / (1 + (taxRate / 100));
+            taxAmount = basePrice - subTotal;
+        } else {
+            // Case 2: Exclusive
+            // tax = price * rate
+            // total = price + tax
+            taxAmount = basePrice * (taxRate / 100);
+            total = basePrice + taxAmount;
+        }
 
         const newItem = {
             productId: product.id,
             name: product.name,
             hsnCode: product.hsnCode || '',
             quantity: 1,
-            unitPrice: basePrice,
+            unitPrice: basePrice, // Store the List Price (whether inclusive or exclusive)
             taxRate: taxRate,
-            taxAmount: (basePrice * taxRate / 100),
+            taxAmount: taxAmount,
             discountAmount: 0,
             discountPercent: 0,
-            total: basePrice + (basePrice * taxRate / 100)
+            total: total,
+            isTaxInclusive: isTaxInclusive // Store this for updates
         };
 
         setFormData(prev => ({
             ...prev,
             items: [...prev.items, newItem]
         }));
-        setSearchTerm('');
-        setSearchResults([]);
     };
 
     const updateItem = (index, field, value) => {
@@ -101,11 +106,44 @@ export default function CreateQuotation() {
             item[field] = Number(value);
         }
 
-        // Recalculate
-        const baseTotal = item.quantity * item.unitPrice;
-        const tax = baseTotal * (item.taxRate / 100);
-        item.taxAmount = tax;
-        item.total = baseTotal + tax - (item.discountAmount * item.quantity);
+        // Recalculate Logic
+        const quantity = item.quantity || 0;
+        const unitPrice = item.unitPrice || 0;
+        const discountAmount = item.discountAmount || 0;
+        const taxRate = item.taxRate || 0;
+
+        // Effective Price after discount (Discount applies to the Unit Price)
+        const totalDiscount = discountAmount * quantity;
+
+        if (item.isTaxInclusive) {
+            // Inclusive Logic
+            // The Price implies it ALREADY has tax.
+            // Discount reduces the Total Price.
+            // Net Total = (Qty * Price) - (Qty * Discount)
+            // Then back-calculate Tax from that Net Total.
+
+            const netTotal = (quantity * unitPrice) - totalDiscount;
+            const subTotal = netTotal / (1 + (taxRate / 100));
+            item.taxAmount = netTotal - subTotal;
+            item.total = netTotal;
+        } else {
+            // Exclusive Logic
+            // The Price is before Tax.
+            // Tax is added on top.
+            // Standard: Tax is usually on (Price - Discount).
+            // But preserving "Add tax on top of selling price" and existing logic style:
+            // Existing logic was: BaseTotal + Tax - Discount.  (Tax on Gross).
+            // Let's use standard: Tax on (Price - Discount) to be safe/correct, 
+            // OR stick to User's "tax = subtotal * rate" where subtotal = price.
+            // User said: "subtotal = price; tax = subtotal * rate; total = subtotal + tax".
+            // This implies Tax is on Gross Price.
+            // And usually Discount is subtracted from Total.
+
+            const grossAmount = quantity * unitPrice;
+            const tax = grossAmount * (taxRate / 100);
+            item.taxAmount = tax;
+            item.total = grossAmount + tax - totalDiscount;
+        }
 
         newItems[index] = item;
         setFormData({ ...formData, items: newItems });
@@ -218,30 +256,24 @@ export default function CreateQuotation() {
                     </div>
                 </div>
 
-                {/* Product Search */}
+                {/* Product Select Dropdown */}
                 <div className="bg-white p-6 rounded-lg shadow-sm mb-6 relative">
                     <h2 className="text-lg font-semibold mb-4">Add Items</h2>
-                    <input
-                        className="input w-full"
-                        placeholder="Search products by name or barcode..."
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                    />
-
-                    {searchResults.length > 0 && (
-                        <div className="absolute z-10 w-full left-0 mt-1 bg-white border border-gray-200 shadow-xl rounded-md overflow-hidden">
-                            {searchResults.map(prod => (
-                                <div
-                                    key={prod.id}
-                                    className="p-3 hover:bg-blue-50 cursor-pointer border-b last:border-0 flex justify-between"
-                                    onClick={() => addItem(prod)}
-                                >
-                                    <span className="font-medium">{prod.name}</span>
-                                    <span className="text-gray-500">HSN: {prod.hsnCode} | ₹{prod.price}</span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    <div className="mb-4">
+                        <SearchableSelect
+                            options={products.map(p => ({
+                                value: p.id,
+                                label: p.name
+                            }))}
+                            value={null} // Always reset after selection
+                            onChange={(val) => {
+                                const product = products.find(p => p.id == val);
+                                if (product) addItem(product);
+                            }}
+                            placeholder="Select Product to add..."
+                            className="w-full"
+                        />
+                    </div>
 
                     {/* Items Table */}
                     <div className="mt-6 overflow-x-auto">
@@ -261,7 +293,12 @@ export default function CreateQuotation() {
                             <tbody className="divide-y divide-gray-100">
                                 {formData.items.map((item, index) => (
                                     <tr key={index}>
-                                        <td className="py-3 pr-4">{item.name}</td>
+                                        <td className="py-3 pr-4">
+                                            {item.name}
+                                            {item.isTaxInclusive && (
+                                                <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1 rounded">Inc. Tax</span>
+                                            )}
+                                        </td>
                                         <td className="py-3 text-sm text-gray-500">{item.hsnCode}</td>
                                         <td className="py-3">
                                             <input
@@ -304,7 +341,10 @@ export default function CreateQuotation() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="py-3 text-sm text-gray-600">{item.taxRate}%</td>
+                                        <td className="py-3 text-sm text-gray-600">
+                                            {item.taxRate}%
+                                            <div className="text-[10px] text-gray-400">₹{item.taxAmount?.toFixed(2)}</div>
+                                        </td>
                                         <td className="py-3 font-bold">₹{item.total.toFixed(2)}</td>
                                         <td className="py-3 text-right">
                                             <button onClick={() => removeItem(index)} className="text-red-500 hover:text-red-700">
@@ -315,9 +355,21 @@ export default function CreateQuotation() {
                                 ))}
                             </tbody>
                             <tfoot>
+                                <tr className="border-t border-gray-100">
+                                    <td colSpan="5" className="text-right py-2 text-sm text-gray-600">Subtotal (Excl. Tax):</td>
+                                    <td colSpan="2" className="py-2 text-right font-medium text-gray-800">
+                                        ₹{formData.items.reduce((sum, item) => sum + (item.total - (item.taxAmount || 0)), 0).toFixed(2)}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colSpan="5" className="text-right py-2 text-sm text-gray-600">Total Tax:</td>
+                                    <td colSpan="2" className="py-2 text-right font-medium text-gray-800">
+                                        ₹{formData.items.reduce((sum, item) => sum + (item.taxAmount || 0), 0).toFixed(2)}
+                                    </td>
+                                </tr>
                                 <tr className="border-t-2 border-gray-100">
                                     <td colSpan="5" className="text-right py-4 font-bold text-gray-600">Grand Total:</td>
-                                    <td colSpan="2" className="py-4 text-xl font-bold text-blue-600">
+                                    <td colSpan="2" className="py-4 text-xl font-bold text-blue-600 text-right">
                                         ₹{calculateGrandTotal().toFixed(2)}
                                     </td>
                                 </tr>
@@ -336,7 +388,7 @@ export default function CreateQuotation() {
                         onChange={e => setFormData({ ...formData, notes: e.target.value })}
                     />
                 </div>
-            </div>
+            </div >
         </>
     );
 }
