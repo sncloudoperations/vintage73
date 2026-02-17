@@ -2,17 +2,37 @@ const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
 const accountingUtils = require('../utils/accountingUtils');
 
+// Helper function to get current date in IST timezone (UTC+5:30)
+const getISTDate = () => {
+    const now = new Date();
+    // Get IST time by adding 5 hours 30 minutes to UTC
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTime = new Date(now.getTime() + istOffset);
+
+    // Extract year, month, day from IST time
+    const year = istTime.getUTCFullYear();
+    const month = istTime.getUTCMonth();
+    const day = istTime.getUTCDate();
+
+    // Create UTC midnight date (00:00:00 UTC)
+    const utcMidnight = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+
+    // Subtract 5.5 hours to get "IST Midnight" represented in UTC
+    // IST Midnight (00:00 IST) is previous day 18:30 UTC
+    // This allows frontend logic (which converts local to ISO) to match correctly
+    return new Date(utcMidnight.getTime() - istOffset);
+};
+
 // Attendance
 exports.checkIn = asyncHandler(async (req, res) => {
     const { userId } = req.body;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayIST = getISTDate();
 
     // Check if already checked in
     const existing = await prisma.attendance.findFirst({
         where: {
             userId,
-            date: { gte: today }
+            date: { gte: todayIST }
         }
     });
 
@@ -24,8 +44,9 @@ exports.checkIn = asyncHandler(async (req, res) => {
     const attendance = await prisma.attendance.create({
         data: {
             userId,
+            date: todayIST, // Explicitly set date to IST date
             checkIn: new Date(),
-            status: 'PRESENT'
+            status: 'CHECKED_IN' // Initial status is CHECKED_IN, not PRESENT
         }
     });
 
@@ -34,13 +55,12 @@ exports.checkIn = asyncHandler(async (req, res) => {
 
 exports.checkOut = asyncHandler(async (req, res) => {
     const { userId } = req.body;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayIST = getISTDate();
 
     const attendance = await prisma.attendance.findFirst({
         where: {
             userId,
-            date: { gte: today }
+            date: { gte: todayIST }
         }
     });
 
@@ -51,7 +71,10 @@ exports.checkOut = asyncHandler(async (req, res) => {
 
     const updated = await prisma.attendance.update({
         where: { id: attendance.id },
-        data: { checkOut: new Date() }
+        data: {
+            checkOut: new Date(),
+            status: 'PRESENT' // Mark as PRESENT only after checkout
+        }
     });
 
     res.json(updated);
@@ -59,13 +82,12 @@ exports.checkOut = asyncHandler(async (req, res) => {
 
 exports.getAttendanceStatus = asyncHandler(async (req, res) => {
     const { userId } = req.query;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayIST = getISTDate();
 
     const attendance = await prisma.attendance.findFirst({
         where: {
             userId: parseInt(userId),
-            date: { gte: today }
+            date: { gte: todayIST }
         }
     });
     res.json({ attendance });
@@ -329,6 +351,10 @@ const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary, wee
                 } else if (att.status === 'HALF_DAY') {
                     payableDays += 0.5;
                     halfDayCount++;
+                } else if (att.status === 'CHECKED_IN') {
+                    // Do not count incomplete attendance
+                    // Treated as absent for payroll until checkout is done
+                    absentCount++;
                 } else if (att.status === 'ABSENT') {
                     // explicitly docked
                     absentCount++;

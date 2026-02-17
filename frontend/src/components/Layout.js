@@ -5,6 +5,7 @@ import TabBar from './TabBar';
 import { FiLogOut, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import api, { getServerUrl } from '@/lib/api';
 import { useTheme } from '@/context/ThemeContext';
+import { useTabs } from '@/context/TabContext';
 import NotificationBell from './NotificationBell';
 import ChatSidebar from './ChatSidebar';
 import { initSocket, disconnectSocket } from '@/utils/socket';
@@ -13,6 +14,7 @@ import { IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 export default function Layout({ children }) {
   const router = useRouter();
   const { theme } = useTheme();
+  const { clearAllTabs } = useTabs();
   const noLauncher = ['/login', '/setup', '/_error'];
   const showNavigation = !noLauncher.includes(router.pathname);
   const [user, setUser] = useState(null);
@@ -70,6 +72,7 @@ export default function Layout({ children }) {
 
   const handleLogout = () => {
     disconnectSocket();
+    clearAllTabs(); // Clear all tabs from state and localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     location.href = '/login'; // Force full reload to clear any context states if needed
