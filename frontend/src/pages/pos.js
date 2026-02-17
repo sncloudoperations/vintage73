@@ -138,6 +138,7 @@ export default function POS() {
                 setProducts(prodRes.data);
                 setCustomers(custRes.data);
 
+
                 // Filter salesmen: match branchId or global (no branch)
                 // Also possibly filter by role if needed, but for now allow all users
                 const branchUsers = prodRes.data ? userRes.data.filter(u => !u.branchId || u.branchId === user?.branchId) : [];
@@ -166,8 +167,46 @@ export default function POS() {
             }
         };
         fetchData();
-        fetchData();
     }, []);
+
+    // --- CART SYNC EFFECT ---
+    useEffect(() => {
+        if (products.length > 0 && cart.length > 0) {
+            let hasChanges = false;
+
+            const updatedCart = cart.map(cartItem => {
+                const freshProd = products.find(p => p.id === cartItem.id);
+                if (freshProd) {
+                    const freshPrice = Number(freshProd.price);
+                    const freshTaxRate = parseFloat(freshProd.taxRate || 0);
+                    const freshIsInclusive = freshProd.isTaxInclusive === true || freshProd.isTaxInclusive === 'true';
+
+                    const isPriceDiff = cartItem.price !== freshPrice;
+                    const isTaxDiff = cartItem.taxRate !== freshTaxRate;
+                    const isIncDiff = cartItem.isTaxInclusive !== freshIsInclusive;
+
+                    if (isPriceDiff || isTaxDiff || isIncDiff) {
+                        hasChanges = true;
+                        return {
+                            ...cartItem,
+                            price: freshPrice,
+                            taxRate: freshTaxRate,
+                            isTaxInclusive: freshIsInclusive,
+                            name: freshProd.name
+                        };
+                    }
+                }
+                return cartItem;
+            });
+
+            if (hasChanges) {
+                console.log("Syncing cart with fresh product data...");
+                setCart(updatedCart);
+                toast.info("Cart prices updated to latest values");
+            }
+        }
+    }, [products, cart]);
+
 
     // Update Invoice Settings when Branch Changes (for Admin)
     useEffect(() => {
@@ -237,16 +276,33 @@ export default function POS() {
 
     const addToCart = (product) => {
         const existing = cart.find(item => item.id === product.id);
+
+        // Always use FRESH data from the passed 'product' object
+        const freshPrice = Number(product.price);
+        const freshTaxRate = parseFloat(product.taxRate || 0);
+        const freshIsInclusive = product.isTaxInclusive === true || product.isTaxInclusive === 'true';
+
         if (existing) {
-            setCart(cart.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
+            setCart(cart.map(item => item.id === product.id ? {
+                ...item,
+                quantity: item.quantity + 1,
+                // FORCE UPDATE details
+                price: freshPrice,
+                taxRate: freshTaxRate,
+                isTaxInclusive: freshIsInclusive
+            } : item));
         } else {
             setCart([...cart, {
                 ...product,
+                // Ensure we spread product but also explicitly set the fields we depend on for calc
+                id: product.id,
+                name: product.name,
+                price: freshPrice,
                 quantity: 1,
                 discountPercent: 0,
                 discountAmount: 0,
-                taxRate: parseFloat(product.taxRate || 0),
-                isTaxInclusive: product.isTaxInclusive || false
+                taxRate: freshTaxRate,
+                isTaxInclusive: freshIsInclusive
             }]);
         }
     };
@@ -295,22 +351,38 @@ export default function POS() {
         const qty = parseFloat(item.quantity || 0);
         const disc = parseFloat(item.discountAmount || 0);
         const rate = parseFloat(item.taxRate || 0);
-        const isInc = item.isTaxInclusive || false;
+        const isInc = item.isTaxInclusive === true;
 
+        // Discount is applied on Unit Price. 
+        // Net Price = Price - Discount
         const netPricePerUnit = price - disc;
-        const lineGross = qty * netPricePerUnit;
 
         let lineTax = 0;
-        let lineSubTotal = 0;
+        let lineSubTotal = 0; // Exclusive of tax
+
+        // Total for line before splitting tax
+        const lineTotalPayable = qty * netPricePerUnit;
 
         if (isInc && rate > 0) {
-            lineTax = lineGross - (lineGross / (1 + (rate / 100)));
-            lineSubTotal = lineGross - lineTax;
+            // Inclusive Case: 
+            // The Price (and thus Net Price) already includes tax.
+            // Total Payable = Price (adjusted for qty/disc).
+            // We need to extract Tax from it.
+
+            const baseAmount = lineTotalPayable / (1 + (rate / 100)); // This is the Subtotal
+            lineTax = lineTotalPayable - baseAmount;
+            lineSubTotal = baseAmount;
         } else if (rate > 0) {
-            lineTax = (lineGross * rate) / 100;
-            lineSubTotal = lineGross;
+            // Exclusive Case:
+            // The Price is Ex-Tax.
+            // Tax is added ON TOP.
+
+            lineSubTotal = lineTotalPayable;
+            lineTax = (lineTotalPayable * rate) / 100;
         } else {
-            lineSubTotal = lineGross;
+            // No Tax
+            lineSubTotal = lineTotalPayable;
+            lineTax = 0;
         }
 
         return {
