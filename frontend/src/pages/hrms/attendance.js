@@ -45,6 +45,7 @@ export default function AttendanceCalendar() {
         data.forEach(record => {
             if (record.status === 'PRESENT') present++;
             if (record.status === 'HALF_DAY') halfDay++;
+            // CHECKED_IN is intentionally not counted as present
 
             if (record.checkIn && record.checkOut) {
                 const diff = new Date(record.checkOut) - new Date(record.checkIn);
@@ -74,6 +75,7 @@ export default function AttendanceCalendar() {
 
         const days = [];
         const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize to midnight for comparison
 
         // Empty cells for previous month
         for (let i = 0; i < firstDay; i++) {
@@ -87,11 +89,14 @@ export default function AttendanceCalendar() {
             const dateString = currentDayDate.toISOString().split('T')[0];
 
             // Find attendance record for this day
-            // Note: DB date might be datetime. We need to match YYYY-MM-DD.
-            // Find attendance record for this day
+            // Note: DB date is DateTime string (UTC). We need to match with local calendar day.
+            // Using ISOString shifts the date if it's strictly UTC midnight vs Local midnight.
+            // Robust approach: Check if record's local date matches currentDayDate.
             const record = attendanceData.find(a => {
-                const recordDate = new Date(a.date).toISOString().split('T')[0];
-                return recordDate === dateString;
+                const recordDate = new Date(a.date);
+                return recordDate.getDate() === currentDayDate.getDate() &&
+                    recordDate.getMonth() === currentDayDate.getMonth() &&
+                    recordDate.getFullYear() === currentDayDate.getFullYear();
             });
 
             // Find leave record for this day
@@ -130,9 +135,11 @@ export default function AttendanceCalendar() {
                         <div className="flex flex-col items-end gap-1">
                             {record && (
                                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${record.status === 'PRESENT' ? 'bg-green-100 text-green-700' :
-                                    record.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
+                                    record.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' :
+                                        record.status === 'CHECKED_IN' ? 'bg-blue-100 text-blue-700' :
+                                            'bg-red-100 text-red-700'
                                     }`}>
-                                    {record.status}
+                                    {record.status === 'CHECKED_IN' ? 'IN PROGRESS' : record.status}
                                 </span>
                             )}
                             {leave && (

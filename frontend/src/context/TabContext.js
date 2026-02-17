@@ -36,7 +36,7 @@ export function TabProvider({ children }) {
   const removeTab = (path, currentPath) => {
     setTabs((prev) => {
       const newTabs = prev.filter((t) => t.path !== path);
-      
+
       // If we closed the active tab, navigate to the last remaining tab or dashboard
       if (path === currentPath) {
         if (newTabs.length > 0) {
@@ -54,8 +54,13 @@ export function TabProvider({ children }) {
     router.push('/dashboard');
   };
 
+  const clearAllTabs = () => {
+    setTabs([]);
+    localStorage.removeItem('openTabs');
+  };
+
   return (
-    <TabContext.Provider value={{ tabs, addTab, removeTab, closeAllTabs }}>
+    <TabContext.Provider value={{ tabs, addTab, removeTab, closeAllTabs, clearAllTabs }}>
       {children}
     </TabContext.Provider>
   );
