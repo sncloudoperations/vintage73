@@ -90,7 +90,9 @@ export default function TopNavigation() {
 
   const filteredGroups = MENU_STRUCTURE.map(group => {
     if (!user) return null;
-    if (user.role === 'admin') return group;
+
+    // Global Admin (Level 1) sees everything
+    if (user.role === 'admin' && !user.branchId) return group;
 
     const allowedModules = user.allowedModules || [];
     const hasFullGroupAccess = allowedModules.includes(group.title);

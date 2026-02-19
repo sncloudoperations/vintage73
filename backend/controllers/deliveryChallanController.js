@@ -6,7 +6,7 @@ const generateChallanNumber = async (prefix = 'DC') => {
   const today = new Date();
   const year = today.getFullYear().toString().slice(-2);
   const month = (today.getMonth() + 1).toString().padStart(2, '0');
-  
+
   const lastChallan = await prisma.deliveryChallan.findFirst({
     where: {
       challanNumber: {
@@ -95,10 +95,16 @@ exports.createChallan = asyncHandler(async (req, res) => {
 
 // Get All Challans
 exports.getAllChallans = asyncHandler(async (req, res) => {
-  const { branchId, status, startDate, endDate } = req.query;
-  
+  const { branchId: queryBranchId, status, startDate, endDate } = req.query;
+
   const where = {};
-  if (branchId) where.branchId = parseInt(branchId);
+
+  // Branch Isolation
+  if (req.user.branchId) {
+    where.branchId = req.user.branchId;
+  } else if (queryBranchId) {
+    where.branchId = parseInt(queryBranchId);
+  }
   if (status) where.status = status;
   if (startDate && endDate) {
     where.challanDate = {
@@ -125,7 +131,7 @@ exports.getAllChallans = asyncHandler(async (req, res) => {
 // Get Single Challan
 exports.getChallan = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  
+
   const challan = await prisma.deliveryChallan.findUnique({
     where: { id: parseInt(id) },
     include: {
@@ -171,7 +177,7 @@ exports.updateStatus = asyncHandler(async (req, res) => {
 // Get Challan for Print
 exports.getChallanForPrint = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  
+
   const challan = await prisma.deliveryChallan.findUnique({
     where: { id: parseInt(id) },
     include: {

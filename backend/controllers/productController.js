@@ -8,13 +8,13 @@ exports.getAllProducts = asyncHandler(async (req, res) => {
 
   // --- BRANCH ENFORCEMENT ---
   let branchId = queryBranchId;
-  const isAdmin = ['ADMIN', 'OWNER', 'SUPERADMIN'].includes(user?.role?.toUpperCase());
+  const isGlobalAdmin = user?.role === 'admin' && !user?.branchId;
 
-  if (!isAdmin) {
-    // Non-admins are locked to their own branch stock view
+  if (!isGlobalAdmin) {
+    // Non-global admins (Branch Admin/Staff) are locked to their own branch stock
     branchId = user.branchId;
   }
-  
+
   const parsedBranchId = branchId && !isNaN(parseInt(branchId)) ? parseInt(branchId) : undefined;
 
   const products = await prisma.product.findMany({

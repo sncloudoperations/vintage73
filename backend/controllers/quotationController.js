@@ -19,7 +19,7 @@ exports.createQuotation = asyncHandler(async (req, res) => {
     const quotationItems = items.map(item => {
         const total = parseFloat(item.total);
         const tax = parseFloat(item.taxAmount || 0);
-        subTotal += (total - tax); 
+        subTotal += (total - tax);
         totalTax += tax;
         finalTotal += total;
 
@@ -41,7 +41,7 @@ exports.createQuotation = asyncHandler(async (req, res) => {
             customerId,
             branchId,
             validUntil: validUntil ? new Date(validUntil) : null,
-            subTotal: subTotal, 
+            subTotal: subTotal,
             taxAmount: totalTax,
             totalAmount: finalTotal,
             notes,
@@ -60,8 +60,15 @@ exports.createQuotation = asyncHandler(async (req, res) => {
 
 // Get All Quotations
 exports.getQuotations = asyncHandler(async (req, res) => {
-    const { branchId } = req.query;
-    const where = branchId ? { branchId: parseInt(branchId) } : {};
+    const { branchId: queryBranchId } = req.query;
+    const where = {};
+
+    // Branch Isolation
+    if (req.user.branchId) {
+        where.branchId = req.user.branchId;
+    } else if (queryBranchId) {
+        where.branchId = parseInt(queryBranchId);
+    }
 
     const quotations = await prisma.quotation.findMany({
         where,
@@ -87,7 +94,7 @@ exports.getQuotationById = asyncHandler(async (req, res) => {
 // Update Quotation
 exports.updateQuotation = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { status, notes, terms } = req.body; 
+    const { status, notes, terms } = req.body;
 
     const quotation = await prisma.quotation.update({
         where: { id: parseInt(id) },
@@ -193,7 +200,7 @@ exports.recordAdvance = asyncHandler(async (req, res) => {
     const payment = await prisma.payment.create({
         data: {
             quotationId: parseInt(id),
-            type: 'receipt', 
+            type: 'receipt',
             amount: parseFloat(amount),
             method,
             reference,

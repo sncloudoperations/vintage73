@@ -5,6 +5,13 @@ const asyncHandler = require('../middleware/asyncHandler');
 
 // Get all users
 exports.getUsers = asyncHandler(async (req, res) => {
+  let where = {};
+
+  // Branch Isolation: If user is not global admin, restrict by branchId
+  if (req.user.branchId) {
+    where.branchId = req.user.branchId;
+  }
+
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -47,6 +54,33 @@ exports.createUser = asyncHandler(async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  // --- Hierarchical Validation ---
+  const creatorRole = req.user.role;
+  const creatorBranchId = req.user.branchId;
+  const creatorModules = req.user.allowedModules || [];
+  const targetRole = role || 'staff';
+  const targetBranchId = branchId ? parseInt(branchId) : null;
+  const targetModules = allowedModules || [];
+
+  const isGlobalAdmin = creatorRole === 'admin' && !creatorBranchId;
+  const isBranchAdmin = creatorRole === 'admin' && creatorBranchId;
+
+  if (isBranchAdmin) {
+    // Branch Admin must create users in their own branch
+    if (targetBranchId !== creatorBranchId) {
+      return res.status(403).json({ message: 'You can only create users for your own branch' });
+    }
+    // Module permissions must be a subset of creator's permissions
+    const unauthorizedModules = targetModules.filter(m => !creatorModules.includes(m));
+    if (unauthorizedModules.length > 0) {
+      return res.status(403).json({ message: `Access denied: You cannot assign modules you don't have access to: ${unauthorizedModules.join(', ')}` });
+    }
+  } else if (!isGlobalAdmin) {
+    // Regular staff cannot create users at all
+    return res.status(403).json({ message: 'Access denied: Insufficient permissions to create users' });
+  }
+  // --- End Validation ---
 
   // Handle Employee Code
   let finalEmployeeCode = employeeCode;
@@ -162,6 +196,44 @@ exports.updateUser = asyncHandler(async (req, res) => {
     employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds,
     weeklyOff
   } = req.body;
+
+  // --- Hierarchical Validation ---
+  const creatorRole = req.user.role;
+  const creatorBranchId = req.user.branchId;
+  const creatorModules = req.user.allowedModules || [];
+  const targetUser = await prisma.user.findUnique({ where: { id: parseInt(id) } });
+
+  if (!targetUser) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const isGlobalAdmin = creatorRole === 'admin' && !creatorBranchId;
+  const isBranchAdmin = creatorRole === 'admin' && creatorBranchId;
+
+  // If Branch Admin is updating
+  if (isBranchAdmin) {
+    // Can only update users in their own branch
+    if (targetUser.branchId !== creatorBranchId) {
+      return res.status(403).json({ message: 'Access denied: Cannot update users from other branches' });
+    }
+    // Cannot move user to another branch
+    if (branchId && parseInt(branchId) !== creatorBranchId) {
+      return res.status(403).json({ message: 'Branch Admin cannot change a user\'s branch' });
+    }
+    // Module permissions check
+    if (allowedModules) {
+      const unauthorizedModules = allowedModules.filter(m => !creatorModules.includes(m));
+      if (unauthorizedModules.length > 0) {
+        return res.status(403).json({ message: `Access denied: You cannot assign modules you don't have access to: ${unauthorizedModules.join(', ')}` });
+      }
+    }
+  } else if (!isGlobalAdmin) {
+    // Regular staff can only update themselves (if at all)
+    if (parseInt(id) !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied: Insufficient permissions' });
+    }
+  }
+  // --- End Validation ---
 
   // Handle designation - either use existing ID or create new
   let designationId = null;
