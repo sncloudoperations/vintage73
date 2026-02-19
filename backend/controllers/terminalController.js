@@ -4,7 +4,15 @@ const crypto = require('crypto');
 
 // Get all terminals
 exports.getTerminals = asyncHandler(async (req, res) => {
+    const where = {};
+
+    // Branch Isolation
+    if (req.user.branchId) {
+        where.branchId = req.user.branchId;
+    }
+
     const terminals = await prisma.terminal.findMany({
+        where,
         include: {
             branch: true,
             users: {
@@ -39,7 +47,7 @@ exports.registerTerminal = asyncHandler(async (req, res) => {
             terminalCode: terminalCode || crypto.randomUUID(),
             name: name || 'New Terminal',
             branchId: branchId ? parseInt(branchId) : null,
-            isActive: isManual 
+            isActive: isManual
         }
     });
     res.status(201).json(terminal);
@@ -78,7 +86,7 @@ exports.bulkCreateTerminals = asyncHandler(async (req, res) => {
                     terminalCode: crypto.randomUUID(),
                     name,
                     branchId: parseInt(branchId),
-                    isActive: true 
+                    isActive: true
                 }
             });
             results.created.push(terminal);

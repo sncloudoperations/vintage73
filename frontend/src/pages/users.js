@@ -23,6 +23,7 @@ export default function Users() {
   const [formData, setFormData] = useState(getInitialFormState());
   const [editingId, setEditingId] = useState(null);
   const [branches, setBranches] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [companyProfile, setCompanyProfile] = useState(null);
   const [designations, setDesignations] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -34,6 +35,15 @@ export default function Users() {
   // const modules = ['DASHBOARD', 'MASTER', 'INVENTORY', 'SALES', 'ACCOUNTS']; // Deprecated
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setCurrentUser(parsedUser);
+      // Pre-set branch if admin with a branch and not editing
+      if (parsedUser.role === 'admin' && parsedUser.branchId && !editingId) {
+        setFormData(prev => ({ ...prev, branchId: parsedUser.branchId }));
+      }
+    }
     fetchUsers();
     fetchBranches();
     fetchCompanyProfile();
@@ -205,6 +215,9 @@ export default function Users() {
 
   const handleOpenAddUser = () => {
     setFormData(getInitialFormState());
+    if (currentUser?.role === 'admin' && currentUser?.branchId) {
+      setFormData(prev => ({ ...prev, branchId: currentUser.branchId }));
+    }
     setEditingId(null);
     setShowModal(true);
   };
@@ -267,7 +280,7 @@ export default function Users() {
                     </span>
                   </td>
                   <td>
-                    <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${user.role === 'admin' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}`}>
+                    <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${user.role === 'admin' ? 'bg-purple-100 text-purple-700 font-bold' : 'bg-slate-100 text-slate-600'}`}>
                       {user.role}
                     </span>
                   </td>
@@ -468,14 +481,21 @@ export default function Users() {
                       <div>
                         <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Assigned Branch</label>
                         <select
-                          className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal py-2.5 text-sm"
+                          className={`input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal py-2.5 text-sm ${currentUser?.branchId ? 'opacity-70 cursor-not-allowed bg-slate-100' : ''}`}
                           value={formData.branchId}
                           onChange={e => setFormData({ ...formData, branchId: e.target.value })}
+                          disabled={currentUser?.branchId}
                         >
-                          <option value="">Global / No Branch</option>
-                          {branches.map(b => (
-                            <option key={b.id} value={b.id}>{b.name}</option>
-                          ))}
+                          {currentUser?.branchId ? (
+                            <option value={currentUser.branchId}>{currentUser.branchName || 'Current Branch'}</option>
+                          ) : (
+                            <>
+                              <option value="">Global / No Branch</option>
+                              {branches.map(b => (
+                                <option key={b.id} value={b.id}>{b.name}</option>
+                              ))}
+                            </>
+                          )}
                         </select>
                       </div>
 
@@ -534,46 +554,57 @@ export default function Users() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {MENU_STRUCTURE.map(group => (
-                        <div key={group.title} className="bg-white p-2.5 rounded-lg border border-slate-200">
-                          <div className="flex items-center gap-2 mb-1.5 pb-1.5 border-b border-slate-100">
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={formData.allowedModules?.includes(group.title)}
-                                onChange={() => toggleModule(group.title)}
-                                className="sr-only peer"
-                              />
-                              <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                            </label>
-                            <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
-                          </div>
+                      {MENU_STRUCTURE.map(group => {
+                        // Filter modules based on current user's access
+                        if (currentUser?.role !== 'admin' || currentUser?.branchId) {
+                          const allowed = currentUser?.allowedModules || [];
+                          // If non-admin, only show the group if it's explicitly allowed OR if any of its items are allowed
+                          if (!allowed.includes(group.title) && !group.items.some(item => allowed.includes(`${group.title}:${item.name}`))) {
+                            return null;
+                          }
+                        }
 
-                          <div className="space-y-0.5">
-                            {group.items.map(item => {
-                              const permissionKey = `${group.title}:${item.name}`;
-                              const isParentSelected = formData.allowedModules?.includes(group.title);
-                              const isSelected = formData.allowedModules?.includes(permissionKey);
+                        return (
+                          <div key={group.title} className="bg-white p-2.5 rounded-lg border border-slate-200">
+                            <div className="flex items-center gap-2 mb-1.5 pb-1.5 border-b border-slate-100">
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={formData.allowedModules?.includes(group.title)}
+                                  onChange={() => toggleModule(group.title)}
+                                  className="sr-only peer"
+                                />
+                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                              </label>
+                              <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
+                            </div>
 
-                              return (
-                                <label key={permissionKey} className={`flex items-center gap-2 cursor-pointer px-1 py-0.5 rounded hover:bg-slate-50 transition-colors ${isParentSelected ? 'opacity-50' : ''}`}>
-                                  <div className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                      type="checkbox"
-                                      checked={isSelected || isParentSelected}
-                                      onChange={() => toggleModule(permissionKey)}
-                                      disabled={isParentSelected}
-                                      className="sr-only peer"
-                                    />
-                                    <div className="w-7 h-4 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                                  </div>
-                                  <span className={`text-[11px] ${isSelected || isParentSelected ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>{item.name}</span>
-                                </label>
-                              );
-                            })}
+                            <div className="space-y-0.5">
+                              {group.items.map(item => {
+                                const permissionKey = `${group.title}:${item.name}`;
+                                const isParentSelected = formData.allowedModules?.includes(group.title);
+                                const isSelected = formData.allowedModules?.includes(permissionKey);
+
+                                return (
+                                  <label key={permissionKey} className={`flex items-center gap-2 cursor-pointer px-1 py-0.5 rounded hover:bg-slate-50 transition-colors ${isParentSelected ? 'opacity-50' : ''}`}>
+                                    <div className="relative inline-flex items-center cursor-pointer">
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected || isParentSelected}
+                                        onChange={() => toggleModule(permissionKey)}
+                                        disabled={isParentSelected}
+                                        className="sr-only peer"
+                                      />
+                                      <div className="w-7 h-4 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                                    </div>
+                                    <span className={`text-[11px] ${isSelected || isParentSelected ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>{item.name}</span>
+                                  </label>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     {/* Terminal Selection */}

@@ -165,10 +165,10 @@ exports.createPurchase = asyncHandler(async (req, res) => {
         await processPurchasePosting(tx, purchase, req.user?.id || 1);
       }
     } catch (accErr) {
-        console.error("Accounting Integration Failed (Purchase):", accErr);
-        const error = new Error('Accounting Error: ' + accErr.message);
-        error.statusCode = 500;
-        throw error;
+      console.error("Accounting Integration Failed (Purchase):", accErr);
+      const error = new Error('Accounting Error: ' + accErr.message);
+      error.statusCode = 500;
+      throw error;
     }
 
     return purchase;
@@ -179,9 +179,16 @@ exports.createPurchase = asyncHandler(async (req, res) => {
 
 // Get All Purchases
 exports.getPurchases = asyncHandler(async (req, res) => {
-  const { branchId, startDate, endDate } = req.query;
+  const { branchId: queryBranchId, startDate, endDate } = req.query;
   const where = {};
-  if (branchId) where.branchId = parseInt(branchId);
+
+  // Branch Isolation
+  if (req.user.branchId) {
+    where.branchId = req.user.branchId;
+  } else if (queryBranchId) {
+    where.branchId = parseInt(queryBranchId);
+  }
+
   if (startDate && endDate) {
     where.purchaseDate = {
       gte: new Date(startDate),
@@ -212,6 +219,12 @@ exports.deletePurchase = asyncHandler(async (req, res) => {
   if (!purchase) {
     res.status(404);
     throw new Error('Purchase not found');
+  }
+
+  // Branch Isolation
+  if (req.user.branchId && purchase.branchId !== req.user.branchId) {
+    res.status(403);
+    throw new Error('Access denied: Cannot delete purchases from other branches');
   }
 
   await prisma.$transaction(async (tx) => {

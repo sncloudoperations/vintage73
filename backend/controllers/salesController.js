@@ -311,7 +311,14 @@ exports.createSale = asyncHandler(async (req, res) => {
 exports.getAllSales = asyncHandler(async (req, res) => {
   const { branchId, startDate, endDate, terminalId, invoice } = req.query;
   const where = {};
-  if (branchId) where.branchId = parseInt(branchId);
+
+  // Branch Isolation
+  if (req.user.branchId) {
+    where.branchId = req.user.branchId;
+  } else if (branchId) {
+    where.branchId = parseInt(branchId);
+  }
+
   if (terminalId) where.terminalId = parseInt(terminalId);
   if (invoice) where.invoiceNumber = invoice;
   if (startDate && endDate) {

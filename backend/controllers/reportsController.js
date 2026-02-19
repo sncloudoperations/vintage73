@@ -4,9 +4,11 @@ const asyncHandler = require('../middleware/asyncHandler');
 const getEffectiveBranchId = (req) => {
   const { branchId: queryBranchId } = req.query;
   const user = req.user;
-  const isAdmin = ['ADMIN', 'OWNER', 'SUPERADMIN'].includes(user?.role?.toUpperCase());
 
-  if (!isAdmin) {
+  // New Hierarchical Logic: Global Admin has no branchId
+  const isGlobalAdmin = user?.role === 'admin' && !user?.branchId;
+
+  if (!isGlobalAdmin) {
     if (!user?.branchId) return -1; // Force failure if no branch assigned
     return user.branchId;
   }
@@ -24,7 +26,7 @@ exports.getSalesReports = asyncHandler(async (req, res) => {
 
   const where = {};
   if (effectiveBranchId) where.branchId = effectiveBranchId;
-  
+
   if (startDate && endDate) {
     where.saleDate = {
       gte: new Date(startDate),

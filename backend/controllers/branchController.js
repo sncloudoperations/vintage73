@@ -3,7 +3,15 @@ const asyncHandler = require('../middleware/asyncHandler');
 
 // Get All Branches
 exports.getBranches = asyncHandler(async (req, res) => {
+  let where = {};
+
+  // If user is restricted to a branch, only show that branch
+  if (req.user.branchId) {
+    where.id = req.user.branchId;
+  }
+
   const branches = await prisma.branch.findMany({
+    where,
     orderBy: { createdAt: 'desc' }
   });
   res.json(branches);
@@ -13,6 +21,13 @@ exports.getBranches = asyncHandler(async (req, res) => {
 exports.getBranchById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const branchId = parseInt(id);
+
+  // Security: Check if user has access to this branch
+  if (req.user.branchId && req.user.branchId !== branchId) {
+    res.status(403);
+    throw new Error('Access denied: Cannot access other branch data');
+  }
+
   if (isNaN(branchId)) {
     res.status(400);
     throw new Error('Invalid Branch ID');
@@ -30,6 +45,12 @@ exports.getBranchById = asyncHandler(async (req, res) => {
 
 // Create Branch
 exports.createBranch = asyncHandler(async (req, res) => {
+  // Only global admin can create branches
+  if (req.user.branchId) {
+    res.status(403);
+    throw new Error('Access denied: Only global admins can create branches');
+  }
+
   const { name, address, phone, email } = req.body;
   const branch = await prisma.branch.create({
     data: { name, address, phone, email }
@@ -41,6 +62,13 @@ exports.createBranch = asyncHandler(async (req, res) => {
 exports.updateBranch = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const branchId = parseInt(id);
+
+  // Security: Check if user has access to this branch
+  if (req.user.branchId && req.user.branchId !== branchId) {
+    res.status(403);
+    throw new Error('Access denied: Cannot update other branches');
+  }
+
   if (isNaN(branchId)) {
     res.status(400);
     throw new Error('Invalid Branch ID');
@@ -58,6 +86,13 @@ exports.updateBranch = asyncHandler(async (req, res) => {
 exports.deleteBranch = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const branchId = parseInt(id);
+
+  // Security: Only global admin can delete branches
+  if (req.user.branchId) {
+    res.status(403);
+    throw new Error('Access denied: Only global admins can delete branches');
+  }
+
   if (isNaN(branchId)) {
     res.status(400);
     throw new Error('Invalid Branch ID');
@@ -69,7 +104,7 @@ exports.deleteBranch = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Cannot delete branch with assigned users');
   }
-  
+
   await prisma.branch.delete({ where: { id: branchId } });
   res.json({ message: 'Branch deleted' });
 });
