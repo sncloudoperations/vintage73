@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { getTerminalId, checkTerminalAccess } from '@/lib/terminal';
 import SearchableSelect from '@/components/SearchableSelect';
 import DynamicInvoice from '@/components/DynamicInvoice';
+import ProfessionalInvoice from '@/components/ProfessionalInvoice';
 
 export default function POS() {
     const [products, setProducts] = useState([]);
@@ -612,7 +613,7 @@ export default function POS() {
             }
         } catch (err) {
             console.error(err);
-            toast.error(err.response?.data?.error || 'Checkout Failed');
+            toast.error(err.response?.data?.message || err.response?.data?.error || 'Checkout Failed');
         }
     };
 
@@ -1073,16 +1074,15 @@ export default function POS() {
                 </div>
             )}
 
-            {/* Hidden Print Invoice */}
-            <div style={{ display: 'none' }}>
-                <DynamicInvoice
-                    ref={componentRef}
-                    printData={lastSale}
-                    companyProfile={companyProfile}
-                    invoiceSettings={invoiceSettings}
-                />
-            </div>
-
+            {lastSale && (
+                <div style={{ display: 'none' }}>
+                    <ProfessionalInvoice
+                        ref={componentRef}
+                        printData={lastSale}
+                        companyProfile={companyProfile}
+                    />
+                </div>
+            )}
             {/* Sales History Modal */}
             {showHistoryModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowHistoryModal(false)}>

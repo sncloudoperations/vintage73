@@ -10,11 +10,16 @@ exports.getMissPunchRequests = asyncHandler(async (req, res) => {
   const { userId } = req.query;
 
   let where = {};
-  
-  // If not admin, only show own requests
-  if (user.role !== 'admin') {
+
+  // Branch Isolation: If user is assigned to a branch, only show that branch's data
+  if (user.branchId) {
+    where.branchId = user.branchId;
+  } else if (user.role !== 'admin') {
     where.userId = user.id;
-  } else if (userId) {
+  }
+
+  // Allow filtering by userId if admin
+  if (user.role === 'admin' && userId) {
     where.userId = parseInt(userId);
   }
 
@@ -55,6 +60,7 @@ exports.createMissPunchRequest = asyncHandler(async (req, res) => {
   const request = await prisma.missPunchRequest.create({
     data: {
       userId: user.id,
+      branchId: user.branchId, // Set branchId from user
       date: new Date(date),
       checkInTime,
       checkOutTime,
@@ -84,6 +90,21 @@ exports.updateMissPunchStatus = asyncHandler(async (req, res) => {
   if (user.role !== 'admin') {
     res.status(403);
     throw new Error('Only admins can approve/reject requests');
+  }
+
+  // Branch isolation: Admin must be from the same branch
+  const existingRequest = await prisma.missPunchRequest.findUnique({
+    where: { id: parseInt(id) }
+  });
+
+  if (!existingRequest) {
+    res.status(404);
+    throw new Error('Request not found');
+  }
+
+  if (user.branchId && existingRequest.branchId !== user.branchId) {
+    res.status(403);
+    throw new Error('Unauthorized: This request belongs to another branch');
   }
 
   if (!['APPROVED', 'REJECTED'].includes(status)) {
@@ -118,17 +139,27 @@ exports.updateMissPunchStatus = asyncHandler(async (req, res) => {
 
   // If approved, optionally create/update attendance record
   if (status === 'APPROVED') {
-    const attendanceDate = new Date(request.date);
+    // Use request.date directly for date logic, normalized to IST midnight
+    const reqDate = new Date(request.date);
+    const dateStr = reqDate.toISOString().split('T')[0]; // This is fine for splitting if normalized below
+
+    const attendanceDate = new Date(reqDate);
     attendanceDate.setHours(0, 0, 0, 0);
+
+    // Helper to create datetime at the correct date
+    const createAtReqDate = (timeStr) => {
+      if (!timeStr) return null;
+      const [hours, minutes] = timeStr.split(':');
+      const d = new Date(reqDate);
+      d.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      return d;
+    };
 
     // Check if attendance already exists
     const existing = await prisma.attendance.findFirst({
       where: {
         userId: request.userId,
-        date: {
-          gte: attendanceDate,
-          lt: new Date(attendanceDate.getTime() + 24 * 60 * 60 * 1000)
-        }
+        date: attendanceDate
       }
     });
 
@@ -137,8 +168,8 @@ exports.updateMissPunchStatus = asyncHandler(async (req, res) => {
       await prisma.attendance.update({
         where: { id: existing.id },
         data: {
-          checkIn: request.checkInTime ? new Date(`${request.date.toISOString().split('T')[0]}T${request.checkInTime}`) : existing.checkIn,
-          checkOut: request.checkOutTime ? new Date(`${request.date.toISOString().split('T')[0]}T${request.checkOutTime}`) : existing.checkOut,
+          checkIn: request.checkInTime ? createAtReqDate(request.checkInTime) : existing.checkIn,
+          checkOut: request.checkOutTime ? createAtReqDate(request.checkOutTime) : existing.checkOut,
           status: 'PRESENT'
         }
       });
@@ -147,9 +178,10 @@ exports.updateMissPunchStatus = asyncHandler(async (req, res) => {
       await prisma.attendance.create({
         data: {
           userId: request.userId,
+          branchId: request.branchId, // Use branchId from request
           date: attendanceDate,
-          checkIn: request.checkInTime ? new Date(`${request.date.toISOString().split('T')[0]}T${request.checkInTime}`) : null,
-          checkOut: request.checkOutTime ? new Date(`${request.date.toISOString().split('T')[0]}T${request.checkOutTime}`) : null,
+          checkIn: createAtReqDate(request.checkInTime),
+          checkOut: createAtReqDate(request.checkOutTime),
           status: 'PRESENT'
         }
       });
@@ -167,11 +199,15 @@ exports.getSalaryAdvances = asyncHandler(async (req, res) => {
   const { userId } = req.query;
 
   let where = {};
-  
-  // If not admin, only show own advances
-  if (user.role !== 'admin') {
+
+  // Branch Isolation
+  if (user.branchId) {
+    where.branchId = user.branchId;
+  } else if (user.role !== 'admin') {
     where.userId = user.id;
-  } else if (userId) {
+  }
+
+  if (user.role === 'admin' && userId) {
     where.userId = parseInt(userId);
   }
 
@@ -230,6 +266,7 @@ exports.createSalaryAdvance = asyncHandler(async (req, res) => {
   const advance = await prisma.salaryAdvance.create({
     data: {
       userId: user.id,
+      branchId: user.branchId, // Set branchId
       amount: parseFloat(amount),
       reason,
       status: 'PENDING'
@@ -257,6 +294,20 @@ exports.updateSalaryAdvanceStatus = asyncHandler(async (req, res) => {
   if (user.role !== 'admin') {
     res.status(403);
     throw new Error('Only admins can approve/reject advances');
+  }
+
+  const existingAdvance = await prisma.salaryAdvance.findUnique({
+    where: { id: parseInt(id) }
+  });
+
+  if (!existingAdvance) {
+    res.status(404);
+    throw new Error('Salary advance not found');
+  }
+
+  if (user.branchId && existingAdvance.branchId !== user.branchId) {
+    res.status(403);
+    throw new Error('Unauthorized: This request belongs to another branch');
   }
 
   if (!['APPROVED', 'REJECTED'].includes(status)) {
@@ -291,7 +342,7 @@ exports.updateSalaryAdvanceStatus = asyncHandler(async (req, res) => {
 
   // Accounting Integration
   if (status === 'APPROVED') {
-      await accountingUtils.handleSalaryAdvanceApproval(advance.id, user.id);
+    await accountingUtils.handleSalaryAdvanceApproval(advance.id, user.id);
   }
 
   res.json(advance);

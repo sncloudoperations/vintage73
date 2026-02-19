@@ -5,7 +5,7 @@ import {
 } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
-import DynamicInvoice from '@/components/DynamicInvoice';
+import ProfessionalInvoice from '@/components/ProfessionalInvoice';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function SalesReport() {
@@ -85,7 +85,7 @@ export default function SalesReport() {
 
     const triggerPrint = (sale) => {
         setPrintSale(sale);
-        toast.loading("Preparing Print...", { duration: 1000 });
+        toast.info("Preparing Print...", { autoClose: 1000, position: 'bottom-right' });
         setTimeout(() => handlePrint(), 500);
     };
 
@@ -380,11 +380,11 @@ export default function SalesReport() {
             )}
 
             {/* Hidden Print Component */}
-            <div style={{ display: 'none' }} ref={componentRef}>
-                <DynamicInvoice
+            <div style={{ display: 'none' }}>
+                <ProfessionalInvoice
+                    ref={componentRef}
                     printData={printSale}
                     companyProfile={companyProfile}
-                    invoiceSettings={invoiceSettings}
                 />
             </div>
 
