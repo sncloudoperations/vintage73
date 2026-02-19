@@ -4,7 +4,7 @@ const { processSalePosting } = require('../utils/accountingHelper');
 
 // Create new sale
 exports.createSale = asyncHandler(async (req, res) => {
-  const { customerId, items, paymentMethod, paidAmount, discount = 0, saleDate, salesmanId, terminalId } = req.body;
+  const { customerId, items, paymentMethod, paidAmount, discount = 0, saleDate, salesmanId, terminalId, isReturn = false, returnReason = '', originalInvoice = '' } = req.body;
   let { branchId } = req.body;
 
   // 1. Hardened Validation
@@ -13,13 +13,17 @@ exports.createSale = asyncHandler(async (req, res) => {
     branchId = req.user.branchId;
   }
 
+  console.log(`[POS Checkout] User: ${req.user?.username}, Body BranchId: ${req.body.branchId}, Effective BranchId: ${branchId}`);
+
   if (!branchId) {
+    console.warn(`[POS Checkout] 400: Branch selection is required (User branch: ${req.user?.branchId})`);
     res.status(400);
     throw new Error('Branch selection is required. Please select a branch or login to a branch-assigned account.');
   }
 
   const validBranchId = parseInt(branchId);
   if (isNaN(validBranchId)) {
+    console.warn(`[POS Checkout] 400: Invalid Branch ID: ${branchId}`);
     res.status(400);
     throw new Error('Invalid Branch ID provided.');
   }
@@ -27,11 +31,13 @@ exports.createSale = asyncHandler(async (req, res) => {
   // Verify branch exists in DB
   const branchExists = await prisma.branch.findUnique({ where: { id: validBranchId } });
   if (!branchExists) {
+    console.warn(`[POS Checkout] 404: Branch ${validBranchId} not found`);
     res.status(404);
     throw new Error(`Branch with ID ${validBranchId} not found.`);
   }
 
   if (!items || !Array.isArray(items) || items.length === 0) {
+    console.warn(`[POS Checkout] 400: Empty items array`);
     res.status(400);
     throw new Error('Sale must have at least one item.');
   }
@@ -48,6 +54,52 @@ exports.createSale = asyncHandler(async (req, res) => {
     if (!customer) {
       res.status(404);
       throw new Error('Customer not found in database.');
+    }
+  }
+
+  // --- RETURN VALIDATION ---
+  if (isReturn && originalInvoice) {
+    const originalSale = await prisma.sale.findUnique({
+      where: { invoiceNumber: originalInvoice },
+      include: { items: true }
+    });
+
+    if (!originalSale) {
+      res.status(404);
+      throw new Error('Original invoice not found for return.');
+    }
+
+    // Get previous returns
+    const previousReturns = await prisma.sale.findMany({
+      where: {
+        originalInvoice: originalInvoice,
+        isReturn: true,
+        status: { not: 'cancelled' }
+      },
+      include: { items: true }
+    });
+
+    const returnedQtyMap = {};
+    previousReturns.forEach(ret => {
+      ret.items.forEach(item => {
+        returnedQtyMap[item.productId] = (returnedQtyMap[item.productId] || 0) + item.quantity;
+      });
+    });
+
+    for (const item of items) {
+      const originalItem = originalSale.items.find(i => i.productId === parseInt(item.productId));
+      if (!originalItem) {
+        res.status(400);
+        throw new Error(`Product ${item.productId} was not part of original invoice ${originalInvoice}.`);
+      }
+
+      const alreadyReturned = returnedQtyMap[item.productId] || 0;
+      const remaining = originalItem.quantity - alreadyReturned;
+
+      if (parseInt(item.quantity) > remaining) {
+        res.status(400);
+        throw new Error(`Cannot return ${item.quantity} units of product ${item.productId}. Only ${remaining} units remaining.`);
+      }
     }
   }
 
@@ -76,13 +128,18 @@ exports.createSale = asyncHandler(async (req, res) => {
         }
       });
 
-      if (!productStock || productStock.quantity < item.quantity) {
-        const error = new Error(`Insufficient stock for product: ${product.name} in this branch`);
-        error.statusCode = 400;
-        throw error;
+
+      if (!isReturn) {
+        if (!productStock || productStock.quantity < item.quantity) {
+          console.warn(`[POS Checkout] 400: Insufficient stock for ${product.name} (Available: ${productStock?.quantity || 0}, Requested: ${item.quantity})`);
+          const error = new Error(`Insufficient stock for product: ${product.name} in this branch`);
+          error.statusCode = 400;
+          throw error;
+        }
       }
 
-      const netPrice = parseFloat(item.unitPrice) - parseFloat(item.discountAmount || 0);
+      const unitPrice = item.unitPrice || item.price || 0;
+      const netPrice = parseFloat(unitPrice) - parseFloat(item.discountAmount || 0);
       const taxRate = parseFloat(product.taxRate || 0);
       const isTaxInclusive = product.isTaxInclusive || false;
 
@@ -104,21 +161,28 @@ exports.createSale = asyncHandler(async (req, res) => {
       subTotal += (lineTotal - (isTaxInclusive ? lineTax : 0));
       taxAmount += lineTax;
 
+      const safeUnitPrice = isNaN(parseFloat(unitPrice)) ? 0 : parseFloat(unitPrice);
+      const safeLineTax = isNaN(lineTax) ? 0 : lineTax;
+      const safeLineTotal = isNaN(lineTotal) ? 0 : lineTotal;
+
       saleItemsData.push({
         productId: productId,
         quantity: item.quantity,
-        unitPrice: parseFloat(item.unitPrice),
+        unitPrice: safeUnitPrice,
         discountPercent: parseFloat(item.discountPercent || 0),
         discountAmount: parseFloat(item.discountAmount || 0),
-        total: parseFloat((lineTotal + (!isTaxInclusive ? lineTax : 0)).toFixed(2)),
-        taxAmount: parseFloat(lineTax.toFixed(2)),
+        total: parseFloat((safeLineTotal + (!isTaxInclusive ? safeLineTax : 0)).toFixed(2)),
+        taxAmount: parseFloat(safeLineTax.toFixed(2)),
         taxRate: parseFloat(taxRate)
       });
     }
 
-    const grandTotal = subTotal + taxAmount - parseFloat(discount) + parseFloat(req.body.roundOffAmount || 0);
+    const grandTotal = (isNaN(subTotal) ? 0 : subTotal) + (isNaN(taxAmount) ? 0 : taxAmount) - parseFloat(discount || 0) + parseFloat(req.body.roundOffAmount || 0);
+    const finalSubTotal = isNaN(subTotal) ? 0 : parseFloat(subTotal.toFixed(2));
+    const finalTaxAmount = isNaN(taxAmount) ? 0 : parseFloat(taxAmount.toFixed(2));
+    const finalGrandTotal = isNaN(grandTotal) ? 0 : parseFloat(grandTotal.toFixed(0)); // Round for cash
     const finalPaidAmount = parseFloat(paidAmount || 0);
-    const roundOffAmount = parseFloat(req.body.roundOffAmount || 0);
+    const finalRoundOffAmount = parseFloat(req.body.roundOffAmount || 0);
 
     // 2. Calculate Incentive
     let incentiveAmount = 0;
@@ -127,7 +191,7 @@ exports.createSale = asyncHandler(async (req, res) => {
     if (validSalesmanId) {
       const salesman = await tx.user.findUnique({ where: { id: validSalesmanId } });
       if (salesman && salesman.incentivePercentage > 0) {
-        incentiveAmount = (grandTotal * parseFloat(salesman.incentivePercentage)) / 100;
+        incentiveAmount = (finalGrandTotal * parseFloat(salesman.incentivePercentage)) / 100;
       }
     }
 
@@ -135,20 +199,23 @@ exports.createSale = asyncHandler(async (req, res) => {
     const sale = await tx.sale.create({
       data: {
         invoiceNumber: `INV-${Date.now()}`,
-        customerId: customer ? customer.id : null,
+        customer: customer ? { connect: { id: customer.id } } : undefined,
         paymentMethod,
-        subTotal,
-        taxAmount,
-        totalAmount: grandTotal,
-        roundOffAmount,
+        subTotal: finalSubTotal,
+        taxAmount: finalTaxAmount,
+        totalAmount: finalGrandTotal,
+        roundOffAmount: finalRoundOffAmount,
         paidAmount: finalPaidAmount,
-        balanceAmount: grandTotal - finalPaidAmount,
+        balanceAmount: finalGrandTotal - finalPaidAmount,
         saleDate: saleDate ? new Date(saleDate) : new Date(),
-        branchId: validBranchId,
-        salesmanId: validSalesmanId,
-        terminalId: terminalId ? parseInt(terminalId) : null,
+        branch: { connect: { id: validBranchId } },
+        salesman: validSalesmanId ? { connect: { id: validSalesmanId } } : undefined,
+        terminal: terminalId ? { connect: { id: parseInt(terminalId) } } : undefined,
         incentiveAmount: incentiveAmount,
-        status: (grandTotal - finalPaidAmount) > 0.5 ? 'partial' : 'completed',
+        status: (finalGrandTotal - finalPaidAmount) > 0.5 ? 'partial' : 'completed',
+        isReturn,
+        returnReason,
+        originalInvoice,
         items: {
           create: saleItemsData
         }
@@ -183,7 +250,7 @@ exports.createSale = asyncHandler(async (req, res) => {
           }
         },
         data: {
-          quantity: { decrement: item.quantity }
+          quantity: isReturn ? { increment: item.quantity } : { decrement: item.quantity }
         }
       });
     }
@@ -209,22 +276,40 @@ exports.createSale = asyncHandler(async (req, res) => {
             method: p.method,
             reference: 'Initial Payment',
             description: `Payment for Invoice ${sale.invoiceNumber}`,
-            saleId: sale.id,
-            branchId: validBranchId,
-            customerId: customer ? customer.id : null
+            sale: { connect: { id: sale.id } },
+            branch: { connect: { id: validBranchId } },
+            customer: customer ? { connect: { id: customer.id } } : undefined
           }
         });
       }
     }
 
-    return sale;
+    // 3.5 Calculate Customer Balance for Invoice
+    let previousBalance = 0;
+    let currentBalance = 0;
+    if (customer) {
+      const allCustomerSales = await tx.sale.findMany({
+        where: { customerId: customer.id }
+      });
+      currentBalance = allCustomerSales.reduce((sum, s) => {
+        if (s.isReturn) return sum - parseFloat(s.totalAmount || 0);
+        return sum + parseFloat(s.balanceAmount || 0);
+      }, 0);
+      previousBalance = currentBalance - (grandTotal - finalPaidAmount);
+    }
+
+    return {
+      ...sale,
+      previousBalance,
+      currentBalance
+    };
   });
 
   res.status(201).json(result);
 });
 
 exports.getAllSales = asyncHandler(async (req, res) => {
-  const { branchId, startDate, endDate, terminalId } = req.query;
+  const { branchId, startDate, endDate, terminalId, invoice } = req.query;
   const where = {};
 
   // Branch Isolation
@@ -235,6 +320,7 @@ exports.getAllSales = asyncHandler(async (req, res) => {
   }
 
   if (terminalId) where.terminalId = parseInt(terminalId);
+  if (invoice) where.invoiceNumber = invoice;
   if (startDate && endDate) {
     where.saleDate = {
       gte: new Date(startDate),
@@ -251,6 +337,40 @@ exports.getAllSales = asyncHandler(async (req, res) => {
     },
     orderBy: { createdAt: 'desc' }
   });
+
+  // If a single invoice is requested, calculate already returned quantities
+  if (invoice && sales.length > 0) {
+    const mainSale = sales[0];
+
+    // Find all returns for this invoice
+    const returns = await prisma.sale.findMany({
+      where: {
+        originalInvoice: invoice,
+        isReturn: true,
+        status: { not: 'cancelled' }
+      },
+      include: {
+        items: true
+      }
+    });
+
+    // Create a map of returned quantities by productId
+    const returnedQtyMap = {};
+    returns.forEach(ret => {
+      ret.items.forEach(item => {
+        returnedQtyMap[item.productId] = (returnedQtyMap[item.productId] || 0) + item.quantity;
+      });
+    });
+
+    // Enrich items with alreadyReturnedQty
+    mainSale.items = mainSale.items.map(item => ({
+      ...item,
+      alreadyReturnedQty: returnedQtyMap[item.productId] || 0
+    }));
+
+    return res.json([mainSale]);
+  }
+
   res.json(sales);
 });
 

@@ -4,23 +4,11 @@ const accountingUtils = require('../utils/accountingUtils');
 
 // Helper function to get current date in IST timezone (UTC+5:30)
 const getISTDate = () => {
+    // With process.env.TZ = 'Asia/Kolkata', new Date() returns IST
     const now = new Date();
-    // Get IST time by adding 5 hours 30 minutes to UTC
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    const istTime = new Date(now.getTime() + istOffset);
-
-    // Extract year, month, day from IST time
-    const year = istTime.getUTCFullYear();
-    const month = istTime.getUTCMonth();
-    const day = istTime.getUTCDate();
-
-    // Create UTC midnight date (00:00:00 UTC)
-    const utcMidnight = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
-
-    // Subtract 5.5 hours to get "IST Midnight" represented in UTC
-    // IST Midnight (00:00 IST) is previous day 18:30 UTC
-    // This allows frontend logic (which converts local to ISO) to match correctly
-    return new Date(utcMidnight.getTime() - istOffset);
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    d.setHours(0, 0, 0, 0); // Normalize to midnight
+    return d;
 };
 
 // Attendance
@@ -44,9 +32,10 @@ exports.checkIn = asyncHandler(async (req, res) => {
     const attendance = await prisma.attendance.create({
         data: {
             userId,
-            date: todayIST, // Explicitly set date to IST date
+            branchId: req.user.branchId, // Set branchId
+            date: todayIST,
             checkIn: new Date(),
-            status: 'CHECKED_IN' // Initial status is CHECKED_IN, not PRESENT
+            status: 'CHECKED_IN'
         }
     });
 
@@ -248,6 +237,7 @@ exports.applyLeave = asyncHandler(async (req, res) => {
     const leave = await prisma.leaveRequest.create({
         data: {
             userId,
+            branchId: req.user.branchId, // Set branchId
             startDate: start,
             endDate: end,
             reason,
@@ -263,6 +253,11 @@ exports.getLeaveRequests = asyncHandler(async (req, res) => {
     const where = {};
     if (userId) where.userId = parseInt(userId);
     if (status) where.status = status;
+
+    // Branch Isolation
+    if (req.user.branchId) {
+        where.branchId = req.user.branchId;
+    }
 
     const leaves = await prisma.leaveRequest.findMany({
         where,
@@ -430,6 +425,7 @@ exports.generatePayroll = asyncHandler(async (req, res) => {
     const payroll = await prisma.payroll.create({
         data: {
             userId: parseInt(userId),
+            branchId: req.user.branchId, // Set branchId
             month,
             year,
             basicSalary: basic,
@@ -504,8 +500,15 @@ exports.getBulkAttendance = asyncHandler(async (req, res) => {
     const endDate = new Date(year, month, 0);
     endDate.setHours(23, 59, 59, 999);
 
+    const where = { employeeProfile: { isNot: null } };
+
+    // Branch Isolation
+    if (req.user.branchId) {
+        where.branchId = req.user.branchId;
+    }
+
     const users = await prisma.user.findMany({
-        where: { employeeProfile: { isNot: null } },
+        where,
         include: {
             employeeProfile: {
                 include: { department: true }
@@ -537,6 +540,11 @@ exports.getPayrollHistory = asyncHandler(async (req, res) => {
     if (month) where.month = month;
     if (year && !isNaN(parseInt(year))) where.year = parseInt(year);
     if (status) where.status = status;
+
+    // Branch Isolation
+    if (req.user.branchId) {
+        where.branchId = req.user.branchId;
+    }
 
     const payrolls = await prisma.payroll.findMany({
         where,

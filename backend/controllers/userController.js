@@ -8,11 +8,13 @@ exports.getUsers = asyncHandler(async (req, res) => {
   let where = {};
 
   // Branch Isolation: If user is not global admin, restrict by branchId
+  // Branch Isolation: If user is assigned to a branch, only show users from that branch
   if (req.user.branchId) {
     where.branchId = req.user.branchId;
   }
 
   const users = await prisma.user.findMany({
+    where,
     select: {
       id: true,
       username: true,
