@@ -4,7 +4,7 @@ import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
 import { FiX, FiPrinter, FiSearch, FiSave, FiAlertCircle, FiRefreshCw } from 'react-icons/fi';
-import DynamicInvoice from '@/components/DynamicInvoice';
+import ProfessionalInvoice from '@/components/ProfessionalInvoice';
 
 export default function SalesReturn() {
   const [invoiceNo, setInvoiceNo] = useState('');
@@ -52,11 +52,15 @@ export default function SalesReturn() {
     try {
       setLoading(true);
       const res = await api.get(`/sales?invoice=${invoiceNo}`);
-      const invoice = res.data.find(inv => inv.invoiceNumber === invoiceNo);
+      const invoice = res.data[0]; // Backend now returns a single-item array for invoice searches
 
-      if (invoice) {
+      if (invoice && invoice.invoiceNumber === invoiceNo) {
         setInvoiceData(invoice);
-        setReturnItems(invoice.items.map(item => ({ ...item, returnQty: 0 })));
+        setReturnItems(invoice.items.map(item => ({
+          ...item,
+          returnQty: 0,
+          alreadyReturnedQty: item.alreadyReturnedQty || 0
+        })));
 
         // Fetch customer balance if customerId exists
         if (invoice.customerId) {
@@ -80,8 +84,10 @@ export default function SalesReturn() {
   const handleQtyChange = (itemId, qty) => {
     setReturnItems(prev => prev.map(item => {
       if (item.id === itemId) {
-        const maxQty = item.quantity;
-        return { ...item, returnQty: Math.min(Math.max(0, parseInt(qty) || 0), maxQty) };
+        const alreadyReturned = item.alreadyReturnedQty || 0;
+        const maxReturnable = item.quantity - alreadyReturned;
+        const newQty = Math.min(Math.max(0, parseInt(qty) || 0), maxReturnable);
+        return { ...item, returnQty: newQty };
       }
       return item;
     }));
@@ -107,19 +113,18 @@ export default function SalesReturn() {
 
     try {
       const payload = {
-        customerName: invoiceData.customerName || invoiceData.customer?.name || 'Walk-in Customer',
+        customerId: invoiceData.customerId,
         isReturn: true,
         returnReason: reason,
         originalInvoice: invoiceData.invoiceNumber,
         paymentMethod: 'Cash',
         items: itemsToReturn.map(i => ({
           productId: i.productId,
-          quantity: i.quantity, // We use the returnQty internally, but the API expects the quantity of the return sale
-          returnQty: i.returnQty, // Or we just map quantity to returnQty
-          price: i.unitPrice,
+          quantity: i.returnQty,
+          unitPrice: i.unitPrice,
           discountAmount: i.discountAmount || 0,
           taxPercent: i.taxPercent || 0
-        })).map(i => ({ ...i, quantity: i.returnQty })) // Normalize for createSale
+        }))
       };
 
       const { data } = await api.post('/sales', payload);
@@ -139,7 +144,7 @@ export default function SalesReturn() {
 
     } catch (err) {
       console.error(err);
-      toast.error('Failed to process return');
+      toast.error(err.response?.data?.message || 'Failed to process return');
     }
   };
 
@@ -184,31 +189,39 @@ export default function SalesReturn() {
                     <tr>
                       <th>Product</th>
                       <th className="text-center">Sold</th>
+                      <th className="text-center">Returned</th>
+                      <th className="text-center">Remaining</th>
                       <th className="text-right">Price</th>
                       <th className="text-center w-32">Return Qty</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {returnItems.map(item => (
-                      <tr key={item.id} className="hover:bg-slate-50/50">
-                        <td className="py-4">
-                          <div className="font-bold text-slate-800">{item.product?.name || item.name}</div>
-                          <div className="text-[10px] text-slate-400 font-mono italic">{item.product?.barcode}</div>
-                        </td>
-                        <td className="text-center font-medium text-slate-600">{item.quantity}</td>
-                        <td className="text-right font-medium text-slate-700">₹ {parseFloat(item.unitPrice).toFixed(2)}</td>
-                        <td className="text-center">
-                          <input
-                            type="number"
-                            className="w-20 py-1 px-2 border border-slate-200 rounded-lg text-center font-bold focus:ring-primary focus:border-primary"
-                            value={item.returnQty}
-                            onChange={(e) => handleQtyChange(item.id, e.target.value)}
-                            min="0"
-                            max={item.quantity}
-                          />
-                        </td>
-                      </tr>
-                    ))}
+                    {returnItems.map(item => {
+                      const remaining = item.quantity - (item.alreadyReturnedQty || 0);
+                      return (
+                        <tr key={item.id} className="hover:bg-slate-50/50">
+                          <td className="py-4">
+                            <div className="font-bold text-slate-800">{item.product?.name || item.name}</div>
+                            <div className="text-[10px] text-slate-400 font-mono italic">{item.product?.barcode}</div>
+                          </td>
+                          <td className="text-center font-medium text-slate-600">{item.quantity}</td>
+                          <td className="text-center font-medium text-amber-600">{item.alreadyReturnedQty || 0}</td>
+                          <td className="text-center font-bold text-slate-900">{remaining}</td>
+                          <td className="text-right font-medium text-slate-700">₹ {parseFloat(item.unitPrice).toFixed(2)}</td>
+                          <td className="text-center">
+                            <input
+                              type="number"
+                              className={`w-20 py-1 px-2 border border-slate-200 rounded-lg text-center font-bold focus:ring-primary focus:border-primary ${remaining === 0 ? 'bg-slate-100 text-slate-400' : ''}`}
+                              value={item.returnQty}
+                              onChange={(e) => handleQtyChange(item.id, e.target.value)}
+                              min="0"
+                              max={remaining}
+                              disabled={remaining === 0}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -274,11 +287,16 @@ export default function SalesReturn() {
 
       {/* Hidden Print Component (Credit Note) */}
       <div style={{ display: 'none' }}>
-        <DynamicInvoice
+        <ProfessionalInvoice
           ref={componentRef}
-          printData={{ ...lastReturn, isReturn: true }}
+          printData={{
+            ...lastReturn,
+            customer: lastReturn?.customer || invoiceData?.customer,
+            customerName: lastReturn?.customerName || invoiceData?.customerName || 'Walk-in Customer',
+            previousBalance: lastReturn?.previousBalance || 0,
+            currentBalance: lastReturn?.currentBalance || 0
+          }}
           companyProfile={companyProfile}
-          invoiceSettings={invoiceSettings}
         />
       </div>
     </div>

@@ -143,13 +143,13 @@ const { postTransaction } = require('../services/dynamicPostingService');
  * Centralized logic for Sale posting.
  */
 async function processSalePosting(tx, sale, userId) {
-  const { invoiceNumber, grandTotal, finalPaidAmount, paymentMethod, saleDate } = sale;
+  const { invoiceNumber, totalAmount, paidAmount, paymentMethod, saleDate } = sale;
 
   // 1. Dynamic Posting for the Sale itself (Ledger Setup handles Dr/Cr for Customers, Sales, Taxes, etc.)
   await postTransaction(tx, 'SALES', sale, userId, invoiceNumber, `Sales Invoice #${invoiceNumber}`);
 
   // 2. Handle Receipt if paid (Optional: this could also be a dynamic 'PAYMENT' posting rule)
-  if (finalPaidAmount > 0) {
+  if (paidAmount > 0) {
     const payMethod = paymentMethod || 'Cash';
     let role = 'CASH';
     let defaultLedger = 'Cash';
@@ -170,13 +170,13 @@ async function processSalePosting(tx, sale, userId) {
     await postVoucher(tx, {
       type: 'RECEIPT',
       date: saleDate ? new Date(saleDate) : new Date(),
-      amount: finalPaidAmount,
+      amount: paidAmount,
       narration: `Payment for #${invoiceNumber}`,
       reference: invoiceNumber,
       createdBy: userId
     }, [
-      { ledgerId: assetLedger.id, type: 'DEBIT', amount: finalPaidAmount },
-      { ledgerId: customerLedger.id, type: 'CREDIT', amount: finalPaidAmount }
+      { ledgerId: assetLedger.id, type: 'DEBIT', amount: paidAmount },
+      { ledgerId: customerLedger.id, type: 'CREDIT', amount: paidAmount }
     ]);
   }
 }

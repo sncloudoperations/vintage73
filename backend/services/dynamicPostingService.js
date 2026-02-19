@@ -185,5 +185,6 @@ async function postTransaction(tx, transactionType, data, userId, reference = ''
 }
 
 module.exports = {
-    postTransaction
+    postTransaction,
+    generateVoucherNumber
 };
