@@ -284,18 +284,27 @@ export default function LedgerReport() {
                             </thead>
                             <tbody>
                                 {/* Opening Balance Row */}
-                                <tr className="bg-slate-50 font-medium text-slate-700">
-                                    <td className="border border-slate-300 px-3 py-2">{startDate}</td>
-                                    <td className="border border-slate-300 px-3 py-2">-</td>
-                                    <td className="border border-slate-300 px-3 py-2 italic">By Balance b/d (Opening)</td>
-                                    <td className="border border-slate-300 px-3 py-2 text-right">-</td>
-                                    <td className="border border-slate-300 px-3 py-2 text-right">-</td>
-                                    <td className="border border-slate-300 px-3 py-2 text-right font-bold text-slate-800">
-                                        ₹{ledgerInfo?.openingBalance?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                                        <span className="text-[10px] ml-1 text-slate-500">{ledgerInfo?.balanceType === 'DEBIT' ? 'Dr' : 'Cr'}</span>
+                                <tr className="bg-slate-50 border-y border-slate-200">
+                                    <td className="px-3 py-2 border border-slate-300 text-slate-700 font-medium">{startDate ? new Date(startDate).toLocaleDateString() : 'Opening'}</td>
+                                    <td className="px-3 py-2 border border-slate-300 text-slate-500">-</td>
+                                    <td className="px-3 py-2 border border-slate-300 text-slate-700 italic font-medium">By Balance b/d (Opening)</td>
+                                    <td className="px-3 py-2 border border-slate-300 text-right text-slate-700">
+                                        {ledgerInfo?.balanceType === 'CREDIT'
+                                            ? (ledgerInfo?.openingCredit || ledgerInfo?.openingBalance > 0 ? `₹${Number(ledgerInfo?.openingCredit || ledgerInfo?.openingBalance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-')
+                                            : (ledgerInfo?.openingDebit || ledgerInfo?.openingBalance > 0 ? `₹${Number(ledgerInfo?.openingDebit || ledgerInfo?.openingBalance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-')}
+                                    </td>
+                                    <td className="px-3 py-2 border border-slate-300 text-right text-slate-700">
+                                        {ledgerInfo?.balanceType === 'CREDIT'
+                                            ? (ledgerInfo?.openingDebit ? `₹${Number(ledgerInfo.openingDebit).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-')
+                                            : (ledgerInfo?.openingCredit ? `₹${Number(ledgerInfo.openingCredit).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-')}
+                                    </td>
+                                    <td className="px-3 py-2 border border-slate-300 text-right font-mono font-medium text-slate-800">
+                                        ₹{Math.abs(ledgerInfo?.openingBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                        <span className="text-[10px] ml-1 text-slate-500">
+                                            {ledgerInfo?.openingBalance >= 0 ? (ledgerInfo?.balanceType === 'CREDIT' ? 'Cr' : 'Dr') : (ledgerInfo?.balanceType === 'CREDIT' ? 'Dr' : 'Cr')}
+                                        </span>
                                     </td>
                                 </tr>
-
                                 {/* Transactions */}
                                 {transactions.map((tx, idx) => (
                                     <tr key={idx} className="hover:bg-slate-50">
@@ -313,14 +322,20 @@ export default function LedgerReport() {
                                             )}
                                         </td>
                                         <td className="border border-slate-300 px-3 py-2 text-right text-primary">
-                                            {tx.debit > 0 ? `₹${tx.debit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-'}
+                                            {ledgerInfo.balanceType === 'CREDIT'
+                                                ? (tx.credit > 0 ? `₹${tx.credit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-')
+                                                : (tx.debit > 0 ? `₹${tx.debit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-')}
                                         </td>
                                         <td className="border border-slate-300 px-3 py-2 text-right text-red-700">
-                                            {tx.credit > 0 ? `₹${tx.credit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-'}
+                                            {ledgerInfo.balanceType === 'CREDIT'
+                                                ? (tx.debit > 0 ? `₹${tx.debit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-')
+                                                : (tx.credit > 0 ? `₹${tx.credit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-')}
                                         </td>
                                         <td className="border border-slate-300 px-3 py-2 text-right font-mono text-slate-700 bg-slate-50/50">
                                             ₹{Math.abs(tx.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                                            <span className="text-[10px] ml-1 text-slate-400">{tx.balance >= 0 ? 'Dr' : 'Cr'}</span>
+                                            <span className="text-[10px] ml-1 text-slate-400">
+                                                {tx.balance >= 0 ? (ledgerInfo.balanceType === 'CREDIT' ? 'Cr' : 'Dr') : (ledgerInfo.balanceType === 'CREDIT' ? 'Dr' : 'Cr')}
+                                            </span>
                                         </td>
                                     </tr>
                                 ))}
@@ -351,7 +366,7 @@ export default function LedgerReport() {
                                         }
                                         <span className="text-xs ml-1 text-slate-600">
                                             {transactions.length > 0
-                                                ? (transactions[transactions.length - 1].balance >= 0 ? 'Dr' : 'Cr')
+                                                ? (transactions[transactions.length - 1].balance >= 0 ? (ledgerInfo.balanceType === 'CREDIT' ? 'Cr' : 'Dr') : (ledgerInfo.balanceType === 'CREDIT' ? 'Dr' : 'Cr'))
                                                 : (ledgerInfo?.balanceType === 'DEBIT' ? 'Dr' : 'Cr')
                                             }
                                         </span>

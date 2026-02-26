@@ -180,10 +180,11 @@ export default function POS() {
                 if (freshProd) {
                     const freshPrice = Number(freshProd.price);
                     const freshTaxRate = parseFloat(freshProd.taxRate || 0);
+                    const freshTaxPercent = parseFloat(freshProd.taxPercent || freshProd.taxRate || 0);
                     const freshIsInclusive = freshProd.isTaxInclusive === true || freshProd.isTaxInclusive === 'true';
 
-                    const isPriceDiff = cartItem.price !== freshPrice;
-                    const isTaxDiff = cartItem.taxRate !== freshTaxRate;
+                    const isPriceDiff = Number(cartItem.price) !== freshPrice;
+                    const isTaxDiff = parseFloat(cartItem.taxRate || 0) !== freshTaxRate || parseFloat(cartItem.taxPercent || 0) !== freshTaxPercent;
                     const isIncDiff = cartItem.isTaxInclusive !== freshIsInclusive;
 
                     if (isPriceDiff || isTaxDiff || isIncDiff) {
@@ -192,6 +193,7 @@ export default function POS() {
                             ...cartItem,
                             price: freshPrice,
                             taxRate: freshTaxRate,
+                            taxPercent: freshTaxPercent,
                             isTaxInclusive: freshIsInclusive,
                             name: freshProd.name
                         };
@@ -303,6 +305,7 @@ export default function POS() {
                 discountPercent: 0,
                 discountAmount: 0,
                 taxRate: freshTaxRate,
+                taxPercent: freshTaxRate, // Sync taxPercent with taxRate
                 isTaxInclusive: freshIsInclusive
             }]);
         }

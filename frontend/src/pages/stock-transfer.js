@@ -48,10 +48,17 @@ export default function StockTransfer() {
     }
   }, [fromBranchId]);
 
+  // Clear To Branch if it matches From Branch (e.g. after changing From Branch)
+  useEffect(() => {
+    if (fromBranchId && toBranchId && fromBranchId === toBranchId) {
+      setToBranchId('');
+    }
+  }, [fromBranchId, toBranchId]);
+
   const fetchInitialData = async () => {
     try {
       const [{ data: branchData }, { data: companyData }] = await Promise.all([
-        api.get('/branches'),
+        api.get('/branches?all=true'),
         api.get('/company')
       ]);
       setBranches(branchData);
@@ -110,7 +117,9 @@ export default function StockTransfer() {
     if (field === 'productId') {
       const product = products.find(p => p.id === parseInt(value));
       if (product) {
-        newRows[index].taxPercent = parseFloat(product.taxRate || product.taxPercent || 0);
+        // Correctly handle zero-tax rates by checking for undefined/null
+        const prodTax = product.taxRate !== undefined && product.taxRate !== null ? product.taxRate : product.taxPercent;
+        newRows[index].taxPercent = parseFloat(prodTax || 0);
         if (product.costPrice) newRows[index].unitCost = parseFloat(product.costPrice);
       }
     }
@@ -131,6 +140,16 @@ export default function StockTransfer() {
     if (!fromBranchId) return toast.error('Select origin branch');
     if (!toBranchId) return toast.error('Select destination branch');
     if (fromBranchId === toBranchId) return toast.error('Source and destination branches cannot be the same');
+
+    // Client-side stock validation
+    for (const row of rows) {
+      if (!row.productId) continue;
+      const product = products.find(p => p.id === parseInt(row.productId));
+      if (product && parseFloat(row.quantity) > product.stock) {
+        return toast.error(`Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${row.quantity}`);
+      }
+    }
+
     if (rows.some(r => !r.productId || r.quantity <= 0)) return toast.error('Check items and quantities');
 
     try {
@@ -228,9 +247,10 @@ export default function StockTransfer() {
                 className="input w-full"
                 value={fromBranchId}
                 onChange={e => setFromBranchId(e.target.value)}
+                disabled={currentUser?.branchId}
               >
                 <option value="">Select Origin Branch...</option>
-                {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                {branches.filter(b => b.isActive).map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
             </div>
             <div>

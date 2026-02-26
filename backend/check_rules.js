@@ -1,11 +1,25 @@
 const { PrismaClient } = require('@prisma/client');
-const fs = require('fs');
 const prisma = new PrismaClient();
-async function main() {
-  const count = await prisma.transactionPosting.count({
-    where: { transactionType: 'PURCHASE', role: 'SUPPLIER' }
+
+async function checkRules() {
+  const rules = await prisma.transactionPosting.findMany({
+    where: { transactionType: 'PURCHASE' },
+    include: { ledger: true }
   });
-  console.log('SUPPLIER_RULE_COUNT:', count);
-  fs.writeFileSync('rule_count.txt', 'SUPPLIER_RULE_COUNT: ' + count);
+  console.log('--- PURCHASE Transaction Posting Rules ---');
+  console.log(JSON.stringify(rules, null, 2));
+
+  const groups = await prisma.accountGroup.findMany();
+  console.log('--- Account Groups ---');
+  console.log(groups.map(g => g.name).join(', '));
+
+  const ledgers = await prisma.ledger.findMany({
+    include: { group: true }
+  });
+  console.log('--- Ledgers ---');
+  ledgers.forEach(l => console.log(`${l.name} (${l.group.name})`));
+
+  await prisma.$disconnect();
 }
-main().catch(e => fs.writeFileSync('rule_count_error.txt', e.stack)).finally(()=>prisma.$disconnect());
+
+checkRules().catch(console.error);

@@ -6,7 +6,8 @@ exports.getBranches = asyncHandler(async (req, res) => {
   let where = {};
 
   // If user is restricted to a branch, only show that branch
-  if (req.user.branchId) {
+  // But allow bypassing for modules that need to see all branches (e.g., Stock Transfer Destination)
+  if (req.user.branchId && req.query.all !== 'true') {
     where.id = req.user.branchId;
   }
 
