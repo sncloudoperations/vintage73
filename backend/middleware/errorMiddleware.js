@@ -2,9 +2,10 @@
  * Global Error Handler
  */
 const errorHandler = (err, req, res, next) => {
-    // Default to 500 if not specified
-    const statusCode = err.statusCode || 500;
-    
+    // Prefer err.statusCode, then res.statusCode (set by middleware before throwing),
+    // then default to 500. Ignore res.statusCode of 200 (the Express default).
+    const statusCode = err.statusCode || (res.statusCode !== 200 ? res.statusCode : 500);
+
     // Log the error (structured for production)
     const logPayload = {
         timestamp: new Date().toISOString(),
@@ -27,7 +28,7 @@ const errorHandler = (err, req, res, next) => {
         success: false,
         message: err.message || 'Internal Server Error',
         // Start validation errors standard format if needed
-        errors: err.errors || undefined, 
+        errors: err.errors || undefined,
         // Hide stack in production
         stack: process.env.NODE_ENV === 'production' ? undefined : err.stack
     });

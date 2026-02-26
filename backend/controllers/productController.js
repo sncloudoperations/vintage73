@@ -52,7 +52,11 @@ exports.createProduct = asyncHandler(async (req, res) => {
   }
 
   const priceDecimal = parseFloat(price);
-  const taxRateDecimal = parseFloat(taxPercent || taxRate) || 0;
+
+  // Decide which tax field to use. Prioritize taxRate/taxPercent if it's the specific field updated, 
+  // but unified across the system, taxRate is the primary source.
+  const taxVal = taxPercent !== undefined ? taxPercent : (taxRate !== undefined ? taxRate : 0);
+  const taxRateDecimal = parseFloat(taxVal) || 0;
 
   try {
     const product = await prisma.product.create({
@@ -90,13 +94,18 @@ exports.updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, price, taxRate, taxPercent, taxType, hsnCode, warranty, description, barcode, categoryName, categoryId, minDiscount, maxDiscount, isTaxInclusive } = req.body;
 
+  // Prioritize the incoming tax value. Usually UI sends both, but if one is updated, it's safer
+  // to pick the one that is likely the intent. In our UI, taxRate is the input.
+  const taxVal = taxRate !== undefined ? taxRate : (taxPercent !== undefined ? taxPercent : 0);
+  const parsedTax = parseFloat(taxVal) || 0;
+
   const dataToUpdate = {
     name,
     categoryName,
     categoryId: categoryId ? parseInt(categoryId) : null,
     price: parseFloat(price),
-    taxRate: parseFloat(taxPercent || taxRate),
-    taxPercent: parseFloat(taxPercent || taxRate),
+    taxRate: parsedTax,
+    taxPercent: parsedTax,
     taxType,
     hsnCode,
     warranty: parseInt(warranty),

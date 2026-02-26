@@ -186,9 +186,41 @@ async function processSalePosting(tx, sale, userId) {
  */
 async function processPurchasePosting(tx, purchase, userId) {
   const reference = purchase.invoiceNumber || `PUR-${purchase.id}`;
+  const { paymentMethod, totalAmount, purchaseDate, supplier } = purchase;
 
-  // Dynamic Posting based on setup
-  await postTransaction(tx, 'PURCHASE', purchase, userId, reference, `Purchase Bill #${reference}`);
+  // 1. Record the Purchase (Dr Purchase, Cr Supplier)
+  const mainNarration = `${paymentMethod} Purchase Bill #${reference}`;
+  await postTransaction(tx, 'PURCHASE', purchase, userId, reference, mainNarration);
+
+  // 2. If Payment is not Credit, settle the Supplier Ledger
+  const isSettled = paymentMethod && paymentMethod.toUpperCase() !== 'CREDIT';
+
+  if (isSettled) {
+    const supplierLedger = await ensureLedger(tx, supplier.name, 'Sundry Creditors');
+
+    // Resolve payment ledger based on method
+    let paymentLedger;
+    const methodUpper = paymentMethod.toUpperCase();
+
+    if (methodUpper.includes('CASH')) {
+      paymentLedger = await getLedgerByRole(tx, 'PAYMENT', 'CASH', 'Cash', 'Cash-in-Hand');
+    } else {
+      // Default to Bank for all other methods (Bank, UPI, Bank Transfer, Card, etc.)
+      paymentLedger = await getLedgerByRole(tx, 'PAYMENT', 'BANK', 'Bank Account', 'Bank Accounts');
+    }
+
+    await postVoucher(tx, {
+      type: 'PAYMENT',
+      date: purchaseDate || new Date(),
+      amount: totalAmount,
+      narration: `${paymentMethod} Settlement for Bill #${reference}`,
+      reference: reference,
+      createdBy: userId
+    }, [
+      { ledgerId: supplierLedger.id, type: 'DEBIT', amount: totalAmount },
+      { ledgerId: paymentLedger.id, type: 'CREDIT', amount: totalAmount }
+    ]);
+  }
 }
 
 module.exports = {

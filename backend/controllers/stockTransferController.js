@@ -9,8 +9,13 @@ exports.createTransfer = asyncHandler(async (req, res) => {
   const user = req.user;
 
   // 1. Validation & Defaulting
-  if (!fromBranchId && user?.branchId) {
+  if (user?.branchId) {
+    // Branch-restricted users MUST use their own branch as source
     fromBranchId = user.branchId;
+  } else if (!fromBranchId) {
+    // For global admins who didn't specify, we still need a default or error
+    res.status(400);
+    throw new Error('From Branch is required for global admins.');
   }
 
   if (!fromBranchId || !toBranchId) {
@@ -97,7 +102,9 @@ exports.createTransfer = asyncHandler(async (req, res) => {
       });
 
       if (!currentStock || currentStock.quantity < item.quantity) {
-        throw new Error(`Insufficient stock for product: ${currentStock?.product?.name || item.productId}. Available: ${currentStock?.quantity || 0}, Requested: ${item.quantity}`);
+        const error = new Error(`Insufficient stock for product: ${currentStock?.product?.name || item.productId}. Available: ${currentStock?.quantity || 0}, Requested: ${item.quantity}`);
+        error.statusCode = 400;
+        throw error;
       }
 
       await tx.productStock.update({

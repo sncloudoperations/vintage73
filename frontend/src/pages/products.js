@@ -112,7 +112,10 @@ export default function Products() {
 
   // Filter Logic
   const filteredProducts = products.filter(product => {
-    const matchesCategory = filterCategory === '' || (product.category?.toLowerCase() || '').includes(filterCategory.toLowerCase());
+    const matchesCategory = filterCategory === '' ||
+      (typeof product.category === 'string'
+        ? product.category.toLowerCase().includes(filterCategory.toLowerCase())
+        : (product.category?.name?.toLowerCase() || '').includes(filterCategory.toLowerCase()));
     let matchesStock = true;
     if (filterStock === 'low') matchesStock = product.stock > 0 && product.stock <= product.minStockLevel;
     if (filterStock === 'out') matchesStock = product.stock === 0;
@@ -276,7 +279,10 @@ export default function Products() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Tax Rate (%)</label>
-                <input type="number" className="input" value={formData.taxRate} onChange={e => setFormData({ ...formData, taxRate: e.target.value })} />
+                <input type="number" className="input" value={formData.taxRate} onChange={e => {
+                  const val = e.target.value;
+                  setFormData({ ...formData, taxRate: val, taxPercent: val });
+                }} />
               </div>
 
               <div>
