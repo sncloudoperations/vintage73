@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import api from '@/lib/api';
 import { MENU_STRUCTURE } from '@/lib/menuStructure';
-import { FiPlus, FiTrash2, FiUser, FiKey, FiEdit2 } from 'react-icons/fi';
+import { FiPlus, FiUser, FiKey, FiEdit2, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 const getInitialFormState = () => ({
@@ -12,6 +12,7 @@ const getInitialFormState = () => ({
   terminalIds: [],
   weeklyOff: 'Sunday',
   autoCode: true,
+  isActive: true,
   image: null,
   imagePreview: null
 });
@@ -30,6 +31,8 @@ export default function Users() {
   const [banks, setBanks] = useState([]);
   const [terminals, setTerminals] = useState([]);
   const [activeTab, setActiveTab] = useState('general');
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [statusTarget, setStatusTarget] = useState(null);
   const router = useRouter();
 
   // const modules = ['DASHBOARD', 'MASTER', 'INVENTORY', 'SALES', 'ACCOUNTS']; // Deprecated
@@ -178,6 +181,7 @@ export default function Users() {
       terminalIds: user.terminals?.map(t => t.id) || [],
       weeklyOff: user.weeklyOff || 'Sunday',
       autoCode: !user.employeeProfile?.employeeCode,
+      isActive: user.isActive,
       image: null,
       imagePreview: user.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL}${user.imageUrl}` : null
     });
@@ -248,6 +252,7 @@ export default function Users() {
                 <th>Access</th>
                 <th>Terminals</th>
                 <th>Joined Date</th>
+                <th>Status</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>
@@ -321,6 +326,11 @@ export default function Users() {
                   <td className="text-slate-500">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
+                  <td>
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${user.isActive ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>
+                      {user.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
                   <td className="text-right">
                     <div className="flex justify-end gap-2">
                       <button
@@ -330,13 +340,19 @@ export default function Users() {
                       >
                         <FiEdit2 />
                       </button>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete User"
-                      >
-                        <FiTrash2 />
-                      </button>
+                      {(currentUser?.role === 'admin') && (
+                        <button
+                          onClick={() => {
+                            setStatusTarget(user);
+                            setShowStatusModal(true);
+                          }}
+                          className="relative flex items-center cursor-pointer focus:outline-none group"
+                          title={user.isActive ? 'Deactivate User Account' : 'Activate User Account'}
+                        >
+                          <div className={`w-11 h-6 rounded-full transition-colors duration-300 ${user.isActive ? 'bg-primary shadow-inner' : 'bg-slate-200'}`}></div>
+                          <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 transform ${user.isActive ? 'translate-x-5' : 'translate-x-0'} shadow-md group-hover:scale-110`}></div>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -526,6 +542,22 @@ export default function Users() {
                             </button>
                           ))}
                         </div>
+                      </div>
+
+                      {/* Status Toggle in Modal */}
+                      <div className="pt-2">
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Account Status</label>
+                        <label className="relative inline-flex items-center cursor-pointer p-2 rounded-lg border border-slate-100 bg-white">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={formData.isActive}
+                            onChange={e => setFormData({ ...formData, isActive: e.target.checked })}
+                            disabled={currentUser?.role !== 'admin'}
+                          />
+                          <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                          <span className="ml-3 text-xs font-bold text-slate-700 uppercase tracking-tight">Account is Active</span>
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -805,6 +837,61 @@ export default function Users() {
         )
       }
 
+
+      {/* Custom Status Confirmation Modal */}
+      {showStatusModal && statusTarget && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
+            <div className={`p-6 ${statusTarget.isActive ? 'bg-amber-50' : 'bg-green-50'}`}>
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${statusTarget.isActive ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
+                  {statusTarget.isActive ? <FiToggleRight className="w-6 h-6" /> : <FiToggleLeft className="w-6 h-6" />}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">
+                    {statusTarget.isActive ? 'Deactivate Account?' : 'Activate Account?'}
+                  </h3>
+                  <p className="text-sm text-slate-600 mt-1 font-medium">
+                    {statusTarget.name} (@{statusTarget.username})
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <p className="text-slate-600 text-sm leading-relaxed">
+                {statusTarget.isActive
+                  ? 'This user will no longer be able to log in to the system. You can reactivate their account anytime.'
+                  : 'This user will regain access to the system with their previous permissions.'}
+              </p>
+
+              <div className="flex gap-3 mt-8">
+                <button
+                  onClick={() => setShowStatusModal(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await api.put(`/users/${statusTarget.id}`, { isActive: !statusTarget.isActive });
+                      toast.success(`User ${statusTarget.isActive ? 'deactivated' : 'activated'} successfully`);
+                      setShowStatusModal(false);
+                      fetchUsers();
+                    } catch (err) {
+                      toast.error('Failed to update status');
+                    }
+                  }}
+                  className={`flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all active:scale-95 ${statusTarget.isActive ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-green-500 hover:bg-green-600 shadow-green-200'}`}
+                >
+                  Yes, {statusTarget.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div >
   );
 }

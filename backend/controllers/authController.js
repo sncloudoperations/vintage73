@@ -68,6 +68,11 @@ exports.login = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
+  // Check if user is active
+  if (user.isActive === false) {
+    return res.status(401).json({ message: 'Your account is inactive. Please contact administrator.' });
+  }
+
   // Terminal Access Control (Skip for Admin to prevent lockout)
   if (user.role !== 'admin') {
     const terminalLockSetting = await prisma.systemSetting.findUnique({
