@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import { FiPlus, FiPrinter, FiSearch, FiEdit, FiTrash2, FiBox } from 'react-icons/fi';
+import { FiPlus, FiPrinter, FiSearch, FiEdit, FiTrash2, FiBox, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 import Barcode from 'react-barcode';
 import { toast } from 'react-toastify';
 
@@ -18,6 +18,8 @@ export default function Products() {
   });
   const [file, setFile] = useState(null); // For Image Upload
   const [imagePreview, setImagePreview] = useState(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [statusTarget, setStatusTarget] = useState(null);
 
   // Filters
   const [filterCategory, setFilterCategory] = useState('');
@@ -137,7 +139,8 @@ export default function Products() {
             name: '', category: '', categoryId: '', price: '', costPrice: '',
             taxRate: '0', taxType: 'none', hsnCode: '', warranty: '0',
             description: '', barcode: '', hasBarcode: true,
-            minDiscount: '', maxDiscount: '', isTaxInclusive: false
+            minDiscount: '', maxDiscount: '', isTaxInclusive: false,
+            isActive: true
           });
           setFile(null);
           setImagePreview(null);
@@ -172,6 +175,7 @@ export default function Products() {
                 <th>Selling Price</th>
                 <th>Stock Status</th>
                 <th>Barcode</th>
+                <th>Status</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>
@@ -202,10 +206,28 @@ export default function Products() {
                     </span>
                   </td>
                   <td className="font-mono text-xs text-slate-500">{product.barcode}</td>
+                  <td>
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${product.isActive ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>
+                      {product.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
                   <td className="text-right">
                     <div className="flex justify-end gap-2">
-                      <button onClick={() => handleEdit(product)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"><FiEdit /></button>
-                      <button className="p-2 hover:bg-red-50 rounded-lg text-red-500 transition-colors"><FiTrash2 /></button>
+                      <button onClick={() => handleEdit(product)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors" title="Edit"><FiEdit /></button>
+                      {/* Only Admin can toggle status */}
+                      {(localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).role === 'admin') && (
+                        <button
+                          onClick={() => {
+                            setStatusTarget(product);
+                            setShowStatusModal(true);
+                          }}
+                          className="relative flex items-center cursor-pointer focus:outline-none group"
+                          title={product.isActive ? 'Deactivate Product' : 'Activate Product'}
+                        >
+                          <div className={`w-11 h-6 rounded-full transition-colors duration-300 ${product.isActive ? 'bg-primary shadow-inner' : 'bg-slate-200'}`}></div>
+                          <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 transform ${product.isActive ? 'translate-x-5' : 'translate-x-0'} shadow-md group-hover:scale-110`}></div>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -348,11 +370,80 @@ export default function Products() {
                 </div>
               )}
 
+              {/* Status Toggle in Modal */}
+              <div className="col-span-2 pt-4 border-t border-slate-50">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={formData.isActive}
+                    onChange={e => setFormData({ ...formData, isActive: e.target.checked })}
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                  <span className="ml-3 text-sm font-medium text-slate-700">Product is Active</span>
+                </label>
+              </div>
+
               <div className="col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Save Product</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Status Confirmation Modal */}
+      {showStatusModal && statusTarget && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
+            <div className={`p-6 ${statusTarget.isActive ? 'bg-amber-50' : 'bg-green-50'}`}>
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${statusTarget.isActive ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
+                  {statusTarget.isActive ? <FiToggleRight className="w-6 h-6" /> : <FiToggleLeft className="w-6 h-6" />}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">
+                    {statusTarget.isActive ? 'Deactivate Product?' : 'Activate Product?'}
+                  </h3>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {statusTarget.name}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <p className="text-slate-600 text-sm leading-relaxed">
+                {statusTarget.isActive
+                  ? 'This product will be hidden from the POS and Sales pages. You can reactivate it anytime from the Master section.'
+                  : 'This product will be visible again on the POS and Sales pages.'}
+              </p>
+
+              <div className="flex gap-3 mt-8">
+                <button
+                  onClick={() => setShowStatusModal(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await api.put(`/products/${statusTarget.id}`, { isActive: !statusTarget.isActive });
+                      toast.success(`Product ${statusTarget.isActive ? 'deactivated' : 'activated'} successfully`);
+                      setShowStatusModal(false);
+                      fetchProducts();
+                    } catch (err) {
+                      toast.error('Failed to update status');
+                    }
+                  }}
+                  className={`flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all active:scale-95 ${statusTarget.isActive ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-green-500 hover:bg-green-600 shadow-green-200'}`}
+                >
+                  Yes, {statusTarget.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

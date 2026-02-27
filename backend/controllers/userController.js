@@ -7,8 +7,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 exports.getUsers = asyncHandler(async (req, res) => {
   let where = {};
 
-  // Branch Isolation: If user is not global admin, restrict by branchId
-  // Branch Isolation: If user is assigned to a branch, only show users from that branch
+  // Branch Isolation: Restrict to branch if assigned
   if (req.user.branchId) {
     where.branchId = req.user.branchId;
   }
@@ -23,6 +22,7 @@ exports.getUsers = asyncHandler(async (req, res) => {
       branchId: true,
       allowedModules: true,
       incentivePercentage: true,
+      isActive: true,
       // imageUrl: true,
       // weeklyOff: true,
       createdAt: true,
@@ -140,6 +140,7 @@ exports.createUser = asyncHandler(async (req, res) => {
       role: role || 'staff',
       allowedModules: allowedModules || [],
       branchId: branchId ? parseInt(branchId) : null,
+      isActive: req.body.isActive !== undefined ? req.body.isActive === 'true' || req.body.isActive === true : true,
       incentivePercentage: parseFloat(incentivePercentage) || 0,
       // imageUrl: req.file ? '/uploads/' + req.file.filename : null,
       // weeklyOff: weeklyOff || 'Sunday',
@@ -237,6 +238,11 @@ exports.updateUser = asyncHandler(async (req, res) => {
   }
   // --- End Validation ---
 
+  // Permission Check: Only Branch Admin can toggle status
+  if (req.body.isActive !== undefined && isBranchAdmin === false && isGlobalAdmin === false) {
+    return res.status(403).json({ message: 'Access denied: Only Branch Admin can activate or deactivate accounts' });
+  }
+
   // Handle designation - either use existing ID or create new
   let designationId = null;
   if (designation) {
@@ -267,50 +273,54 @@ exports.updateUser = asyncHandler(async (req, res) => {
     }
   }
 
+  const dataToUpdate = {};
+
+  if (name !== undefined) dataToUpdate.name = name;
+  if (role !== undefined) dataToUpdate.role = role;
+  if (allowedModules !== undefined) dataToUpdate.allowedModules = allowedModules;
+  if (branchId !== undefined) dataToUpdate.branchId = branchId ? parseInt(branchId) : null;
+
+  if (incentivePercentage !== undefined) {
+    dataToUpdate.incentivePercentage = !isNaN(parseFloat(incentivePercentage)) ? parseFloat(incentivePercentage) : 0;
+  }
+
+  if (req.body.isActive !== undefined) {
+    dataToUpdate.isActive = (req.body.isActive === 'true' || req.body.isActive === true);
+  }
+
+  if (terminalIds !== undefined) {
+    dataToUpdate.terminals = {
+      set: Array.isArray(terminalIds) ? terminalIds.map(id => ({ id: parseInt(id) })) : []
+    };
+  }
+
+  // Build employeeProfile data only if any employee field is present
+  const employeeFields = [designation, department, joiningDate, basicSalary, labourRule, nationalId, employeeCode, bankName, accountNumber, ifscCode, branchName];
+  if (employeeFields.some(f => f !== undefined)) {
+    const employeeData = {};
+    if (designationId !== undefined) employeeData.designationId = designationId;
+    if (departmentId !== undefined) employeeData.departmentId = departmentId;
+    if (employeeCode !== undefined) employeeData.employeeCode = employeeCode;
+    if (joiningDate !== undefined) employeeData.joiningDate = joiningDate ? new Date(joiningDate) : new Date();
+    if (basicSalary !== undefined) employeeData.basicSalary = !isNaN(parseFloat(basicSalary)) ? parseFloat(basicSalary) : 0;
+    if (labourRule !== undefined) employeeData.labourRule = labourRule;
+    if (nationalId !== undefined) employeeData.nationalId = nationalId;
+    if (bankName !== undefined) employeeData.bankName = bankName;
+    if (accountNumber !== undefined) employeeData.accountNumber = accountNumber;
+    if (ifscCode !== undefined) employeeData.ifscCode = ifscCode;
+    if (branchName !== undefined) employeeData.branchName = branchName;
+
+    dataToUpdate.employeeProfile = {
+      upsert: {
+        create: employeeData,
+        update: employeeData
+      }
+    };
+  }
+
   const user = await prisma.user.update({
     where: { id: parseInt(id) },
-    data: {
-      name: name,
-      role: role,
-      allowedModules: allowedModules,
-      branchId: branchId ? parseInt(branchId) : null,
-      incentivePercentage: incentivePercentage ? parseFloat(incentivePercentage) : 0,
-      // imageUrl: req.file ? '/uploads/' + req.file.filename : undefined,
-      // weeklyOff: weeklyOff,
-      terminals: {
-        set: terminalIds && Array.isArray(terminalIds) ? terminalIds.map(id => ({ id: parseInt(id) })) : []
-      },
-      employeeProfile: {
-        upsert: {
-          create: {
-            designationId,
-            departmentId,
-            employeeCode,
-            joiningDate: joiningDate ? new Date(joiningDate) : new Date(),
-            basicSalary: basicSalary ? parseFloat(basicSalary) : 0,
-            labourRule,
-            nationalId,
-            bankName,
-            accountNumber,
-            ifscCode,
-            branchName
-          },
-          update: {
-            designationId,
-            departmentId,
-            employeeCode,
-            joiningDate: joiningDate ? new Date(joiningDate) : new Date(),
-            basicSalary: basicSalary ? parseFloat(basicSalary) : 0,
-            labourRule,
-            nationalId,
-            bankName,
-            accountNumber,
-            ifscCode,
-            branchName
-          }
-        }
-      }
-    }
+    data: dataToUpdate
   });
   res.json({ message: 'User updated successfully', user });
 });

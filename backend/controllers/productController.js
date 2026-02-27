@@ -17,7 +17,20 @@ exports.getAllProducts = asyncHandler(async (req, res) => {
 
   const parsedBranchId = branchId && !isNaN(parseInt(branchId)) ? parseInt(branchId) : undefined;
 
+  const whereClause = {};
+
+  if (parsedBranchId && !isGlobalAdmin) {
+    // Non-global admins (Branch Admin/Staff) are locked to their own branch stock
+    whereClause.stocks = { some: { branchId: parsedBranchId } };
+  }
+
+  // Visibility Rule: Only admins can see inactive products
+  if (user?.role !== 'admin') {
+    whereClause.isActive = true;
+  }
+
   const products = await prisma.product.findMany({
+    where: whereClause,
     include: {
       category: true,
       stocks: parsedBranchId ? {
@@ -57,28 +70,31 @@ exports.createProduct = asyncHandler(async (req, res) => {
   // but unified across the system, taxRate is the primary source.
   const taxVal = taxPercent !== undefined ? taxPercent : (taxRate !== undefined ? taxRate : 0);
   const taxRateDecimal = parseFloat(taxVal) || 0;
-
   try {
-    const product = await prisma.product.create({
-      data: {
-        name,
-        categoryName,
-        price: priceDecimal,
-        taxType,
-        taxRate: taxRateDecimal,
-        taxPercent: taxRateDecimal,
-        hsnCode,
-        warranty: parseInt(warranty) || 0,
-        description,
-        barcode,
-        hasBarcode: (hasBarcode === 'true' || hasBarcode === true) || false,
-        minDiscount: minDiscount ? parseFloat(minDiscount) : null,
-        maxDiscount: maxDiscount ? parseFloat(maxDiscount) : null,
-        isTaxInclusive: (isTaxInclusive === 'true' || isTaxInclusive === true) || false,
-        imageUrl: imageUrl,
-        categoryId: categoryId ? parseInt(categoryId) : null // Link to Category model
-      }
-    });
+    const data = {
+      name,
+      categoryName,
+      price: !isNaN(parseFloat(price)) ? parseFloat(price) : 0,
+      taxType,
+      taxRate: taxRateDecimal,
+      taxPercent: taxRateDecimal,
+      hsnCode,
+      warranty: !isNaN(parseInt(warranty)) ? parseInt(warranty) : 0,
+      description,
+      barcode,
+      hasBarcode: (hasBarcode === 'true' || hasBarcode === true) || false,
+      minDiscount: minDiscount ? parseFloat(minDiscount) : null,
+      maxDiscount: maxDiscount ? parseFloat(maxDiscount) : null,
+      isTaxInclusive: (isTaxInclusive === 'true' || isTaxInclusive === true) || false,
+      imageUrl: imageUrl,
+      isActive: req.body.isActive !== undefined ? (req.body.isActive === 'true' || req.body.isActive === true) : true
+    };
+
+    if (categoryId) {
+      data.category = { connect: { id: parseInt(categoryId) } };
+    }
+
+    const product = await prisma.product.create({ data });
     res.status(201).json(product);
   } catch (error) {
     if (error.code === 'P2002') {
@@ -92,29 +108,50 @@ exports.createProduct = asyncHandler(async (req, res) => {
 // Update Product
 exports.updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, price, taxRate, taxPercent, taxType, hsnCode, warranty, description, barcode, categoryName, categoryId, minDiscount, maxDiscount, isTaxInclusive } = req.body;
+  const { name, price, taxRate, taxPercent, taxType, hsnCode, warranty, description, barcode, categoryName, categoryId, minDiscount, maxDiscount, isTaxInclusive, isActive } = req.body;
 
-  // Prioritize the incoming tax value. Usually UI sends both, but if one is updated, it's safer
-  // to pick the one that is likely the intent. In our UI, taxRate is the input.
-  const taxVal = taxRate !== undefined ? taxRate : (taxPercent !== undefined ? taxPercent : 0);
-  const parsedTax = parseFloat(taxVal) || 0;
+  const dataToUpdate = {};
 
-  const dataToUpdate = {
-    name,
-    categoryName,
-    categoryId: categoryId ? parseInt(categoryId) : null,
-    price: parseFloat(price),
-    taxRate: parsedTax,
-    taxPercent: parsedTax,
-    taxType,
-    hsnCode,
-    warranty: parseInt(warranty),
-    description,
-    barcode,
-    minDiscount: minDiscount ? parseFloat(minDiscount) : null,
-    maxDiscount: maxDiscount ? parseFloat(maxDiscount) : null,
-    isTaxInclusive: (isTaxInclusive === 'true' || isTaxInclusive === true) || false
-  };
+  if (name !== undefined) dataToUpdate.name = name;
+  if (categoryName !== undefined) dataToUpdate.categoryName = categoryName;
+  if (taxType !== undefined) dataToUpdate.taxType = taxType;
+  if (hsnCode !== undefined) dataToUpdate.hsnCode = hsnCode;
+  if (description !== undefined) dataToUpdate.description = description;
+  if (barcode !== undefined) dataToUpdate.barcode = barcode;
+
+  if (price !== undefined && !isNaN(parseFloat(price))) {
+    dataToUpdate.price = parseFloat(price);
+  }
+
+  if (taxRate !== undefined || taxPercent !== undefined) {
+    const taxVal = taxRate !== undefined ? taxRate : taxPercent;
+    const parsedTax = parseFloat(taxVal) || 0;
+    dataToUpdate.taxRate = parsedTax;
+    dataToUpdate.taxPercent = parsedTax;
+  }
+
+  if (warranty !== undefined) {
+    dataToUpdate.warranty = !isNaN(parseInt(warranty)) ? parseInt(warranty) : 0;
+  }
+
+  if (minDiscount !== undefined) dataToUpdate.minDiscount = minDiscount ? parseFloat(minDiscount) : null;
+  if (maxDiscount !== undefined) dataToUpdate.maxDiscount = maxDiscount ? parseFloat(maxDiscount) : null;
+
+  if (isTaxInclusive !== undefined) {
+    dataToUpdate.isTaxInclusive = (isTaxInclusive === 'true' || isTaxInclusive === true);
+  }
+
+  if (isActive !== undefined) {
+    dataToUpdate.isActive = (isActive === 'true' || isActive === true);
+  }
+
+  if (categoryId !== undefined) {
+    if (categoryId) {
+      dataToUpdate.category = { connect: { id: parseInt(categoryId) } };
+    } else {
+      dataToUpdate.category = { disconnect: true };
+    }
+  }
 
   if (req.file) {
     dataToUpdate.imageUrl = '/uploads/' + req.file.filename;
