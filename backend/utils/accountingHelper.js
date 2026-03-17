@@ -183,29 +183,47 @@ async function processSalePosting(tx, sale, userId) {
 
 /**
  * Centralized logic for Purchase posting.
+ * Uses hardcoded Dr/Cr logic so it works even if TransactionPosting DB rules are missing.
  */
 async function processPurchasePosting(tx, purchase, userId) {
   const reference = purchase.invoiceNumber || `PUR-${purchase.id}`;
-  const { paymentMethod, totalAmount, purchaseDate, supplier } = purchase;
+  const { paymentMethod, purchaseDate, supplier } = purchase;
+  const totalAmount = parseFloat(String(purchase.totalAmount || 0));
 
-  // 1. Record the Purchase (Dr Purchase, Cr Supplier)
-  const mainNarration = `${paymentMethod} Purchase Bill #${reference}`;
-  await postTransaction(tx, 'PURCHASE', purchase, userId, reference, mainNarration);
+  if (!totalAmount || totalAmount === 0) {
+    console.warn('Purchase totalAmount is 0, skipping accounting posting.');
+    return;
+  }
 
-  // 2. If Payment is not Credit, settle the Supplier Ledger
+  // 1. Resolve ledgers
+  const purchaseLedger = await ensureLedger(tx, 'Purchase Account', 'Purchase Accounts');
+  const supplierLedger = supplier
+    ? await ensureLedger(tx, supplier.name, 'Sundry Creditors')
+    : await ensureLedger(tx, 'Sundry Creditors (General)', 'Sundry Creditors');
+
+  // 2. Post Purchase Voucher: Dr Purchase Account, Cr Supplier
+  const mainNarration = `${paymentMethod || 'Credit'} Purchase Bill #${reference}`;
+  await postVoucher(tx, {
+    type: 'PURCHASE',
+    date: purchaseDate || new Date(),
+    amount: totalAmount,
+    narration: mainNarration,
+    reference: reference,
+    createdBy: userId
+  }, [
+    { ledgerId: purchaseLedger.id, type: 'DEBIT', amount: totalAmount },
+    { ledgerId: supplierLedger.id, type: 'CREDIT', amount: totalAmount }
+  ]);
+
+  // 3. If Payment is not Credit, also settle the Supplier Ledger (Cr Bank/Cash, Dr Supplier)
   const isSettled = paymentMethod && paymentMethod.toUpperCase() !== 'CREDIT';
 
   if (isSettled) {
-    const supplierLedger = await ensureLedger(tx, supplier.name, 'Sundry Creditors');
-
-    // Resolve payment ledger based on method
     let paymentLedger;
     const methodUpper = paymentMethod.toUpperCase();
-
     if (methodUpper.includes('CASH')) {
       paymentLedger = await getLedgerByRole(tx, 'PAYMENT', 'CASH', 'Cash', 'Cash-in-Hand');
     } else {
-      // Default to Bank for all other methods (Bank, UPI, Bank Transfer, Card, etc.)
       paymentLedger = await getLedgerByRole(tx, 'PAYMENT', 'BANK', 'Bank Account', 'Bank Accounts');
     }
 
