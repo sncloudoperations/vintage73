@@ -4,35 +4,58 @@ const prisma = new PrismaClient();
 async function fixPurchasePosting() {
   console.log('Fixing PURCHASE TransactionPosting rules...');
   try {
-    // 1. Fix Purchase Account Rule (Should be DEBIT)
-    const purchaseResult = await prisma.transactionPosting.updateMany({
-      where: { 
-        transactionType: 'PURCHASE', 
-        role: 'PURCHASE_ACCOUNT' 
-      },
-      data: { 
-        side: 'DEBIT', 
-        amountField: 'totalAmount' 
+    // Find the Purchase Account ledger
+    let purchaseLedger = await prisma.ledger.findFirst({ where: { name: 'Purchase Account' } });
+
+    if (!purchaseLedger) {
+      console.log('Purchase Account ledger not found, creating it...');
+      // Find or create Account Group
+      let purchaseGroup = await prisma.accountGroup.findFirst({ where: { name: 'Purchase Accounts' } });
+      if (!purchaseGroup) {
+        purchaseGroup = await prisma.accountGroup.create({
+          data: { name: 'Purchase Accounts', groupType: 'EXPENSES' }
+        });
+        console.log('Created Purchase Accounts group.');
+      }
+      purchaseLedger = await prisma.ledger.create({
+        data: { name: 'Purchase Account', groupId: purchaseGroup.id, balanceType: 'DEBIT' }
+      });
+      console.log('Created Purchase Account ledger.');
+    }
+
+    // 1. Upsert PURCHASE_ACCOUNT rule (DEBIT)
+    await prisma.transactionPosting.upsert({
+      where: { transactionType_role: { transactionType: 'PURCHASE', role: 'PURCHASE_ACCOUNT' } },
+      update: { side: 'DEBIT', amountField: 'totalAmount', ledgerId: purchaseLedger.id },
+      create: {
+        transactionType: 'PURCHASE',
+        role: 'PURCHASE_ACCOUNT',
+        label: 'Purchase Dr',
+        ledgerId: purchaseLedger.id,
+        side: 'DEBIT',
+        amountField: 'totalAmount'
       }
     });
-    console.log(`Updated ${purchaseResult.count} rule(s) for PURCHASE_ACCOUNT to DEBIT.`);
+    console.log('PURCHASE_ACCOUNT rule -> DEBIT: OK');
 
-    // 2. Fix Supplier Rule (Should be CREDIT)
-    const supplierResult = await prisma.transactionPosting.updateMany({
-      where: { 
-        transactionType: 'PURCHASE', 
-        role: 'SUPPLIER' 
-      },
-      data: { 
-        side: 'CREDIT', 
-        amountField: 'totalAmount' 
+    // 2. Upsert SUPPLIER rule (CREDIT)
+    await prisma.transactionPosting.upsert({
+      where: { transactionType_role: { transactionType: 'PURCHASE', role: 'SUPPLIER' } },
+      update: { side: 'CREDIT', amountField: 'totalAmount', ledgerId: purchaseLedger.id },
+      create: {
+        transactionType: 'PURCHASE',
+        role: 'SUPPLIER',
+        label: 'Supplier Cr',
+        ledgerId: purchaseLedger.id, // placeholder; resolved dynamically at runtime
+        side: 'CREDIT',
+        amountField: 'totalAmount'
       }
     });
-    console.log(`Updated ${supplierResult.count} rule(s) for SUPPLIER to CREDIT.`);
+    console.log('SUPPLIER rule -> CREDIT: OK');
 
-    console.log('Successfully applied fixes to the database!');
+    console.log('\n✅ Fixes applied successfully! Restart your backend server now.');
   } catch (error) {
-    console.error('Failed to fix rules:', error.message);
+    console.error('❌ Failed:', error.message);
   } finally {
     await prisma.$disconnect();
   }
