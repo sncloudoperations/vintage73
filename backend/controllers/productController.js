@@ -19,11 +19,6 @@ exports.getAllProducts = asyncHandler(async (req, res) => {
 
   const whereClause = {};
 
-  if (parsedBranchId && !isGlobalAdmin) {
-    // Non-global admins (Branch Admin/Staff) are locked to their own branch stock
-    whereClause.stocks = { some: { branchId: parsedBranchId } };
-  }
-
   // Visibility Rule: Only admins can see inactive products
   if (user?.role !== 'admin') {
     whereClause.isActive = true;
@@ -43,6 +38,8 @@ exports.getAllProducts = asyncHandler(async (req, res) => {
   // Map stock to a flat structure for frontend compatibility
   const formattedProducts = products.map(p => ({
     ...p,
+    // If parsedBranchId is present, we only show stock for THAT branch.
+    // If no stock entry exists for that branch, we default to 0.
     stock: parsedBranchId ? (p.stocks[0]?.quantity || 0) : p.stocks.reduce((acc, s) => acc + s.quantity, 0)
   }));
 
