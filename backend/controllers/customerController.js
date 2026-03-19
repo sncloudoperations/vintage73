@@ -39,10 +39,21 @@ exports.createCustomer = asyncHandler(async (req, res) => {
     branchId = user.branchId;
   }
 
+  // --- SANITIZE & VALIDATE PHONE ---
+  const sanitizedPhone = phone?.trim() === "" ? null : phone?.trim();
+
+  if (sanitizedPhone) {
+    const existingCustomer = await prisma.customer.findUnique({ where: { phone: sanitizedPhone } });
+    if (existingCustomer) {
+      res.status(400);
+      throw new Error(`Customer with phone number ${sanitizedPhone} already exists.`);
+    }
+  }
+
   const customer = await prisma.customer.create({
     data: {
       name,
-      phone,
+      phone: sanitizedPhone,
       email,
       address,
       city,
@@ -67,12 +78,13 @@ exports.createCustomer = asyncHandler(async (req, res) => {
 // Update customer
 exports.updateCustomer = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, phone, email, address, branchId, city, state, pincode, gstin, partyType } = req.body;
+  const sanitizedPhone = phone?.trim() === "" ? null : phone?.trim();
+
   const customer = await prisma.customer.update({
     where: { id: parseInt(id) },
     data: {
       name,
-      phone,
+      phone: sanitizedPhone,
       email,
       address,
       city,

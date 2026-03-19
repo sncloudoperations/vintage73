@@ -171,7 +171,7 @@ export default function QuotationsList() {
                         {quotations.map((q) => (
                             <tr key={q.id} className="hover:bg-gray-50">
                                 <td className="px-6 py-4 text-sm text-gray-600">
-                                    {new Date(q.quotationDate).toLocaleDateString()}
+                                    {new Date(q.quotationDate).toLocaleDateString('en-GB')}
                                 </td>
                                 <td className="px-6 py-4 text-sm font-medium text-blue-600">
                                     {q.quotationNumber}

@@ -4,7 +4,18 @@ const asyncHandler = require('../middleware/asyncHandler');
 
 // Get all Financial Years
 exports.getAllFinancialYears = asyncHandler(async (req, res) => {
+    const { branchId: queryBranchId } = req.query;
+    const user = req.user;
+
+    let branchId = queryBranchId;
+    if (!branchId && user?.branchId) {
+        branchId = user.branchId;
+    }
+
+    const where = branchId ? { branchId: parseInt(branchId) } : {};
+
     const years = await prisma.financialYear.findMany({
+        where,
         orderBy: { startDate: 'desc' }
     });
     res.json(years);
@@ -12,11 +23,20 @@ exports.getAllFinancialYears = asyncHandler(async (req, res) => {
 
 // Create Financial Year
 exports.createFinancialYear = asyncHandler(async (req, res) => {
-    const { name, startDate, endDate } = req.body;
+    const { name, startDate, endDate, branchId: queryBranchId } = req.body;
+    const user = req.user;
 
-    // Validate overlapping dates
+    let branchId = queryBranchId;
+    if (!branchId && user?.branchId) {
+        branchId = user.branchId;
+    }
+
+    const branchIdInt = branchId ? parseInt(branchId) : null;
+
+    // Validate overlapping dates WITHIN THE SAME BRANCH
     const existing = await prisma.financialYear.findFirst({
         where: {
+            branchId: branchIdInt,
             OR: [
                 {
                     startDate: { lte: new Date(endDate) },
@@ -28,18 +48,43 @@ exports.createFinancialYear = asyncHandler(async (req, res) => {
 
     if (existing) {
         res.status(400);
-        throw new Error('Date range overlaps with an existing Financial Year.');
+        throw new Error('Date range overlaps with an existing Financial Year for this branch.');
     }
 
     const year = await prisma.financialYear.create({
         data: {
             name,
             startDate: new Date(startDate),
-            endDate: new Date(endDate)
+            endDate: new Date(endDate),
+            invoicePrefix: req.body.invoicePrefix || 'INV',
+            invoiceSequence: req.body.invoiceSequence?.toString() || "001",
+            branchId: branchIdInt
         }
     });
 
     res.status(201).json(year);
+});
+
+// Update Financial Year
+exports.updateFinancialYear = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { name, startDate, endDate, isClosed, isLocked, invoicePrefix, invoiceSequence, branchId } = req.body;
+
+    const year = await prisma.financialYear.update({
+        where: { id: parseInt(id) },
+        data: {
+            name,
+            startDate: startDate ? new Date(startDate) : undefined,
+            endDate: endDate ? new Date(endDate) : undefined,
+            isClosed,
+            isLocked,
+            invoicePrefix,
+            invoiceSequence: invoiceSequence !== undefined ? invoiceSequence.toString() : undefined,
+            branchId: branchId ? parseInt(branchId) : undefined
+        }
+    });
+
+    res.json(year);
 });
 
 // Preview Closing (Calculate Profit/Loss)

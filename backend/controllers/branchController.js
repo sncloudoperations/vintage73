@@ -52,9 +52,9 @@ exports.createBranch = asyncHandler(async (req, res) => {
     throw new Error('Access denied: Only global admins can create branches');
   }
 
-  const { name, address, phone, email } = req.body;
+  const { name, address, phone, email, stockIncluded } = req.body;
   const branch = await prisma.branch.create({
-    data: { name, address, phone, email }
+    data: { name, address, phone, email, stockIncluded: stockIncluded !== undefined ? stockIncluded : true }
   });
   res.status(201).json(branch);
 });
@@ -75,10 +75,10 @@ exports.updateBranch = asyncHandler(async (req, res) => {
     throw new Error('Invalid Branch ID');
   }
 
-  const { name, address, phone, email, isActive } = req.body;
+  const { name, address, phone, email, isActive, stockIncluded } = req.body;
   const branch = await prisma.branch.update({
     where: { id: branchId },
-    data: { name, address, phone, email, isActive }
+    data: { name, address, phone, email, isActive, stockIncluded }
   });
   res.json(branch);
 });

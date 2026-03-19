@@ -7,7 +7,7 @@ export default function Branches() {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ name: '', address: '', phone: '', email: '', isActive: true });
+  const [formData, setFormData] = useState({ name: '', address: '', phone: '', email: '', isActive: true, stockIncluded: true });
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function Branches() {
       }
       setShowModal(false);
       setEditingId(null);
-      setFormData({ name: '', address: '', phone: '', email: '', isActive: true });
+      setFormData({ name: '', address: '', phone: '', email: '', isActive: true, stockIncluded: true });
       fetchBranches();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save branch');
@@ -51,7 +51,8 @@ export default function Branches() {
       address: branch.address || '',
       phone: branch.phone || '',
       email: branch.email || '',
-      isActive: branch.isActive
+      isActive: branch.isActive,
+      stockIncluded: branch.stockIncluded !== undefined ? branch.stockIncluded : true
     });
     setShowModal(true);
   };
@@ -88,6 +89,9 @@ export default function Branches() {
               <div className="flex justify-between items-start mb-4">
                 <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${branch.isActive ? 'bg-primary-light/10 text-primary border border-primary/20' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
                   {branch.isActive ? 'Active' : 'Inactive'}
+                </div>
+                <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${branch.stockIncluded ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+                  Stock: {branch.stockIncluded ? 'Enabled' : 'Disabled'}
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => openEditModal(branch)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary-light/10 rounded-lg transition-colors">
@@ -182,7 +186,7 @@ export default function Branches() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 py-2 mt-2">
+              <div className="flex flex-col gap-3 py-2 mt-2">
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -193,6 +197,18 @@ export default function Branches() {
                   />
                   <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
                   <span className="ml-3 text-sm font-medium text-slate-700">Active Status</span>
+                </label>
+
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="stockIncluded"
+                    checked={formData.stockIncluded}
+                    onChange={e => setFormData({ ...formData, stockIncluded: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-orange-500"></div>
+                  <span className="ml-3 text-sm font-medium text-slate-700">Stock Included (Strict Validation)</span>
                 </label>
               </div>
 

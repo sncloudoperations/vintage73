@@ -6,6 +6,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.use(authMiddleware);
 const upload = require('../middleware/uploadMiddleware');
 
+router.get('/admins', userController.getAdminsByBranch);
 router.get('/', userController.getUsers);
 router.post('/', upload.single('image'), userController.createUser);
 router.put('/:id', upload.single('image'), userController.updateUser);

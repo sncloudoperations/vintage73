@@ -259,6 +259,13 @@ exports.getLeaveRequests = asyncHandler(async (req, res) => {
         where.branchId = req.user.branchId;
     }
 
+    // Admin-based RBAC: branch admin can only see leaves of staff assigned to them
+    if (req.user.role === 'admin' && req.user.branchId && !userId) {
+        where.user = {
+            adminId: req.user.id
+        };
+    }
+
     const leaves = await prisma.leaveRequest.findMany({
         where,
         include: {
@@ -273,11 +280,31 @@ exports.getLeaveRequests = asyncHandler(async (req, res) => {
 exports.updateLeaveStatus = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { status, approvedById } = req.body;
+
+    // Fetch the leave request first to check authorization
+    const leaveRequest = await prisma.leaveRequest.findUnique({
+        where: { id: parseInt(id) },
+        include: { user: true }
+    });
+
+    if (!leaveRequest) {
+        res.status(404);
+        throw new Error('Leave request not found');
+    }
+
+    // RBAC: Only the assigned admin (for branch admins) or any admin (for global admins) can approve
+    if (req.user.role === 'admin' && req.user.branchId) {
+        if (leaveRequest.user.adminId !== req.user.id) {
+            res.status(403);
+            throw new Error('You are not authorized to approve/reject this staff member\'s leave requests');
+        }
+    }
+
     const leave = await prisma.leaveRequest.update({
         where: { id: parseInt(id) },
         data: {
             status,
-            approvedById: approvedById ? parseInt(approvedById) : undefined
+            approvedById: approvedById ? parseInt(approvedById) : req.user.id
         }
     });
     res.json(leave);
@@ -653,4 +680,81 @@ exports.updateEmployeeProfile = asyncHandler(async (req, res) => {
         }
     });
     res.json(profile);
+});
+
+// ==================== WORK LOG ====================
+
+exports.createWorkLog = asyncHandler(async (req, res) => {
+    const { userId, date, description } = req.body;
+
+    if (!userId || !date || !description) {
+        res.status(400);
+        throw new Error('userId, date, and description are required');
+    }
+
+    // RBAC: Only the staff member themselves or an admin can create a log
+    if (req.user.role !== 'admin' && req.user.id !== parseInt(userId)) {
+        res.status(403);
+        throw new Error('You can only record work logs for yourself');
+    }
+
+    // Fetch the user to get their assigned adminId
+    const staffUser = await prisma.user.findUnique({
+        where: { id: parseInt(userId) },
+        select: { adminId: true, branchId: true }
+    });
+
+    const workLog = await prisma.workLog.create({
+        data: {
+            userId: parseInt(userId),
+            adminId: staffUser?.adminId || null,
+            branchId: staffUser?.branchId || req.user.branchId || null,
+            date: new Date(date),
+            description
+        },
+        include: {
+            user: { select: { name: true, username: true } }
+        }
+    });
+
+    res.json(workLog);
+});
+
+exports.getWorkLogs = asyncHandler(async (req, res) => {
+    const { userId, date } = req.query;
+    const where = {};
+
+    if (userId) where.userId = parseInt(userId);
+
+    // Branch Isolation
+    if (req.user.branchId) {
+        where.branchId = req.user.branchId;
+    }
+
+    // Admin-based RBAC: branch admin only sees work logs of their assigned staff OR their own
+    if (req.user.role === 'admin' && req.user.branchId && !userId) {
+        where.OR = [
+            { userId: req.user.id },
+            { user: { adminId: req.user.id } }
+        ];
+    }
+
+    // Date filter
+    if (date) {
+        const start = new Date(date);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(date);
+        end.setHours(23, 59, 59, 999);
+        where.date = { gte: start, lte: end };
+    }
+
+    const logs = await prisma.workLog.findMany({
+        where,
+        include: {
+            user: { select: { name: true, username: true } }
+        },
+        orderBy: { date: 'desc' }
+    });
+
+    res.json(logs);
 });

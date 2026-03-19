@@ -47,7 +47,7 @@ exports.createUser = asyncHandler(async (req, res) => {
     username, password, name, role, allowedModules, branchId, incentivePercentage,
     designation, department, joiningDate, basicSalary, labourRule, nationalId,
     employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds,
-    weeklyOff
+    weeklyOff, adminId
   } = req.body;
 
   const existingUser = await prisma.user.findUnique({ where: { username } });
@@ -142,6 +142,7 @@ exports.createUser = asyncHandler(async (req, res) => {
       branchId: branchId ? parseInt(branchId) : null,
       isActive: req.body.isActive !== undefined ? req.body.isActive === 'true' || req.body.isActive === true : true,
       incentivePercentage: parseFloat(incentivePercentage) || 0,
+      adminId: adminId ? parseInt(adminId) : null,
       // imageUrl: req.file ? '/uploads/' + req.file.filename : null,
       // weeklyOff: weeklyOff || 'Sunday',
       terminals: terminalIds && Array.isArray(terminalIds) ? { connect: terminalIds.map(id => ({ id: parseInt(id) })) } : undefined,
@@ -197,7 +198,7 @@ exports.updateUser = asyncHandler(async (req, res) => {
     name, role, allowedModules, branchId, incentivePercentage,
     designation, department, joiningDate, basicSalary, labourRule, nationalId,
     employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds,
-    weeklyOff
+    weeklyOff, adminId
   } = req.body;
 
   // --- Hierarchical Validation ---
@@ -223,11 +224,14 @@ exports.updateUser = asyncHandler(async (req, res) => {
     if (branchId && parseInt(branchId) !== creatorBranchId) {
       return res.status(403).json({ message: 'Branch Admin cannot change a user\'s branch' });
     }
-    // Module permissions check
-    if (allowedModules) {
-      const unauthorizedModules = allowedModules.filter(m => !creatorModules.includes(m));
+    // Module permissions check: Branch Admin can only assign modules they have access to.
+    // However, they should NOT be blocked if the target user ALREADY had those modules (they are just retaining them).
+    if (allowedModules && Array.isArray(allowedModules)) {
+      const existingModules = Array.isArray(targetUser.allowedModules) ? targetUser.allowedModules : [];
+      const addedModules = allowedModules.filter(m => !existingModules.includes(m));
+      const unauthorizedModules = addedModules.filter(m => !creatorModules.includes(m));
       if (unauthorizedModules.length > 0) {
-        return res.status(403).json({ message: `Access denied: You cannot assign modules you don't have access to: ${unauthorizedModules.join(', ')}` });
+        return res.status(403).json({ message: `Access denied: You cannot assign NEW modules you don't have access to: ${unauthorizedModules.join(', ')}` });
       }
     }
   } else if (!isGlobalAdmin) {
@@ -284,6 +288,10 @@ exports.updateUser = asyncHandler(async (req, res) => {
     dataToUpdate.incentivePercentage = !isNaN(parseFloat(incentivePercentage)) ? parseFloat(incentivePercentage) : 0;
   }
 
+  if (adminId !== undefined) {
+    dataToUpdate.adminId = adminId ? parseInt(adminId) : null;
+  }
+
   if (req.body.isActive !== undefined) {
     dataToUpdate.isActive = (req.body.isActive === 'true' || req.body.isActive === true);
   }
@@ -324,3 +332,19 @@ exports.updateUser = asyncHandler(async (req, res) => {
   });
   res.json({ message: 'User updated successfully', user });
 });
+
+// Get admins by branch (for admin assignment dropdown)
+exports.getAdminsByBranch = asyncHandler(async (req, res) => {
+  const { branchId } = req.query;
+  const where = { role: 'admin' };
+  if (branchId) {
+    where.branchId = parseInt(branchId);
+  }
+  const admins = await prisma.user.findMany({
+    where,
+    select: { id: true, name: true, username: true, branchId: true },
+    orderBy: { name: 'asc' }
+  });
+  res.json(admins);
+});
+

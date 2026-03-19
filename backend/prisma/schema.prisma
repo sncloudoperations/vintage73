@@ -41,6 +41,12 @@ model User {
   imageUrl               String?
   weeklyOff              String?  @default("Sunday")
   isActive               Boolean  @default(true)
+  // Admin assignment: links staff to their assigned admin
+  adminId        Int?
+  admin          User?    @relation("StaffAdmin", fields: [adminId], references: [id])
+  managedStaff   User[]   @relation("StaffAdmin")
+  workLogs       WorkLog[]
+  managedWorkLogs WorkLog[] @relation("AdminWorkLogs")
 }
 
 model Branch {
@@ -71,6 +77,9 @@ model Branch {
   payrolls          Payroll[]
   missPunchRequests MissPunchRequest[]
   salaryAdvances    SalaryAdvance[]
+  workLogs          WorkLog[]
+  financialYears    FinancialYear[]
+  stockIncluded   Boolean    @default(true)
 }
 
 model CompanyProfile {
@@ -230,7 +239,7 @@ model PurchaseItem {
 
 model Sale {
   id              Int        @id @default(autoincrement())
-  invoiceNumber   String     @unique
+  invoiceNumber   String
   customerId      Int?
   saleDate        DateTime   @default(now())
   subTotal        Decimal    @db.Decimal(10, 2)
@@ -269,6 +278,13 @@ model Sale {
   customer        Customer?  @relation(fields: [customerId], references: [id])
   salesman        User?      @relation("Salesman", fields: [salesmanId], references: [id])
   items           SaleItem[]
+  quotationId     Int?       @unique
+  quotation       Quotation? @relation("QuotationToInvoice", fields: [quotationId], references: [id])
+  isInvoice       Boolean    @default(false)
+  financialYearId Int?
+  financialYear   FinancialYear? @relation(fields: [financialYearId], references: [id])
+
+  @@unique([branchId, invoiceNumber, financialYearId])
 }
 
 model SaleItem {
@@ -342,6 +358,7 @@ model Quotation {
   payments        Payment[]       // Advance payments linked to this quotation
   isTaxInclusive  Boolean         @default(false)
   taxType         String?         // IGST, CGST_SGST, etc.
+  invoice         Sale?           @relation("QuotationToInvoice")
 }
 
 model QuotationItem {
@@ -698,13 +715,20 @@ model JournalEntry {
 
 model FinancialYear {
   id        Int      @id @default(autoincrement())
-  name      String   @unique // e.g., "FY 2024-25"
+  name      String // e.g., "FY 2024-25"
   startDate DateTime
   endDate   DateTime
   isClosed  Boolean  @default(false)
   isLocked  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  invoicePrefix   String   @default("INV")
+  invoiceSequence String   @default("001")
+  branchId        Int?
+  branch          Branch?  @relation(fields: [branchId], references: [id])
+  sales           Sale[]
+
+  @@unique([name, branchId])
 }
 
 // GST Settings for E-Way Bill and Invoice Configuration
@@ -857,4 +881,18 @@ model Notification {
   isRead      Boolean  @default(false)
   link        String?  // Optional link to navigate to
   createdAt   DateTime @default(now())
+}
+
+model WorkLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  adminId     Int?
+  admin       User?    @relation("AdminWorkLogs", fields: [adminId], references: [id])
+  branchId    Int?
+  branch      Branch?  @relation(fields: [branchId], references: [id])
+  date        DateTime
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
