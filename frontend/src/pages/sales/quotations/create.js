@@ -230,7 +230,9 @@ export default function CreateQuotation() {
                             >
                                 <option value="">Select Customer</option>
                                 {customers.map(c => (
-                                    <option key={c.id} value={c.id}>{c.name} ({c.phone})</option>
+                                    <option key={c.id} value={c.id}>
+                                        {c.name}{c.phone ? ` (${c.phone})` : ''}
+                                    </option>
                                 ))}
                             </select>
                         </div>

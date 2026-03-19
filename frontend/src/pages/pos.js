@@ -18,6 +18,7 @@ export default function POS() {
     const [terminal, setTerminal] = useState(null);
     const [branches, setBranches] = useState([]);
     const [selectedBranch, setSelectedBranch] = useState('');
+    const [branchSettings, setBranchSettings] = useState({ stockIncluded: true });
 
     useEffect(() => {
         const stored = localStorage.getItem('user');
@@ -152,11 +153,15 @@ export default function POS() {
                 if (user?.branchId) {
                     try {
                         const branchRes = await api.get(`/branches/${user.branchId}`);
-                        if (branchRes.data?.invoiceSettings) {
-                            setInvoiceSettings(branchRes.data.invoiceSettings);
-                        } else if (compRes.data?.invoiceSettings) {
-                            // Fallback to company settings if branch settings are empty
-                            setInvoiceSettings(compRes.data.invoiceSettings);
+                        if (branchRes.data) {
+                            setBranchSettings({
+                                stockIncluded: branchRes.data.stockIncluded !== undefined ? branchRes.data.stockIncluded : true
+                            });
+                            if (branchRes.data.invoiceSettings) {
+                                setInvoiceSettings(branchRes.data.invoiceSettings);
+                            } else if (compRes.data?.invoiceSettings) {
+                                setInvoiceSettings(compRes.data.invoiceSettings);
+                            }
                         }
                     } catch (err) {
                         console.error('Failed to load branch settings', err);
@@ -168,7 +173,7 @@ export default function POS() {
             }
         };
         fetchData();
-    }, []);
+    }, [user?.branchId]);
 
     // --- CART SYNC EFFECT ---
     useEffect(() => {
@@ -217,6 +222,9 @@ export default function POS() {
             if (selectedBranch) {
                 try {
                     const { data } = await api.get(`/branches/${selectedBranch}`);
+                    setBranchSettings({
+                        stockIncluded: data?.stockIncluded !== undefined ? data.stockIncluded : true
+                    });
                     if (data?.invoiceSettings && Object.keys(data.invoiceSettings).length > 0) {
                         setInvoiceSettings(data.invoiceSettings);
                     } else {
@@ -278,7 +286,17 @@ export default function POS() {
     };
 
     const addToCart = (product) => {
+        if (branchSettings.stockIncluded && product.stock <= 0) {
+            toast.error('Out of stock in your branch');
+            return;
+        }
+
         const existing = cart.find(item => item.id === product.id);
+
+        if (existing && branchSettings.stockIncluded && (existing.quantity + 1) > product.stock) {
+            toast.error(`Only ${product.stock} units available in stock`);
+            return;
+        }
 
         // Always use FRESH data from the passed 'product' object
         const freshPrice = Number(product.price);
@@ -313,6 +331,11 @@ export default function POS() {
 
     const updateQuantity = (id, newQty) => {
         if (newQty < 1) return;
+        const item = cart.find(i => i.id === id);
+        if (branchSettings.stockIncluded && item && newQty > item.stock) {
+            toast.error(`Only ${item.stock} units available in stock`);
+            return;
+        }
         setCart(cart.map(item => item.id === id ? { ...item, quantity: newQty } : item));
     };
 
@@ -684,13 +707,7 @@ export default function POS() {
                         {products.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(product => (
                             <div key={product.id}
                                 className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group active:scale-95"
-                                onClick={() => {
-                                    if (product.stock <= 0) {
-                                        toast.error('Out of stock in your branch');
-                                        return;
-                                    }
-                                    addToCart(product);
-                                }}>
+                                onClick={() => addToCart(product)}>
                                 <div className="aspect-square bg-slate-50 rounded-lg mb-3 flex items-center justify-center overflow-hidden relative">
                                     {product.imageUrl ? (
                                         <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
@@ -1079,11 +1096,12 @@ export default function POS() {
 
             {lastSale && (
                 <div style={{ display: 'none' }}>
-                    <ProfessionalInvoice
-                        ref={componentRef}
-                        printData={lastSale}
-                        companyProfile={companyProfile}
-                    />
+                    <div ref={componentRef}>
+                        <ProfessionalInvoice 
+                            printData={lastSale} 
+                            companyProfile={companyProfile} 
+                        />
+                    </div>
                 </div>
             )}
             {/* Sales History Modal */}
@@ -1111,7 +1129,7 @@ export default function POS() {
                                         {salesHistory.map(sale => (
                                             <tr key={sale.id} className={`border-b hover:bg-slate-50 cursor-pointer ${selectedHistorySale?.id === sale.id ? 'bg-primary-light/10' : ''}`} onClick={() => setSelectedHistorySale(sale)}>
                                                 <td className="p-3">
-                                                    <p className="font-bold text-slate-700">{new Date(sale.saleDate).toLocaleDateString()}</p>
+                                                    <p className="font-bold text-slate-700">{new Date(sale.saleDate).toLocaleDateString('en-GB')}</p>
                                                     <p className="text-xs text-slate-400 font-mono">#{sale.invoiceNumber}</p>
                                                 </td>
                                                 <td className="p-3 text-slate-600 truncate max-w-[100px]">{sale.customer?.name || 'Walk-in'}</td>

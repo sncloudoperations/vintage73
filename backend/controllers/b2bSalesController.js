@@ -3,16 +3,88 @@ const asyncHandler = require('../middleware/asyncHandler');
 const { ensureLedger, postVoucher } = require('../utils/accountingHelper');
 
 // Generate B2B Invoice Number
-const generateInvoiceNumber = async (prefix = 'INV') => {
-  const today = new Date();
-  const year = today.getFullYear().toString().slice(-2);
-  const month = (today.getMonth() + 1).toString().padStart(2, '0');
-  
-  const lastInvoice = await prisma.sale.findFirst({
+// Generate B2B Invoice Number using Financial Year sequence and Branch-wise isolation
+const generateInvoiceNumber = async (tx, saleDate = new Date(), branchId) => {
+  const sDate = new Date(saleDate);
+  // Explicitly look for branch-specific FY first
+  let financialYear = await tx.financialYear.findFirst({
     where: {
-      invoiceNumber: {
-        startsWith: `${prefix}-${year}${month}`
+      branchId: parseInt(branchId),
+      startDate: { lte: sDate },
+      endDate: { gte: sDate },
+      isClosed: false
+    }
+  });
+
+  // Fallback to global FY if no branch-specific one exists
+  if (!financialYear) {
+    financialYear = await tx.financialYear.findFirst({
+      where: {
+        branchId: null,
+        startDate: { lte: sDate },
+        endDate: { gte: sDate },
+        isClosed: false
+      }
+    });
+  }
+
+  if (financialYear) {
+    // BRANCH-WISE SEQUENCING: Look for the last sale in this branch and FY
+    const lastSaleInBranch = await tx.sale.findFirst({
+      where: { 
+        branchId: parseInt(branchId), 
+        financialYearId: financialYear.id,
+        invoiceNumber: { startsWith: financialYear.invoicePrefix || 'INV' }
       },
+      orderBy: { invoiceNumber: 'desc' }
+    });
+
+    let nextSeq;
+    const startingSeq = financialYear.invoiceSequence || '001';
+    
+    const prefix = financialYear.invoicePrefix || 'INV';
+    if (lastSaleInBranch && lastSaleInBranch.invoiceNumber) {
+      const lastInvoiceNum = lastSaleInBranch.invoiceNumber;
+      
+      let lastNum = NaN;
+      if (lastInvoiceNum.startsWith(prefix)) {
+        const seqPart = lastInvoiceNum.slice(prefix.length);
+        lastNum = parseInt(seqPart, 10);
+      } else {
+        const match = lastInvoiceNum.match(/(\d+)$/);
+        lastNum = match ? parseInt(match[0], 10) : NaN;
+      }
+      
+      if (!isNaN(lastNum)) {
+        nextSeq = (lastNum + 1).toString().padStart(startingSeq.length, '0');
+      } else {
+        nextSeq = (parseInt(startingSeq, 10) || 1).toString().padStart(startingSeq.length, '0');
+      }
+    } else {
+      nextSeq = startingSeq;
+    }
+
+    const invoiceNumber = `${prefix}${nextSeq}`;
+    console.log(`[B2B-NUMBERING] Branch: ${branchId}, FY: ${financialYear.id}, Last: ${lastSaleInBranch?.invoiceNumber}, New: ${invoiceNumber}`);
+
+    // Update the FY sequence for sync (store current as per user req)
+    await tx.financialYear.update({
+      where: { id: financialYear.id },
+      data: { invoiceSequence: nextSeq }
+    });
+
+    return { 
+      invoiceNumber,
+      financialYearId: financialYear.id 
+    };
+  }
+
+  // Fallback
+  const year = sDate.getFullYear().toString().slice(-2);
+  const month = (sDate.getMonth() + 1).toString().padStart(2, '0');
+  const lastInvoice = await tx.sale.findFirst({
+    where: {
+      invoiceNumber: { startsWith: `INV-B2B-${year}${month}` },
       isB2B: true
     },
     orderBy: { createdAt: 'desc' }
@@ -20,11 +92,15 @@ const generateInvoiceNumber = async (prefix = 'INV') => {
 
   let sequence = 1;
   if (lastInvoice) {
-    const lastSeq = parseInt(lastInvoice.invoiceNumber.split('-').pop());
-    sequence = lastSeq + 1;
+    const parts = lastInvoice.invoiceNumber.split('-');
+    const lastSeq = parseInt(parts[parts.length - 1]);
+    if (!isNaN(lastSeq)) sequence = lastSeq + 1;
   }
 
-  return `${prefix}-${year}${month}-${sequence.toString().padStart(4, '0')}`;
+  return { 
+    invoiceNumber: `INV-B2B-${year}${month}-${sequence.toString().padStart(4, '0')}`,
+    financialYearId: null 
+  };
 };
 
 // Determine if IGST or CGST/SGST based on place of supply
@@ -47,19 +123,22 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
     paymentMethod,
     paidAmount,
     saleDate,
-    branchId,
+    branchId: bodyBranchId,
     salesmanId,
     placeOfSupply,
     transportMode,
     vehicleNumber,
     transporterName,
     transporterId,
-    roundOffAmount
+    discount = 0,
+    roundOffAmount = 0
   } = req.body;
 
-  if (!branchId) {
+  const branchId = bodyBranchId || req.user?.branchId;
+  const branchIdInt = parseInt(branchId);
+  if (isNaN(branchIdInt)) {
     res.status(400);
-    throw new Error('Branch is required');
+    throw new Error('Branch selection is required.');
   }
 
   if (!customerId) {
@@ -101,6 +180,7 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
       }
 
       // Stock check
+      const branchRecord = await tx.branch.findUnique({ where: { id: parseInt(branchId) } });
       const productStock = await tx.productStock.findUnique({
         where: {
           branchId_productId: {
@@ -110,8 +190,10 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
         }
       });
 
-      if (!productStock || productStock.quantity < item.quantity) {
-        throw new Error(`Insufficient stock for product: ${product.name}`);
+      if (branchRecord?.stockIncluded === true) {
+        if (!productStock || productStock.quantity < item.quantity) {
+          throw new Error(`Insufficient stock for product: ${product.name}`);
+        }
       }
 
       const unitPrice = parseFloat(item.unitPrice || product.price);
@@ -141,7 +223,7 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
 
     const grandTotal = subTotal + taxAmount + parseFloat(roundOffAmount || 0);
     const finalPaidAmount = parseFloat(paidAmount || 0);
-    const invoiceNumber = await generateInvoiceNumber(prefix);
+    const { invoiceNumber, financialYearId } = await generateInvoiceNumber(tx, saleDate, branchId);
 
     // Check if E-Way Bill is required
     const ewayRequired = settings && grandTotal >= parseFloat(settings.ewayBillThreshold);
@@ -150,7 +232,8 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
     const sale = await tx.sale.create({
       data: {
         invoiceNumber,
-        customerId: customer.id,
+        financialYear: financialYearId ? { connect: { id: financialYearId } } : undefined,
+        customer: { connect: { id: customer.id } },
         paymentMethod: paymentMethod || 'Credit',
         subTotal,
         taxAmount,
@@ -159,8 +242,8 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
         paidAmount: finalPaidAmount,
         balanceAmount: grandTotal - finalPaidAmount,
         saleDate: saleDate ? new Date(saleDate) : new Date(),
-        branchId: parseInt(branchId),
-        salesmanId: salesmanId ? parseInt(salesmanId) : null,
+        branch: { connect: { id: parseInt(branchId) } },
+        salesman: salesmanId ? { connect: { id: parseInt(salesmanId) } } : undefined,
         status: (grandTotal - finalPaidAmount) > 0.5 ? 'partial' : 'completed',
         isB2B: true,
         placeOfSupply: placeOfSupply || customer.state,
@@ -181,14 +264,21 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
 
     // Deduct Stock
     for (const item of items) {
-      await tx.productStock.update({
+      await tx.productStock.upsert({
         where: {
           branchId_productId: {
             branchId: parseInt(branchId),
             productId: parseInt(item.productId)
           }
         },
-        data: { quantity: { decrement: parseInt(item.quantity) } }
+        create: {
+          branchId: parseInt(branchId),
+          productId: parseInt(item.productId),
+          quantity: -parseInt(item.quantity)
+        },
+        update: {
+          quantity: { decrement: parseInt(item.quantity) }
+        }
       });
     }
 

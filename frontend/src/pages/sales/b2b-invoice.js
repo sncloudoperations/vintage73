@@ -13,6 +13,7 @@ export default function B2BInvoice() {
   const [settings, setSettings] = useState(null);
   const [company, setCompany] = useState(null);
   const [user, setUser] = useState(null);
+  const [branchSettings, setBranchSettings] = useState({ stockIncluded: true });
 
   // Tab State
   const [activeTab, setActiveTab] = useState('create'); // 'create' or 'history'
@@ -62,16 +63,23 @@ export default function B2BInvoice() {
       try {
         const [custRes, prodRes, statesRes, settingsRes, companyRes] = await Promise.all([
           api.get('/customers'),
-          api.get('/products'),
+          api.get('/products', { params: { branchId: user?.branchId } }),
           api.get('/states'),
           api.get('/gst-settings'),
           api.get('/company')
         ]);
-        setCustomers(custRes.data.filter(c => c.gstin)); // Only show B2B customers
+        setCustomers(custRes.data.filter(c => c.gstin));
         setProducts(prodRes.data);
         setStates(statesRes.data);
         setSettings(settingsRes.data);
         setCompany(companyRes.data);
+
+        if (user?.branchId) {
+          const { data: bData } = await api.get(`/branches/${user.branchId}`);
+          setBranchSettings({
+            stockIncluded: bData.stockIncluded !== undefined ? bData.stockIncluded : true
+          });
+        }
       } catch (err) {
         console.error(err);
         toast.error('Failed to load data');
@@ -80,7 +88,7 @@ export default function B2BInvoice() {
       }
     };
     fetchData();
-  }, []);
+  }, [user?.branchId]);
 
   // Fetch invoice history
   const fetchInvoiceHistory = async () => {
@@ -139,8 +147,17 @@ export default function B2BInvoice() {
 
   // Add Item
   const addItem = (product) => {
+    if (branchSettings.stockIncluded && (product.stock || 0) <= 0) {
+      toast.error('Out of stock in your branch');
+      return;
+    }
+
     const existing = items.find(i => i.productId === product.id);
     if (existing) {
+      if (branchSettings.stockIncluded && (existing.quantity + 1) > product.stock) {
+        toast.error(`Only ${product.stock} units available in stock`);
+        return;
+      }
       setItems(items.map(i => i.productId === product.id ? { ...i, quantity: i.quantity + 1 } : i));
     } else {
       setItems([...items, {
@@ -157,6 +174,14 @@ export default function B2BInvoice() {
 
   // Update Item
   const updateItem = (productId, field, value) => {
+    if (field === 'quantity' && branchSettings.stockIncluded) {
+      const item = items.find(i => i.productId === productId);
+      const product = products.find(p => p.id === productId);
+      if (product && parseInt(value) > product.stock) {
+        toast.error(`Only ${product.stock} units available in stock`);
+        return;
+      }
+    }
     setItems(items.map(i => {
       if (i.productId === productId) {
         return { ...i, [field]: parseFloat(value) || 0 };
@@ -755,7 +780,7 @@ export default function B2BInvoice() {
                   {invoices.map(inv => (
                     <tr key={inv.id} className="border-b border-slate-50 hover:bg-slate-50">
                       <td className="p-4 font-medium text-blue-600">{inv.invoiceNumber}</td>
-                      <td className="p-4">{new Date(inv.saleDate).toLocaleDateString('en-IN')}</td>
+                      <td className="p-4">{new Date(inv.saleDate).toLocaleDateString('en-GB')}</td>
                       <td className="p-4 font-medium">{inv.customer?.name}</td>
                       <td className="p-4 text-slate-500 text-xs">{inv.customer?.gstin}</td>
                       <td className="p-4 text-right font-bold">₹{parseFloat(inv.totalAmount).toFixed(2)}</td>

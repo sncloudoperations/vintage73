@@ -55,6 +55,7 @@ export const MENU_STRUCTURE = [
       { name: 'Payroll', icon: FiDollarSign, path: '/hrms/payroll' },
       { name: 'Salary Advance', icon: FiDollarSign, path: '/hrms/salary-advance' },
       { name: 'Salary Processing', icon: FiCreditCard, path: '/hrms/salary-processing' },
+      { name: 'Work Log', icon: FiClipboard, path: '/hrms/work-log' },
     ]
   },
   {
@@ -91,6 +92,7 @@ export const MENU_STRUCTURE = [
       { name: 'Credit Management', icon: FiDollarSign, path: '/credit' },
       { name: 'Customers', icon: FiUsers, path: '/customers' },
       { name: 'Delivery Challan', icon: FiTruck, path: '/sales/delivery-challan' },
+      { name: 'Invoices', icon: FiFileText, path: '/sales/invoices' },
       { name: 'New Sale (POS)', icon: FiGrid, path: '/pos' },
       { name: 'Quotations', icon: FiFileText, path: '/sales/quotations' },
       { name: 'Sales Return', icon: FiBox, path: '/sales-return' },

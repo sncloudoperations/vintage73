@@ -36,6 +36,11 @@ router.delete('/payroll/:id', hrmsController.deletePayroll);
 router.get('/profile/:userId', hrmsController.getEmployeeProfile);
 router.post('/profile/:userId', hrmsController.updateEmployeeProfile);
 
+// Work Logs
+router.post('/work-logs', hrmsController.createWorkLog);
+router.get('/work-logs', hrmsController.getWorkLogs);
+
+
 // Settings - Designations & Departments
 router.get('/designations', hrmsSettingsController.getDesignations);
 router.post('/designations', hrmsSettingsController.createDesignation);

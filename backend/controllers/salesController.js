@@ -118,6 +118,24 @@ exports.createSale = asyncHandler(async (req, res) => {
         throw error;
       }
 
+      // --- STOCK VALIDATION ---
+      if (!isReturn && branchExists?.stockIncluded === true) {
+        const stock = await tx.productStock.findUnique({
+          where: {
+            branchId_productId: {
+              branchId: validBranchId,
+              productId: productId
+            }
+          }
+        });
+
+        if (!stock || stock.quantity < item.quantity) {
+          const error = new Error(`Insufficient stock for product ${product.name}. Available: ${stock ? stock.quantity : 0}, Required: ${item.quantity}`);
+          error.statusCode = 400;
+          throw error;
+        }
+      }
+
       // Stock check
       const productStock = await tx.productStock.findUnique({
         where: {
@@ -129,14 +147,6 @@ exports.createSale = asyncHandler(async (req, res) => {
       });
 
 
-      if (!isReturn) {
-        if (!productStock || productStock.quantity < item.quantity) {
-          console.warn(`[POS Checkout] 400: Insufficient stock for ${product.name} (Available: ${productStock?.quantity || 0}, Requested: ${item.quantity})`);
-          const error = new Error(`Insufficient stock for product: ${product.name} in this branch`);
-          error.statusCode = 400;
-          throw error;
-        }
-      }
 
       const unitPrice = item.unitPrice || item.price || 0;
       const netPrice = parseFloat(unitPrice) - parseFloat(item.discountAmount || 0);
@@ -195,10 +205,92 @@ exports.createSale = asyncHandler(async (req, res) => {
       }
     }
 
-    // 3. Create Sale Record
+    // 3. Find Matching Financial Year based on Sale Date
+    // 3. Financial Year and Invoice Numbering (Branch-wise)
+    const sDate = saleDate ? new Date(saleDate) : new Date();
+    
+    // Explicitly look for branch-specific FY first
+    let financialYear = await tx.financialYear.findFirst({
+        where: {
+            branchId: validBranchId,
+            startDate: { lte: sDate },
+            endDate: { gte: sDate },
+            isClosed: false
+        }
+    });
+
+    // Fallback to global FY if no branch-specific one exists
+    if (!financialYear) {
+        financialYear = await tx.financialYear.findFirst({
+            where: {
+                branchId: null,
+                startDate: { lte: sDate },
+                endDate: { gte: sDate },
+                isClosed: false
+            }
+        });
+    }
+
+    let generatedInvoiceNumber;
+    let financialYearId = null;
+
+    if (financialYear) {
+      financialYearId = financialYear.id;
+      
+      // BRANCH-WISE SEQUENCING: Look for the last sale in this branch and FY
+        // Look for the absolute MAXIMUM invoice number in this branch and FY (to avoid collisions)
+        const lastSaleInBranch = await tx.sale.findFirst({
+            where: { 
+                branchId: validBranchId, 
+                financialYearId: financialYear.id,
+                invoiceNumber: { startsWith: financialYear.invoicePrefix || 'INV' }
+            },
+            orderBy: { invoiceNumber: 'desc' }
+        });
+
+      let nextSeq;
+      const startingSeq = financialYear.invoiceSequence || '001';
+      
+      const prefix = financialYear.invoicePrefix || 'INV';
+      if (lastSaleInBranch && lastSaleInBranch.invoiceNumber) {
+        const lastInvoiceNum = lastSaleInBranch.invoiceNumber;
+        
+        let lastNum = NaN;
+        if (lastInvoiceNum.startsWith(prefix)) {
+          const seqPart = lastInvoiceNum.slice(prefix.length);
+          lastNum = parseInt(seqPart, 10);
+        } else {
+          // Fallback regex only if prefix doesn't match at all
+          const match = lastInvoiceNum.match(/(\d+)$/);
+          lastNum = match ? parseInt(match[0], 10) : NaN;
+        }
+        
+        if (!isNaN(lastNum)) {
+          nextSeq = (lastNum + 1).toString().padStart(startingSeq.length, '0');
+        } else {
+          nextSeq = (parseInt(startingSeq, 10) || 1).toString().padStart(startingSeq.length, '0');
+        }
+      } else {
+        nextSeq = startingSeq;
+      }
+
+      // Construct Invoice Number
+      generatedInvoiceNumber = `${prefix}${nextSeq}`;
+      console.log(`[NUMBERING] Branch: ${validBranchId}, FY: ${financialYear.id}, Last Sale: ${lastSaleInBranch?.invoiceNumber}, New Invoice: ${generatedInvoiceNumber}`);
+
+      // Update the FY sequence for sync (store the CURRENTLY used sequence as per user requirement)
+      await tx.financialYear.update({
+        where: { id: financialYear.id },
+        data: { invoiceSequence: nextSeq }
+      });
+    } else {
+      generatedInvoiceNumber = `INV-${Date.now()}`;
+    }
+
+    // 4. Create Sale Record
     const sale = await tx.sale.create({
       data: {
-        invoiceNumber: `INV-${Date.now()}`,
+        invoiceNumber: generatedInvoiceNumber,
         customer: customer ? { connect: { id: customer.id } } : undefined,
         paymentMethod,
         subTotal: finalSubTotal,
@@ -207,12 +299,14 @@ exports.createSale = asyncHandler(async (req, res) => {
         roundOffAmount: finalRoundOffAmount,
         paidAmount: finalPaidAmount,
         balanceAmount: finalGrandTotal - finalPaidAmount,
-        saleDate: saleDate ? new Date(saleDate) : new Date(),
+        saleDate: sDate,
         branch: { connect: { id: validBranchId } },
         salesman: validSalesmanId ? { connect: { id: validSalesmanId } } : undefined,
         terminal: terminalId ? { connect: { id: parseInt(terminalId) } } : undefined,
         incentiveAmount: incentiveAmount,
         status: (finalGrandTotal - finalPaidAmount) > 0.5 ? 'partial' : 'completed',
+        financialYear: financialYearId ? { connect: { id: financialYearId } } : undefined,
+        isInvoice: !isReturn, // Normally sales are invoices unless it's a return
         isReturn,
         returnReason,
         originalInvoice,
@@ -242,14 +336,19 @@ exports.createSale = asyncHandler(async (req, res) => {
     }
 
     for (const item of items) {
-      await tx.productStock.update({
+      await tx.productStock.upsert({
         where: {
           branchId_productId: {
             branchId: validBranchId,
             productId: parseInt(item.productId)
           }
         },
-        data: {
+        create: {
+          branchId: validBranchId,
+          productId: parseInt(item.productId),
+          quantity: isReturn ? item.quantity : -item.quantity
+        },
+        update: {
           quantity: isReturn ? { increment: item.quantity } : { decrement: item.quantity }
         }
       });
@@ -300,6 +399,8 @@ exports.createSale = asyncHandler(async (req, res) => {
 
     return {
       ...sale,
+      id: sale.id,
+      invoiceNumber: sale.invoiceNumber,
       previousBalance,
       currentBalance
     };
@@ -309,8 +410,10 @@ exports.createSale = asyncHandler(async (req, res) => {
 });
 
 exports.getAllSales = asyncHandler(async (req, res) => {
-  const { branchId, startDate, endDate, terminalId, invoice } = req.query;
+  const { branchId, startDate, endDate, terminalId, invoice, isInvoice } = req.query;
   const where = {};
+  
+  if (isInvoice !== undefined) where.isInvoice = isInvoice === 'true';
 
   // Branch Isolation
   if (req.user.branchId) {

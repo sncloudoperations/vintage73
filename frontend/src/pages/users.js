@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import api from '@/lib/api';
 import { MENU_STRUCTURE } from '@/lib/menuStructure';
-import { FiPlus, FiUser, FiKey, FiEdit2, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
+import { FiPlus, FiUser, FiKey, FiEdit2, FiToggleLeft, FiToggleRight, FiSearch } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import SearchableSelect from '@/components/SearchableSelect';
+
 
 const getInitialFormState = () => ({
-  username: '', name: '', password: '', role: 'staff', branchId: '', allowedModules: [], incentivePercentage: 0,
+  username: '', name: '', password: '', role: 'staff', branchId: '', adminId: '', allowedModules: [], incentivePercentage: 0,
   designation: '', department: '', joiningDate: '', basicSalary: 0, labourRule: '', nationalId: '',
   employeeCode: '', bankName: '', accountNumber: '', ifscCode: '', branchName: '',
   terminalIds: [],
@@ -30,6 +32,7 @@ export default function Users() {
   const [departments, setDepartments] = useState([]);
   const [banks, setBanks] = useState([]);
   const [terminals, setTerminals] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [activeTab, setActiveTab] = useState('general');
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [statusTarget, setStatusTarget] = useState(null);
@@ -96,6 +99,23 @@ export default function Users() {
     try {
       const { data } = await api.get('/hrms/departments');
       setDepartments(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (formData.branchId) {
+      fetchAdmins(formData.branchId);
+    } else {
+      setAdmins([]);
+    }
+  }, [formData.branchId]);
+
+  const fetchAdmins = async (branchId) => {
+    try {
+      const { data } = await api.get(`/users/admins?branchId=${branchId}`);
+      setAdmins(data);
     } catch (err) {
       console.error(err);
     }
@@ -182,6 +202,7 @@ export default function Users() {
       weeklyOff: user.weeklyOff || 'Sunday',
       autoCode: !user.employeeProfile?.employeeCode,
       isActive: user.isActive,
+      adminId: user.adminId || '',
       image: null,
       imagePreview: user.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL}${user.imageUrl}` : null
     });
@@ -543,6 +564,21 @@ export default function Users() {
                           ))}
                         </div>
                       </div>
+
+                      {formData.role === 'staff' && (
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex items-center justify-between">
+                            Assigned Admin
+                            <span className="text-[9px] text-red-500 normal-case font-medium">Required for Staff</span>
+                          </label>
+                          <SearchableSelect
+                            options={admins.map(a => ({ value: a.id, label: `${a.name} (@${a.username})` }))}
+                            value={formData.adminId}
+                            onChange={val => setFormData({ ...formData, adminId: val })}
+                            placeholder="Type to search admin..."
+                          />
+                        </div>
+                      )}
 
                       {/* Status Toggle in Modal */}
                       <div className="pt-2">
