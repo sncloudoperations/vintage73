@@ -244,7 +244,7 @@ export default function DeliveryChallan() {
               {challans.map(challan => (
                 <tr key={challan.id} className="border-b border-slate-50 hover:bg-slate-50">
                   <td className="p-4 font-medium">{challan.challanNumber}</td>
-                  <td className="p-4">{new Date(challan.challanDate).toLocaleDateString('en-IN')}</td>
+                  <td className="p-4">{new Date(challan.challanDate).toLocaleDateString('en-GB')}</td>
                   <td className="p-4">{challan.customer?.name || '-'}</td>
                   <td className="p-4">{challan.reasonForMovement}</td>
                   <td className="p-4">{challan.items?.length || 0} items</td>

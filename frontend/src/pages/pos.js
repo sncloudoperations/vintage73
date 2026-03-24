@@ -1148,7 +1148,9 @@ export default function POS() {
                                         <div className="flex justify-between items-start mb-6 border-b pb-4">
                                             <div>
                                                 <h3 className="text-xl font-bold text-slate-800">Invoice #{selectedHistorySale.invoiceNumber}</h3>
-                                                <p className="text-sm text-slate-500">{new Date(selectedHistorySale.saleDate).toLocaleString()}</p>
+                                                <p className="text-sm text-slate-500">
+                                                    {new Date(selectedHistorySale.saleDate).toLocaleDateString('en-GB')} {new Date(selectedHistorySale.saleDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
                                             </div>
                                             <div className="text-right">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${selectedHistorySale.isReturn ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
