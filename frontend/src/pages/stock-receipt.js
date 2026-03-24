@@ -152,7 +152,7 @@ export default function StockReceipt() {
           <tbody className="divide-y divide-slate-50">
             {filteredTransfers.map(t => (
               <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="p-4 pl-6 font-medium text-slate-600">{new Date(t.createdAt).toLocaleDateString()}</td>
+                <td className="p-4 pl-6 font-medium text-slate-600">{new Date(t.createdAt).toLocaleDateString('en-GB')}</td>
                 <td className="p-4">
                   <span className="font-bold text-slate-800">{t.fromBranch?.name}</span>
                 </td>
@@ -172,7 +172,7 @@ export default function StockReceipt() {
                   {t.status === 'RECEIVED' ? (
                     <div className="flex flex-col text-xs">
                       <span className="font-bold text-slate-700">{t.receivedBy?.name || 'Staff'}</span>
-                      <span className="text-slate-400">{t.receivedAt ? new Date(t.receivedAt).toLocaleString() : '-'}</span>
+                      <span className="text-slate-400">{t.receivedAt ? new Date(t.receivedAt).toLocaleDateString('en-GB') + ' ' + new Date(t.receivedAt).toLocaleTimeString() : '-' }</span>
                     </div>
                   ) : (
                     <span className="text-slate-300 italic text-[10px]">Awaiting...</span>
@@ -258,7 +258,7 @@ export default function StockReceipt() {
             </div>
             <div className="text-right">
               <p className="text-[9px] font-bold text-slate-400 uppercase">Transfer Date</p>
-              <p className="text-[11px] font-bold text-slate-800">{selectedForPrint?.createdAt ? new Date(selectedForPrint.createdAt).toLocaleString() : '-'}</p>
+              <p className="text-[11px] font-bold text-slate-800">{selectedForPrint?.createdAt ? new Date(selectedForPrint.createdAt).toLocaleDateString('en-GB') + ' ' + new Date(selectedForPrint.createdAt).toLocaleTimeString() : '-'}</p>
             </div>
           </div>
 
@@ -296,7 +296,7 @@ export default function StockReceipt() {
                 <p className="text-[8px] font-black text-primary uppercase mb-1 tracking-widest">Received & Verified By</p>
                 <p className="font-bold text-sm text-slate-800">{selectedForPrint.receivedBy?.name || 'Staff'}</p>
                 <p className="text-[9px] text-slate-400 uppercase">
-                  {selectedForPrint.receivedAt ? new Date(selectedForPrint.receivedAt).toLocaleString() : '-'}
+                  {selectedForPrint.receivedAt ? new Date(selectedForPrint.receivedAt).toLocaleDateString('en-GB') + ' ' + new Date(selectedForPrint.receivedAt).toLocaleTimeString() : '-'}
                 </p>
               </div>
             </div>

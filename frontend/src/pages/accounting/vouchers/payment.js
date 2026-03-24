@@ -386,7 +386,7 @@ export default function PaymentVoucher() {
                                                     <td className="px-6 py-4">
                                                         <div className="flex flex-col">
                                                             <span className="text-sm font-semibold text-slate-800 tracking-tight">
-                                                                {new Date(v.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                                {new Date(v.date).toLocaleDateString('en-GB')}
                                                             </span>
                                                             <span className="text-[10px] font-medium text-slate-400 uppercase">
                                                                 {v.reference || '-'}

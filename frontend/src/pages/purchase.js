@@ -423,7 +423,7 @@ export default function Purchase() {
                 ) : (
                   filteredPurchases.map(p => (
                     <tr key={p.id} className="hover:bg-slate-50/50">
-                      <td className="p-4 font-medium">{new Date(p.purchaseDate).toLocaleDateString()}</td>
+                      <td className="p-4 font-medium">{new Date(p.purchaseDate).toLocaleDateString('en-GB')}</td>
                       <td className="p-4">{p.supplier?.name || "Unknown"}</td>
                       <td className="p-4 font-mono text-xs text-slate-500">#{p.id}</td>
                       <td className="p-4 text-right font-bold text-slate-700">₹{parseFloat(p.totalAmount).toFixed(2)}</td>
@@ -467,7 +467,7 @@ export default function Purchase() {
             <div className="p-6 border-b flex justify-between items-center bg-slate-50">
               <div>
                 <h3 className="text-xl font-bold text-slate-800">Purchase Details #{selectedPurchase.id}</h3>
-                <p className="text-sm text-slate-500">{new Date(selectedPurchase.purchaseDate).toDateString()} • {selectedPurchase.supplier?.name}</p>
+                <p className="text-sm text-slate-500">{new Date(selectedPurchase.purchaseDate).toLocaleDateString('en-GB')} • {selectedPurchase.supplier?.name}</p>
               </div>
               <button onClick={() => setSelectedPurchase(null)} className="text-slate-400 hover:text-slate-600">✕</button>
             </div>
