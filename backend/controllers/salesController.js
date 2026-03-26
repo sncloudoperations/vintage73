@@ -1,6 +1,7 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
 const { processSalePosting } = require('../utils/accountingHelper');
+const { generateNextNumber } = require('../services/numberingService');
 
 // Create new sale
 exports.createSale = asyncHandler(async (req, res) => {
@@ -205,86 +206,15 @@ exports.createSale = asyncHandler(async (req, res) => {
       }
     }
 
-    // 3. Find Matching Financial Year based on Sale Date
     // 3. Financial Year and Invoice Numbering (Branch-wise)
-    const sDate = saleDate ? new Date(saleDate) : new Date();
-    
-    // Explicitly look for branch-specific FY first
-    let financialYear = await tx.financialYear.findFirst({
-        where: {
-            branchId: validBranchId,
-            startDate: { lte: sDate },
-            endDate: { gte: sDate },
-            isClosed: false
-        }
-    });
+    const { number: generatedInvoiceNumber, nextSeq, financialYearId } = await generateNextNumber(tx, 'invoice', validBranchId, saleDate);
 
-    // Fallback to global FY if no branch-specific one exists
-    if (!financialYear) {
-        financialYear = await tx.financialYear.findFirst({
-            where: {
-                branchId: null,
-                startDate: { lte: sDate },
-                endDate: { gte: sDate },
-                isClosed: false
-            }
+    if (financialYearId) {
+        // Update the FY sequence for sync (store the CURRENTLY used sequence as per user requirement)
+        await tx.financialYear.update({
+            where: { id: financialYearId },
+            data: { invoiceSequence: nextSeq }
         });
-    }
-
-    let generatedInvoiceNumber;
-    let financialYearId = null;
-
-    if (financialYear) {
-      financialYearId = financialYear.id;
-      
-      // BRANCH-WISE SEQUENCING: Look for the last sale in this branch and FY
-        // Look for the absolute MAXIMUM invoice number in this branch and FY (to avoid collisions)
-        const lastSaleInBranch = await tx.sale.findFirst({
-            where: { 
-                branchId: validBranchId, 
-                financialYearId: financialYear.id,
-                invoiceNumber: { startsWith: financialYear.invoicePrefix || 'INV' }
-            },
-            orderBy: { invoiceNumber: 'desc' }
-        });
-
-      let nextSeq;
-      const startingSeq = financialYear.invoiceSequence || '001';
-      
-      const prefix = financialYear.invoicePrefix || 'INV';
-      if (lastSaleInBranch && lastSaleInBranch.invoiceNumber) {
-        const lastInvoiceNum = lastSaleInBranch.invoiceNumber;
-        
-        let lastNum = NaN;
-        if (lastInvoiceNum.startsWith(prefix)) {
-          const seqPart = lastInvoiceNum.slice(prefix.length);
-          lastNum = parseInt(seqPart, 10);
-        } else {
-          // Fallback regex only if prefix doesn't match at all
-          const match = lastInvoiceNum.match(/(\d+)$/);
-          lastNum = match ? parseInt(match[0], 10) : NaN;
-        }
-        
-        if (!isNaN(lastNum)) {
-          nextSeq = (lastNum + 1).toString().padStart(startingSeq.length, '0');
-        } else {
-          nextSeq = (parseInt(startingSeq, 10) || 1).toString().padStart(startingSeq.length, '0');
-        }
-      } else {
-        nextSeq = startingSeq;
-      }
-
-      // Construct Invoice Number
-      generatedInvoiceNumber = `${prefix}${nextSeq}`;
-      console.log(`[NUMBERING] Branch: ${validBranchId}, FY: ${financialYear.id}, Last Sale: ${lastSaleInBranch?.invoiceNumber}, New Invoice: ${generatedInvoiceNumber}`);
-
-      // Update the FY sequence for sync (store the CURRENTLY used sequence as per user requirement)
-      await tx.financialYear.update({
-        where: { id: financialYear.id },
-        data: { invoiceSequence: nextSeq }
-      });
-    } else {
-      generatedInvoiceNumber = `INV-${Date.now()}`;
     }
 
     // 4. Create Sale Record
@@ -299,7 +229,7 @@ exports.createSale = asyncHandler(async (req, res) => {
         roundOffAmount: finalRoundOffAmount,
         paidAmount: finalPaidAmount,
         balanceAmount: finalGrandTotal - finalPaidAmount,
-        saleDate: sDate,
+        saleDate: saleDate ? new Date(saleDate) : new Date(),
         branch: { connect: { id: validBranchId } },
         salesman: validSalesmanId ? { connect: { id: validSalesmanId } } : undefined,
         terminal: terminalId ? { connect: { id: parseInt(terminalId) } } : undefined,

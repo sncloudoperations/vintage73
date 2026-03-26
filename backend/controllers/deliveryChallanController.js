@@ -1,29 +1,7 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
+const { generateNextNumber } = require('../services/numberingService');
 
-// Generate Challan Number
-const generateChallanNumber = async (prefix = 'DC') => {
-  const today = new Date();
-  const year = today.getFullYear().toString().slice(-2);
-  const month = (today.getMonth() + 1).toString().padStart(2, '0');
-
-  const lastChallan = await prisma.deliveryChallan.findFirst({
-    where: {
-      challanNumber: {
-        startsWith: `${prefix}-${year}${month}`
-      }
-    },
-    orderBy: { createdAt: 'desc' }
-  });
-
-  let sequence = 1;
-  if (lastChallan) {
-    const lastSeq = parseInt(lastChallan.challanNumber.split('-').pop());
-    sequence = lastSeq + 1;
-  }
-
-  return `${prefix}-${year}${month}-${sequence.toString().padStart(4, '0')}`;
-};
 
 // Create Delivery Challan
 exports.createChallan = asyncHandler(async (req, res) => {
@@ -52,11 +30,16 @@ exports.createChallan = asyncHandler(async (req, res) => {
     throw new Error('At least one item is required');
   }
 
-  // Get settings for prefix
-  const settings = await prisma.gSTSettings.findFirst();
-  const prefix = settings?.challanPrefix || 'DC';
+  // Generate Challan Number
+  const { number: challanNumber, nextSeq, financialYearId } = await generateNextNumber(prisma, 'challan', parseInt(branchId), challanDate);
 
-  const challanNumber = await generateChallanNumber(prefix);
+  if (financialYearId) {
+      // Update the FY sequence for sync
+      await prisma.financialYear.update({
+          where: { id: financialYearId },
+          data: { challanSequence: nextSeq }
+      });
+  }
 
   const challan = await prisma.deliveryChallan.create({
     data: {
@@ -72,6 +55,7 @@ exports.createChallan = asyncHandler(async (req, res) => {
       dispatchFrom,
       dispatchTo,
       branchId: parseInt(branchId),
+      financialYearId,
       items: {
         create: items.map(item => ({
           productId: parseInt(item.productId),

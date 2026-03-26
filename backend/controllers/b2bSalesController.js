@@ -1,107 +1,8 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
 const { ensureLedger, postVoucher } = require('../utils/accountingHelper');
+const { generateNextNumber } = require('../services/numberingService');
 
-// Generate B2B Invoice Number
-// Generate B2B Invoice Number using Financial Year sequence and Branch-wise isolation
-const generateInvoiceNumber = async (tx, saleDate = new Date(), branchId) => {
-  const sDate = new Date(saleDate);
-  // Explicitly look for branch-specific FY first
-  let financialYear = await tx.financialYear.findFirst({
-    where: {
-      branchId: parseInt(branchId),
-      startDate: { lte: sDate },
-      endDate: { gte: sDate },
-      isClosed: false
-    }
-  });
-
-  // Fallback to global FY if no branch-specific one exists
-  if (!financialYear) {
-    financialYear = await tx.financialYear.findFirst({
-      where: {
-        branchId: null,
-        startDate: { lte: sDate },
-        endDate: { gte: sDate },
-        isClosed: false
-      }
-    });
-  }
-
-  if (financialYear) {
-    // BRANCH-WISE SEQUENCING: Look for the last sale in this branch and FY
-    const lastSaleInBranch = await tx.sale.findFirst({
-      where: { 
-        branchId: parseInt(branchId), 
-        financialYearId: financialYear.id,
-        invoiceNumber: { startsWith: financialYear.invoicePrefix || 'INV' }
-      },
-      orderBy: { invoiceNumber: 'desc' }
-    });
-
-    let nextSeq;
-    const startingSeq = financialYear.invoiceSequence || '001';
-    
-    const prefix = financialYear.invoicePrefix || 'INV';
-    if (lastSaleInBranch && lastSaleInBranch.invoiceNumber) {
-      const lastInvoiceNum = lastSaleInBranch.invoiceNumber;
-      
-      let lastNum = NaN;
-      if (lastInvoiceNum.startsWith(prefix)) {
-        const seqPart = lastInvoiceNum.slice(prefix.length);
-        lastNum = parseInt(seqPart, 10);
-      } else {
-        const match = lastInvoiceNum.match(/(\d+)$/);
-        lastNum = match ? parseInt(match[0], 10) : NaN;
-      }
-      
-      if (!isNaN(lastNum)) {
-        nextSeq = (lastNum + 1).toString().padStart(startingSeq.length, '0');
-      } else {
-        nextSeq = (parseInt(startingSeq, 10) || 1).toString().padStart(startingSeq.length, '0');
-      }
-    } else {
-      nextSeq = startingSeq;
-    }
-
-    const invoiceNumber = `${prefix}${nextSeq}`;
-    console.log(`[B2B-NUMBERING] Branch: ${branchId}, FY: ${financialYear.id}, Last: ${lastSaleInBranch?.invoiceNumber}, New: ${invoiceNumber}`);
-
-    // Update the FY sequence for sync (store current as per user req)
-    await tx.financialYear.update({
-      where: { id: financialYear.id },
-      data: { invoiceSequence: nextSeq }
-    });
-
-    return { 
-      invoiceNumber,
-      financialYearId: financialYear.id 
-    };
-  }
-
-  // Fallback
-  const year = sDate.getFullYear().toString().slice(-2);
-  const month = (sDate.getMonth() + 1).toString().padStart(2, '0');
-  const lastInvoice = await tx.sale.findFirst({
-    where: {
-      invoiceNumber: { startsWith: `INV-B2B-${year}${month}` },
-      isB2B: true
-    },
-    orderBy: { createdAt: 'desc' }
-  });
-
-  let sequence = 1;
-  if (lastInvoice) {
-    const parts = lastInvoice.invoiceNumber.split('-');
-    const lastSeq = parseInt(parts[parts.length - 1]);
-    if (!isNaN(lastSeq)) sequence = lastSeq + 1;
-  }
-
-  return { 
-    invoiceNumber: `INV-B2B-${year}${month}-${sequence.toString().padStart(4, '0')}`,
-    financialYearId: null 
-  };
-};
 
 // Determine if IGST or CGST/SGST based on place of supply
 const determineTaxType = async (placeOfSupply) => {
@@ -223,7 +124,15 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
 
     const grandTotal = subTotal + taxAmount + parseFloat(roundOffAmount || 0);
     const finalPaidAmount = parseFloat(paidAmount || 0);
-    const { invoiceNumber, financialYearId } = await generateInvoiceNumber(tx, saleDate, branchId);
+    const { number: invoiceNumber, nextSeq, financialYearId } = await generateNextNumber(tx, 'invoice', parseInt(branchId), saleDate);
+
+    if (financialYearId) {
+        // Update the FY sequence for sync (store current as per user req)
+        await tx.financialYear.update({
+            where: { id: financialYearId },
+            data: { invoiceSequence: nextSeq }
+        });
+    }
 
     // Check if E-Way Bill is required
     const ewayRequired = settings && grandTotal >= parseFloat(settings.ewayBillThreshold);

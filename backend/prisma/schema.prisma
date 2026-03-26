@@ -220,10 +220,14 @@ model Purchase {
   paymentMethod String?
   balanceAmount Decimal        @default(0) @db.Decimal(10, 2)
   paidAmount    Decimal        @default(0) @db.Decimal(10, 2)
-  branchId      Int
-  branch        Branch         @relation(fields: [branchId], references: [id])
+  branchId        Int
+  branch          Branch         @relation(fields: [branchId], references: [id])
   supplier      Supplier?      @relation(fields: [supplierId], references: [id])
   items         PurchaseItem[]
+  financialYearId Int?
+  financialYear   FinancialYear? @relation(fields: [financialYearId], references: [id])
+
+  @@unique([branchId, invoiceNumber, financialYearId])
 }
 
 model PurchaseItem {
@@ -339,7 +343,7 @@ model Payment {
 
 model Quotation {
   id              Int             @id @default(autoincrement())
-  quotationNumber String          @unique
+  quotationNumber String
   customerId      Int?
   customer        Customer?       @relation(fields: [customerId], references: [id])
   quotationDate   DateTime        @default(now())
@@ -359,6 +363,10 @@ model Quotation {
   isTaxInclusive  Boolean         @default(false)
   taxType         String?         // IGST, CGST_SGST, etc.
   invoice         Sale?           @relation("QuotationToInvoice")
+  financialYearId Int?
+  financialYear   FinancialYear? @relation(fields: [financialYearId], references: [id])
+
+  @@unique([branchId, quotationNumber, financialYearId])
 }
 
 model QuotationItem {
@@ -724,9 +732,18 @@ model FinancialYear {
   updatedAt DateTime @updatedAt
   invoicePrefix   String   @default("INV")
   invoiceSequence String   @default("001")
+  quotationPrefix   String @default("QT")
+  quotationSequence String @default("001")
+  challanPrefix     String @default("DC")
+  challanSequence   String @default("001")
+  purchasePrefix    String @default("PUR")
+  purchaseSequence  String @default("001")
   branchId        Int?
   branch          Branch?  @relation(fields: [branchId], references: [id])
   sales           Sale[]
+  quotations      Quotation[]
+  purchases       Purchase[]
+  challans        DeliveryChallan[]
 
   @@unique([name, branchId])
 }
@@ -765,7 +782,7 @@ model GSTSettings {
 // Delivery Challan for goods movement
 model DeliveryChallan {
   id                Int       @id @default(autoincrement())
-  challanNumber     String    @unique
+  challanNumber     String
   customerId        Int?
   customer          Customer? @relation(fields: [customerId], references: [id])
   challanDate       DateTime  @default(now())
@@ -785,6 +802,10 @@ model DeliveryChallan {
   items             DeliveryChallanItem[]
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  financialYearId   Int?
+  financialYear     FinancialYear? @relation(fields: [financialYearId], references: [id])
+
+  @@unique([branchId, challanNumber, financialYearId])
 }
 
 model DeliveryChallanItem {

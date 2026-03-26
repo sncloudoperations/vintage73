@@ -23,7 +23,7 @@ exports.getAllFinancialYears = asyncHandler(async (req, res) => {
 
 // Create Financial Year
 exports.createFinancialYear = asyncHandler(async (req, res) => {
-    const { name, startDate, endDate, branchId: queryBranchId } = req.body;
+    const { name, startDate, endDate, branchId: queryBranchId, invoicePrefix, invoiceSequence, quotationPrefix, quotationSequence, challanPrefix, challanSequence, purchasePrefix, purchaseSequence } = req.body;
     const user = req.user;
 
     let branchId = queryBranchId;
@@ -56,8 +56,14 @@ exports.createFinancialYear = asyncHandler(async (req, res) => {
             name,
             startDate: new Date(startDate),
             endDate: new Date(endDate),
-            invoicePrefix: req.body.invoicePrefix || 'INV',
-            invoiceSequence: req.body.invoiceSequence?.toString() || "001",
+            invoicePrefix: invoicePrefix || 'INV',
+            invoiceSequence: invoiceSequence?.toString() || "001",
+            quotationPrefix: quotationPrefix || 'QT',
+            quotationSequence: quotationSequence?.toString() || "001",
+            challanPrefix: challanPrefix || 'DC',
+            challanSequence: challanSequence?.toString() || "001",
+            purchasePrefix: purchasePrefix || 'PUR',
+            purchaseSequence: purchaseSequence?.toString() || "001",
             branchId: branchIdInt
         }
     });
@@ -68,7 +74,7 @@ exports.createFinancialYear = asyncHandler(async (req, res) => {
 // Update Financial Year
 exports.updateFinancialYear = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { name, startDate, endDate, isClosed, isLocked, invoicePrefix, invoiceSequence, branchId } = req.body;
+    const { name, startDate, endDate, isClosed, isLocked, invoicePrefix, invoiceSequence, quotationPrefix, quotationSequence, challanPrefix, challanSequence, purchasePrefix, purchaseSequence, branchId } = req.body;
 
     const year = await prisma.financialYear.update({
         where: { id: parseInt(id) },
@@ -80,6 +86,12 @@ exports.updateFinancialYear = asyncHandler(async (req, res) => {
             isLocked,
             invoicePrefix,
             invoiceSequence: invoiceSequence !== undefined ? invoiceSequence.toString() : undefined,
+            quotationPrefix,
+            quotationSequence: quotationSequence !== undefined ? quotationSequence.toString() : undefined,
+            challanPrefix,
+            challanSequence: challanSequence !== undefined ? challanSequence.toString() : undefined,
+            purchasePrefix,
+            purchaseSequence: purchaseSequence !== undefined ? purchaseSequence.toString() : undefined,
             branchId: branchId ? parseInt(branchId) : undefined
         }
     });
