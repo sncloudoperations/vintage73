@@ -1,6 +1,7 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
 const { processPurchasePosting } = require('../utils/accountingHelper');
+const { generateNextNumber } = require('../services/numberingService');
 
 // Helper to generate Voucher Number
 async function generateVoucherNumber(tx, type) {
@@ -78,76 +79,14 @@ exports.createPurchase = asyncHandler(async (req, res) => {
 
     // 2. Identify Financial Year & Generate Number
     const pDate = req.body.purchaseDate ? new Date(req.body.purchaseDate) : new Date();
-    
-    // Explicitly look for branch-specific FY first
-    let financialYear = await tx.financialYear.findFirst({
-        where: {
-            branchId: parseInt(branchId),
-            startDate: { lte: pDate },
-            endDate: { gte: pDate },
-            isClosed: false
-        }
-    });
+    const { number: invoiceNumber, nextSeq, financialYearId } = await generateNextNumber(tx, 'purchase', branchId, pDate);
 
-    // Fallback to global FY if no branch-specific one exists
-    if (!financialYear) {
-        financialYear = await tx.financialYear.findFirst({
-            where: {
-                branchId: null,
-                startDate: { lte: pDate },
-                endDate: { gte: pDate },
-                isClosed: false
-            }
-        });
-    }
-
-    let invoiceNumber;
-    if (financialYear) {
-        const prefix = financialYear.invoicePrefix || 'PUR';
-        const startingSeq = financialYear.invoiceSequence || '001';
-
-        // BRANCH-WISE SEQUENCING: Look for the last purchase in this branch and FY
-        const lastPurchaseInBranch = await tx.purchase.findFirst({
-            where: { 
-                branchId: branchId ? parseInt(branchId) : null,
-                financialYearId: financialYear.id,
-                invoiceNumber: { startsWith: prefix }
-            },
-            orderBy: { invoiceNumber: 'desc' }
-        });
-
-        let nextSeq;
-        if (lastPurchaseInBranch && lastPurchaseInBranch.invoiceNumber) {
-        const lastInvoiceNum = lastPurchaseInBranch.invoiceNumber;
-        
-        let lastNum = NaN;
-        if (lastInvoiceNum.startsWith(prefix)) {
-            const seqPart = lastInvoiceNum.slice(prefix.length);
-            lastNum = parseInt(seqPart, 10);
-        } else {
-            const match = lastInvoiceNum.match(/(\d+)$/);
-            lastNum = match ? parseInt(match[0], 10) : NaN;
-        }
-        
-        if (!isNaN(lastNum)) {
-            nextSeq = (lastNum + 1).toString().padStart(startingSeq.length, '0');
-        } else {
-            nextSeq = (parseInt(startingSeq, 10) || 1).toString().padStart(startingSeq.length, '0');
-        }
-    } else {
-        nextSeq = startingSeq;
-    }
-
-        invoiceNumber = `${prefix}${nextSeq}`;
-        console.log(`[PURCHASE-NUMBERING] Branch: ${branchId}, Last: ${lastPurchaseInBranch?.invoiceNumber}, New: ${invoiceNumber}`);
-
-        // Sync global FY sequence
+    if (financialYearId) {
+        // Update the FY sequence for sync
         await tx.financialYear.update({
-            where: { id: financialYear.id },
-            data: { invoiceSequence: nextSeq }
+            where: { id: financialYearId },
+            data: { purchaseSequence: nextSeq }
         });
-    } else {
-        invoiceNumber = req.body.invoiceNumber || `PUR-${Date.now()}`;
     }
 
     // 2b. Calculate Totals (Items + Tax) - RESTORED
@@ -183,6 +122,7 @@ exports.createPurchase = asyncHandler(async (req, res) => {
         supplierId: supplierId,
         paymentMethod: paymentMethod,
         branchId: branchId,
+        financialYearId,
         subTotal: totalSubTotal,
         taxAmount: totalTax,
         totalAmount: totalAmount,

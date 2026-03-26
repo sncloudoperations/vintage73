@@ -1,5 +1,6 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
+const { generateNextNumber } = require('../services/numberingService');
 
 // Create a new Quotation
 exports.createQuotation = asyncHandler(async (req, res) => {
@@ -7,80 +8,14 @@ exports.createQuotation = asyncHandler(async (req, res) => {
     const customerId = req.body.customerId ? parseInt(req.body.customerId) : null;
 
     // 1. Identify Financial Year & Generate Number (Branch-wise)
-    const qDate = new Date();
-    // Explicitly look for branch-specific FY first
-    let financialYear = await prisma.financialYear.findFirst({
-        where: {
-            branchId: branchId ? parseInt(branchId) : null,
-            startDate: { lte: qDate },
-            endDate: { gte: qDate },
-            isClosed: false
-        }
-    });
+    const { number: quotationNumber, nextSeq, financialYearId } = await generateNextNumber(prisma, 'quotation', branchId, new Date());
 
-    // Fallback to global FY if no branch-specific one exists
-    if (!financialYear) {
-        financialYear = await prisma.financialYear.findFirst({
-            where: {
-                branchId: null,
-                startDate: { lte: qDate },
-                endDate: { gte: qDate },
-                isClosed: false
-            }
-        });
-    }
-
-    let quotationNumber;
-    if (financialYear) {
-        const prefix = financialYear.invoicePrefix || 'QT';
-        const startingSeq = financialYear.invoiceSequence || '001';
-
-        // BRANCH-WISE SEQUENCING: Look for the last quotation in this branch and FY
-        const lastQuotation = await prisma.quotation.findFirst({
-            where: {
-                branchId: branchId ? parseInt(branchId) : null,
-                createdAt: {
-                    gte: financialYear.startDate,
-                    lte: financialYear.endDate
-                },
-                quotationNumber: { startsWith: prefix }
-            },
-            orderBy: { quotationNumber: 'desc' }
-        });
-
-        let nextSeq;
-        if (lastQuotation && lastQuotation.quotationNumber) {
-            const lastQuotationNum = lastQuotation.quotationNumber;
-            
-            let lastNum = NaN;
-            if (lastQuotationNum.startsWith(prefix)) {
-                const seqPart = lastQuotationNum.slice(prefix.length);
-                lastNum = parseInt(seqPart, 10);
-            } else {
-                const match = lastQuotationNum.match(/(\d+)$/);
-                lastNum = match ? parseInt(match[0], 10) : NaN;
-            }
-            
-            if (!isNaN(lastNum)) {
-                nextSeq = (lastNum + 1).toString().padStart(startingSeq.length, '0');
-            } else {
-                nextSeq = (parseInt(startingSeq, 10) || 1).toString().padStart(startingSeq.length, '0');
-            }
-        } else {
-            nextSeq = startingSeq;
-        }
-        quotationNumber = `${prefix}${nextSeq}`;
-
-        // Sync FY sequence so the table reflects the last used number
+    if (financialYearId) {
+        // Update the FY sequence for sync
         await prisma.financialYear.update({
-            where: { id: financialYear.id },
-            data: { invoiceSequence: nextSeq }
+            where: { id: financialYearId },
+            data: { quotationSequence: nextSeq }
         });
-    } else {
-        // Fallback to old pattern if no active FY
-        const dateStr = qDate.toISOString().slice(0, 10).replace(/-/g, '');
-        const count = await prisma.quotation.count();
-        quotationNumber = `QT-${dateStr}-${(count + 1).toString().padStart(4, '0')}`;
     }
 
     // Calculate Totals
@@ -112,6 +47,7 @@ exports.createQuotation = asyncHandler(async (req, res) => {
             quotationNumber,
             customerId,
             branchId,
+            financialYearId,
             validUntil: validUntil ? new Date(validUntil) : null,
             subTotal: subTotal,
             taxAmount: totalTax,
@@ -216,84 +152,15 @@ exports.convertToSale = asyncHandler(async (req, res) => {
             }
         }
 
-        // Find Matching Financial Year based on Invoice Date
-        // Explicitly look for branch-specific FY first
-        let financialYear = await tx.financialYear.findFirst({
-            where: {
-                branchId: parseInt(quotation.branchId),
-                startDate: { lte: saleDate },
-                endDate: { gte: saleDate },
-                isClosed: false
-            }
-        });
+        // Generate Invoice Number
+        const { number: invoiceNumber, nextSeq, financialYearId } = await generateNextNumber(tx, 'invoice', quotation.branchId, saleDate);
 
-        // Fallback to global FY if no branch-specific one exists
-        if (!financialYear) {
-            financialYear = await tx.financialYear.findFirst({
-                where: {
-                    branchId: null,
-                    startDate: { lte: saleDate },
-                    endDate: { gte: saleDate },
-                    isClosed: false
-                }
-            });
-        }
-
-        let invoiceNumber;
-        let financialYearId = null;
-
-        if (financialYear) {
-            financialYearId = financialYear.id;
-            
-            // BRANCH-WISE SEQUENCING: Look for the last sale in this branch and FY
-            const lastSaleInBranch = await tx.sale.findFirst({
-                where: { 
-                    branchId: quotation.branchId, 
-                    financialYearId: financialYear.id,
-                    invoiceNumber: { startsWith: financialYear.invoicePrefix || 'INV' }
-                },
-                orderBy: { invoiceNumber: 'desc' }
-            });
-
-            let nextSeq;
-            const startingSeq = financialYear.invoiceSequence || '001';
-            
-            const prefix = financialYear.invoicePrefix || 'INV';
-            if (lastSaleInBranch && lastSaleInBranch.invoiceNumber) {
-                const lastInvoiceNum = lastSaleInBranch.invoiceNumber;
-                
-                let lastNum = NaN;
-                if (lastInvoiceNum.startsWith(prefix)) {
-                    const seqPart = lastInvoiceNum.slice(prefix.length);
-                    lastNum = parseInt(seqPart, 10);
-                } else {
-                    const match = lastInvoiceNum.match(/(\d+)$/);
-                    lastNum = match ? parseInt(match[0], 10) : NaN;
-                }
-                
-                if (!isNaN(lastNum)) {
-                    nextSeq = (lastNum + 1).toString().padStart(startingSeq.length, '0');
-                } else {
-                    nextSeq = (parseInt(startingSeq, 10) || 1).toString().padStart(startingSeq.length, '0');
-                }
-            } else {
-                nextSeq = startingSeq;
-            }
-
-            // Construct Invoice Number
-            invoiceNumber = `${prefix}${nextSeq}`;
-            console.log(`[CONVERT-NUMBERING] Branch: ${quotation.branchId}, FY: ${financialYear.id}, Last: ${lastSaleInBranch?.invoiceNumber}, New: ${invoiceNumber}`);
-
+        if (financialYearId) {
             // Update the FY sequence for sync
             await tx.financialYear.update({
-                where: { id: financialYear.id },
+                where: { id: financialYearId },
                 data: { invoiceSequence: nextSeq }
             });
-        } else {
-            // Fallback to old date-based pattern if no FY found
-            const dateStr = saleDate.toISOString().slice(0, 10).replace(/-/g, '');
-            const count = await tx.sale.count();
-            invoiceNumber = `INV-${dateStr}-${(count + 1).toString().padStart(4, '0')}`;
         }
 
         // Create Sale
