@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Branch" ADD COLUMN IF NOT EXISTS "stockIncluded" BOOLEAN NOT NULL DEFAULT true;

@@ -327,9 +327,14 @@ const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary, wee
         const start = new Date(fromDate);
         const end = new Date(toDate);
         start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        const diffTime = end.getTime() - start.getTime();
+        totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        
+        // Restore end to end of day for database queries
         end.setHours(23, 59, 59, 999);
 
-        totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
         payableDays = totalDays; // Start with full days
 
         const attendance = await prisma.attendance.findMany({
