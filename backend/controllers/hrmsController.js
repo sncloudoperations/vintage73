@@ -330,6 +330,7 @@ const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary, wee
         end.setHours(23, 59, 59, 999);
 
         totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        payableDays = totalDays; // Start with full days
 
         const attendance = await prisma.attendance.findMany({
             where: {
@@ -368,35 +369,37 @@ const calculatePayrollData = async ({ userId, fromDate, toDate, basicSalary, wee
 
             if (att) {
                 if (att.status === 'PRESENT') {
-                    payableDays += 1;
                     presentCount++;
                 } else if (att.status === 'HALF_DAY') {
-                    payableDays += 0.5;
+                    payableDays -= 0.5;
                     halfDayCount++;
                 } else if (att.status === 'CHECKED_IN') {
-                    // Do not count incomplete attendance
-                    // Treated as absent for payroll until checkout is done
-                    absentCount++;
+                    // Considered present initially
+                    presentCount++;
                 } else if (att.status === 'ABSENT') {
                     // explicitly docked
+                    payableDays -= 1;
                     absentCount++;
                 }
             } else if (leave) {
                 if (leave.leaveType?.isPaid) {
-                    payableDays += 1;
                     paidLeaveDays++;
                 } else {
+                    // Explicit unpaid leave
+                    payableDays -= 1;
                     unpaidLeaveDays++;
                 }
             } else if (isWeeklyOff) {
-                // If no record and no leave on weekly off, it's paid (Standard Holiday)
-                payableDays += 1;
                 weekendDays++;
             } else {
-                // DEFAULT ABSENT for working days
-                absentCount++;
+                // If there's no attendance record, DO NOTHING to payableDays.
+                // Do not deduct automatically. Payable stays equal to totalDays for this day.
             }
         }
+
+        // Safety bound check
+        if (payableDays < 0) payableDays = 0;
+        if (payableDays > totalDays) payableDays = totalDays;
 
         basic = (Number(basicSalary) / totalDays) * payableDays;
     } else {

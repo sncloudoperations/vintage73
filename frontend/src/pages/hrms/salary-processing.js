@@ -365,12 +365,14 @@ export default function SalaryProcessing() {
                                             <span>Monthly Basic</span>
                                             <span>{companyProfile?.currencySymbol || '₹'}{parseFloat(preview.basicSalary).toLocaleString()}</span>
                                         </div>
-                                        <div className="flex justify-between text-xs font-bold text-red-500">
-                                            <span className="flex items-center gap-1">
-                                                Deductions ({preview.calculation.totalDays - preview.calculation.payableDays} days)
-                                            </span>
-                                            <span>-{companyProfile?.currencySymbol || '₹'}{(parseFloat(preview.basicSalary) - parseFloat(preview.calculation.calculatedBasic)).toLocaleString()}</span>
-                                        </div>
+                                        {preview.calculation.totalDays > preview.calculation.payableDays && (
+                                            <div className="flex justify-between text-xs font-bold text-red-500">
+                                                <span className="flex items-center gap-1">
+                                                    Deductions ({Number(preview.calculation.totalDays - preview.calculation.payableDays).toFixed(1).replace(/\.0$/, '')} days)
+                                                </span>
+                                                <span>-{companyProfile?.currencySymbol || '₹'}{(parseFloat(preview.basicSalary) - parseFloat(preview.calculation.calculatedBasic)).toLocaleString()}</span>
+                                            </div>
+                                        )}
                                         {preview.pendingAdvances > 0 && (
                                             <div className="flex justify-between text-xs font-bold text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-100 mt-2">
                                                 <span>Salary Advances</span>
