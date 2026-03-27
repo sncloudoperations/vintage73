@@ -304,30 +304,51 @@ export default function ReportDesign() {
               {/* Elements */}
               <div className="space-y-3">
                 <label className="text-[10px] font-bold text-slate-400 uppercase">Interactive Elements</label>
-                <p className="text-[10px] text-slate-400 italic">Click an element to add it to the Header</p>
+                <p className="text-[10px] text-slate-400 italic">Toggle an element to add or remove it from the layout</p>
                 <div className="grid grid-cols-1 gap-2">
-                  {Object.entries(COMPONENT_METADATA).map(([id, meta]) => (
-                    <button
-                      key={id}
-                      onClick={() => {
-                        const newSettings = { ...settings };
-                        if (!newSettings[activeTab].layout.header.includes(id) &&
-                          !newSettings[activeTab].layout.body?.includes(id) &&
-                          !newSettings[activeTab].layout.footer.includes(id)) {
-                          newSettings[activeTab].layout.header.push(id);
-                          setSettings(newSettings);
-                          toast.success(`${meta.label} added to Header`);
-                        } else {
-                          toast.error(`${meta.label} is already on the layout`);
-                        }
-                      }}
-                      className="group w-full p-2.5 rounded-lg border border-slate-100 bg-white shadow-sm flex items-center gap-3 hover:border-primary hover:shadow-md transition-all text-left"
-                    >
-                      <meta.icon className="text-slate-400 group-hover:text-primary" />
-                      <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900">{meta.label}</span>
-                      <FiPlus className="ml-auto text-slate-300 group-hover:text-primary-light opacity-0 group-hover:opacity-100 transition-opacity" size={14} />
-                    </button>
-                  ))}
+                  {Object.entries(COMPONENT_METADATA).map(([id, meta]) => {
+                    const isOn = settings[activeTab]?.layout?.header?.includes(id) ||
+                      settings[activeTab]?.layout?.body?.includes(id) ||
+                      settings[activeTab]?.layout?.footer?.includes(id);
+
+                    const handleToggle = () => {
+                      const newSettings = { ...settings };
+                      const layout = newSettings[activeTab].layout;
+                      if (isOn) {
+                        // Remove from all zones
+                        layout.header = (layout.header || []).filter(i => i !== id);
+                        layout.body = (layout.body || []).filter(i => i !== id);
+                        layout.footer = (layout.footer || []).filter(i => i !== id);
+                        setSettings(newSettings);
+                        toast.success(`${meta.label} removed from layout`);
+                      } else {
+                        // Add to header
+                        layout.header = [...(layout.header || []), id];
+                        setSettings(newSettings);
+                        toast.success(`${meta.label} added to Header`);
+                      }
+                    };
+
+                    return (
+                      <div
+                        key={id}
+                        className="w-full p-2.5 rounded-lg border border-slate-100 bg-white shadow-sm flex items-center gap-3"
+                      >
+                        <meta.icon className={isOn ? 'text-primary' : 'text-slate-400'} />
+                        <span className={`text-xs font-bold flex-1 ${isOn ? 'text-slate-900' : 'text-slate-600'}`}>{meta.label}</span>
+                        <button
+                          type="button"
+                          onClick={handleToggle}
+                          className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${isOn ? 'bg-primary' : 'bg-slate-200'}`}
+                          aria-pressed={isOn}
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isOn ? 'translate-x-4' : 'translate-x-0'}`}
+                          />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
