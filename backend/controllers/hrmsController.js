@@ -602,9 +602,22 @@ exports.getPayrollHistory = asyncHandler(async (req, res) => {
                 }
             }
         },
-        orderBy: { createdAt: 'desc' }
     });
-    res.json(payrolls);
+
+    const mappedPayrolls = payrolls.map(p => {
+        const advanceDeduction = p.salaryAdvances ? p.salaryAdvances.reduce((sum, adv) => sum + Number(adv.amount), 0) : 0;
+        const grossSalary = Number(p.basicSalary) + Number(p.allowances);
+        const incentives = Number(p.allowances);
+        return {
+            ...p,
+            advanceDeduction,
+            grossSalary,
+            incentives,
+            deductions: Number(p.deductions)
+        };
+    });
+
+    res.json(mappedPayrolls);
 });
 
 exports.updatePayrollStatus = asyncHandler(async (req, res) => {
