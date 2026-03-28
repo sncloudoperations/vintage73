@@ -380,7 +380,7 @@ export default function SalaryProcessing() {
                                             </div>
                                         )}
                                         <div className="border-t border-slate-200 pt-2 flex justify-between items-center">
-                                            <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Net Salary</span>
+                                            <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Final Pay</span>
                                             <span className="text-lg font-black text-slate-900 leading-none">
                                                 {companyProfile?.currencySymbol || '₹'}{(parseFloat(preview.calculation.calculatedBasic) - parseFloat(preview.pendingAdvances || 0)).toLocaleString()}
                                             </span>
