@@ -39,7 +39,12 @@ export default function Login() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       toast.success('Login Successful! Redirecting...');
-      router.push('/dashboard');
+      
+      if (data.user.role === 'customer') {
+        router.push('/customer-dashboard');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed';
       setError(msg);

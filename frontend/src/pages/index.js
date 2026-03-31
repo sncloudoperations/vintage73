@@ -7,7 +7,21 @@ export default function Home() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      router.push('/dashboard');
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          const user = JSON.parse(storedUser);
+          if (user.role === 'customer') {
+            router.push('/customer-dashboard');
+          } else {
+            router.push('/dashboard');
+          }
+        } catch (e) {
+          router.push('/dashboard');
+        }
+      } else {
+        router.push('/dashboard');
+      }
     } else {
       router.push('/login');
     }

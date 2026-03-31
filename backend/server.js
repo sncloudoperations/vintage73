@@ -94,6 +94,7 @@ app.use('/api/terminals', require('./routes/terminalRoutes'));
 app.use('/api/accounting/reconciliation', require('./routes/bankReconciliationRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 
 // Global Error Handler (MUST be last)
 app.use(errorHandler);

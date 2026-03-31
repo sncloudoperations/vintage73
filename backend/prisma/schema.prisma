@@ -47,6 +47,12 @@ model User {
   managedStaff   User[]   @relation("StaffAdmin")
   workLogs       WorkLog[]
   managedWorkLogs WorkLog[] @relation("AdminWorkLogs")
+  // Advanced Ticketing System
+  assignedTickets       Ticket[]        @relation("AssignedTo")
+  closureRequests       TicketClosureRequest[] @relation("ClosureRequestedBy")
+  ticketHistoryActions  TicketHistory[] @relation("TicketHistoryDoneBy")
+  ticketMessages        TicketMessage[] @relation("TicketMessageSender")
+  ownedTickets          Ticket[]        @relation("TicketAdmin")
 }
 
 model Branch {
@@ -80,6 +86,7 @@ model Branch {
   workLogs          WorkLog[]
   financialYears    FinancialYear[]
   stockIncluded   Boolean    @default(true)
+  tickets         Ticket[]
 }
 
 model CompanyProfile {
@@ -131,6 +138,11 @@ model Customer {
   gstin     String?
   partyType String    @default("B2C") // B2B, B2C, Unregistered
   area      String?
+  // Authentication & Access Control
+  username  String?   @unique
+  password  String?
+  role      String    @default("customer")
+  accessPermissions Json?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   branchId  Int?
@@ -139,6 +151,7 @@ model Customer {
   sales     Sale[]
   challans  DeliveryChallan[]
   quotations Quotation[]
+  tickets    Ticket[]
 }
 
 model Supplier {
@@ -893,13 +906,14 @@ model ChatMessage {
 }
 
 model Notification {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(cuid())
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
   title       String
   message     String   @db.Text
   type        String   @default("INFO") // INFO, SUCCESS, WARNING, ERROR, MESSAGE
   isRead      Boolean  @default(false)
+  ticketId    String?  // Associated ticket reference
   link        String?  // Optional link to navigate to
   createdAt   DateTime @default(now())
 }
@@ -917,3 +931,76 @@ model WorkLog {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// ==================== ADVANCED TICKETING SYSTEM ====================
+
+model Ticket {
+  id            String   @id @default(uuid())
+  ticketId      String   @unique // Formatted ID: TKT-1001
+  title         String
+  description   String
+  categoryName  String?  // Legacy category string
+  categoryId    Int?
+  category      TicketCategory? @relation(fields: [categoryId], references: [id])
+  priority      String   // Low, Medium, High
+  status        String   @default("CREATED") // CREATED, ASSIGNED, IN_PROGRESS, CLOSED
+  fileUrl       String?  // uploaded file
+  resignReason  String?  @db.Text
+  branchId      Int
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  adminId       Int?     // Target Branch Admin ID (for partitioning)
+  admin         User?    @relation("TicketAdmin", fields: [adminId], references: [id])
+  customerId    Int?
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  assignedToId  Int?     // Staff ID
+  assignedTo    User?    @relation("AssignedTo", fields: [assignedToId], references: [id])
+  createdByRole String   // customer / admin
+  slaStatus     String?  // OnTime / Delayed
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  history       TicketHistory[]
+  messages      TicketMessage[]
+  closureRequests TicketClosureRequest[]
+}
+
+model TicketCategory {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  tickets Ticket[]
+}
+
+model TicketHistory {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  action    String   // Created, Assigned, StatusChanged, MessageAdded, ClosureRequested, etc.
+  message   String
+  doneById  Int
+  doneBy    User     @relation("TicketHistoryDoneBy", fields: [doneById], references: [id])
+  role      String   // admin / staff / customer
+  reason    String?  @db.Text
+  createdAt DateTime @default(now())
+}
+
+model TicketMessage {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  message   String   @db.Text
+  senderId  Int
+  sender    User     @relation("TicketMessageSender", fields: [senderId], references: [id])
+  role      String   // admin / staff / customer
+  createdAt DateTime @default(now())
+}
+
+model TicketClosureRequest {
+  id            String   @id @default(uuid())
+  ticketId      String
+  ticket        Ticket   @relation(fields: [ticketId], references: [id])
+  requestedById Int
+  requestedBy   User     @relation("ClosureRequestedBy", fields: [requestedById], references: [id])
+  reason        String   @db.Text
+  status        String   @default("Pending") // Pending, Approved, Rejected
+  createdAt     DateTime @default(now())
+}
+

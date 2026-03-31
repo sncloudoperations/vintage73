@@ -49,7 +49,8 @@ exports.setup = asyncHandler(async (req, res) => {
 exports.login = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
 
-  const user = await prisma.user.findUnique({
+  let isCustomer = false;
+  let user = await prisma.user.findUnique({
     where: { username },
     include: {
       branch: true,
@@ -58,6 +59,19 @@ exports.login = asyncHandler(async (req, res) => {
       }
     }
   });
+
+  if (!user) {
+    user = await prisma.customer.findUnique({
+      where: { username },
+      include: {
+        branch: true
+      }
+    });
+    if (user) {
+      isCustomer = true;
+      user.role = user.role || 'customer';
+    }
+  }
 
   if (!user) {
     return res.status(401).json({ message: 'Invalid credentials' });
@@ -73,8 +87,8 @@ exports.login = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: 'Your account is inactive. Please contact administrator.' });
   }
 
-  // Terminal Access Control (Skip for Admin to prevent lockout)
-  if (user.role !== 'admin') {
+  // Terminal Access Control (Skip for Admin and Customers to prevent lockout)
+  if (user.role !== 'admin' && !isCustomer) {
     const terminalLockSetting = await prisma.systemSetting.findUnique({
       where: { key: 'TERMINAL_LOCK' }
     });
@@ -141,9 +155,15 @@ exports.login = asyncHandler(async (req, res) => {
     }
   }
 
-  // Generate JWT
+  // Generate JWT with explicit account type to prevent ID collision
   const token = jwt.sign(
-    { userId: user.id, username: user.username, role: user.role, branchId: user.branchId },
+    { 
+      userId: user.id, 
+      username: user.username, 
+      role: user.role, 
+      branchId: user.branchId,
+      accountType: isCustomer ? 'customer' : 'user'
+    },
     process.env.JWT_SECRET,
     { expiresIn: '24h' }
   );
@@ -158,7 +178,8 @@ exports.login = asyncHandler(async (req, res) => {
       role: user.role,
       branchId: user.branchId,
       branchName: user.branch?.name,
-      allowedModules: user.allowedModules
+      accountType: isCustomer ? 'customer' : 'user',
+      allowedModules: user.allowedModules || user.accessPermissions || []
     }
   });
 });
@@ -166,18 +187,22 @@ exports.login = asyncHandler(async (req, res) => {
 // Change Password
 exports.changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  const userId = req.user.id;
+  const userId = req.user.userId || req.user.id; // Use correct ID from decoded JWT
+  const role = req.user.role;
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId }
-  });
+  let account;
+  if (role === 'customer') {
+    account = await prisma.customer.findUnique({ where: { id: userId } });
+  } else {
+    account = await prisma.user.findUnique({ where: { id: userId } });
+  }
 
-  if (!user) {
+  if (!account) {
     return res.status(404).json({ message: 'User not found' });
   }
 
   // Verify current password
-  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  const isMatch = await bcrypt.compare(currentPassword, account.password);
   if (!isMatch) {
     return res.status(400).json({ message: 'Current password is incorrect' });
   }
@@ -190,10 +215,17 @@ exports.changePassword = asyncHandler(async (req, res) => {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
   // Update password
-  await prisma.user.update({
-    where: { id: userId },
-    data: { password: hashedPassword }
-  });
+  if (role === 'customer') {
+    await prisma.customer.update({
+      where: { id: userId },
+      data: { password: hashedPassword }
+    });
+  } else {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword }
+    });
+  }
 
   res.json({ message: 'Password changed successfully' });
 });

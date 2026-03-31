@@ -3,6 +3,7 @@ import { IoNotificationsOutline } from 'react-icons/io5';
 import axios from 'axios';
 import { getSocket } from '@/utils/socket';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 const NotificationBell = ({ variant = 'default' }) => {
     const [notifications, setNotifications] = useState([]);
@@ -59,9 +60,28 @@ const NotificationBell = ({ variant = 'default' }) => {
         }
     };
 
+    const handleMarkAllRead = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/read-all`, {}, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+            toast.success('All notifications marked as read', { position: 'bottom-right', autoClose: 2000 });
+        } catch (error) {
+            console.error('Error marking all as read:', error);
+        }
+    };
+
     const handleNotificationClick = (notification) => {
-        markAsRead(notification.id);
-        if (notification.type === 'MESSAGE') {
+        if (!notification.isRead) {
+            markAsRead(notification.id);
+        }
+        
+        if (notification.ticketId) {
+            // Redirect to ticketing with deep link ID
+            router.push(`/ticketing?id=${notification.ticketId}`);
+        } else if (notification.type === 'MESSAGE') {
             router.push('/chat');
         } else if (notification.link) {
             router.push(notification.link);
@@ -86,10 +106,19 @@ const NotificationBell = ({ variant = 'default' }) => {
             </button>
 
             {showDropdown && (
-                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 flex flex-col">
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 rounded-t-xl">
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 flex flex-col overflow-hidden">
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
                         <h3 className="font-bold dark:text-white">Notifications</h3>
-                        <span className="text-xs text-blue-500 font-medium">{unreadCount} New</span>
+                        <div className="flex gap-2">
+                             {unreadCount > 0 && (
+                                <button onClick={handleMarkAllRead} className="text-[10px] text-blue-500 font-bold hover:underline">
+                                    Mark all read
+                                </button>
+                             )}
+                             <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                                {unreadCount} New
+                             </span>
+                        </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto">

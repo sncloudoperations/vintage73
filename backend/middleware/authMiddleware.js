@@ -25,22 +25,43 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     throw new Error('Invalid token');
   }
 
-  // Get user from database
-  const user = await prisma.user.findUnique({
-    where: { id: decoded.userId },
-    select: {
-      id: true,
-      username: true,
-      name: true,
-      role: true,
-      branchId: true,
-      allowedModules: true
+  // Get user from database using explicit account type to prevent identity theft
+  let user = null;
+  const isCustomerAccount = decoded.accountType === 'customer';
+
+  if (isCustomerAccount) {
+    user = await prisma.customer.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        role: true,
+        branchId: true,
+        accessPermissions: true
+      }
+    });
+
+    if (user) {
+        user.allowedModules = user.accessPermissions || [];
     }
-  });
+  } else {
+    user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        role: true,
+        branchId: true,
+        allowedModules: true
+      }
+    });
+  }
 
   if (!user) {
     res.status(401);
-    throw new Error('User no longer exists');
+    throw new Error('Identity verification failed: Account no longer exists');
   }
 
   // Attach user to request object

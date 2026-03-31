@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { MENU_STRUCTURE } from '@/lib/menuStructure';
 import { useTabs } from '@/context/TabContext';
-import { FiChevronDown, FiGrid, FiSearch, FiSettings } from 'react-icons/fi';
+import { FiChevronDown, FiGrid, FiSearch, FiSettings, FiLogOut } from 'react-icons/fi';
+import NotificationBell from './NotificationBell';
 
 export default function TopNavigation() {
   const router = useRouter();
@@ -166,8 +167,9 @@ export default function TopNavigation() {
       </div>
 
 
-      {/* Search Bar */}
-      <div className="relative" ref={searchRef}>
+      <div className="flex items-center gap-4">
+        {/* Search Bar */}
+        <div className="relative" ref={searchRef}>
         <div className="relative">
           <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-primary-dark" />
           <input
@@ -207,6 +209,7 @@ export default function TopNavigation() {
           </div>
         )}
       </div>
-    </nav>
-  );
+    </div>
+  </nav>
+);
 }
