@@ -657,8 +657,12 @@ exports.getBranchCustomers = asyncHandler(async (req, res) => {
         ? req.user.branchId
         : (req.query.branchId ? parseInt(req.query.branchId) : null);
 
-    // Only filter by branch if a branchId is known; otherwise return all (superadmin/staff fallback)
-    const where = branchId ? { branchId } : {};
+    // If branchId is known, return customers matching that branch OR those with no branch set (legacy data)
+    // If no branchId at all (superadmin), return all customers
+    const where = branchId
+        ? { OR: [{ branchId }, { branchId: null }] }
+        : {};
+
     const customers = await prisma.customer.findMany({
         where,
         select: { id: true, name: true, phone: true },
