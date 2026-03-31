@@ -52,6 +52,7 @@ model User {
   closureRequests       TicketClosureRequest[] @relation("ClosureRequestedBy")
   ticketHistoryActions  TicketHistory[] @relation("TicketHistoryDoneBy")
   ticketMessages        TicketMessage[] @relation("TicketMessageSender")
+  ownedTickets          Ticket[]        @relation("TicketAdmin")
 }
 
 model Branch {
@@ -942,10 +943,13 @@ model Ticket {
   categoryId    Int?
   category      TicketCategory? @relation(fields: [categoryId], references: [id])
   priority      String   // Low, Medium, High
-  status        String   @default("Pending") // Pending, InProgress, Waiting, Completed, Rejected
+  status        String   @default("CREATED") // CREATED, ASSIGNED, IN_PROGRESS, CLOSED
   fileUrl       String?  // uploaded file
+  resignReason  String?  @db.Text
   branchId      Int
   branch        Branch   @relation(fields: [branchId], references: [id])
+  adminId       Int?     // Target Branch Admin ID (for partitioning)
+  admin         User?    @relation("TicketAdmin", fields: [adminId], references: [id])
   customerId    Int?
   customer      Customer? @relation(fields: [customerId], references: [id])
   assignedToId  Int?     // Staff ID
@@ -974,6 +978,7 @@ model TicketHistory {
   doneById  Int
   doneBy    User     @relation("TicketHistoryDoneBy", fields: [doneById], references: [id])
   role      String   // admin / staff / customer
+  reason    String?  @db.Text
   createdAt DateTime @default(now())
 }
 

@@ -13,7 +13,12 @@ const {
   createCategory,
   updateCategory,
   deleteCategory,
-  handleTicketDecision
+  handleTicketDecision,
+  acceptTicket,
+  reassignTicket,
+  completeTicket,
+  getBranchCustomers,
+  getBranchAdmins
 } = require('../controllers/ticketController');
 const authMiddleware = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
@@ -26,6 +31,8 @@ router.put('/assign', assignTicket);
 router.put('/status', updateStatus);
 router.put('/decision', handleTicketDecision);
 router.get('/categories', getCategories);
+router.get('/branch-customers', getBranchCustomers);
+router.get('/branch-admins', getBranchAdmins);
 router.post('/categories', createCategory);
 router.put('/categories/:id', updateCategory);
 router.delete('/categories/:id', deleteCategory);
@@ -35,5 +42,10 @@ router.post('/message', addMessage);
 router.post('/closure-request', requestClosure);
 router.put('/closure-approve', handleClosureRequest);
 router.put('/mark-ignored', markAsIgnored);
+
+// Staff Actions
+router.post('/accept', acceptTicket);
+router.post('/reassign', reassignTicket);
+router.post('/complete', completeTicket);
 
 module.exports = router;
