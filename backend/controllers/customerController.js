@@ -16,7 +16,9 @@ exports.getCustomers = asyncHandler(async (req, res) => {
     branchId = user.branchId;
   }
 
-  const where = branchId ? { branchId: parseInt(branchId) } : {};
+  const where = branchId
+    ? { OR: [{ branchId: parseInt(branchId) }, { branchId: null }] }
+    : {};
   const customers = await prisma.customer.findMany({
     where,
     orderBy: { createdAt: 'desc' },
