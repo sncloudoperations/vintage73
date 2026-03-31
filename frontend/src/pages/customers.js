@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import api from '@/lib/api';
 import { MENU_STRUCTURE } from '@/lib/menuStructure';
 import { FiPlus, FiTrash2, FiEdit2, FiUsers, FiMapPin, FiPhone, FiSearch, FiCheck, FiLoader, FiKey } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 export default function Customers() {
+  const router = useRouter();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -29,7 +31,10 @@ export default function Customers() {
 
   useEffect(() => {
     fetchCustomers();
-  }, []);
+    if (router.query.autoOpenAdd === 'true') {
+      setShowModal(true);
+    }
+  }, [router.query]);
 
   const fetchCustomers = async () => {
     try {
@@ -56,6 +61,9 @@ export default function Customers() {
       setShowModal(false);
       resetForm();
       fetchCustomers();
+      if (router.query.returnTo) {
+        router.push(router.query.returnTo);
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || err.response?.data?.error || 'Operation failed');
     }

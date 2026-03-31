@@ -47,6 +47,10 @@ export default function Ticketing() {
   const [messageText, setMessageText] = useState('');
   const [reassignReason, setReassignReason] = useState('');
   const [showReassignModal, setShowReassignModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [showQuickAddCustomer, setShowQuickAddCustomer] = useState(false);
+  const [quickCustomer, setQuickCustomer] = useState({ name: '', phone: '', email: '' });
   const [reassignMode, setReassignMode] = useState('STAFF'); // STAFF | ADMIN
   const [reassignTargetStaffId, setReassignTargetStaffId] = useState('');
   const [nextStaffId, setNextStaffId] = useState('');
@@ -72,8 +76,13 @@ export default function Ticketing() {
       fetchBranchAdmins(storedUser.branchId || '');
     }
     if (storedUser.role === 'admin' || storedUser.role === 'superadmin') {
-      fetchStaff(storedUser.branchId);
-      fetchBranchCustomers(storedUser.branchId);
+      if (storedUser.branchId) {
+        fetchStaff(storedUser.branchId);
+        fetchBranchCustomers(storedUser.branchId);
+      } else if (storedUser.role === 'superadmin') {
+        fetchStaff();
+        fetchBranchCustomers();
+      }
     }
   }, []);
 
@@ -91,6 +100,25 @@ export default function Ticketing() {
     setShowDetailModal(false); setSelectedTicket(null); setActiveDetailTab('timeline');
     if (router.query.id) { const { id, ...rest } = router.query; router.push({ pathname: router.pathname, query: rest }, undefined, { shallow: true }); }
   };
+
+  const closeCreateModal = () => {
+    setShowCreateModal(false);
+    if (router.query.openCreate) {
+      const { openCreate, ...rest } = router.query;
+      router.push({ pathname: router.pathname, query: rest }, undefined, { shallow: true });
+    }
+  };
+
+  useEffect(() => {
+    if (router.query.openCreate === 'true') {
+      const savedTicket = sessionStorage.getItem('draftTicket');
+      if (savedTicket) {
+        try { setNewTicket(JSON.parse(savedTicket)); } catch {}
+        sessionStorage.removeItem('draftTicket');
+      }
+      setShowCreateModal(true);
+    }
+  }, [router.query.openCreate]);
 
   // ─── API CALLS ───
   const fetchTickets = async () => {
@@ -115,7 +143,7 @@ export default function Ticketing() {
     try {
       await api.post('/tickets', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Ticket submitted successfully');
-      setShowCreateModal(false);
+      closeCreateModal();
       setNewTicket({ title: '', description: '', priority: 'Medium', categoryId: '', branchId: '', customerId: '', assignedToId: '', adminId: '', file: null });
       fetchTickets();
     } catch (err) {
@@ -219,15 +247,18 @@ export default function Ticketing() {
     }
   };
 
-  const handleCreateCategory = async () => {
-    const name = prompt('Enter new category name:');
-    if (!name) return;
+  const handleCreateCategory = async (e) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return toast.error('Category name is required');
     try {
-      await api.post('/tickets/categories', { name });
+      await api.post('/tickets/categories', { name: newCategoryName.trim() });
       toast.success('Category created');
+      setNewCategoryName('');
+      setShowCategoryModal(false);
       fetchCategories();
-    } catch { toast.error('Failed to create category'); }
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to create category'); }
   };
+
 
   // ─── STYLE HELPERS ───
   const getStatusColor = (s) => ({ CREATED: 'bg-emerald-50 text-emerald-600', ASSIGNED: 'bg-blue-50 text-blue-600', IN_PROGRESS: 'bg-violet-50 text-violet-600', CLOSED: 'bg-slate-100 text-slate-600', REJECTED: 'bg-red-50 text-red-600' }[s] || 'bg-slate-50 text-slate-400');
@@ -396,7 +427,7 @@ export default function Ticketing() {
                     <h2 className="text-lg font-bold text-slate-800">Create New Ticket</h2>
                     <p className="text-xs text-slate-500 mt-1">Submit a new support request</p>
                 </div>
-                <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors"><FiXCircle size={24} /></button>
+                <button type="button" onClick={closeCreateModal} className="text-slate-400 hover:text-slate-600 transition-colors"><FiXCircle size={24} /></button>
               </div>
 
               <form onSubmit={handleCreateTicket} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar bg-white">
@@ -422,7 +453,7 @@ export default function Ticketing() {
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 flex justify-between">
                       Category
-                      <button type="button" onClick={handleCreateCategory} className="text-primary hover:underline font-bold text-[9px]">Add New</button>
+                      <button type="button" onClick={() => setShowCategoryModal(true)} className="text-primary hover:underline font-bold text-[9px]">Add New</button>
                     </label>
                     <div className="relative">
                         <select required className="w-full bg-slate-50 border border-slate-200 focus:border-primary rounded-xl px-4 py-2.5 text-sm font-medium outline-none appearance-none" value={newTicket.categoryId}
@@ -437,7 +468,14 @@ export default function Ticketing() {
 
                 {user?.role === 'admin' && (
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Link to Customer</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 flex justify-between">
+                      Link to Customer
+                      <button type="button" onClick={() => {
+                        sessionStorage.setItem('draftTicket', JSON.stringify(newTicket));
+                        closeCreateModal();
+                        router.push({ pathname: '/customers', query: { returnTo: '/ticketing?openCreate=true', autoOpenAdd: 'true' } });
+                      }} className="text-primary hover:underline font-bold text-[9px]">Add New</button>
+                    </label>
                     <div className="relative">
                         <select required className="w-full bg-slate-50 border border-slate-200 focus:border-primary rounded-xl px-4 py-2.5 text-sm font-medium outline-none appearance-none" value={newTicket.customerId}
                         onChange={e => setNewTicket({...newTicket, customerId: e.target.value})}>
@@ -822,6 +860,34 @@ export default function Ticketing() {
               <iframe src={`http://localhost:5000${previewFile}`} title="Attachment Viewer" className="w-full max-w-6xl h-[85vh] bg-white rounded-xl shadow-2xl drop-shadow-2xl" />
             )}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── ADD CATEGORY MODAL ─── */}
+      <AnimatePresence>
+        {showCategoryModal && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden border border-slate-200">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-800">Add New Category</h2>
+                  <p className="text-xs text-slate-500 mt-1">Create a category for tickets</p>
+                </div>
+                <button onClick={() => setShowCategoryModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors"><FiXCircle size={24} /></button>
+              </div>
+              <form onSubmit={handleCreateCategory} className="p-6 space-y-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Category Name</label>
+                  <input type="text" required placeholder="e.g. Hardware Issue" className="w-full bg-slate-50 border border-slate-200 focus:border-primary rounded-xl px-4 py-2.5 text-sm font-medium outline-none transition-all"
+                    value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} autoFocus />
+                </div>
+                <button type="submit" className="w-full py-3 bg-primary text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-primary-dark transition-all shadow-md">
+                   Save Category
+                </button>
+              </form>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
