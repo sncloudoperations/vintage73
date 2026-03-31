@@ -128,7 +128,24 @@ export default function Ticketing() {
   const fetchCategories = async () => { try { const { data } = await api.get('/tickets/categories'); setCategories(data); } catch {} };
   const fetchBranches = async () => { try { const { data } = await api.get('/branches'); setBranches(data); } catch {} };
   const fetchStaff = async (branchId) => { try { const { data } = await api.get(`/users/staff${branchId ? `?branchId=${branchId}` : ''}`); setStaff(data); } catch {} };
-  const fetchBranchCustomers = async (branchId) => { try { const { data } = await api.get(`/tickets/branch-customers${branchId ? `?branchId=${branchId}` : ''}`); setCustomers(data); } catch {} };
+  const fetchBranchCustomers = async (branchId) => {
+    try {
+      const { data } = await api.get(`/tickets/branch-customers${branchId ? `?branchId=${branchId}` : ''}`);
+      if (Array.isArray(data) && data.length > 0) {
+        setCustomers(data);
+      } else {
+        // Fallback: load all customers if branch-specific returns empty
+        const { data: allCustomers } = await api.get('/customers');
+        setCustomers(Array.isArray(allCustomers) ? allCustomers : []);
+      }
+    } catch {
+      // Fallback: if endpoint fails (e.g. 400 on old server), use general customers list
+      try {
+        const { data: allCustomers } = await api.get('/customers');
+        setCustomers(Array.isArray(allCustomers) ? allCustomers : []);
+      } catch {}
+    }
+  };
   const fetchBranchAdmins = async (branchId) => { try { const { data } = await api.get(`/tickets/branch-admins${branchId ? `?branchId=${branchId}` : ''}`); setBranchAdmins(data); } catch {} };
 
   const handleCreateTicket = async (e) => {
