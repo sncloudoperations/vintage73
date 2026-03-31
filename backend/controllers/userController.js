@@ -348,3 +348,17 @@ exports.getAdminsByBranch = asyncHandler(async (req, res) => {
   res.json(admins);
 });
 
+// Get staff by branch (for ticket assignment dropdown)
+exports.getStaffByBranch = asyncHandler(async (req, res) => {
+  const { branchId } = req.query;
+  const where = { role: 'staff' };
+  if (branchId) {
+    where.branchId = parseInt(branchId);
+  }
+  const staff = await prisma.user.findMany({
+    where,
+    select: { id: true, name: true, username: true, branchId: true },
+    orderBy: { name: 'asc' }
+  });
+  res.json(staff);
+});

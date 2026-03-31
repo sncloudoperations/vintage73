@@ -1,55 +1,40 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
 
-// Get user notifications
+// @desc    Get current user notifications
+// @route   GET /api/notifications
+// @access  Private
 exports.getNotifications = asyncHandler(async (req, res) => {
-    const userId = req.user.id;
-
     const notifications = await prisma.notification.findMany({
-        where: { userId },
+        where: { userId: req.user.id },
         orderBy: { createdAt: 'desc' },
-        take: 20 // Last 20 notifications
+        take: 50
     });
     res.json(notifications);
 });
 
-// Mark notification as read
+// @desc    Mark notification as read
+// @route   PUT /api/notifications/:id/read
+// @access  Private
 exports.markAsRead = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const userId = req.user.id;
-
-    await prisma.notification.update({
-        where: { id: parseInt(id), userId },
+    const notification = await prisma.notification.updateMany({
+        where: { 
+            id: id,
+            userId: req.user.id 
+        },
         data: { isRead: true }
     });
-    res.json({ message: 'Notification marked as read' });
+    res.json({ message: 'Marked as read' });
 });
 
-// Create a new notification (Utility function for subsequent use)
-// This is an internal utility, but we keep it async. 
-// It doesn't need asyncHandler since it's not an Express route directly, 
-// but it's used within routes that are.
-exports.createNotification = async (userId, title, message, type = 'INFO', link = null) => {
-    try {
-        const notification = await prisma.notification.create({
-            data: {
-                userId,
-                title,
-                message,
-                type,
-                link
-            }
-        });
-
-        // Trigger socket alert
-        const { getIO } = require('../utils/socket');
-        const io = getIO();
-        if (io) {
-            io.to(`user_${userId}`).emit('new_notification', notification);
-        }
-
-        return notification;
-    } catch (error) {
-        console.error('Error creating notification:', error);
-    }
-};
+// @desc    Mark all notifications as read
+// @route   PUT /api/notifications/read-all
+// @access  Private
+exports.markAllRead = asyncHandler(async (req, res) => {
+    await prisma.notification.updateMany({
+        where: { userId: req.user.id },
+        data: { isRead: true }
+    });
+    res.json({ message: 'All marked as read' });
+});

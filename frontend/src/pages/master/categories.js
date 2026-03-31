@@ -4,6 +4,7 @@ import { FiPlus, FiEdit, FiTrash2, FiSearch, FiGrid } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 export default function CategoryMaster() {
+    const [activeTab, setActiveTab] = useState('product'); // 'product' or 'ticket'
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -37,8 +38,10 @@ export default function CategoryMaster() {
     ];
 
     const fetchCategories = async () => {
+        setLoading(true);
         try {
-            const { data } = await api.get('/categories');
+            const url = activeTab === 'product' ? '/categories' : '/tickets/categories';
+            const { data } = await api.get(url);
             setCategories(data);
         } catch (error) {
             toast.error('Failed to fetch categories');
@@ -50,16 +53,17 @@ export default function CategoryMaster() {
 
     useEffect(() => {
         fetchCategories();
-    }, []);
+    }, [activeTab]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const baseUrl = activeTab === 'product' ? '/categories' : '/tickets/categories';
         try {
             if (editingCategory) {
-                await api.put(`/categories/${editingCategory.id}`, formData);
+                await api.put(`${baseUrl}/${editingCategory.id}`, formData);
                 toast.success('Category updated successfully');
             } else {
-                await api.post('/categories', formData);
+                await api.post(baseUrl, formData);
                 toast.success('Category created successfully');
             }
             setShowModal(false);
@@ -74,8 +78,9 @@ export default function CategoryMaster() {
 
     const handleDelete = async (id) => {
         if (!confirm('Are you sure you want to delete this category?')) return;
+        const baseUrl = activeTab === 'product' ? '/categories' : '/tickets/categories';
         try {
-            await api.delete(`/categories/${id}`);
+            await api.delete(`${baseUrl}/${id}`);
             toast.success('Category deleted successfully');
             fetchCategories();
         } catch (error) {
@@ -100,13 +105,27 @@ export default function CategoryMaster() {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Category Master</h1>
-                    <p className="text-slate-500 text-sm mt-1">Manage product categories</p>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Category Master</h1>
+                    <p className="text-slate-500 text-sm font-medium">Centralized management for system classification</p>
                 </div>
-                <button onClick={() => openModal()} className="btn btn-primary">
-                    <FiPlus className="text-lg" /> Add Category
+                <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 shadow-inner">
+                    <button 
+                        onClick={() => setActiveTab('product')}
+                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'product' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
+                    >
+                        Product Inventory
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('ticket')}
+                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'ticket' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
+                    >
+                        Ticketing system
+                    </button>
+                </div>
+                <button onClick={() => openModal()} className="btn btn-primary shadow-primary/20 shadow-lg px-8 py-3 rounded-2xl text-[10px] uppercase font-black tracking-widest">
+                    <FiPlus className="text-lg" /> New {activeTab === 'product' ? 'Product' : 'Ticket'} Category
                 </button>
             </div>
 
@@ -128,8 +147,9 @@ export default function CategoryMaster() {
                     <thead>
                         <tr>
                             <th>Category Name</th>
-                            <th>Unit Type</th>
-                            <th>Products Linked</th>
+                            {activeTab === 'product' && <th>Unit Type</th>}
+                            {activeTab === 'product' && <th>Products Linked</th>}
+                            {activeTab === 'ticket' && <th>Usage</th>}
                             <th className="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -149,20 +169,31 @@ export default function CategoryMaster() {
                                             {category.name}
                                         </div>
                                     </td>
-                                    <td>
-                                        {category.unitType ? (
-                                            <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs font-medium uppercase">
-                                                {category.unitType}
+                                    {activeTab === 'product' && (
+                                        <td>
+                                            {category.unitType ? (
+                                                <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs font-medium uppercase">
+                                                    {category.unitType}
+                                                </span>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs">-</span>
+                                            )}
+                                        </td>
+                                    )}
+                                    {activeTab === 'product' && (
+                                        <td>
+                                            <span className="badge badge-info">
+                                                {category._count?.products || 0} Products
                                             </span>
-                                        ) : (
-                                            <span className="text-slate-400 text-xs">-</span>
-                                        )}
-                                    </td>
-                                    <td>
-                                        <span className="badge badge-info">
-                                            {category._count?.products || 0} Products
-                                        </span>
-                                    </td>
+                                        </td>
+                                    )}
+                                    {activeTab === 'ticket' && (
+                                        <td>
+                                            <span className="badge badge-primary">
+                                                {category._count?.tickets || 0} Tickets Linked
+                                            </span>
+                                        </td>
+                                    )}
                                     <td className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <button onClick={() => openModal(category)} className="p-2 hover:bg-slate-100 rounded text-slate-600 transition-colors">
@@ -191,31 +222,33 @@ export default function CategoryMaster() {
                         </div>
                         <form onSubmit={handleSubmit} className="p-5">
                             <div className="mb-4">
-                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Category Name <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">{activeTab === 'product' ? 'Product' : 'Ticket'} Category Name <span className="text-red-500">*</span></label>
                                 <input
                                     autoFocus
                                     required
                                     type="text"
                                     className="input w-full"
-                                    placeholder="e.g. Electronics, Clothing"
+                                    placeholder={activeTab === 'product' ? "e.g. Electronics, Clothing" : "e.g. Software, Hardware"}
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
                             </div>
 
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Default Unit Type</label>
-                                <select
-                                    className="input w-full"
-                                    value={formData.unitType}
-                                    onChange={(e) => setFormData({ ...formData, unitType: e.target.value })}
-                                >
-                                    <option value="">Select Unit</option>
-                                    {UNIT_TYPES.map(unit => (
-                                        <option key={unit.value} value={unit.value}>{unit.label}</option>
-                                    ))}
-                                </select>
-                            </div>
+                            {activeTab === 'product' && (
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Default Unit Type</label>
+                                    <select
+                                        className="input w-full"
+                                        value={formData.unitType}
+                                        onChange={(e) => setFormData({ ...formData, unitType: e.target.value })}
+                                    >
+                                        <option value="">Select Unit</option>
+                                        {UNIT_TYPES.map(unit => (
+                                            <option key={unit.value} value={unit.value}>{unit.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
 
                             <div className="flex justify-end gap-3 pt-2">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary">Cancel</button>

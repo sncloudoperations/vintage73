@@ -30,26 +30,35 @@ export default function Layout({ children }) {
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       setUser(userData);
-      initSocket(userData.id);
-      fetchUnreadCount();
-
-      const socket = initSocket(userData.id);
-      socket.on('receive_message', () => {
+      
+      if (userData.role !== 'customer') {
+        initSocket(userData.id);
         fetchUnreadCount();
-      });
 
-      // Fallback: Fetch branch name if missing from existing session
-      if (userData.branchId && !userData.branchName) {
-        api.get(`/branches/${userData.branchId}`)
-          .then(res => {
-            setBranch(res.data);
-            // Update localStorage for next time
-            const updatedUser = { ...userData, branchName: res.data.name };
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-          })
-          .catch(err => console.error("Error fetching branch:", err));
-      } else if (userData.branchName) {
-        setBranch({ name: userData.branchName });
+        const socket = initSocket(userData.id);
+        socket.on('receive_message', () => {
+          fetchUnreadCount();
+        });
+
+        // Fallback: Fetch branch name if missing from existing session
+        if (userData.branchId && !userData.branchName) {
+          api.get(`/branches/${userData.branchId}`)
+            .then(res => {
+              setBranch(res.data);
+              // Update localStorage for next time
+              const updatedUser = { ...userData, branchName: res.data.name };
+              localStorage.setItem('user', JSON.stringify(updatedUser));
+            })
+            .catch(err => console.error("Error fetching branch:", err));
+        } else if (userData.branchName) {
+          setBranch({ name: userData.branchName });
+        }
+      } else {
+        // Customers also get socket for real-time notifications
+        initSocket(userData.id);
+        if (userData.branchName) {
+          setBranch({ name: userData.branchName });
+        }
       }
     }
 
@@ -135,18 +144,20 @@ export default function Layout({ children }) {
                 </div>
 
                 <div className="flex items-center gap-2 ml-4">
-                  <button
-                    onClick={() => setIsChatOpen(true)}
-                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
-                    title="Internal Chat"
-                  >
-                    <IoChatbubbleEllipsesOutline className="text-2xl text-gray-600 dark:text-gray-300" />
-                    {totalUnread > 0 && (
-                      <span className="absolute top-1 right-1 bg-blue-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-white dark:border-gray-800">
-                        {totalUnread}
-                      </span>
-                    )}
-                  </button>
+                  {user?.role !== 'customer' && (
+                    <button
+                      onClick={() => setIsChatOpen(true)}
+                      className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+                      title="Internal Chat"
+                    >
+                      <IoChatbubbleEllipsesOutline className="text-2xl text-gray-600 dark:text-gray-300" />
+                      {totalUnread > 0 && (
+                        <span className="absolute top-1 right-1 bg-blue-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-white dark:border-gray-800">
+                          {totalUnread}
+                        </span>
+                      )}
+                    </button>
+                  )}
                   <NotificationBell />
                 </div>
 

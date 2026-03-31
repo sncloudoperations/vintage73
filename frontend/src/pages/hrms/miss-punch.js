@@ -37,6 +37,26 @@ export default function MissPunchRequests() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // 3-Day Rule Validation
+        const requestDate = new Date(formData.date);
+        requestDate.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const diffInMs = today.getTime() - requestDate.getTime();
+        const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+        if (diffInDays > 3) {
+            toast.error('Miss Punch request cannot be applied after 3 days from the missed date');
+            return;
+        }
+
+        if (requestDate > today) {
+            toast.error('Miss Punch cannot be applied for future dates');
+            return;
+        }
+
         try {
             await api.post('/hrms/miss-punch', formData);
             toast.success('Miss punch request submitted successfully');
@@ -44,7 +64,7 @@ export default function MissPunchRequests() {
             setFormData({ date: '', checkInTime: '', checkOutTime: '', reason: '' });
             fetchRequests();
         } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to submit request');
+            toast.error(err.response?.data?.error || err.response?.data?.message || 'Failed to submit request');
         }
     };
 
@@ -189,10 +209,13 @@ export default function MissPunchRequests() {
                                 <input
                                     required
                                     type="date"
-                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all"
+                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all mb-1"
                                     value={formData.date}
                                     onChange={e => setFormData({ ...formData, date: e.target.value })}
                                 />
+                                <p className="text-[10px] text-amber-600 font-bold flex items-center gap-1.5 px-1 uppercase tracking-tighter">
+                                    <FiCalendar size={12} /> Limit: Within 3 days from missed date
+                                </p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>

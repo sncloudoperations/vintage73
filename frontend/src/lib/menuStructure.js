@@ -99,6 +99,13 @@ export const MENU_STRUCTURE = [
     ]
   },
   {
+    title: 'SUPPORT',
+    icon: FiMessageSquare,
+    items: [
+      { name: 'Ticketing System', icon: FiClipboard, path: '/ticketing' },
+    ]
+  },
+  {
     title: 'REPORTS',
     icon: TbReportAnalytics,
     items: [

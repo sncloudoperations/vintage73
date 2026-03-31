@@ -57,6 +57,25 @@ exports.createMissPunchRequest = asyncHandler(async (req, res) => {
     throw new Error('Date and reason are required');
   }
 
+  // 3-Day Rule Validation
+  const requestDate = new Date(date);
+  requestDate.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const diffInMs = today.getTime() - requestDate.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInDays > 3) {
+    res.status(400);
+    throw new Error('Miss Punch request cannot be applied after 3 days from the missed date');
+  }
+
+  if (requestDate > today) {
+    res.status(400);
+    throw new Error('Miss Punch cannot be applied for future dates');
+  }
+
   const request = await prisma.missPunchRequest.create({
     data: {
       userId: user.id,

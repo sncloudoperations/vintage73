@@ -1,6 +1,7 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
 const { ensureLedger } = require('../utils/accountingHelper');
+const bcrypt = require('bcryptjs');
 
 // Get all customers
 exports.getCustomers = asyncHandler(async (req, res) => {
@@ -30,7 +31,7 @@ exports.getCustomers = asyncHandler(async (req, res) => {
 
 // Create customer
 exports.createCustomer = asyncHandler(async (req, res) => {
-  const { name, phone, email, address, branchId: queryBranchId, city, state, pincode, gstin, partyType } = req.body;
+  const { name, phone, email, address, branchId: queryBranchId, city, state, pincode, gstin, partyType, username, password, accessPermissions } = req.body;
   const user = req.user;
 
   // --- BRANCH FALLBACK ---
@@ -50,6 +51,25 @@ exports.createCustomer = asyncHandler(async (req, res) => {
     }
   }
 
+  let hashedPassword = null;
+  if (password) {
+    hashedPassword = await bcrypt.hash(password, 10);
+  }
+
+  if (username) {
+    const existingUser = await prisma.customer.findUnique({ where: { username } });
+    if (existingUser) {
+      res.status(400);
+      throw new Error('Username is already taken by another customer.');
+    }
+    // Also check main User table just to avoid confusion, though they log in differently
+    const adminUser = await prisma.user.findUnique({ where: { username } });
+    if (adminUser) {
+      res.status(400);
+      throw new Error('Username is already taken by a system user.');
+    }
+  }
+
   const customer = await prisma.customer.create({
     data: {
       name,
@@ -61,7 +81,11 @@ exports.createCustomer = asyncHandler(async (req, res) => {
       pincode,
       gstin,
       partyType: partyType || 'B2C',
-      branchId: branchId ? parseInt(branchId) : null
+      branchId: branchId ? parseInt(branchId) : null,
+      username: username || null,
+      password: hashedPassword,
+      accessPermissions: accessPermissions || null,
+      role: 'customer'
     }
   });
 
@@ -78,22 +102,53 @@ exports.createCustomer = asyncHandler(async (req, res) => {
 // Update customer
 exports.updateCustomer = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const { name, phone, email, address, branchId, city, state, pincode, gstin, partyType, username, password, accessPermissions } = req.body;
+  
   const sanitizedPhone = phone?.trim() === "" ? null : phone?.trim();
+
+  const data = {
+    name,
+    phone: sanitizedPhone,
+    email,
+    address,
+    city,
+    state,
+    pincode,
+    gstin,
+    partyType: partyType || 'B2C'
+  };
+
+  if (branchId !== undefined) {
+    data.branchId = branchId ? parseInt(branchId) : null;
+  }
+
+  if (username !== undefined) {
+    if (username) {
+      const existingUser = await prisma.customer.findUnique({ where: { username } });
+      if (existingUser && existingUser.id !== parseInt(id)) {
+        res.status(400);
+        throw new Error('Username is already taken by another customer.');
+      }
+      const adminUser = await prisma.user.findUnique({ where: { username } });
+      if (adminUser) {
+        res.status(400);
+        throw new Error('Username is already taken by a system user.');
+      }
+    }
+    data.username = username || null;
+  }
+
+  if (password) {
+    data.password = await bcrypt.hash(password, 10);
+  }
+
+  if (accessPermissions !== undefined) {
+    data.accessPermissions = accessPermissions;
+  }
 
   const customer = await prisma.customer.update({
     where: { id: parseInt(id) },
-    data: {
-      name,
-      phone: sanitizedPhone,
-      email,
-      address,
-      city,
-      state,
-      pincode,
-      gstin,
-      partyType: partyType || 'B2C',
-      branchId: branchId ? parseInt(branchId) : null
-    }
+    data
   });
   res.json(customer);
 });
