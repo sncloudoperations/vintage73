@@ -652,17 +652,17 @@ exports.getCategories = asyncHandler(async (req, res) => {
 
 // @desc    Get Customers for branch
 exports.getBranchCustomers = asyncHandler(async (req, res) => {
-    const branchId = req.user.role === 'admin' ? req.user.branchId : req.query.branchId;
-    
-    if (!branchId && req.user.role !== 'superadmin') {
-        res.status(400);
-        throw new Error('Branch ID is required');
-    }
+    // For admins, use their own branchId. For others, use query param if provided.
+    const branchId = req.user.role === 'admin' && req.user.branchId
+        ? req.user.branchId
+        : (req.query.branchId ? parseInt(req.query.branchId) : null);
 
-    const where = branchId ? { branchId: parseInt(branchId) } : {};
+    // Only filter by branch if a branchId is known; otherwise return all (superadmin/staff fallback)
+    const where = branchId ? { branchId } : {};
     const customers = await prisma.customer.findMany({
         where,
-        select: { id: true, name: true, phone: true }
+        select: { id: true, name: true, phone: true },
+        orderBy: { name: 'asc' }
     });
     res.json(customers);
 });
