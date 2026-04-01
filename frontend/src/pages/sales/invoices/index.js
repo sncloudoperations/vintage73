@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import { FiPrinter, FiEye, FiCheckCircle, FiFileText, FiDollarSign, FiX, FiSearch } from 'react-icons/fi';
+import { FiPrinter, FiEye, FiCheckCircle, FiFileText, FiDollarSign, FiX, FiSearch, FiTrash2, FiAlertTriangle } from 'react-icons/fi';
+
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
@@ -19,6 +20,13 @@ export default function InvoicesList() {
     const [showPreview, setShowPreview] = useState(false);
     const printRef = useRef();
     const handlePrint = useReactToPrint({ contentRef: printRef });
+
+    // Cancellation State
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const [deleteReason, setDeleteReason] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+
 
     useEffect(() => {
         fetchInvoices();
@@ -81,6 +89,38 @@ export default function InvoicesList() {
         setTimeout(() => handlePrint(), 100);
     };
 
+    const handleDeleteClick = (invoice) => {
+        setSelectedInvoice(invoice);
+        setDeleteReason('');
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteReason.trim()) {
+            toast.warn("Please provide a reason for cancellation");
+            return;
+        }
+
+        setIsDeleting(true);
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            await api.put(`/sales/${selectedInvoice.id}/cancel`, {
+                cancelledBy: user.name || user.username || 'Admin',
+                cancelReason: deleteReason
+            });
+            
+            toast.success("Invoice cancelled successfully");
+            setShowDeleteModal(false);
+            fetchInvoices();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to cancel invoice");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+
     const filteredInvoices = invoices.filter(inv => 
         inv.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (inv.customer?.name && inv.customer.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -112,8 +152,10 @@ export default function InvoicesList() {
                             <th className="px-6 py-4">Date</th>
                             <th className="px-6 py-4">Invoice #</th>
                             <th className="px-6 py-4">Customer</th>
+                            <th className="px-6 py-4">Status</th>
                             <th className="px-6 py-4 text-right">Total Amount</th>
                             <th className="px-6 py-4 text-center">Actions</th>
+
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -135,27 +177,49 @@ export default function InvoicesList() {
                                     <div className="font-medium">{inv.customer?.name || 'Walk-in Customer'}</div>
                                     <div className="text-xs text-slate-400">{inv.customer?.phone}</div>
                                 </td>
+                                <td className="px-6 py-4">
+                                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter border ${
+                                        inv.status === 'cancelled' 
+                                        ? 'bg-red-50 text-red-600 border-red-100'
+                                        : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                    }`}>
+                                        {inv.status}
+                                    </span>
+                                </td>
                                 <td className="px-6 py-4 text-sm text-right font-bold text-slate-800">
                                     ₹{Number(inv.totalAmount).toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4">
-                                    <div className="flex justify-center gap-3">
+                                    <div className="flex justify-center gap-2">
                                         <button
                                             onClick={() => handleView(inv.id)}
-                                            className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+                                            className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
                                             title="View Invoice"
                                         >
-                                            <FiEye size={18} />
+                                            <FiEye size={16} />
                                         </button>
                                         <button
                                             onClick={() => handleDirectPrint(inv)}
-                                            className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                                            className="p-1.5 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                                             title="Print Invoice"
                                         >
-                                            <FiPrinter size={18} />
+                                            <FiPrinter size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteClick(inv)}
+                                            disabled={inv.status === 'cancelled'}
+                                            className={`p-1.5 rounded-lg transition-all ${
+                                                inv.status === 'cancelled'
+                                                ? 'text-slate-200 cursor-not-allowed'
+                                                : 'text-slate-400 hover:text-red-600 hover:bg-red-50'
+                                            }`}
+                                            title="Cancel Invoice"
+                                        >
+                                            <FiTrash2 size={16} />
                                         </button>
                                     </div>
                                 </td>
+
                             </tr>
                         ))}
                         {!loading && filteredInvoices.length === 0 && (
@@ -206,6 +270,55 @@ export default function InvoicesList() {
                     </div>
                 </div>
             )}
+
+            {/* Cancel Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="p-6 border-b flex justify-between items-center bg-red-50 text-red-800">
+                            <div className="flex items-center gap-2">
+                                <FiAlertTriangle className="text-xl" />
+                                <h2 className="font-black uppercase tracking-widest text-xs">Cancel Invoice</h2>
+                            </div>
+                            <button onClick={() => setShowDeleteModal(false)} className="text-red-400 hover:text-red-600 transition-colors">
+                                <FiX size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 italic text-sm text-slate-500">
+                                Are you sure you want to cancel Invoice <span className="font-bold text-slate-800">{selectedInvoice?.invoiceNumber}</span>? 
+                                <p className="mt-1 text-[10px] non-italic text-slate-400">Stock will be restored and accounting reversed.</p>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest ml-1">Reason for Cancellation</label>
+                                <textarea 
+                                    className="input min-h-[100px] bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm"
+                                    value={deleteReason}
+                                    onChange={(e) => setDeleteReason(e.target.value)}
+                                    placeholder="e.g. Wrong items billed, Order returned, Duplicate entry..."
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="p-6 pt-0 flex gap-3">
+                            <button
+                                onClick={() => setShowDeleteModal(false)}
+                                className="flex-1 py-3 px-4 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all text-sm"
+                            >
+                                Nevermind
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                disabled={isDeleting || !deleteReason.trim()}
+                                className="flex-1 py-3 px-4 rounded-xl font-bold bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                {isDeleting ? <span className="animate-pulse">Processing...</span> : "Yes, Cancel Invoice"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
             {/* Off-screen Print Container */}
             <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', pointerEvents: 'none' }}>
