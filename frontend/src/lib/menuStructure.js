@@ -36,6 +36,8 @@ export const MENU_STRUCTURE = [
       { name: 'Dashboard', icon: FiBarChart2, path: '/crm' },
       { name: 'Deals Pipeline', icon: FiBriefcase, path: '/crm/deals' },
       { name: 'Leads', icon: FiUsers, path: '/crm/leads' },
+      { name: 'Lead Follow-ups', icon: FiCalendar, path: '/crm/followups' },
+      { name: 'Won Leads', icon: FiCheckCircle, path: '/crm/converted' },
       { name: 'Tasks', icon: FiCheckCircle, path: '/crm/tasks' },
     ]
   },
