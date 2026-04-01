@@ -23,8 +23,6 @@ exports.getUsers = asyncHandler(async (req, res) => {
       allowedModules: true,
       incentivePercentage: true,
       isActive: true,
-      // imageUrl: true,
-      // weeklyOff: true,
       createdAt: true,
       terminals: {
         select: { id: true, name: true, terminalCode: true }
@@ -61,7 +59,6 @@ exports.createUser = asyncHandler(async (req, res) => {
   const creatorRole = req.user.role;
   const creatorBranchId = req.user.branchId;
   const creatorModules = req.user.allowedModules || [];
-  const targetRole = role || 'staff';
   const targetBranchId = branchId ? parseInt(branchId) : null;
   const targetModules = allowedModules || [];
 
@@ -69,29 +66,24 @@ exports.createUser = asyncHandler(async (req, res) => {
   const isBranchAdmin = creatorRole === 'admin' && creatorBranchId;
 
   if (isBranchAdmin) {
-    // Branch Admin must create users in their own branch
     if (targetBranchId !== creatorBranchId) {
       return res.status(403).json({ message: 'You can only create users for your own branch' });
     }
-    // Module permissions must be a subset of creator's permissions
     const unauthorizedModules = targetModules.filter(m => !creatorModules.includes(m));
     if (unauthorizedModules.length > 0) {
       return res.status(403).json({ message: `Access denied: You cannot assign modules you don't have access to: ${unauthorizedModules.join(', ')}` });
     }
   } else if (!isGlobalAdmin) {
-    // Regular staff cannot create users at all
     return res.status(403).json({ message: 'Access denied: Insufficient permissions to create users' });
   }
   // --- End Validation ---
 
-  // Handle Employee Code
   let finalEmployeeCode = employeeCode;
   if (!finalEmployeeCode) {
     const lastEmployee = await prisma.employeeProfile.findFirst({
       where: { employeeCode: { startsWith: 'EMP' } },
       orderBy: { employeeCode: 'desc' }
     });
-
     if (lastEmployee && lastEmployee.employeeCode) {
       const lastNum = parseInt(lastEmployee.employeeCode.replace('EMP', ''));
       finalEmployeeCode = `EMP${(lastNum + 1).toString().padStart(3, '0')}`;
@@ -100,13 +92,11 @@ exports.createUser = asyncHandler(async (req, res) => {
     }
   }
 
-  // Handle designation - either use existing ID or create new
   let designationId = null;
   if (designation) {
     if (typeof designation === 'number' || !isNaN(designation)) {
       designationId = parseInt(designation);
     } else {
-      // Create new designation
       const newDesignation = await prisma.designation.upsert({
         where: { name: designation },
         update: {},
@@ -116,13 +106,11 @@ exports.createUser = asyncHandler(async (req, res) => {
     }
   }
 
-  // Handle department - either use existing ID or create new
   let departmentId = null;
   if (department) {
     if (typeof department === 'number' || !isNaN(department)) {
       departmentId = parseInt(department);
     } else {
-      // Create new department
       const newDepartment = await prisma.department.upsert({
         where: { name: department },
         update: {},
@@ -143,8 +131,6 @@ exports.createUser = asyncHandler(async (req, res) => {
       isActive: req.body.isActive !== undefined ? req.body.isActive === 'true' || req.body.isActive === true : true,
       incentivePercentage: parseFloat(incentivePercentage) || 0,
       adminId: adminId ? parseInt(adminId) : null,
-      // imageUrl: req.file ? '/uploads/' + req.file.filename : null,
-      // weeklyOff: weeklyOff || 'Sunday',
       terminals: terminalIds && Array.isArray(terminalIds) ? { connect: terminalIds.map(id => ({ id: parseInt(id) })) } : undefined,
       employeeProfile: {
         create: {
@@ -214,40 +200,39 @@ exports.updateUser = asyncHandler(async (req, res) => {
   const isGlobalAdmin = creatorRole === 'admin' && !creatorBranchId;
   const isBranchAdmin = creatorRole === 'admin' && creatorBranchId;
 
-  // If Branch Admin is updating
   if (isBranchAdmin) {
-    // Can only update users in their own branch
     if (targetUser.branchId !== creatorBranchId) {
       return res.status(403).json({ message: 'Access denied: Cannot update users from other branches' });
     }
-    // Cannot move user to another branch
     if (branchId && parseInt(branchId) !== creatorBranchId) {
-      return res.status(403).json({ message: 'Branch Admin cannot change a user\'s branch' });
+      return res.status(403).json({ message: "Branch Admin cannot change a user's branch" });
     }
-    // Module permissions check: Branch Admin can only assign modules they have access to.
-    // However, they should NOT be blocked if the target user ALREADY had those modules (they are just retaining them).
+    // Allow sub-modules if the parent group (e.g. 'SETTINGS') is already granted to the admin
     if (allowedModules && Array.isArray(allowedModules)) {
       const existingModules = Array.isArray(targetUser.allowedModules) ? targetUser.allowedModules : [];
       const addedModules = allowedModules.filter(m => !existingModules.includes(m));
-      const unauthorizedModules = addedModules.filter(m => !creatorModules.includes(m));
+      const unauthorizedModules = addedModules.filter(m => {
+        if (creatorModules.includes(m)) return false;
+        // Allow sub-module if parent group is granted (e.g. 'SETTINGS' covers 'SETTINGS:Change Password')
+        const parentKey = m.includes(':') ? m.split(':')[0] : null;
+        if (parentKey && creatorModules.includes(parentKey)) return false;
+        return true;
+      });
       if (unauthorizedModules.length > 0) {
         return res.status(403).json({ message: `Access denied: You cannot assign NEW modules you don't have access to: ${unauthorizedModules.join(', ')}` });
       }
     }
   } else if (!isGlobalAdmin) {
-    // Regular staff can only update themselves (if at all)
     if (parseInt(id) !== req.user.id) {
       return res.status(403).json({ message: 'Access denied: Insufficient permissions' });
     }
   }
   // --- End Validation ---
 
-  // Permission Check: Only Branch Admin can toggle status
   if (req.body.isActive !== undefined && isBranchAdmin === false && isGlobalAdmin === false) {
     return res.status(403).json({ message: 'Access denied: Only Branch Admin can activate or deactivate accounts' });
   }
 
-  // Handle designation - either use existing ID or create new
   let designationId = null;
   if (designation) {
     if (typeof designation === 'number' || !isNaN(designation)) {
@@ -262,7 +247,6 @@ exports.updateUser = asyncHandler(async (req, res) => {
     }
   }
 
-  // Handle department - either use existing ID or create new
   let departmentId = null;
   if (department) {
     if (typeof department === 'number' || !isNaN(department)) {
@@ -278,31 +262,25 @@ exports.updateUser = asyncHandler(async (req, res) => {
   }
 
   const dataToUpdate = {};
-
   if (name !== undefined) dataToUpdate.name = name;
   if (role !== undefined) dataToUpdate.role = role;
   if (allowedModules !== undefined) dataToUpdate.allowedModules = allowedModules;
   if (branchId !== undefined) dataToUpdate.branchId = branchId ? parseInt(branchId) : null;
-
   if (incentivePercentage !== undefined) {
     dataToUpdate.incentivePercentage = !isNaN(parseFloat(incentivePercentage)) ? parseFloat(incentivePercentage) : 0;
   }
-
   if (adminId !== undefined) {
     dataToUpdate.adminId = adminId ? parseInt(adminId) : null;
   }
-
   if (req.body.isActive !== undefined) {
     dataToUpdate.isActive = (req.body.isActive === 'true' || req.body.isActive === true);
   }
-
   if (terminalIds !== undefined) {
     dataToUpdate.terminals = {
       set: Array.isArray(terminalIds) ? terminalIds.map(id => ({ id: parseInt(id) })) : []
     };
   }
 
-  // Build employeeProfile data only if any employee field is present
   const employeeFields = [designation, department, joiningDate, basicSalary, labourRule, nationalId, employeeCode, bankName, accountNumber, ifscCode, branchName];
   if (employeeFields.some(f => f !== undefined)) {
     const employeeData = {};
