@@ -184,15 +184,15 @@ function MyLeaves({ user }) {
                                     {l.leaveType && <span className="text-xs text-slate-400 block">{l.leaveType.isPaid ? 'Paid' : 'Unpaid'}</span>}
                                 </td>
                                 <td className="px-6 py-3 text-slate-700">
-                                    {new Date(l.startDate).toLocaleDateString()}
-                                    {!l.isHalfDay && l.startDate !== l.endDate && ` - ${new Date(l.endDate).toLocaleDateString()}`}
+                                    {new Date(l.startDate).toLocaleDateString('en-GB')}
+                                    {!l.isHalfDay && l.startDate !== l.endDate && ` - ${new Date(l.endDate).toLocaleDateString('en-GB')}`}
                                 </td>
                                 <td className="px-6 py-3 text-slate-600">{l.reason}</td>
                                 <td className="px-6 py-3">
                                     <StatusBadge status={l.status} />
                                 </td>
                                 <td className="px-6 py-3 text-slate-400 text-xs">
-                                    {new Date(l.createdAt).toLocaleDateString()}
+                                    {new Date(l.createdAt).toLocaleDateString('en-GB')}
                                 </td>
                             </tr>
                         ))}
@@ -258,8 +258,8 @@ function ManageLeaves() {
                                     {l.isHalfDay && <div className="mt-1"><span className="px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-100 text-[10px] rounded font-bold uppercase">Half Day</span></div>}
                                 </td>
                                 <td className="px-6 py-3 text-slate-700">
-                                    {new Date(l.startDate).toLocaleDateString()}
-                                    {!l.isHalfDay && l.startDate !== l.endDate && ` - ${new Date(l.endDate).toLocaleDateString()}`}
+                                    {new Date(l.startDate).toLocaleDateString('en-GB')}
+                                    {!l.isHalfDay && l.startDate !== l.endDate && ` - ${new Date(l.endDate).toLocaleDateString('en-GB')}`}
                                 </td>
                                 <td className="px-6 py-3 text-slate-600">{l.reason}</td>
                                 <td className="px-6 py-3">
