@@ -227,9 +227,12 @@ export default function Customers() {
                 <p className="text-xs font-mono bg-slate-50 px-2 py-1 rounded">GSTIN: {customer.gstin}</p>
               )}
               {customer.address && <p className="flex items-start gap-2"><FiMapPin className="mt-0.5 text-slate-400" /> {customer.address}</p>}
-              <div className="pt-3 mt-3 border-t border-slate-50 flex justify-between items-center text-xs">
-                <span className="text-slate-400">Total Sales</span>
-                <span className="font-bold text-slate-700">{customer._count?.sales || 0} Orders</span>
+              <div className="pt-3 mt-3 border-t border-slate-50 flex justify-between items-center text-[10px] uppercase tracking-wider font-bold">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                  <FiMapPin size={12} className="text-primary" />
+                  <span>{customer.branch?.name || 'Global'}</span>
+                </div>
+                <div className="text-slate-400">{customer._count?.sales || 0} Orders</div>
               </div>
             </div>
           </div>

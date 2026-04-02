@@ -70,8 +70,13 @@ exports.checkOut = asyncHandler(async (req, res) => {
 });
 
 exports.getAttendanceStatus = asyncHandler(async (req, res) => {
-    const { userId } = req.query;
+    let { userId } = req.query;
     const todayIST = getISTDate();
+
+    // RBAC: Staff can only see their own attendance status
+    if (req.user.role === 'staff') {
+        userId = req.user.id;
+    }
 
     const attendance = await prisma.attendance.findFirst({
         where: {
@@ -83,7 +88,13 @@ exports.getAttendanceStatus = asyncHandler(async (req, res) => {
 });
 
 exports.getAttendanceHistory = asyncHandler(async (req, res) => {
-    const { userId, month, year } = req.query;
+    let { userId, month, year } = req.query;
+    
+    // RBAC: Staff can only see their own attendance history
+    if (req.user.role === 'staff') {
+        userId = req.user.id;
+    }
+
     const where = { userId: parseInt(userId) };
     const leaveWhere = {
         userId: parseInt(userId),
@@ -528,16 +539,18 @@ exports.getPayrollPreview = asyncHandler(async (req, res) => {
 
 exports.getBulkAttendance = asyncHandler(async (req, res) => {
     const { month, year } = req.query;
+    const where = { employeeProfile: { isNot: null } };
+
+    // RBAC: Staff can only see their own records, Admins see all (within branch)
+    if (req.user.role === 'staff') {
+        where.id = req.user.id;
+    } else if (req.user.branchId) {
+        where.branchId = req.user.branchId;
+    }
+
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0);
     endDate.setHours(23, 59, 59, 999);
-
-    const where = { employeeProfile: { isNot: null } };
-
-    // Branch Isolation
-    if (req.user.branchId) {
-        where.branchId = req.user.branchId;
-    }
 
     const users = await prisma.user.findMany({
         where,

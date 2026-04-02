@@ -8,23 +8,17 @@ exports.getCustomers = asyncHandler(async (req, res) => {
   const { branchId: queryBranchId } = req.query;
   const user = req.user;
 
-  // --- BRANCH ENFORCEMENT ---
-  let branchId = queryBranchId;
-  const isGlobalAdmin = user?.role === 'admin' && !user?.branchId;
-
-  if (!isGlobalAdmin) {
-    branchId = user.branchId;
-  }
-
-  const where = branchId
-    ? { OR: [{ branchId: parseInt(branchId) }, { branchId: null }] }
-    : {};
+  // GLOBAL CUSTOMERS: Return all customers regardless of branch
+  const where = {};
   const customers = await prisma.customer.findMany({
     where,
     orderBy: { createdAt: 'desc' },
     include: {
       _count: {
         select: { sales: true }
+      },
+      branch: {
+        select: { name: true }
       }
     }
   });
