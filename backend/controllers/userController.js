@@ -39,6 +39,36 @@ exports.getUsers = asyncHandler(async (req, res) => {
   res.json(users);
 });
 
+// Get single user by ID
+exports.getUserById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const user = await prisma.user.findUnique({
+    where: { id: parseInt(id) },
+    include: {
+      terminals: {
+        select: { id: true, name: true, terminalCode: true }
+      },
+      employeeProfile: {
+        include: {
+          designation: true,
+          department: true
+        }
+      }
+    }
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // Remove password from response
+  const { password, ...userWithoutPassword } = user;
+  
+  console.log(`[GET USER] Fetched ID ${id}:`, JSON.stringify(userWithoutPassword, null, 2));
+  
+  res.json(userWithoutPassword);
+});
+
 // Create new user
 exports.createUser = asyncHandler(async (req, res) => {
   const {
@@ -184,7 +214,7 @@ exports.updateUser = asyncHandler(async (req, res) => {
     name, role, allowedModules, branchId, incentivePercentage,
     designation, department, joiningDate, basicSalary, labourRule, nationalId,
     employeeCode, bankName, accountNumber, ifscCode, branchName, terminalIds,
-    weeklyOff, adminId
+    weeklyOff, adminId, password, username
   } = req.body;
 
   // --- Hierarchical Validation ---
@@ -263,8 +293,22 @@ exports.updateUser = asyncHandler(async (req, res) => {
 
   const dataToUpdate = {};
   if (name !== undefined) dataToUpdate.name = name;
+  if (username !== undefined) dataToUpdate.username = username;
   if (role !== undefined) dataToUpdate.role = role;
-  if (allowedModules !== undefined) dataToUpdate.allowedModules = allowedModules;
+  if (weeklyOff !== undefined) dataToUpdate.weeklyOff = weeklyOff;
+  
+  if (req.file) {
+    dataToUpdate.imageUrl = `/uploads/${req.file.filename}`;
+  }
+  
+  if (allowedModules !== undefined) {
+    if (typeof allowedModules === 'string') {
+      dataToUpdate.allowedModules = [allowedModules];
+    } else if (Array.isArray(allowedModules)) {
+      dataToUpdate.allowedModules = allowedModules;
+    }
+  }
+
   if (branchId !== undefined) dataToUpdate.branchId = branchId ? parseInt(branchId) : null;
   if (incentivePercentage !== undefined) {
     dataToUpdate.incentivePercentage = !isNaN(parseFloat(incentivePercentage)) ? parseFloat(incentivePercentage) : 0;
@@ -276,9 +320,23 @@ exports.updateUser = asyncHandler(async (req, res) => {
     dataToUpdate.isActive = (req.body.isActive === 'true' || req.body.isActive === true);
   }
   if (terminalIds !== undefined) {
+    let tIds = [];
+    if (typeof terminalIds === 'string' && terminalIds.trim() !== '') {
+      tIds = [parseInt(terminalIds)];
+    } else if (Array.isArray(terminalIds)) {
+      tIds = terminalIds.map(id => parseInt(id)).filter(id => !isNaN(id));
+    }
     dataToUpdate.terminals = {
-      set: Array.isArray(terminalIds) ? terminalIds.map(id => ({ id: parseInt(id) })) : []
+      set: tIds.map(id => ({ id }))
     };
+  }
+
+  // Handle Password Update if provided
+  if (password && password.trim() !== '') {
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+    dataToUpdate.password = await bcrypt.hash(password, 10);
   }
 
   const employeeFields = [designation, department, joiningDate, basicSalary, labourRule, nationalId, employeeCode, bankName, accountNumber, ifscCode, branchName];
@@ -303,6 +361,8 @@ exports.updateUser = asyncHandler(async (req, res) => {
       }
     };
   }
+
+  console.log('[UPDATE USER] Updating ID:', id, 'Data:', JSON.stringify(dataToUpdate, null, 2));
 
   const user = await prisma.user.update({
     where: { id: parseInt(id) },

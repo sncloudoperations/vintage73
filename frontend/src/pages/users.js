@@ -132,7 +132,7 @@ export default function Users() {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await api.get('/users');
+      const { data } = await api.get(`/users?t=${Date.now()}`);
       setUsers(data);
     } catch (err) {
       console.error(err);
@@ -148,65 +148,78 @@ export default function Users() {
       const data = new FormData();
       Object.keys(formData).forEach(key => {
         if (key === 'allowedModules' || key === 'terminalIds') {
-          formData[key].forEach(val => data.append(`${key}[]`, val));
+          formData[key].forEach(val => data.append(key, val));
         } else if (key === 'image') {
           if (formData[key]) data.append('image', formData[key]);
+        } else if (key === 'password') {
+          // Only append password if it has a value (for update)
+          if (formData[key] && formData[key].trim() !== '') {
+            data.append(key, formData[key]);
+          }
         } else {
           data.append(key, formData[key]);
         }
       });
 
       if (editingId) {
-        await api.put(`/users/${editingId}`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.put(`/users/${editingId}`, data);
         toast.success('User updated successfully');
       } else {
-        await api.post('/users', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post('/users', data);
         toast.success('User created successfully');
       }
+      await fetchUsers();
       setShowModal(false);
       setEditingId(null);
       setFormData(getInitialFormState());
-      fetchUsers();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save user');
     }
   };
 
 
-  const openEditModal = (user) => {
-    setEditingId(user.id);
-    setFormData({
-      username: user.username || '',
-      name: user.name || '',
-      password: '', // Password not editable here
-      role: user.role,
-      branchId: user.branchId || '',
-      allowedModules: user.allowedModules || [],
-      incentivePercentage: user.incentivePercentage || 0,
-      designation: user.employeeProfile?.designationId || '',
-      department: user.employeeProfile?.departmentId || '',
-      joiningDate: user.employeeProfile?.joiningDate ? user.employeeProfile.joiningDate.split('T')[0] : '',
-      basicSalary: user.employeeProfile?.basicSalary || 0,
-      labourRule: user.employeeProfile?.labourRule || '',
-      nationalId: user.employeeProfile?.nationalId || '',
-      employeeCode: user.employeeProfile?.employeeCode || '',
-      bankName: user.employeeProfile?.bankName || '',
-      accountNumber: user.employeeProfile?.accountNumber || '',
-      ifscCode: user.employeeProfile?.ifscCode || '',
-      branchName: user.employeeProfile?.branchName || '',
-      terminalIds: user.terminals?.map(t => t.id) || [],
-      weeklyOff: user.weeklyOff || 'Sunday',
-      autoCode: !user.employeeProfile?.employeeCode,
-      isActive: user.isActive,
-      adminId: user.adminId || '',
-      image: null,
-      imagePreview: user.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL}${user.imageUrl}` : null
-    });
-    setShowModal(true);
+  const openEditModal = async (user) => {
+    const loadingToast = toast.loading('Loading fresh user data...');
+    try {
+      // Use cache-busting query param to guarantee fresh data
+      const { data: freshUser } = await api.get(`/users/${user.id}?t=${Date.now()}`);
+      
+      console.log('Fetched fresh data:', freshUser);
+      
+      setFormData({
+        username: freshUser.username || '',
+        name: freshUser.name || '',
+        password: '', // Clear password field for edit
+        role: freshUser.role,
+        branchId: freshUser.branchId || '',
+        allowedModules: freshUser.allowedModules || [],
+        incentivePercentage: freshUser.incentivePercentage || 0,
+        designation: freshUser.employeeProfile?.designationId || '',
+        department: freshUser.employeeProfile?.departmentId || '',
+        joiningDate: freshUser.employeeProfile?.joiningDate ? freshUser.employeeProfile.joiningDate.split('T')[0] : '',
+        basicSalary: freshUser.employeeProfile?.basicSalary || 0,
+        labourRule: freshUser.employeeProfile?.labourRule || '',
+        nationalId: freshUser.employeeProfile?.nationalId || '',
+        employeeCode: freshUser.employeeProfile?.employeeCode || '',
+        bankName: freshUser.employeeProfile?.bankName || '',
+        accountNumber: freshUser.employeeProfile?.accountNumber || '',
+        ifscCode: freshUser.employeeProfile?.ifscCode || '',
+        branchName: freshUser.employeeProfile?.branchName || '',
+        terminalIds: freshUser.terminals?.map(t => t.id) || [],
+        weeklyOff: freshUser.weeklyOff || 'Sunday',
+        autoCode: !freshUser.employeeProfile?.employeeCode,
+        isActive: freshUser.isActive,
+        adminId: freshUser.adminId || '',
+        image: null,
+        imagePreview: freshUser.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL}${freshUser.imageUrl}` : null
+      });
+      setEditingId(freshUser.id);
+      setShowModal(true);
+      toast.dismiss(loadingToast);
+    } catch (err) {
+      console.error(err);
+      toast.update(loadingToast, { render: 'Failed to fetch user', type: 'error', isLoading: false, autoClose: 3000 });
+    }
   };
 
   const handleDelete = async (id) => {
@@ -497,21 +510,27 @@ export default function Users() {
                         </div>
                       </div>
 
-                      {!editingId && (
-                        <div>
-                          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Initial Password</label>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex justify-between items-center">
+                          <span>{editingId ? 'New Password (Optional)' : 'Initial Password'}</span>
+                          {editingId && <span className="text-[9px] text-primary-dark normal-case font-medium">Leave blank to keep current</span>}
+                        </label>
+                        <div className="relative group">
                           <input
-                            required
+                            required={!editingId}
                             type="password"
                             name="password"
                             autoComplete="new-password"
-                            className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm"
-                            placeholder="••••••••"
+                            className="input w-full bg-slate-50 border-slate-100 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all font-normal py-2.5 text-sm pr-10"
+                            placeholder={editingId ? "•••••••• (Untouched)" : "••••••••"}
                             value={formData.password}
                             onChange={e => setFormData({ ...formData, password: e.target.value })}
                           />
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-primary transition-colors">
+                            <FiKey />
+                          </div>
                         </div>
-                      )}
+                      </div>
                     </div>
 
                     <div className="space-y-4">
