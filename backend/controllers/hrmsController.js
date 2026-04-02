@@ -254,16 +254,13 @@ exports.getLeaveRequests = asyncHandler(async (req, res) => {
     if (userId) where.userId = parseInt(userId);
     if (status) where.status = status;
 
-    // Branch Isolation
-    if (req.user.branchId) {
-        where.branchId = req.user.branchId;
-    }
-
-    // Admin-based RBAC: branch admin can only see leaves of staff assigned to them
-    if (req.user.role === 'admin' && req.user.branchId && !userId) {
-        where.user = {
-            adminId: req.user.id
-        };
+    // Strict branch and role isolation
+    if (req.user.role === 'staff') {
+        where.userId = req.user.id;
+    } else if (req.user.branchId) {
+        // Admin with a branchId = branch admin: filter via the staff user's branchId relation
+        // This is the safest approach: works even if the record's own branchId is null
+        where.user = { branchId: req.user.branchId };
     }
 
     const leaves = await prisma.leaveRequest.findMany({
@@ -747,18 +744,15 @@ exports.getWorkLogs = asyncHandler(async (req, res) => {
 
     if (userId) where.userId = parseInt(userId);
 
-    // Branch Isolation
-    if (req.user.branchId) {
-        where.branchId = req.user.branchId;
+    // Strict branch and role isolation
+    console.log('[HRMS DEBUG getWorkLogs] user.role:', req.user.role, '| user.branchId:', req.user.branchId, '| user.id:', req.user.id);
+    if (req.user.role === 'staff') {
+        where.userId = req.user.id;
+    } else if (req.user.branchId) {
+        // Admin with a branchId = branch admin: filter via the staff user's branchId relation
+        where.user = { branchId: req.user.branchId };
     }
-
-    // Admin-based RBAC: branch admin only sees work logs of their assigned staff OR their own
-    if (req.user.role === 'admin' && req.user.branchId && !userId) {
-        where.OR = [
-            { userId: req.user.id },
-            { user: { adminId: req.user.id } }
-        ];
-    }
+    console.log('[HRMS DEBUG getWorkLogs] where filter:', JSON.stringify(where));
 
     // Date filter
     if (date) {

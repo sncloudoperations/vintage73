@@ -211,7 +211,7 @@ export default function AttendanceCalendar() {
                     </button>
                     <h2 className="text-lg font-bold text-slate-700 flex items-center gap-2">
                         <FiCalendar className="text-primary mb-0.5" />
-                        {date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                        {date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
                     </h2>
                     <button onClick={handleNextMonth} className="p-2 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200 hover:shadow-sm text-slate-600">
                         <FiChevronRight size={20} />

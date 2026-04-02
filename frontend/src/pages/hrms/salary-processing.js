@@ -464,7 +464,7 @@ export default function SalaryProcessing() {
                                                     <div className="font-bold text-slate-800">{p.user?.name || 'Unknown'}</div>
                                                     <div className="text-xs text-slate-500 uppercase font-bold tracking-tighter">
                                                         {p.fromDate && p.toDate ? (
-                                                            `${new Date(p.fromDate).toLocaleDateString()} - ${new Date(p.toDate).toLocaleDateString()}`
+                                                            `${new Date(p.fromDate).toLocaleDateString('en-GB')} - ${new Date(p.toDate).toLocaleDateString('en-GB')}`
                                                         ) : (
                                                             `${p.month} ${p.year}`
                                                         )}

@@ -139,7 +139,7 @@ export default function MissPunchRequests() {
                                             <div className="text-xs text-slate-400">@{req.user?.username}</div>
                                         </td>
                                         <td className="px-6 py-4 font-medium text-slate-700">
-                                            {new Date(req.date).toLocaleDateString()}
+                                            {new Date(req.date).toLocaleDateString('en-GB')}
                                         </td>
                                         <td className="px-6 py-4 text-slate-600">
                                             {req.checkInTime || '-'}
@@ -158,7 +158,7 @@ export default function MissPunchRequests() {
                                                 <div>
                                                     <div className="font-medium">{req.reviewer.name}</div>
                                                     <div className="text-xs text-slate-400">
-                                                        {req.reviewedAt ? new Date(req.reviewedAt).toLocaleDateString() : ''}
+                                                        {req.reviewedAt ? new Date(req.reviewedAt).toLocaleDateString('en-GB') : ''}
                                                     </div>
                                                 </div>
                                             ) : '-'}

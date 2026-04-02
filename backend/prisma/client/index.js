@@ -986,7 +986,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Dell\\Desktop\\quickpos\\inventory\\backend\\prisma\\client",
+      "value": "c:\\Users\\Dell\\Desktop\\quickpos\\inventory\\backend\\prisma\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -1013,7 +1013,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": true,
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

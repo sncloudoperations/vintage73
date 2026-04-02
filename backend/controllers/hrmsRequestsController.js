@@ -11,17 +11,21 @@ exports.getMissPunchRequests = asyncHandler(async (req, res) => {
 
   let where = {};
 
-  // Branch Isolation: If user is assigned to a branch, only show that branch's data
-  if (user.branchId) {
-    where.branchId = user.branchId;
-  } else if (user.role !== 'admin') {
+  // Strict branch and role isolation
+  console.log('[HRMS DEBUG getMissPunch] user.role:', user.role, '| user.branchId:', user.branchId, '| user.id:', user.id);
+  if (user.role === 'staff') {
     where.userId = user.id;
+  } else if (user.branchId) {
+    // Any admin with a branchId is a branch admin - filter via the related staff member's branchId
+    where.user = { branchId: user.branchId };
   }
 
-  // Allow filtering by userId if admin
-  if (user.role === 'admin' && userId) {
+  // Allow additional userId filter for admins (within their branch)
+  if (user.branchId && userId) {
     where.userId = parseInt(userId);
+    delete where.user;
   }
+  console.log('[HRMS DEBUG getMissPunch] where filter:', JSON.stringify(where));
 
   const requests = await prisma.missPunchRequest.findMany({
     where,
@@ -219,15 +223,19 @@ exports.getSalaryAdvances = asyncHandler(async (req, res) => {
 
   let where = {};
 
-  // Branch Isolation
-  if (user.branchId) {
-    where.branchId = user.branchId;
-  } else if (user.role !== 'admin') {
+  // Strict branch and role isolation
+  if (user.role === 'staff') {
     where.userId = user.id;
+  } else if (user.branchId) {
+    // Any admin with a branchId is a branch admin - filter via the related staff member's branchId
+    // This works even if the record's own branchId is null (legacy data)
+    where.user = { branchId: user.branchId };
   }
 
-  if (user.role === 'admin' && userId) {
+  // Allow additional userId filter for admins (within their branch)
+  if (user.branchId && userId) {
     where.userId = parseInt(userId);
+    delete where.user;
   }
 
   const advances = await prisma.salaryAdvance.findMany({

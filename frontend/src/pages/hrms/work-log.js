@@ -175,7 +175,7 @@ export default function WorkLogPage() {
                                         <p className="whitespace-pre-line">{log.description}</p>
                                     </td>
                                     <td className="px-6 py-4 text-slate-400 text-xs">
-                                        {new Date(log.createdAt).toLocaleDateString()}
+                                        {new Date(log.createdAt).toLocaleDateString('en-GB')}
                                     </td>
                                 </tr>
                             ))}

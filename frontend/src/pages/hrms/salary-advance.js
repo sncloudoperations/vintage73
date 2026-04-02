@@ -170,7 +170,7 @@ export default function SalaryAdvance() {
                                             {adv.reason}
                                         </td>
                                         <td className="px-6 py-4 text-slate-600">
-                                            {new Date(adv.requestDate).toLocaleDateString()}
+                                            {new Date(adv.requestDate).toLocaleDateString('en-GB')}
                                         </td>
                                         <td className="px-6 py-4">
                                             {getStatusBadge(adv)}
@@ -180,7 +180,7 @@ export default function SalaryAdvance() {
                                                 <div>
                                                     <div className="font-medium">{adv.approver.name}</div>
                                                     <div className="text-xs text-slate-400">
-                                                        {adv.approvedAt ? new Date(adv.approvedAt).toLocaleDateString() : ''}
+                                                        {adv.approvedAt ? new Date(adv.approvedAt).toLocaleDateString('en-GB') : ''}
                                                     </div>
                                                 </div>
                                             ) : '-'}

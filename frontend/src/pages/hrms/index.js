@@ -69,7 +69,7 @@ export default function HRMSDashboard() {
                 <div className="space-y-4">
                     <div className="flex justify-between items-center text-sm">
                         <span className="text-slate-500">Date</span>
-                        <span className="font-medium">{new Date().toLocaleDateString()}</span>
+                        <span className="font-medium">{new Date().toLocaleDateString('en-GB')}</span>
                     </div>
 
                     <div className="flex justify-between items-center text-sm">

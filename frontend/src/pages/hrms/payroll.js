@@ -211,7 +211,7 @@ export default function PayrollPage() {
                                         <td>
                                             <div className="font-bold text-slate-700">{p.month} {p.year}</div>
                                             <div className="text-[10px] text-slate-400 uppercase tracking-tighter italic">
-                                                {p.fromDate ? new Date(p.fromDate).toLocaleDateString() : '?'} - {p.toDate ? new Date(p.toDate).toLocaleDateString() : '?'}
+                                                {p.fromDate ? new Date(p.fromDate).toLocaleDateString('en-GB') : '?'} - {p.toDate ? new Date(p.toDate).toLocaleDateString('en-GB') : '?'}
                                             </div>
                                         </td>
                                         <td className="text-right font-mono text-slate-600">
@@ -336,7 +336,7 @@ export default function PayrollPage() {
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-slate-400 font-medium">Joining Date:</span>
-                                                <span className="text-slate-900 font-bold">{selectedPayroll.user?.employeeProfile?.joiningDate ? new Date(selectedPayroll.user.employeeProfile.joiningDate).toLocaleDateString() : '-'}</span>
+                                                <span className="text-slate-900 font-bold">{selectedPayroll.user?.employeeProfile?.joiningDate ? new Date(selectedPayroll.user.employeeProfile.joiningDate).toLocaleDateString('en-GB') : '-'}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -477,7 +477,7 @@ export default function PayrollPage() {
                                             </div>
                                         )}
                                         <div className="text-[10px] font-bold text-slate-500 space-y-1">
-                                            <p>Date: {new Date().toLocaleDateString()}</p>
+                                            <p>Date: {new Date().toLocaleDateString('en-GB')}</p>
                                             <p>Document No: BS-{filters.month?.substring(0, 3).toUpperCase()}-{filters.year}</p>
                                         </div>
                                     </div>

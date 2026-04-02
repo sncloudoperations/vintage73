@@ -168,7 +168,7 @@ export default function BankStatementPage() {
                                     </div>
                                 )}
                                 <div className="text-xs font-bold text-slate-500 space-y-1">
-                                    <p>Date: {new Date().toLocaleDateString()}</p>
+                                    <p>Date: {new Date().toLocaleDateString('en-GB')}</p>
                                     <p>Document No: BS-{filters.month?.substring(0, 3).toUpperCase()}-{filters.year}</p>
                                 </div>
                             </div>
