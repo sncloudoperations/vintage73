@@ -7,9 +7,16 @@ const asyncHandler = require('../middleware/asyncHandler');
 exports.getUsers = asyncHandler(async (req, res) => {
   let where = {};
 
-  // Branch Isolation: Restrict to branch if assigned
+  // Filter by role if provided in query
+  if (req.query.role) {
+    where.role = req.query.role;
+  }
+
+  // Branch Isolation: Restrict to branch if assigned or provided in query
   if (req.user.branchId) {
     where.branchId = req.user.branchId;
+  } else if (req.query.branchId) {
+    where.branchId = parseInt(req.query.branchId);
   }
 
   const users = await prisma.user.findMany({

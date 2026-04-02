@@ -142,7 +142,7 @@ exports.createTicket = asyncHandler(async (req, res) => {
     await createNotification({
       userId: requesterId,
       title: 'New Service Ticket',
-      message: `Branch admin created a ticket for you: ${title}`,
+      message: `Your ticket #${ticket.ticketId} has been created by ${ticket.branch.name}`,
       type: 'INFO',
       ticketId: ticket.id,
       link: `/ticketing?id=${ticket.id}`
@@ -213,13 +213,8 @@ exports.getTickets = asyncHandler(async (req, res) => {
         where.AND.push({ assignedToId: parseInt(id) }); // Fallback to personal only
     }
   } else if (role === 'admin' && userBranchId) {
-    // Branch Admin sees their own partitioned tickets OR branch-wide shared tickets
-    where.AND.push({
-      OR: [
-        { adminId: parseInt(id) },
-        { adminId: null, branchId: parseInt(userBranchId) }
-      ]
-    });
+    // Branch Admin sees all tickets for their branch
+    where.AND.push({ branchId: parseInt(userBranchId) });
   } else if (role === 'superadmin' || (role === 'admin' && !userBranchId)) {
     // Global access
   } else {
@@ -659,9 +654,8 @@ exports.getBranchCustomers = asyncHandler(async (req, res) => {
 
     // If branchId is known, return customers matching that branch OR those with no branch set (legacy data)
     // If no branchId at all (superadmin), return all customers
-    const where = branchId
-        ? { OR: [{ branchId }, { branchId: null }] }
-        : {};
+    // GLOBAL CUSTOMERS: Return all customers across branches
+    const where = {};
 
     const customers = await prisma.customer.findMany({
         where,
@@ -701,7 +695,10 @@ exports.acceptTicket = asyncHandler(async (req, res) => {
 
 // @desc    Reassign ticket (Staff only)
 exports.reassignTicket = asyncHandler(async (req, res) => {
-    const { ticketId, reason, nextStaffId } = req.body;
+    // Supporting both /reassign (POST) and /:id/reassign (PUT)
+    const ticketId = req.params.id || req.body.ticketId;
+    const { reason, nextStaffId, assignedTo } = req.body;
+    const staffId = assignedTo || nextStaffId;
 
     if (!reason) {
         res.status(400);
@@ -716,12 +713,12 @@ exports.reassignTicket = asyncHandler(async (req, res) => {
     }
 
     let updateData = {
-        status: nextStaffId ? 'ASSIGNED' : 'CLOSED',
+        status: staffId ? 'ASSIGNED' : 'CREATED', // Back to CREATED if no one assigned
         resignReason: reason,
         history: {
             create: {
                 action: 'Reassigned',
-                message: nextStaffId 
+                message: staffId 
                     ? `Staff reassign to another agent. Reason: ${reason}`
                     : `Staff reassign requested. Reason: ${reason}`,
                 doneById: req.user.id,
@@ -731,8 +728,8 @@ exports.reassignTicket = asyncHandler(async (req, res) => {
         }
     };
 
-    if (nextStaffId) {
-        updateData.assignedTo = { connect: { id: parseInt(nextStaffId) } };
+    if (staffId) {
+        updateData.assignedTo = { connect: { id: parseInt(staffId) } };
     } else {
         updateData.assignedTo = { disconnect: true };
     }
@@ -740,7 +737,7 @@ exports.reassignTicket = asyncHandler(async (req, res) => {
     const updatedTicket = await prisma.ticket.update({
         where: { id: String(ticketId) },
         data: updateData,
-        include: { assignedTo: true }
+        include: { assignedTo: { select: { id: true, name: true, username: true } } }
     });
 
     // Notify Admins
@@ -752,7 +749,7 @@ exports.reassignTicket = asyncHandler(async (req, res) => {
         await createNotification({
             userId: admin.id,
             title: 'Staff Reassign Update',
-            message: nextStaffId 
+            message: staffId 
                 ? `Staff (${req.user.name}) reassigned ticket #${updatedTicket.ticketId} to colleague. Reason: ${reason}`
                 : `Staff (${req.user.name}) requested reassignment for ticket #${updatedTicket.ticketId}. Reason: ${reason}`,
             type: 'WARNING',
@@ -762,9 +759,9 @@ exports.reassignTicket = asyncHandler(async (req, res) => {
     }
 
     // Notify New Staff if applicable
-    if (nextStaffId && updatedTicket.assignedTo) {
+    if (staffId && updatedTicket.assignedTo) {
         await createNotification({
-            userId: parseInt(nextStaffId),
+            userId: parseInt(staffId),
             title: 'Ticket Reassigned to You',
             message: `Colleague (${req.user.name}) reassigned ticket #${updatedTicket.ticketId} to you. Reason: ${reason}`,
             type: 'INFO',

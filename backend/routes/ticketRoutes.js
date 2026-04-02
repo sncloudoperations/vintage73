@@ -46,6 +46,7 @@ router.put('/mark-ignored', markAsIgnored);
 // Staff Actions
 router.post('/accept', acceptTicket);
 router.post('/reassign', reassignTicket);
+router.put('/:id/reassign', reassignTicket);
 router.post('/complete', completeTicket);
 
 module.exports = router;
