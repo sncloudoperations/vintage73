@@ -9,6 +9,7 @@ const upload = require('../middleware/uploadMiddleware');
 router.get('/admins', userController.getAdminsByBranch);
 router.get('/staff', userController.getStaffByBranch);
 router.get('/', userController.getUsers);
+router.get('/:id', userController.getUserById);
 router.post('/', upload.single('image'), userController.createUser);
 router.put('/:id', upload.single('image'), userController.updateUser);
 router.put('/:id/password', userController.updatePassword);
