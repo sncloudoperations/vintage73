@@ -91,7 +91,8 @@ const CURRENCY_SYMBOLS = {
 
     // Numpad Support
     const [activeInput, setActiveInput] = useState('search'); // 'search' or cartItemId
-    const [invoiceSettings, setInvoiceSettings] = useState(null);
+    const [salesSettings, setSalesSettings] = useState(null);
+    const [returnSettings, setReturnSettings] = useState(null);
     const [companyProfile, setCompanyProfile] = useState(null);
     const [customerBalance, setCustomerBalance] = useState(0);
     const [cashier, setCashier] = useState(null);
@@ -171,10 +172,12 @@ const CURRENCY_SYMBOLS = {
 
             // Fetch Dedicated Invoice Settings (New System)
             try {
-                const settingsRes = await api.get('/invoice-settings', { params: { type: 'sales' } });
-                if (settingsRes.data?.settings) {
-                    setInvoiceSettings(settingsRes.data.settings);
-                }
+                const [salesRes, returnRes] = await Promise.all([
+                    api.get('/invoice-settings', { params: { type: 'sales' } }),
+                    api.get('/invoice-settings', { params: { type: 'return' } })
+                ]);
+                if (salesRes.data?.settings) setSalesSettings(salesRes.data.settings);
+                if (returnRes.data?.settings) setReturnSettings(returnRes.data.settings);
             } catch (err) {
                 console.error('Failed to load professional invoice settings', err);
             }
@@ -245,15 +248,15 @@ const CURRENCY_SYMBOLS = {
                         stockIncluded: data?.stockIncluded !== undefined ? data.stockIncluded : true
                     });
                     if (data?.invoiceSettings && Object.keys(data.invoiceSettings).length > 0) {
-                        setInvoiceSettings(data.invoiceSettings);
+                        setSalesSettings(data.invoiceSettings);
                     } else {
-                        setInvoiceSettings(companyProfile?.invoiceSettings || null);
+                        setSalesSettings(companyProfile?.invoiceSettings || null);
                     }
                 } catch (err) {
                     console.error("Failed to fetch branch settings", err);
                 }
             } else if (companyProfile) {
-                setInvoiceSettings(companyProfile.invoiceSettings);
+                setSalesSettings(companyProfile.invoiceSettings);
             }
         };
 
@@ -615,7 +618,7 @@ const CURRENCY_SYMBOLS = {
                 currencyCode,
                 currencySymbol,
                 exchangeRate,
-                settings: invoiceSettings || {}
+                settings: (lastSale?.isReturn ? returnSettings : salesSettings) || {}
             }); // Save for printing
             setShowPaymentModal(false);
             // Delay print slightly to allow state update
@@ -1165,7 +1168,7 @@ const CURRENCY_SYMBOLS = {
                 <div style={{ display: 'none' }}>
                     <div ref={componentRef}>
                         <ProfessionalInvoice 
-                            printData={{...lastSale, settings: invoiceSettings}} 
+                            printData={{...lastSale, settings: lastSale?.isReturn ? returnSettings : salesSettings}} 
                             companyProfile={companyProfile} 
                         />
                     </div>

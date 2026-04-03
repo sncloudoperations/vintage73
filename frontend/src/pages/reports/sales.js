@@ -22,7 +22,8 @@ export default function SalesReport() {
     const [selectedSale, setSelectedSale] = useState(null);
     const [printSale, setPrintSale] = useState(null);
     const [companyProfile, setCompanyProfile] = useState(null);
-    const [invoiceSettings, setInvoiceSettings] = useState(null);
+    const [salesSettings, setSalesSettings] = useState(null);
+    const [returnSettings, setReturnSettings] = useState(null);
     const [user, setUser] = useState(null);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [saleToCancel, setSaleToCancel] = useState(null);
@@ -49,12 +50,16 @@ export default function SalesReport() {
         try {
             setLoading(true);
             const queryBranchId = selectedBranch === 'all' ? undefined : selectedBranch;
-            const [salesRes, compRes] = await Promise.all([
+            const [salesRes, compRes, salesSettingsRes, returnSettingsRes] = await Promise.all([
                 api.get('/sales', { params: { branchId: queryBranchId } }),
-                api.get('/company')
+                api.get('/company'),
+                api.get('/invoice-settings', { params: { type: 'sales' } }),
+                api.get('/invoice-settings', { params: { type: 'return' } })
             ]);
             setSales(salesRes.data);
             if (compRes.data) setCompanyProfile(compRes.data);
+            if (salesSettingsRes.data?.settings) setSalesSettings(salesSettingsRes.data.settings);
+            if (returnSettingsRes.data?.settings) setReturnSettings(returnSettingsRes.data.settings);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load data");
@@ -379,11 +384,10 @@ export default function SalesReport() {
                 </div>
             )}
 
-            {/* Hidden Print Component */}
             <div style={{ display: 'none' }}>
                 <ProfessionalInvoice
                     ref={componentRef}
-                    printData={printSale}
+                    printData={{...printSale, settings: printSale?.isReturn ? returnSettings : salesSettings}}
                     companyProfile={companyProfile}
                 />
             </div>
