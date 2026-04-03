@@ -597,7 +597,7 @@ const CURRENCY_SYMBOLS = {
                     productId: item.id,
                     quantity: item.quantity,
                     unitPrice: item.price,
-                    taxPercent: item.taxPercent,
+                    taxPercent: taxEnabled ? item.taxPercent : 0,
                     discountPercent: item.discountPercent,
                     discountAmount: item.discountAmount
                 })),

@@ -153,7 +153,7 @@ exports.createSale = asyncHandler(async (req, res) => {
 
       const unitPrice = item.unitPrice || item.price || 0;
       const netPrice = parseFloat(unitPrice) - parseFloat(item.discountAmount || 0);
-      const taxRate = parseFloat(product.taxRate || 0);
+      const taxRate = item.taxPercent !== undefined ? parseFloat(item.taxPercent) : parseFloat(product.taxRate || 0);
       const isTaxInclusive = product.isTaxInclusive || false;
 
       let lineTax = 0;

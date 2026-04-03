@@ -194,7 +194,8 @@ export default function InvoicesList() {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 text-sm text-right font-bold text-slate-800">
-                                    ₹{Number(inv.totalAmount).toFixed(2)}
+                                    {(inv.currencyCode === 'USD' ? '$' : inv.currencyCode === 'AED' ? 'د.إ' : '₹')}
+                                    {(Number(inv.totalAmount) * Number(inv.exchangeRate || 1)).toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex justify-center gap-2">
