@@ -33,24 +33,37 @@ const numberToWords = (num) => {
     return result + ' Only';
 };
 
-const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile }, ref) => {
+const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previewMode = 'Desktop' }, ref) => {
     if (!printData) return null;
 
     const {
         invoiceNumber, saleDate, items, subTotal, taxAmount, totalAmount, roundOffAmount,
-        customer, customerName, previousBalance, currentBalance, placeOfSupply
+        customer, customerName, previousBalance, currentBalance, placeOfSupply,
+        currencyCode, currencySymbol, exchangeRate
     } = printData;
 
-    const amountInWords = useMemo(() => numberToWords(parseFloat(totalAmount || 0)), [totalAmount]);
+    const currentSymbol = currencySymbol || '₹';
+    const settings = printData.settings || {};
+    const tpl = settings.template || 'modern';
+    const pageSize = settings.pageSize || 'A5';
+    const accent = settings.accentColor || '#10b981';
+    
+    const isThermal = pageSize === 'Thermal';
+    const isA5 = pageSize === 'A5';
+    const isA4 = pageSize === 'A4';
+    const isMobile = previewMode === 'Mobile';
 
-    // Breakdown taxes for footer
+    const isModern = tpl === 'modern';
+    const isClassic = tpl === 'classic';
+    const isBold = tpl === 'bold';
+    const isMinimal = tpl === 'minimal';
+
     const taxBreakdown = useMemo(() => {
         const breakdown = {};
         items?.forEach(item => {
             const rate = parseFloat(item.taxRate || 0);
             const lineTax = parseFloat(item.taxAmount || 0);
-            const taxable = parseFloat(item.total) - lineTax;
-
+            const taxable = (parseFloat(item.total) || 0) - lineTax;
             if (!breakdown[rate]) {
                 breakdown[rate] = { taxableAmount: 0, taxAmount: 0 };
             }
@@ -60,143 +73,213 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile }, ref
         return breakdown;
     }, [items]);
 
+    const getContainerStyle = () => {
+        const base = {
+            width: isThermal ? '80mm' : (isA5 ? '148mm' : '210mm'),
+            minHeight: isThermal ? 'auto' : (isA5 ? '210mm' : '297mm'),
+            padding: isThermal ? '4mm' : (isA5 ? '4mm 12mm 12mm 12mm' : '5mm 18mm 15mm 18mm'),
+            fontSize: isThermal ? '10px' : (isA5 ? '12px' : '13px'),
+            backgroundColor: 'white',
+            color: '#1f2937', 
+            margin: isMobile ? '0' : '0 auto',
+            boxSizing: 'border-box',
+            position: 'relative',
+            fontFamily: isThermal ? 'monospace' : "'Inter', system-ui, sans-serif"
+        };
+
+        if (isMobile) {
+            base.width = '100%';
+            base.minHeight = 'auto';
+            base.padding = '15px';
+            base.fontSize = '12px';
+        }
+
+        if (isClassic && !isThermal) {
+            base.border = '2px solid black';
+        }
+
+        return base;
+    };
+
+    // Shared Typography Scale (Clean & Balanced)
+    const s_Title = "text-[20px] font-bold tracking-[0.5px] uppercase"; 
+    const s_Company = "text-[16px] font-semibold leading-tight mb-1";
+    const s_AddressLabel = "text-[12px] text-[#6b7280]"; 
+    const s_SecHead = "text-[12px] font-bold uppercase tracking-wider mb-2";
+    const s_Label = "text-[12px] font-medium text-[#6b7280]";
+    const s_Value = "text-[13px] font-bold text-[#1f2937]";
+    const s_TableTh = "px-2.5 text-[10px] font-bold uppercase tracking-wider";
+    const s_TableTd = "py-2 px-2.5 text-[12px] font-medium border-b border-slate-50";
+    const s_TotalBox = "text-[14px] font-bold";
+    const s_GrandTotal = "text-[18px] font-bold";
+
+    if (isThermal) {
+        return (
+            <div ref={ref} style={getContainerStyle()} className="thermal-invoice">
+                <style>{`@media print { @page { size: 80mm auto; margin: 0; } body { margin: 0; } .thermal-invoice { width: 80mm !important; margin: 0 !important; padding: 4mm !important; } }`}</style>
+                <div className="text-center border-b border-dashed border-black pb-2 mb-4">
+                    {settings.showLogo !== false && <div className="w-8 h-8 border border-black rounded flex items-center justify-center text-[8px] font-bold mx-auto mb-1 uppercase tracking-tighter">Logo</div>}
+                    {settings.showCompanyName !== false && <h2 className="text-[14px] font-bold uppercase">{companyProfile?.companyName || 'OUR STORE'}</h2>}
+                    <p className="text-[10px]">{companyProfile?.address}</p>
+                    <p className="text-[10px]">Ph: {companyProfile?.phone}</p>
+                    <div className="border-t border-b border-black py-1 mt-1 font-bold">{settings.headerTitle || 'TAX INVOICE'}</div>
+                </div>
+                <div className="text-[10px] mb-4">
+                    <div className="flex justify-between"><span>Inv: {invoiceNumber}</span><span>{new Date(saleDate).toLocaleDateString()}</span></div>
+                    <div className="font-bold mt-1">Bill To: {customer?.name || customerName || 'Walk-in'}</div>
+                </div>
+                <table className="w-full text-[10px] border-b border-dashed border-black mb-4">
+                    <thead><tr><th className="text-left font-bold py-1">Item</th><th className="text-right font-bold w-12 py-1">Qty</th><th className="text-right font-bold w-16 py-1">Amt</th></tr></thead>
+                    <tbody>{items?.map((item, i) => (<tr key={i}><td className="py-1">{item.product?.name || item.name}</td><td className="text-right py-1">{item.quantity}</td><td className="text-right py-1">{currentSymbol}{parseFloat(item.total || 0).toFixed(2)}</td></tr>))}</tbody>
+                </table>
+                <div className="space-y-1 text-[11px] font-bold flex flex-col items-end">
+                    <div className="flex justify-between w-full"><span>Subtotal:</span><span>{currentSymbol}{parseFloat(subTotal || 0).toFixed(2)}</span></div>
+                    <div className="flex justify-between w-full text-[13px] border-t border-black pt-1 mt-1 font-black"><span>TOTAL:</span><span>{currentSymbol}{parseFloat(totalAmount || 0).toFixed(0)}</span></div>
+                </div>
+                <div className="text-center mt-4 pt-2 border-t border-dashed border-black text-[9px] font-bold tracking-widest"><p>{settings.footerText || 'THANK YOU!'}</p></div>
+            </div>
+        );
+    }
+
     return (
-        <div ref={ref} className="p-6 bg-white text-black text-[12px] leading-tight" style={{ width: '210mm', minHeight: '148mm', fontFamily: 'Arial, sans-serif' }}>
-            {/* Header */}
-            <div className="text-center mb-4">
-                <h1 className="text-[20px] font-bold uppercase mb-1">{companyProfile?.companyName || 'ABS HARDWARE'}</h1>
-                <p className="mb-0.5">{companyProfile?.address || 'Ayiramkolly, Ambalavayal, Wayanad'}</p>
-                <p className="mb-0.5">Ph. no: {companyProfile?.phone || '7510133133'}</p>
-                <p className="font-semibold uppercase">GSTIN: {companyProfile?.gstNumber || '32DXHPK3898B1ZF'}, State: {companyProfile?.state || '32-Kerala'}</p>
-            </div>
+        <div ref={ref} style={getContainerStyle()} className={`professional-invoice leading-normal`}>
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+                @media print {
+                    @page { 
+                        size: ${pageSize === 'A4' ? '210mm 297mm' : '148mm 210mm'}; 
+                        margin: 0; 
+                    }
+                    body { margin: 0 !important; -webkit-print-color-adjust: exact; background: #fff !important; }
+                    .professional-invoice {
+                        width: ${isA4 ? '210mm' : '148mm'} !important;
+                        min-height: ${isA4 ? '297mm' : '210mm'} !important;
+                        box-shadow: none !important; 
+                        margin: 0 !important;
+                        border: none !important;
+                    }
+                }
+                .professional-invoice { font-family: 'Inter', sans-serif !important; }
+            `}</style>
 
-            {/* Title */}
-            <div className="text-center mb-4">
-                <span className="border border-black px-10 py-1 font-bold text-[14px] uppercase tracking-wider">Tax Invoice</span>
-            </div>
-
-            {/* Meta Info */}
-            <div className="flex justify-between border-t border-x border-black p-3 pb-2">
+            {/* HEADER AREA */}
+            <div className={`flex justify-between items-start mb-6`}>
                 <div className="flex-1">
-                    <p className="font-bold text-[11px] mb-1 uppercase">Bill To</p>
-                    <p className="font-bold uppercase text-[13px]">{customer?.name || customerName || 'Walk-in Customer'}</p>
-                    <p>Contact No. : {customer?.phone || 'N/A'}</p>
-                    <p>State: {customer?.state || 'N/A'}</p>
+                    {settings.showLogo !== false && (
+                        <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center font-bold text-slate-300 border border-slate-100 shadow-sm uppercase text-[9px] tracking-widest">Logo</div>
+                    )}
                 </div>
                 <div className="text-right flex-1">
-                    <p className="font-bold text-[11px] mb-1 uppercase text-right">Invoice Details</p>
-                    <div className="grid grid-cols-2 gap-x-2 text-right justify-end ml-auto max-w-[200px]">
-                        <span className="font-semibold">Invoice No. :</span>
-                        <span>{invoiceNumber || 'N/A'}</span>
-                        <span className="font-semibold">Date :</span>
-                        <span>{new Date(saleDate || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
-                        <span className="font-semibold">Place of supply :</span>
-                        <span>{placeOfSupply || companyProfile?.state || '32-Kerala'}</span>
-                    </div>
+                    <h1 className={`${s_Title} mb-2`} style={{ color: (isBold || isModern) ? accent : '#1f2937' }}>
+                        {settings.headerTitle || 'TAX INVOICE'}
+                    </h1>
+                    {settings.showCompanyName !== false && (
+                        <p className={s_Company}>{companyProfile?.companyName || 'Your Company Name'}</p>
+                    )}
+                    {settings.showAddress !== false && (
+                        <div className={s_AddressLabel}>
+                            <p>{companyProfile?.address}</p>
+                            <p>+91 {companyProfile?.phone}</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Body Table */}
-            <table className="w-full border-collapse border border-black">
-                <thead>
-                    <tr className="bg-gray-50 uppercase text-[10px]">
-                        <th className="border border-black p-1 text-center w-[30px]">#</th>
-                        <th className="border border-black p-1 text-left">Item Name</th>
-                        <th className="border border-black p-1 text-center w-[100px]">HSN/ SAC</th>
-                        <th className="border border-black p-1 text-center w-[60px]">Qty</th>
-                        <th className="border border-black p-1 text-right w-[90px]">Price/ Unit</th>
-                        <th className="border border-black p-1 text-right w-[60px]">GST</th>
-                        <th className="border border-black p-1 text-right w-[100px]">Taxable Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {items?.map((item, index) => {
-                        const lineTax = parseFloat(item.taxAmount || 0);
-                        const taxable = parseFloat(item.total) - lineTax;
-                        return (
-                            <tr key={index} className="text-[11px]">
-                                <td className="border border-black p-1.5 text-center">{index + 1}</td>
-                                <td className="border border-black p-1.5 font-bold uppercase">{item.product?.name || item.name}</td>
-                                <td className="border border-black p-1.5 text-center">{item.product?.hsnCode || '-'}</td>
-                                <td className="border border-black p-1.5 text-center font-semibold">{item.quantity}</td>
-                                <td className="border border-black p-1.5 text-right">₹ {(taxable / item.quantity).toFixed(2)}</td>
-                                <td className="border border-black p-1.5 text-right">{item.taxRate}%</td>
-                                <td className="border border-black p-1.5 text-right font-semibold">₹ {taxable.toFixed(2)}</td>
+            {/* BILL TO & INVOICE DETAILS */}
+            <div className={`flex mb-8 gap-x-12 ${isMinimal ? '' : 'border-t border-slate-100 pt-8'}`}>
+                {settings.showCustomer !== false && (
+                    <div className={`flex-1 ${isMinimal ? '' : 'border-r border-slate-100 pr-8'}`}>
+                        <p className={`${s_SecHead}`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>Bill To</p>
+                        <div className="space-y-1">
+                           <p className={s_Value}>{customer?.name || customerName || 'Customer Name'}</p>
+                           <p className={s_AddressLabel}>{customer?.email || 'customer@email.com'}</p>
+                           <p className={s_AddressLabel}>{customer?.phone || '+91 9876543210'}</p>
+                        </div>
+                    </div>
+                )}
+                {settings.showInvoiceMeta !== false && (
+                    <div className="flex-1 pl-4">
+                        <p className={`${s_SecHead}`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>Invoice Details</p>
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-6">
+                                <span className={s_Label}>Invoice No:</span> 
+                                <span className={s_Value}>{invoiceNumber || 'INV26-001'}</span>
+                            </div>
+                            <div className="flex items-center gap-6">
+                                <span className={s_Label}>Date:</span> 
+                                <span className={s_Value} style={{ letterSpacing: '0.2px' }}>{saleDate ? new Date(saleDate).toLocaleDateString('en-GB') : '03/04/2026'}</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* ITEMS TABLE */}
+            <div className={`mb-8`}>
+                <table className={`w-full ${(isBold || isModern) ? 'border-separate border-spacing-0' : 'border-collapse'}`}>
+                    <thead>
+                        <tr className={(isBold || isModern) ? 'text-white' : ''} style={(isBold || isModern) ? { backgroundColor: accent, height: (isBold || isModern) ? '36px' : 'auto' } : { backgroundColor: isMinimal ? 'white' : '#f9fbfd' }}>
+                            <th className={`${s_TableTh} text-left ${isMinimal ? 'border-b border-slate-200' : isBold ? 'rounded-l-lg' : 'rounded-l-lg'}`}>{isBold ? 'DESCRIPTION' : 'Description'}</th>
+                            {settings.showColQty !== false && <th className={`${s_TableTh} text-center w-14 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'QTY' : 'Qty'}</th>}
+                            {settings.showColPrice !== false && <th className={`${s_TableTh} text-center w-24 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'PRICE' : 'Price'}</th>}
+                            {settings.showColTax !== false && <th className={`${s_TableTh} text-center w-16 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'GST%' : 'Gst %'}</th>}
+                            {settings.showColTotal !== false && <th className={`${s_TableTh} text-right w-28 ${isMinimal ? 'border-b border-slate-200' : isBold ? 'rounded-r-lg' : 'rounded-r-lg'}`}>{isBold ? 'TOTAL' : 'Total'}</th>}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {items?.map((item, idx) => (
+                            <tr key={idx} className="border-b border-transparent">
+                                <td className={`${s_TableTd} text-left font-bold text-slate-800`}>{item.product?.name || item.name || 'Premium Subscription'}</td>
+                                {settings.showColQty !== false && <td className={`${s_TableTd} text-center font-semibold text-slate-600`}>{item.quantity || 1}</td>}
+                                {settings.showColPrice !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{currentSymbol}{parseFloat(item.unitPrice || 100).toFixed(2)}</td>}
+                                {settings.showColTax !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{item.taxRate || 18}%</td>}
+                                {settings.showColTotal !== false && <td className={`${s_TableTd} text-right font-bold text-slate-800`}>{currentSymbol}{parseFloat(item.total || 118).toFixed(2)}</td>}
                             </tr>
-                        );
-                    })}
-                    {/* Empty rows to fill space if needed, or just standard list */}
-                </tbody>
-            </table>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
-            {/* Footer Summary Section */}
-            <div className="flex border-x border-b border-black">
-                {/* Tax Breakdown (Left) */}
-                <div className="flex-1 p-2 border-r border-black">
-                    <table className="w-full text-[10px]">
-                        <thead>
-                            <tr className="text-left text-gray-500 font-semibold border-b border-gray-200">
-                                <th className="pb-1 text-left">Tax type</th>
-                                <th className="pb-1 text-right">Taxable amount</th>
-                                <th className="pb-1 text-center">Rate</th>
-                                <th className="pb-1 text-right">Tax amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Object.entries(taxBreakdown).map(([rate, data]) => (
-                                <React.Fragment key={rate}>
-                                    <tr>
-                                        <td className="py-1">SGST</td>
-                                        <td className="py-1 text-right">₹ {data.taxableAmount.toFixed(1)}</td>
-                                        <td className="py-1 text-center">{parseFloat(rate) / 2}%</td>
-                                        <td className="py-1 text-right">₹ {(data.taxAmount / 2).toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-1">CGST</td>
-                                        <td className="py-1 text-right">₹ {data.taxableAmount.toFixed(1)}</td>
-                                        <td className="py-1 text-center">{parseFloat(rate) / 2}%</td>
-                                        <td className="py-1 text-right">₹ {(data.taxAmount / 2).toFixed(2)}</td>
-                                    </tr>
-                                </React.Fragment>
-                            ))}
-                        </tbody>
-                    </table>
+                {/* TAX & TOTALS */}
+            <div className="flex justify-between items-start mb-8">
+                <div className="w-[42%]">
+                    {settings.showTaxSummary !== false && (
+                        <div className={`bg-[#f8fafc] p-3.5 rounded-xl border border-slate-100`}>
+                            <p className={`${s_SecHead} mb-1.5`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>{isBold ? 'TAX SUMMARY' : 'Tax Summary'}</p>
+                            <div className={`space-y-1 text-[10px]`}>
+                                <div className="flex justify-between font-normal text-slate-500"><span>CGST (9%)</span><span className="font-semibold text-slate-700">{currentSymbol}9.00</span></div>
+                                <div className="flex justify-between font-normal text-slate-500"><span>SGST (9%)</span><span className="font-semibold text-slate-700">{currentSymbol}9.00</span></div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* Amounts (Right) */}
-                <div className="w-[300px] p-2 bg-white">
-                    <div className="flex justify-between font-semibold mb-1">
-                        <span>Sub Total</span>
-                        <span>₹ {parseFloat(subTotal || 0).toFixed(2)}</span>
+                <div className={`w-[260px] p-4 rounded-xl bg-[#f8fafc] border border-slate-100 ${isBold ? 'border-l-[4px]' : isModern ? 'border-t-2' : isClassic ? 'border-2 border-black' : ''}`} style={isBold ? { borderLeftColor: accent } : isModern ? { borderTopColor: accent } : {}}>
+                    <div className="space-y-1 mb-2">
+                        <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
+                            <span>Subtotal</span>
+                            <span className="font-semibold text-slate-700">{currentSymbol}100.00</span>
+                        </div>
+                        <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
+                            <span>Total Tax</span>
+                            <span className="font-semibold text-slate-700">{currentSymbol}18.00</span>
+                        </div>
                     </div>
-                    <div className="flex justify-between text-gray-600 mb-1">
-                        <span>Round off</span>
-                        <span>₹ {parseFloat(roundOffAmount || 0).toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-[14px] border-y border-black py-1 my-1">
-                        <span>Total</span>
-                        <span>₹ {parseFloat(totalAmount || 0).toFixed(0)}</span>
-                    </div>
-                    <div className="flex justify-between text-gray-600 mb-0.5">
-                        <span>Previous Balance</span>
-                        <span>₹ {parseFloat(previousBalance || 0).toFixed(0)}</span>
-                    </div>
-                    <div className="flex justify-between font-semibold">
-                        <span>Current Balance</span>
-                        <span>₹ {parseFloat(currentBalance || 0).toFixed(0)}</span>
+                    <div className={`pt-2.5 border-t border-slate-200/50 flex justify-between items-center mt-1`}>
+                        <span className="font-bold uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>GRAND TOTAL</span>
+                        <span className="font-bold text-[16px] tracking-tighter" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>{currentSymbol}118.00</span>
                     </div>
                 </div>
             </div>
 
-            {/* Words */}
-            <div className="mt-4">
-                <p className="font-bold text-[11px] uppercase mb-1">Invoice Amount In Words</p>
-                <p className="italic text-[12px]">{amountInWords}</p>
-            </div>
-
-            <div className="mt-12 flex justify-between">
-                <div className="w-[150px] border-t border-black pt-1 text-center">
-                    <p className="text-[10px] font-bold">Authorized Signatory</p>
+            {/* FOOTER */}
+            <div className={`mt-auto pt-8 border-t border-slate-50 flex justify-between items-end`}>
+                <div className="flex-1">
+                    <p className={`${s_SecHead} mb-1.5`} style={isBold ? { color: accent } : { color: '#94a3b8' }}>Terms</p>
+                    <p className="text-[12px] text-slate-400 leading-relaxed max-w-[380px] font-normal">{settings.termsConditions || 'Goods once sold will not be taken back.'}</p>
+                </div>
+                <div className="text-right text-slate-300 font-medium italic text-[14px] opacity-80">
+                    Thank you for your business!
                 </div>
             </div>
         </div>
@@ -204,5 +287,4 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile }, ref
 });
 
 ProfessionalInvoice.displayName = 'ProfessionalInvoice';
-
 export default ProfessionalInvoice;

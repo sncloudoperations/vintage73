@@ -288,6 +288,8 @@ exports.Prisma.SaleScalarFieldEnum = {
   originalInvoice: 'originalInvoice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  currencyCode: 'currencyCode',
+  exchangeRate: 'exchangeRate',
   balanceAmount: 'balanceAmount',
   paidAmount: 'paidAmount',
   cancelledAt: 'cancelledAt',
@@ -909,6 +911,13 @@ exports.Prisma.TicketClosureRequestScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.InvoiceSettingScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  settings: 'settings',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -916,6 +925,10 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.NullableJsonNullValueInput = {
   DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -992,7 +1005,8 @@ exports.Prisma.ModelName = {
   TicketCategory: 'TicketCategory',
   TicketHistory: 'TicketHistory',
   TicketMessage: 'TicketMessage',
-  TicketClosureRequest: 'TicketClosureRequest'
+  TicketClosureRequest: 'TicketClosureRequest',
+  InvoiceSetting: 'InvoiceSetting'
 };
 
 /**

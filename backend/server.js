@@ -102,6 +102,7 @@ app.use('/api/accounting/reconciliation', require('./routes/bankReconciliationRo
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/tickets', require('./routes/ticketRoutes'));
+app.use('/api/invoice-settings', require('./routes/invoiceSettingsRoutes'));
 
 // Global Error Handler (MUST be last)
 app.use(errorHandler);

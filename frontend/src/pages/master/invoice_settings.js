@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fi';
 
 import Modal from '@/components/Modal';
+import ProfessionalInvoice from '@/components/ProfessionalInvoice';
 
 const COMPONENT_METADATA = {
   showLogo: { label: 'Logo', icon: FiImage },
@@ -112,21 +113,19 @@ export default function InvoiceSettings() {
 
     const fetchSettings = async () => {
         try {
-            const res = await api.get('/company');
-            const data = res.data?.invoiceSettings;
+            // Fetch both sales and return settings
+            const [salesRes, returnRes] = await Promise.all([
+                api.get('/invoice-settings', { params: { type: 'sales' } }),
+                api.get('/invoice-settings', { params: { type: 'return' } })
+            ]);
 
-            if (data) {
-                // Handle migration from old flat structure if needed
-                if (data.sales && data.return) {
-                    setSettings(data);
-                } else {
-                    // Assume existing data is for sales, and use default for return
-                    setSettings({
-                        sales: { ...defaultSettings, ...data }, // Merge existing items
-                        return: defaultReturnSettings
-                    });
-                }
-            }
+            const salesData = salesRes.data?.settings;
+            const returnData = returnRes.data?.settings;
+
+            setSettings({
+                sales: salesData || defaultSettings,
+                return: returnData || defaultReturnSettings
+            });
         } catch (err) {
             console.error(err);
             toast.error('Failed to load settings');
@@ -137,7 +136,11 @@ export default function InvoiceSettings() {
 
     const handleSave = async () => {
         try {
-            await api.put('/company', { invoiceSettings: settings });
+            // Save the current active tab's settings
+            await api.post('/invoice-settings', { 
+                type: activeTab, 
+                settings: settings[activeTab] 
+            });
             toast.success('Invoice Settings Saved!');
         } catch (err) {
             toast.error('Failed to save settings');
@@ -393,7 +396,48 @@ export default function InvoiceSettings() {
                             {/* Live Preview Area */}
                             <div className="flex-1 overflow-auto p-4 md:p-8 flex items-start justify-center bg-slate-100">
                                 {/* Main Responsive Canvas */}
-                                <InvoicePreview config={currentConfig} previewMode={previewMode} />
+                                <div className={`transition-all duration-300 shadow-2xl ${previewMode === 'Mobile' ? 'w-[360px]' : 'w-auto'}`}>
+                                    <ProfessionalInvoice 
+                                        previewMode={previewMode}
+                                        companyProfile={{
+                                            companyName: 'ABS HARDWARE & PAINTS',
+                                            address: 'Ayiramkolly, Ambalavayal, Wayanad, Kerala - 673593',
+                                            phone: '7510133133',
+                                            gstNumber: '32DXHPK3898B1ZF',
+                                            state: '32-KERALA'
+                                        }}
+                                        printData={{
+                                            invoiceNumber: currentConfig.invoicePrefix + '-001',
+                                            saleDate: new Date().toISOString(),
+                                            customerName: 'WALK-IN CUSTOMER',
+                                            placeOfSupply: '32-KERALA',
+                                            currencySymbol: '₹',
+                                            currencyCode: 'INR',
+                                            exchangeRate: 1,
+                                            subTotal: 847.46,
+                                            taxAmount: 152.54,
+                                            totalAmount: 1000.00,
+                                            roundOffAmount: 0,
+                                            currentBalance: 1250,
+                                            settings: currentConfig,
+                                            items: [
+                                                {
+                                                    name: 'PREMIUM ASIAN PAINTS - WHITE (1L)',
+                                                    quantity: 2,
+                                                    unitPrice: 423.73,
+                                                    total: 1000.00,
+                                                    taxAmount: 152.54,
+                                                    taxRate: 18,
+                                                    product: {
+                                                        name: 'PREMIUM ASIAN PAINTS - WHITE (1L)',
+                                                        barcode: '890123456789',
+                                                        hsnCode: '3208'
+                                                    }
+                                                }
+                                            ]
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -407,43 +451,6 @@ export default function InvoiceSettings() {
                     )}
                 </div>
             </div>
-        </div>
-    );
-}
-
-// -------------------------------------------------------------
-// DYNAMIC LIVE PREVIEW COMPONENTS
-// -------------------------------------------------------------
-
-// PREVIEW SECTION - lines 418-637 replacement
-function InvoicePreview({ config, previewMode }) {
-    const isMobile = previewMode === 'Mobile';
-    const pageSize = config.pageSize || 'A4';
-    const tpl = config.template || 'modern';
-    const isThermal = pageSize === 'Thermal';
-
-    const styleObj = {
-        width: isMobile ? '320px' : (pageSize === 'A4' ? '794px' : pageSize === 'A5' ? '420px' : '302px'),
-        padding: isMobile ? '12px' : (pageSize === 'A4' ? '32px' : pageSize === 'A5' ? '20px' : '8px'),
-        minHeight: isMobile ? '500px' : (pageSize === 'A4' ? '1123px' : pageSize === 'A5' ? '595px' : 'auto'),
-        fontSize: isThermal ? '10px' : pageSize === 'A5' ? '12px' : '14px',
-        backgroundColor: '#ffffff',
-        borderTopWidth: (!isThermal && (tpl === 'bold' || tpl === 'modern')) ? (tpl === 'bold' ? '16px' : '8px') : '0px',
-        borderTopStyle: 'solid',
-        borderTopColor: (!isThermal && (tpl === 'bold' || tpl === 'modern')) ? (config.accentColor || '#009262') : 'transparent',
-    };
-
-    const outerClass = [
-        'relative shrink-0 mx-auto transition-all duration-300 ease-in-out font-sans bg-white shadow-lg overflow-hidden',
-        isThermal ? 'rounded-sm' : (tpl === 'classic' ? 'border border-black rounded-none' : 'rounded-lg'),
-    ].join(' ');
-
-    return (
-        <div id="invoice-preview" className={outerClass} style={styleObj}>
-            {isThermal
-                ? <ThermalLayout config={config} />
-                : <StandardLayout config={config} tpl={tpl} isMobile={isMobile} pageSize={pageSize} />
-            }
         </div>
     );
 }

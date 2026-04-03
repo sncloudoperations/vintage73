@@ -24,23 +24,23 @@ export default function SalesReturn() {
   }, []);
 
   const fetchSettings = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const [compRes, branchRes] = await Promise.all([
-        api.get('/company'),
-        user?.branchId ? api.get(`/branches/${user.branchId}`) : null
-      ]);
+      // Fetch Company Profile and Dedicated Invoice Settings (Return Type)
+      try {
+        const [compRes, settingsRes] = await Promise.all([
+          api.get('/company'),
+          api.get('/invoice-settings', { params: { type: 'return' } })
+        ]);
 
-      setCompanyProfile(compRes.data);
+        if (compRes.data) {
+          setCompanyProfile(compRes.data);
+        }
 
-      if (branchRes?.data?.invoiceSettings) {
-        setInvoiceSettings(branchRes.data.invoiceSettings);
-      } else if (compRes.data?.invoiceSettings) {
-        setInvoiceSettings(compRes.data.invoiceSettings);
+        if (settingsRes.data?.settings) {
+          setInvoiceSettings(settingsRes.data.settings);
+        }
+      } catch (err) {
+        console.error('Failed to load professional invoice settings', err);
       }
-    } catch (err) {
-      console.error('Error fetching settings:', err);
-    }
   };
 
   const handlePrint = useReactToPrint({
@@ -294,7 +294,8 @@ export default function SalesReturn() {
             customer: lastReturn?.customer || invoiceData?.customer,
             customerName: lastReturn?.customerName || invoiceData?.customerName || 'Walk-in Customer',
             previousBalance: lastReturn?.previousBalance || 0,
-            currentBalance: lastReturn?.currentBalance || 0
+            currentBalance: lastReturn?.currentBalance || 0,
+            settings: invoiceSettings
           }}
           companyProfile={companyProfile}
         />
