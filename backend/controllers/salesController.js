@@ -5,7 +5,11 @@ const { generateNextNumber } = require('../services/numberingService');
 
 // Create new sale
 exports.createSale = asyncHandler(async (req, res) => {
-  const { customerId, items, paymentMethod, paidAmount, discount = 0, saleDate, salesmanId, terminalId, isReturn = false, returnReason = '', originalInvoice = '' } = req.body;
+  const { 
+    customerId, items, paymentMethod, paidAmount, discount = 0, saleDate, salesmanId, 
+    terminalId, isReturn = false, returnReason = '', originalInvoice = '',
+    currencyCode = 'INR', exchangeRate = 1.0 
+  } = req.body;
   let { branchId } = req.body;
 
   // 1. Hardened Validation
@@ -105,6 +109,12 @@ exports.createSale = asyncHandler(async (req, res) => {
   }
 
   const result = await prisma.$transaction(async (tx) => {
+    // Re-verify branch stock setting inside transaction for absolute current state
+    const fetchBranch = await tx.branch.findUnique({ where: { id: validBranchId } });
+    const stockIncluded = !!fetchBranch?.stockIncluded;
+
+    console.log(`[POS Stock Validation] Branch: ${fetchBranch?.name}, Included: ${stockIncluded}, IsReturn: ${isReturn}`);
+
     // 1. Calculate Totals
     let subTotal = 0;
     let taxAmount = 0;
@@ -120,7 +130,7 @@ exports.createSale = asyncHandler(async (req, res) => {
       }
 
       // --- STOCK VALIDATION ---
-      if (!isReturn && branchExists?.stockIncluded === true) {
+      if (!isReturn && stockIncluded) {
         const stock = await tx.productStock.findUnique({
           where: {
             branchId_productId: {
@@ -130,22 +140,14 @@ exports.createSale = asyncHandler(async (req, res) => {
           }
         });
 
+        console.log(`[POS Stock Validation] Product: ${product.name}, Stock: ${stock?.quantity || 0}, Required: ${item.quantity}`);
+
         if (!stock || stock.quantity < item.quantity) {
           const error = new Error(`Insufficient stock for product ${product.name}. Available: ${stock ? stock.quantity : 0}, Required: ${item.quantity}`);
           error.statusCode = 400;
           throw error;
         }
       }
-
-      // Stock check
-      const productStock = await tx.productStock.findUnique({
-        where: {
-          branchId_productId: {
-            branchId: validBranchId,
-            productId: productId
-          }
-        }
-      });
 
 
 
@@ -240,6 +242,8 @@ exports.createSale = asyncHandler(async (req, res) => {
         isReturn,
         returnReason,
         originalInvoice,
+        currencyCode,
+        exchangeRate: parseFloat(exchangeRate),
         items: {
           create: saleItemsData
         }

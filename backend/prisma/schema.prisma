@@ -273,6 +273,8 @@ model Sale {
   originalInvoice String?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
+  currencyCode    String?    @default("INR")
+  exchangeRate    Decimal?   @default(1.0) @db.Decimal(10, 4)
   balanceAmount   Decimal    @default(0) @db.Decimal(10, 2)
   paidAmount      Decimal    @default(0) @db.Decimal(10, 2)
   cancelledAt     DateTime?
@@ -1046,4 +1048,12 @@ model TicketClosureRequest {
   status        String   @default("Pending") // Pending, Approved, Rejected
   createdAt     DateTime @default(now())
 }
+
+model InvoiceSetting {
+  id        Int      @id @default(autoincrement())
+  type      String   @unique // 'sales' or 'return'
+  settings  Json
+  updatedAt DateTime @updatedAt
+}
+
 

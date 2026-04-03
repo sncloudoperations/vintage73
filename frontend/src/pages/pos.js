@@ -56,7 +56,19 @@ export default function POS() {
     // Salesman Selection
     const [salesmanId, setSalesmanId] = useState('');
     const [availableSalesmen, setAvailableSalesmen] = useState([]);
+const EXCHANGE_RATES = {
+    INR: 1,
+    AED: 0.044,
+    EUR: 0.011,
+    USD: 0.012
+};
 
+const CURRENCY_SYMBOLS = {
+    INR: '₹',
+    AED: 'AED',
+    EUR: '€',
+    USD: '$'
+};
     // Customer Search
     const [customerSearch, setCustomerSearch] = useState('');
     const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
@@ -87,6 +99,10 @@ export default function POS() {
 
     // Round Off State
     const [roundOff, setRoundOff] = useState(0);
+    const [taxEnabled, setTaxEnabled] = useState(true);
+    const [currencyCode, setCurrencyCode] = useState('INR');
+    const [currencySymbol, setCurrencySymbol] = useState('₹');
+    const [exchangeRate, setExchangeRate] = useState(1);
 
     // Restore POS state on mount or when user changes
     useEffect(() => {
@@ -101,6 +117,11 @@ export default function POS() {
                     setSalesmanId(parsed.salesmanId || '');
                     setSaleDate(parsed.saleDate || new Date().toISOString().split('T')[0]);
                     setRoundOff(parsed.roundOff || 0);
+                    setTaxEnabled(parsed.taxEnabled !== undefined ? parsed.taxEnabled : true);
+                    const restoredCode = parsed.currencyCode || 'INR';
+                    setCurrencyCode(restoredCode);
+                    setCurrencySymbol(CURRENCY_SYMBOLS[restoredCode] || '₹');
+                    setExchangeRate(EXCHANGE_RATES[restoredCode] || 1);
                 } catch (e) {
                     console.error('Failed to restore POS state:', e);
                 }
@@ -117,63 +138,60 @@ export default function POS() {
                 customerName,
                 salesmanId,
                 saleDate,
-                roundOff
+                roundOff,
+                taxEnabled,
+                currencyCode,
+                currencySymbol,
+                exchangeRate
             };
             localStorage.setItem(`pos_state_${user.id}`, JSON.stringify(stateToStore));
         }
     }, [cart, customerId, customerName, salesmanId, saleDate, roundOff, user?.id]);
 
+    const fetchData = async () => {
+        try {
+            const activeBranchId = selectedBranch || user?.branchId;
+            const [prodRes, custRes, compRes, userRes] = await Promise.all([
+                api.get('/products', { params: { branchId: activeBranchId } }),
+                api.get('/customers'),
+                api.get('/company'),
+                // Fetch users as salesmen, filter by branch if needed
+                api.get('/users')
+            ]);
+            setProducts(prodRes.data);
+            setCustomers(custRes.data);
+
+
+            // Filter salesmen: match branchId or global (no branch)
+            const branchUsers = userRes.data.filter(u => !u.branchId || u.branchId === activeBranchId);
+            setAvailableSalesmen(branchUsers);
+            if (compRes.data) {
+                setCompanyProfile(compRes.data);
+            }
+
+            // Fetch Dedicated Invoice Settings (New System)
+            try {
+                const settingsRes = await api.get('/invoice-settings', { params: { type: 'sales' } });
+                if (settingsRes.data?.settings) {
+                    setInvoiceSettings(settingsRes.data.settings);
+                }
+            } catch (err) {
+                console.error('Failed to load professional invoice settings', err);
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to fetch initial data');
+        }
+    };
+
     // Fetch Data
     useEffect(() => {
         // Session time update
         setSessionTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-
-        const fetchData = async () => {
-            try {
-                const [prodRes, custRes, compRes, userRes] = await Promise.all([
-                    api.get('/products', { params: { branchId: user?.branchId } }),
-                    api.get('/customers'),
-                    api.get('/company'),
-                    // Fetch users as salesmen, filter by branch if needed
-                    api.get('/users')
-                ]);
-                setProducts(prodRes.data);
-                setCustomers(custRes.data);
-
-
-                // Filter salesmen: match branchId or global (no branch)
-                // Also possibly filter by role if needed, but for now allow all users
-                const branchUsers = prodRes.data ? userRes.data.filter(u => !u.branchId || u.branchId === user?.branchId) : [];
-                setAvailableSalesmen(branchUsers);
-                if (compRes.data) {
-                    setCompanyProfile(compRes.data);
-                }
-
-                // Fetch Branch Specific Settings
-                if (user?.branchId) {
-                    try {
-                        const branchRes = await api.get(`/branches/${user.branchId}`);
-                        if (branchRes.data) {
-                            setBranchSettings({
-                                stockIncluded: branchRes.data.stockIncluded !== undefined ? branchRes.data.stockIncluded : true
-                            });
-                            if (branchRes.data.invoiceSettings) {
-                                setInvoiceSettings(branchRes.data.invoiceSettings);
-                            } else if (compRes.data?.invoiceSettings) {
-                                setInvoiceSettings(compRes.data.invoiceSettings);
-                            }
-                        }
-                    } catch (err) {
-                        console.error('Failed to load branch settings', err);
-                    }
-                }
-            } catch (err) {
-                console.error(err);
-                toast.error('Failed to fetch initial data');
-            }
-        };
-        fetchData();
-    }, [user?.branchId]);
+        if (user) {
+            fetchData();
+        }
+    }, [user?.branchId, selectedBranch]);
 
     // --- CART SYNC EFFECT ---
     useEffect(() => {
@@ -216,45 +234,33 @@ export default function POS() {
     }, [products, cart]);
 
 
-    // Update Invoice Settings when Branch Changes (for Admin)
+    // Update Invoice Settings and Stock Settings when Branch Changes
     useEffect(() => {
         const updateSettings = async () => {
-            if (selectedBranch) {
+            const activeBranchId = selectedBranch || user?.branchId;
+            if (activeBranchId) {
                 try {
-                    const { data } = await api.get(`/branches/${selectedBranch}`);
+                    const { data } = await api.get(`/branches/${activeBranchId}`);
                     setBranchSettings({
                         stockIncluded: data?.stockIncluded !== undefined ? data.stockIncluded : true
                     });
                     if (data?.invoiceSettings && Object.keys(data.invoiceSettings).length > 0) {
                         setInvoiceSettings(data.invoiceSettings);
                     } else {
-                        // Fallback to company settings
                         setInvoiceSettings(companyProfile?.invoiceSettings || null);
                     }
                 } catch (err) {
                     console.error("Failed to fetch branch settings", err);
                 }
             } else if (companyProfile) {
-                // Revert to company settings or User Branch settings if deselecting?
-                // If user has a branch, we should go back to that.
-                if (user?.branchId) {
-                    // We need to re-fetch user branch settings or store them. 
-                    // For simplicity, let's re-fetch or rely on company if user branch logic handled elsewhere.
-                    // Actually, if selectedBranch is "" (All/None), we usually default to company or user branch.
-                    // Let's just set to company for now to be safe, or re-run the initial logic?
-                    // Initial logic is in mount. 
-                    // Better: Fallback to companyProfile.invoiceSettings
-                    setInvoiceSettings(companyProfile.invoiceSettings);
-                } else {
-                    setInvoiceSettings(companyProfile.invoiceSettings);
-                }
+                setInvoiceSettings(companyProfile.invoiceSettings);
             }
         };
 
-        if (companyProfile) {
+        if (companyProfile && (selectedBranch || user?.branchId)) {
             updateSettings();
         }
-    }, [selectedBranch, companyProfile, user]);
+    }, [selectedBranch, companyProfile, user?.branchId]);
 
     // Fetch Customer Balance when customerId changes
     useEffect(() => {
@@ -373,15 +379,22 @@ export default function POS() {
     };
 
     // Calculations
+    // Calculations
     const calcResults = cart.reduce((acc, item) => {
-        const price = parseFloat(item.price || 0);
+        // Base Unit Price in INR
+        const basePrice = parseFloat(item.price || 0);
+        // Converted Unit Price
+        const price = basePrice * exchangeRate;
+        
         const qty = parseFloat(item.quantity || 0);
-        const disc = parseFloat(item.discountAmount || 0);
-        const rate = parseFloat(item.taxRate || 0);
+        
+        // Base Discount in INR converted to current currency
+        const disc = parseFloat(item.discountAmount || 0) * exchangeRate;
+        
+        const rate = taxEnabled ? parseFloat(item.taxRate || 0) : 0; 
         const isInc = item.isTaxInclusive === true;
 
-        // Discount is applied on Unit Price. 
-        // Net Price = Price - Discount
+        // Net Price = Converted Price - Converted Discount
         const netPricePerUnit = price - disc;
 
         let lineTax = 0;
@@ -391,23 +404,13 @@ export default function POS() {
         const lineTotalPayable = qty * netPricePerUnit;
 
         if (isInc && rate > 0) {
-            // Inclusive Case: 
-            // The Price (and thus Net Price) already includes tax.
-            // Total Payable = Price (adjusted for qty/disc).
-            // We need to extract Tax from it.
-
-            const baseAmount = lineTotalPayable / (1 + (rate / 100)); // This is the Subtotal
+            const baseAmount = lineTotalPayable / (1 + (rate / 100)); 
             lineTax = lineTotalPayable - baseAmount;
             lineSubTotal = baseAmount;
         } else if (rate > 0) {
-            // Exclusive Case:
-            // The Price is Ex-Tax.
-            // Tax is added ON TOP.
-
             lineSubTotal = lineTotalPayable;
             lineTax = (lineTotalPayable * rate) / 100;
         } else {
-            // No Tax
             lineSubTotal = lineTotalPayable;
             lineTax = 0;
         }
@@ -421,7 +424,7 @@ export default function POS() {
     const { subTotal, tax } = calcResults;
     const totalBeforeRound = subTotal + tax;
     const total = totalBeforeRound + parseFloat(roundOff || 0);
-    const currencySymbol = companyProfile?.currencySymbol || '₹';
+    // Use the state currencySymbol instead of redeclaring
 
     // Auto Round Function
     const handleAutoRound = () => {
@@ -585,7 +588,7 @@ export default function POS() {
             const payload = {
                 customerId: customerId ? parseInt(customerId) : null,
                 customerName: customerName || 'Walk-in Customer',
-                branchId: user?.branchId || (selectedBranch ? parseInt(selectedBranch) : null),
+                branchId: selectedBranch ? parseInt(selectedBranch) : (user?.branchId || null),
                 saleDate,
                 items: cart.map(item => ({
                     productId: item.id,
@@ -600,12 +603,20 @@ export default function POS() {
                 terminalId: terminal?.id,
                 roundOffAmount: roundOff,
                 payments: finalPayments,
-                salesmanId: salesmanId ? parseInt(salesmanId) : null
+                salesmanId: salesmanId ? parseInt(salesmanId) : null,
+                currencyCode,
+                exchangeRate
             };
 
             const res = await api.post('/sales', payload);
 
-            setLastSale(res.data); // Save for printing
+            setLastSale({
+                ...res.data,
+                currencyCode,
+                currencySymbol,
+                exchangeRate,
+                settings: invoiceSettings || {}
+            }); // Save for printing
             setShowPaymentModal(false);
             // Delay print slightly to allow state update
             setTimeout(() => handlePrint(), 100);
@@ -616,6 +627,9 @@ export default function POS() {
             setSalesmanId(cashier?.id || ''); // Reset to cashier
             localStorage.removeItem(`pos_state_${user?.id}`);
             toast.success('Sale Completed Successfully!');
+            
+            // Refresh Products to update stock counts
+            fetchData();
 
             // WhatsApp Integration
             const wsSettings = await api.get('/whatsapp/settings').then(r => r.data).catch(() => null);
@@ -626,7 +640,7 @@ export default function POS() {
                     let msg = wsSettings.salesTemplate || 'Hello [[customer_name]], your invoice [[bill_no]] for [[total_amount]] is ready.';
                     msg = msg.replace(/\[\[customer_name\]\]/g, customerName || customer?.name || 'Customer')
                         .replace(/\[\[bill_no\]\]/g, res.data.invoiceNumber)
-                        .replace(/\[\[total_amount\]\]/g, `₹${total.toFixed(2)}`)
+                        .replace(/\[\[total_amount\]\]/g, currencyCode === 'AED' ? `${total.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${total.toFixed(2)}`)
                         .replace(/\[\[company_name\]\]/g, companyProfile?.companyName || 'Our Store');
 
                     try {
@@ -720,7 +734,9 @@ export default function POS() {
                                 </div>
                                 <h3 className="font-semibold text-slate-700 text-sm truncate mb-1">{product.name}</h3>
                                 <div className="flex justify-between items-center">
-                                    <p className="text-primary font-bold">₹{product.price}</p>
+                                    <p className="text-primary font-bold">
+                                        {currencyCode === 'AED' ? `${(product.price * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(product.price * exchangeRate).toFixed(2)}`}
+                                    </p>
                                     <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors">
                                         <FiPlus size={14} />
                                     </div>
@@ -816,6 +832,42 @@ export default function POS() {
                             )}
                         </div>
                     </div>
+
+                    {/* Options Panel (Currency & Tax) */}
+                    <div className="grid grid-cols-2 gap-3 py-3 border-t border-slate-100">
+                        <div>
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Currency</label>
+                            <select 
+                                className="w-full h-9 bg-slate-50 border border-slate-200 rounded px-2 text-xs font-bold text-slate-700 outline-none focus:border-primary transition-all"
+                                value={currencyCode}
+                                onChange={(e) => {
+                                    const code = e.target.value;
+                                    setCurrencyCode(code);
+                                    setCurrencySymbol(CURRENCY_SYMBOLS[code]);
+                                    setExchangeRate(EXCHANGE_RATES[code]);
+                                }}
+                            >
+                                <option value="INR">INR (₹)</option>
+                                <option value="AED">AED (د.إ)</option>
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Tax Calculation</label>
+                            <button 
+                                onClick={() => setTaxEnabled(!taxEnabled)}
+                                className={`w-full h-9 rounded font-bold text-xs transition-all flex items-center justify-center gap-2 border ${
+                                    taxEnabled 
+                                    ? 'bg-primary/10 text-primary border-primary/20' 
+                                    : 'bg-slate-50 text-slate-400 border-slate-200'
+                                }`}
+                            >
+                                <div className={`w-2 h-2 rounded-full ${taxEnabled ? 'bg-primary animate-pulse' : 'bg-slate-300'}`}></div>
+                                TAX {taxEnabled ? 'ON' : 'OFF'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Cart Headers */}
@@ -854,7 +906,7 @@ export default function POS() {
                                                     />
                                                 </div>
                                                 <div className="flex items-center gap-0.5">
-                                                    <span className="text-[10px] text-slate-400">₹</span>
+                                                    <span className="text-[10px] text-slate-400">{currencySymbol}</span>
                                                     <input
                                                         className="w-10 p-0.5 text-[10px] text-center bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
                                                         placeholder="Amt"
@@ -880,13 +932,19 @@ export default function POS() {
 
                                         {/* Price */}
                                         <div className="flex-[2] text-right">
-                                            <div className="font-bold text-slate-600">₹{item.price}</div>
-                                            {item.discountAmount > 0 && <div className="text-[10px] text-orange-500 line-through">₹{item.price * item.quantity}</div>}
+                                            <div className="font-bold text-slate-600">
+                                                {currencyCode === 'AED' ? `${(item.price * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(item.price * exchangeRate).toFixed(2)}`}
+                                            </div>
+                                            {item.discountAmount > 0 && (
+                                                <div className="text-[10px] text-orange-500 line-through">
+                                                    {currencyCode === 'AED' ? `${(item.price * exchangeRate * item.quantity).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(item.price * exchangeRate * item.quantity).toFixed(2)}`}
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Total */}
                                         <div className="flex-[2] text-right font-bold text-slate-800">
-                                            ₹{((item.price - (item.discountAmount || 0)) * item.quantity).toFixed(2)}
+                                            {currencyCode === 'AED' ? `${(((item.price * exchangeRate) - ((item.discountAmount || 0) * exchangeRate)) * item.quantity).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(((item.price * exchangeRate) - ((item.discountAmount || 0) * exchangeRate)) * item.quantity).toFixed(2)}`}
                                         </div>
 
                                         {/* Remove */}
@@ -907,16 +965,22 @@ export default function POS() {
                     <div className="space-y-1 text-sm">
                         <div className="flex justify-between text-slate-500">
                             <span>Subtotal</span>
-                            <span className="font-medium">₹{subTotal.toFixed(2)}</span>
+                            <span className="font-medium">
+                                {currencyCode === 'AED' ? `${subTotal.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${subTotal.toFixed(2)}`}
+                            </span>
                         </div>
                         <div className="flex justify-between text-slate-500">
                             <span>Tax</span>
-                            <span className="font-medium">₹{tax.toFixed(2)}</span>
+                            <span className="font-medium">
+                                {currencyCode === 'AED' ? `${tax.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${tax.toFixed(2)}`}
+                            </span>
                         </div>
                         {customerBalance !== 0 && (
                             <div className="flex justify-between text-orange-600 font-bold">
                                 <span>Balance Due</span>
-                                <span>₹{customerBalance.toFixed(2)}</span>
+                                <span>
+                                    {currencyCode === 'AED' ? `${(customerBalance * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(customerBalance * exchangeRate).toFixed(2)}`}
+                                </span>
                             </div>
                         )}
 
@@ -938,11 +1002,12 @@ export default function POS() {
 
                     <div className="flex justify-between items-end pt-2 border-t border-slate-200">
                         <span className="text-slate-800 font-bold text-lg">Total</span>
-                        <span className="text-slate-800 font-bold text-lg">Total</span>
                         <div className="relative">
-                            <span className="absolute left-0 top-1/2 -translate-y-1/2 text-3xl font-black text-slate-800 pointer-events-none">₹</span>
+                            <span className={`absolute top-1/2 -translate-y-1/2 font-black text-slate-800 pointer-events-none ${currencyCode === 'AED' ? 'text-sm right-0' : 'text-3xl left-0'}`}>
+                                {currencySymbol}
+                            </span>
                             <input
-                                className="w-40 text-right text-3xl font-black text-slate-800 bg-transparent border-b-2 border-transparent hover:border-slate-200 focus:border-primary outline-none transition-all pl-6"
+                                className={`w-40 text-right text-3xl font-black text-slate-800 bg-transparent border-b-2 border-transparent hover:border-slate-200 focus:border-primary outline-none transition-all ${currencyCode === 'AED' ? 'pr-14' : 'pl-6'}`}
                                 value={total.toFixed(2)}
                                 onChange={e => handleTotalChange(e.target.value)}
                                 onFocus={e => e.target.select()}
@@ -1032,11 +1097,13 @@ export default function POS() {
 
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
+                                        <span className={`absolute top-1/2 -translate-y-1/2 text-slate-400 font-bold ${currencyCode === 'AED' ? 'right-3' : 'left-3'}`}>
+                                            {currencySymbol}
+                                        </span>
                                         <input
                                             autoFocus
                                             type="number"
-                                            className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 font-bold text-lg text-slate-800 transition-all"
+                                            className={`w-full py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 font-bold text-lg text-slate-800 transition-all ${currencyCode === 'AED' ? 'pr-12 pl-4' : 'pl-8 pr-4'}`}
                                             placeholder="0.00"
                                             value={paymentData.paidAmount}
                                             onChange={e => setPaymentData({ ...paymentData, paidAmount: e.target.value })}
@@ -1098,7 +1165,7 @@ export default function POS() {
                 <div style={{ display: 'none' }}>
                     <div ref={componentRef}>
                         <ProfessionalInvoice 
-                            printData={lastSale} 
+                            printData={{...lastSale, settings: invoiceSettings}} 
                             companyProfile={companyProfile} 
                         />
                     </div>
@@ -1133,7 +1200,13 @@ export default function POS() {
                                                     <p className="text-xs text-slate-400 font-mono">#{sale.invoiceNumber}</p>
                                                 </td>
                                                 <td className="p-3 text-slate-600 truncate max-w-[100px]">{sale.customer?.name || 'Walk-in'}</td>
-                                                <td className="p-3 text-right font-bold text-slate-800">₹{parseFloat(sale.totalAmount).toFixed(2)}</td>
+                                                <td className="p-3 text-right font-bold text-slate-800">
+                                                    {(() => {
+                                                        const sym = CURRENCY_SYMBOLS[sale.currencyCode] || '₹';
+                                                        const val = parseFloat(sale.totalAmount).toFixed(2);
+                                                        return sale.currencyCode === 'AED' ? `${val} ${sym}` : `${sym}${val}`;
+                                                    })()}
+                                                </td>
                                                 <td className="p-3 text-primary"><FiMonitor /></td>
                                             </tr>
                                         ))}
@@ -1166,7 +1239,11 @@ export default function POS() {
                                                         let msg = wsSettings.salesTemplate || '';
                                                         msg = msg.replace(/\[\[customer_name\]\]/g, selectedHistorySale.customer?.name || 'Customer')
                                                             .replace(/\[\[bill_no\]\]/g, selectedHistorySale.invoiceNumber)
-                                                            .replace(/\[\[total_amount\]\]/g, `₹${parseFloat(selectedHistorySale.totalAmount).toFixed(2)}`)
+                                                            .replace(/\[\[total_amount\]\]/g, (() => {
+                                                                const sym = CURRENCY_SYMBOLS[selectedHistorySale.currencyCode] || '₹';
+                                                                const val = parseFloat(selectedHistorySale.totalAmount).toFixed(2);
+                                                                return selectedHistorySale.currencyCode === 'AED' ? `${val} ${sym}` : `${sym}${val}`;
+                                                            })())
                                                             .replace(/\[\[company_name\]\]/g, companyProfile?.companyName || 'Our Store');
 
                                                         try {
@@ -1203,8 +1280,22 @@ export default function POS() {
                                                     <tr key={item.id} className="border-b border-slate-50 last:border-0">
                                                         <td className="p-2 text-slate-700">{item.product?.name}</td>
                                                         <td className="p-2 text-center">{item.quantity}</td>
-                                                        <td className="p-2 text-right">₹{item.unitPrice}</td>
-                                                        <td className="p-2 text-right font-bold">₹{item.total}</td>
+                                                        <td className="p-2 text-right">
+                                                            {(() => {
+                                                                const sym = CURRENCY_SYMBOLS[selectedHistorySale.currencyCode] || '₹';
+                                                                const rate = parseFloat(selectedHistorySale.exchangeRate || 1);
+                                                                const val = (item.unitPrice * rate).toFixed(2);
+                                                                return selectedHistorySale.currencyCode === 'AED' ? `${val} ${sym}` : `${sym}${val}`;
+                                                            })()}
+                                                        </td>
+                                                        <td className="p-2 text-right font-bold">
+                                                            {(() => {
+                                                                const sym = CURRENCY_SYMBOLS[selectedHistorySale.currencyCode] || '₹';
+                                                                const rate = parseFloat(selectedHistorySale.exchangeRate || 1);
+                                                                const val = (item.total * rate).toFixed(2);
+                                                                return selectedHistorySale.currencyCode === 'AED' ? `${val} ${sym}` : `${sym}${val}`;
+                                                            })()}
+                                                        </td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -1212,7 +1303,13 @@ export default function POS() {
 
                                         <div className="flex justify-between items-center text-xl font-black text-slate-900 border-t pt-4">
                                             <span>Total Amount</span>
-                                            <span>{currencySymbol}{parseFloat(selectedHistorySale.totalAmount).toFixed(2)}</span>
+                                            <span>
+                                                {(() => {
+                                                    const sym = CURRENCY_SYMBOLS[selectedHistorySale.currencyCode] || '₹';
+                                                    const val = parseFloat(selectedHistorySale.totalAmount).toFixed(2);
+                                                    return selectedHistorySale.currencyCode === 'AED' ? `${val} ${sym}` : `${sym}${val}`;
+                                                })()}
+                                            </span>
                                         </div>
 
                                         <div className="mt-6 flex gap-3">

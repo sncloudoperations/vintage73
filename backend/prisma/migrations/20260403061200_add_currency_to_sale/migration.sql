@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Sale" ADD COLUMN "currencyCode" TEXT DEFAULT 'INR';
+ALTER TABLE "Sale" ADD COLUMN "exchangeRate" DECIMAL(10,4) DEFAULT 1.0;
