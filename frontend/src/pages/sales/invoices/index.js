@@ -6,12 +6,14 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
 import DynamicInvoice from '@/components/DynamicInvoice';
+import ProfessionalInvoice from '@/components/ProfessionalInvoice';
 
 export default function InvoicesList() {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [companyProfile, setCompanyProfile] = useState(null);
-    const [invoiceSettings, setInvoiceSettings] = useState(null);
+    const [salesSettings, setSalesSettings] = useState(null);
+    const [returnSettings, setReturnSettings] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const router = useRouter();
 
@@ -35,9 +37,14 @@ export default function InvoicesList() {
 
     const fetchSettings = async () => {
         try {
-            const res = await api.get('/company');
-            setCompanyProfile(res.data);
-            setInvoiceSettings(res.data?.invoiceSettings || null);
+            const [companyRes, salesSettingsRes, returnSettingsRes] = await Promise.all([
+                api.get('/company'),
+                api.get('/invoice-settings', { params: { type: 'sales' } }),
+                api.get('/invoice-settings', { params: { type: 'return' } })
+            ]);
+            setCompanyProfile(companyRes.data);
+            if (salesSettingsRes.data?.settings) setSalesSettings(salesSettingsRes.data.settings);
+            if (returnSettingsRes.data?.settings) setReturnSettings(returnSettingsRes.data.settings);
         } catch (err) {
             console.error(err);
         }
@@ -259,13 +266,12 @@ export default function InvoicesList() {
                             </div>
                         </div>
                         <div className="flex-1 p-8 bg-slate-100 overflow-y-auto pattern-grid-slate-200">
-                            <div className="mx-auto shadow-2xl bg-white max-w-[800px]">
-                                <DynamicInvoice
-                                    printData={printData}
-                                    companyProfile={companyProfile}
-                                    invoiceSettings={invoiceSettings}
+                             <div className="mx-auto shadow-2xl bg-white max-w-[800px]" ref={printRef}>
+                                <ProfessionalInvoice
+                                   printData={{...printData, settings: printData.isReturn ? returnSettings : salesSettings}}
+                                   companyProfile={companyProfile}
                                 />
-                            </div>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -324,10 +330,9 @@ export default function InvoicesList() {
             <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', pointerEvents: 'none' }}>
                 <div ref={printRef}>
                     {printData && (
-                        <DynamicInvoice
-                            printData={printData}
+                        <ProfessionalInvoice
+                            printData={{...printData, settings: printData?.isReturn ? returnSettings : salesSettings}}
                             companyProfile={companyProfile}
-                            invoiceSettings={invoiceSettings}
                         />
                     )}
                 </div>
