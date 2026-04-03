@@ -57,6 +57,8 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     const isClassic = tpl === 'classic';
     const isBold = tpl === 'bold';
     const isMinimal = tpl === 'minimal';
+    const exRate = parseFloat(exchangeRate) || 1;
+    const formatAmt = (amt) => (parseFloat(amt || 0) * exRate).toFixed(2);
 
     const taxBreakdown = useMemo(() => {
         const breakdown = {};
@@ -118,25 +120,31 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
             <div ref={ref} style={getContainerStyle()} className="thermal-invoice">
                 <style>{`@media print { @page { size: 80mm auto; margin: 0; } body { margin: 0; } .thermal-invoice { width: 80mm !important; margin: 0 !important; padding: 4mm !important; } }`}</style>
                 <div className="text-center border-b border-dashed border-black pb-2 mb-4">
-                    {settings.showLogo !== false && <div className="w-8 h-8 border border-black rounded flex items-center justify-center text-[8px] font-bold mx-auto mb-1 uppercase tracking-tighter">Logo</div>}
+                    {settings.showLogo !== false && (
+                        companyProfile?.logoUrl ? (
+                            <img src={companyProfile.logoUrl} alt="Logo" className="w-8 h-8 object-contain mx-auto mb-1" />
+                        ) : (
+                            <div className="w-8 h-8 border border-black rounded flex items-center justify-center text-[8px] font-bold mx-auto mb-1 uppercase tracking-tighter">Logo</div>
+                        )
+                    )}
                     {settings.showCompanyName !== false && <h2 className="text-[14px] font-bold uppercase">{companyProfile?.companyName || 'OUR STORE'}</h2>}
                     <p className="text-[10px]">{companyProfile?.address}</p>
                     <p className="text-[10px]">Ph: {companyProfile?.phone}</p>
                     <div className="border-t border-b border-black py-1 mt-1 font-bold">{settings.headerTitle || 'TAX INVOICE'}</div>
                 </div>
                 <div className="text-[10px] mb-4">
-                    <div className="flex justify-between"><span>Inv: {invoiceNumber}</span><span>{new Date(saleDate).toLocaleDateString()}</span></div>
+                    <div className="flex justify-between"><span>Inv: {invoiceNumber || ''}</span><span>{saleDate ? new Date(saleDate).toLocaleDateString() : ''}</span></div>
                     <div className="font-bold mt-1">Bill To: {customer?.name || customerName || 'Walk-in'}</div>
                 </div>
                 <table className="w-full text-[10px] border-b border-dashed border-black mb-4">
                     <thead><tr><th className="text-left font-bold py-1">Item</th><th className="text-right font-bold w-12 py-1">Qty</th><th className="text-right font-bold w-16 py-1">Amt</th></tr></thead>
-                    <tbody>{items?.map((item, i) => (<tr key={i}><td className="py-1">{item.product?.name || item.name}</td><td className="text-right py-1">{item.quantity}</td><td className="text-right py-1">{currentSymbol}{parseFloat(item.total || 0).toFixed(2)}</td></tr>))}</tbody>
+                    <tbody>{items?.map((item, i) => (<tr key={i}><td className="py-1">{item.product?.name || item.name || 'Item'}</td><td className="text-right py-1">{item.quantity || 0}</td><td className="text-right py-1">{currentSymbol}{formatAmt(item.total)}</td></tr>))}</tbody>
                 </table>
                 <div className="space-y-1 text-[11px] font-bold flex flex-col items-end">
-                    <div className="flex justify-between w-full"><span>Subtotal:</span><span>{currentSymbol}{parseFloat(subTotal || 0).toFixed(2)}</span></div>
-                    <div className="flex justify-between w-full text-[13px] border-t border-black pt-1 mt-1 font-black"><span>TOTAL:</span><span>{currentSymbol}{parseFloat(totalAmount || 0).toFixed(0)}</span></div>
+                    <div className="flex justify-between w-full"><span>Subtotal:</span><span>{currentSymbol}{formatAmt(subTotal)}</span></div>
+                    <div className="flex justify-between w-full text-[13px] border-t border-black pt-1 mt-1 font-black"><span>TOTAL:</span><span>{currentSymbol}{formatAmt(totalAmount)}</span></div>
                 </div>
-                <div className="text-center mt-4 pt-2 border-t border-dashed border-black text-[9px] font-bold tracking-widest"><p>{settings.footerText || 'THANK YOU!'}</p></div>
+                <div className="text-center mt-4 pt-2 border-t border-dashed border-black text-[9px] font-bold tracking-widest"><p>{settings.footerText || settings.footerNote || 'THANK YOU!'}</p></div>
             </div>
         );
     }
@@ -166,7 +174,11 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
             <div className={`flex justify-between items-start mb-6`}>
                 <div className="flex-1">
                     {settings.showLogo !== false && (
-                        <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center font-bold text-slate-300 border border-slate-100 shadow-sm uppercase text-[9px] tracking-widest">Logo</div>
+                        companyProfile?.logoUrl ? (
+                            <img src={companyProfile.logoUrl} alt="Logo" className="w-16 h-16 object-contain" />
+                        ) : (
+                            <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center font-bold text-slate-300 border border-slate-100 shadow-sm uppercase text-[9px] tracking-widest">Logo</div>
+                        )
                     )}
                 </div>
                 <div className="text-right flex-1">
@@ -178,8 +190,8 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     )}
                     {settings.showAddress !== false && (
                         <div className={s_AddressLabel}>
-                            <p>{companyProfile?.address}</p>
-                            <p>+91 {companyProfile?.phone}</p>
+                            <p>{companyProfile?.address || ''}</p>
+                            <p>{companyProfile?.phone ? `+91 ${companyProfile.phone}` : ''}</p>
                         </div>
                     )}
                 </div>
@@ -191,9 +203,9 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <div className={`flex-1 ${isMinimal ? '' : 'border-r border-slate-100 pr-8'}`}>
                         <p className={`${s_SecHead}`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>Bill To</p>
                         <div className="space-y-1">
-                           <p className={s_Value}>{customer?.name || customerName || 'Customer Name'}</p>
-                           <p className={s_AddressLabel}>{customer?.email || 'customer@email.com'}</p>
-                           <p className={s_AddressLabel}>{customer?.phone || '+91 9876543210'}</p>
+                           <p className={s_Value}>{customer?.name || customerName || 'Walk-in'}</p>
+                           {customer?.email && <p className={s_AddressLabel}>{customer.email}</p>}
+                           {customer?.phone && <p className={s_AddressLabel}>{customer.phone}</p>}
                         </div>
                     </div>
                 )}
@@ -203,11 +215,11 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                         <div className="space-y-2">
                             <div className="flex items-center gap-6">
                                 <span className={s_Label}>Invoice No:</span> 
-                                <span className={s_Value}>{invoiceNumber || 'INV26-001'}</span>
+                                <span className={s_Value}>{invoiceNumber || ''}</span>
                             </div>
                             <div className="flex items-center gap-6">
                                 <span className={s_Label}>Date:</span> 
-                                <span className={s_Value} style={{ letterSpacing: '0.2px' }}>{saleDate ? new Date(saleDate).toLocaleDateString('en-GB') : '03/04/2026'}</span>
+                                <span className={s_Value} style={{ letterSpacing: '0.2px' }}>{saleDate ? new Date(saleDate).toLocaleDateString('en-GB') : ''}</span>
                             </div>
                         </div>
                     </div>
@@ -222,18 +234,18 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             <th className={`${s_TableTh} text-left ${isMinimal ? 'border-b border-slate-200' : isBold ? 'rounded-l-lg' : 'rounded-l-lg'}`}>{isBold ? 'DESCRIPTION' : 'Description'}</th>
                             {settings.showColQty !== false && <th className={`${s_TableTh} text-center w-14 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'QTY' : 'Qty'}</th>}
                             {settings.showColPrice !== false && <th className={`${s_TableTh} text-center w-24 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'PRICE' : 'Price'}</th>}
-                            {settings.showColTax !== false && <th className={`${s_TableTh} text-center w-16 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'GST%' : 'Gst %'}</th>}
+                            {settings.showColTax !== false && parseFloat(taxAmount || 0) > 0 && <th className={`${s_TableTh} text-center w-16 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'GST%' : 'Gst %'}</th>}
                             {settings.showColTotal !== false && <th className={`${s_TableTh} text-right w-28 ${isMinimal ? 'border-b border-slate-200' : isBold ? 'rounded-r-lg' : 'rounded-r-lg'}`}>{isBold ? 'TOTAL' : 'Total'}</th>}
                         </tr>
                     </thead>
                     <tbody>
                         {items?.map((item, idx) => (
                             <tr key={idx} className="border-b border-transparent">
-                                <td className={`${s_TableTd} text-left font-bold text-slate-800`}>{item.product?.name || item.name || 'Premium Subscription'}</td>
-                                {settings.showColQty !== false && <td className={`${s_TableTd} text-center font-semibold text-slate-600`}>{item.quantity || 1}</td>}
-                                {settings.showColPrice !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{currentSymbol}{parseFloat(item.unitPrice || 100).toFixed(2)}</td>}
-                                {settings.showColTax !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{item.taxRate || 18}%</td>}
-                                {settings.showColTotal !== false && <td className={`${s_TableTd} text-right font-bold text-slate-800`}>{currentSymbol}{parseFloat(item.total || 118).toFixed(2)}</td>}
+                                <td className={`${s_TableTd} text-left font-bold text-slate-800`}>{item.product?.name || item.name || 'Item'}</td>
+                                {settings.showColQty !== false && <td className={`${s_TableTd} text-center font-semibold text-slate-600`}>{item.quantity || 0}</td>}
+                                {settings.showColPrice !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{currentSymbol}{formatAmt(item.unitPrice)}</td>}
+                                {settings.showColTax !== false && parseFloat(taxAmount || 0) > 0 && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{parseFloat(item.taxRate || 0)}%</td>}
+                                {settings.showColTotal !== false && <td className={`${s_TableTd} text-right font-bold text-slate-800`}>{currentSymbol}{formatAmt(item.total)}</td>}
                             </tr>
                         ))}
                     </tbody>
@@ -243,12 +255,24 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                 {/* TAX & TOTALS */}
             <div className="flex justify-between items-start mb-8">
                 <div className="w-[42%]">
-                    {settings.showTaxSummary !== false && (
+                    {settings.showTaxSummary !== false && parseFloat(taxAmount || 0) > 0 && Object.entries(taxBreakdown).filter(([rate]) => parseFloat(rate) > 0).length > 0 && (
                         <div className={`bg-[#f8fafc] p-3.5 rounded-xl border border-slate-100`}>
                             <p className={`${s_SecHead} mb-1.5`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>{isBold ? 'TAX SUMMARY' : 'Tax Summary'}</p>
                             <div className={`space-y-1 text-[10px]`}>
-                                <div className="flex justify-between font-normal text-slate-500"><span>CGST (9%)</span><span className="font-semibold text-slate-700">{currentSymbol}9.00</span></div>
-                                <div className="flex justify-between font-normal text-slate-500"><span>SGST (9%)</span><span className="font-semibold text-slate-700">{currentSymbol}9.00</span></div>
+                                {Object.entries(taxBreakdown)
+                                    .filter(([rate]) => parseFloat(rate) > 0)
+                                    .map(([rate, data]) => (
+                                    <React.Fragment key={rate}>
+                                        <div className="flex justify-between font-normal text-slate-500">
+                                            <span>CGST ({parseFloat(rate)/2}%)</span>
+                                            <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(data.taxAmount / 2)}</span>
+                                        </div>
+                                        <div className="flex justify-between font-normal text-slate-500">
+                                            <span>SGST ({parseFloat(rate)/2}%)</span>
+                                            <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(data.taxAmount / 2)}</span>
+                                        </div>
+                                    </React.Fragment>
+                                ))}
                             </div>
                         </div>
                     )}
@@ -258,16 +282,18 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <div className="space-y-1 mb-2">
                         <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
                             <span>Subtotal</span>
-                            <span className="font-semibold text-slate-700">{currentSymbol}100.00</span>
+                            <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(subTotal || (parseFloat(totalAmount) - parseFloat(taxAmount || 0)))}</span>
                         </div>
-                        <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
-                            <span>Total Tax</span>
-                            <span className="font-semibold text-slate-700">{currentSymbol}18.00</span>
-                        </div>
+                        {parseFloat(taxAmount || 0) > 0 && (
+                            <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
+                                <span>Total Tax</span>
+                                <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(taxAmount)}</span>
+                            </div>
+                        )}
                     </div>
                     <div className={`pt-2.5 border-t border-slate-200/50 flex justify-between items-center mt-1`}>
                         <span className="font-bold uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>GRAND TOTAL</span>
-                        <span className="font-bold text-[16px] tracking-tighter" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>{currentSymbol}118.00</span>
+                        <span className="font-bold text-[16px] tracking-tighter" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>{currentSymbol}{formatAmt(totalAmount)}</span>
                     </div>
                 </div>
             </div>
@@ -279,7 +305,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <p className="text-[12px] text-slate-400 leading-relaxed max-w-[380px] font-normal">{settings.termsConditions || 'Goods once sold will not be taken back.'}</p>
                 </div>
                 <div className="text-right text-slate-300 font-medium italic text-[14px] opacity-80">
-                    Thank you for your business!
+                    {settings.footerText || settings.footerNote || 'Thank you for your business!'}
                 </div>
             </div>
         </div>
