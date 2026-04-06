@@ -70,8 +70,13 @@ export default function ReceiptVoucher() {
         try {
             let res;
             if (editId) {
+                const apiEntries = [
+                    { type: 'DEBIT', ledgerId: parseInt(formData.receiptAccount), amount: parseFloat(formData.amount), description: formData.narration },
+                    { type: 'CREDIT', ledgerId: parseInt(formData.incomeAccount), amount: parseFloat(formData.amount), description: formData.narration }
+                ];
                 res = await api.put(`/accounting/vouchers/${editId}`, {
                     ...formData,
+                    entries: apiEntries,
                     voucherType: 'RECEIPT'
                 });
                 toast.success('Receipt voucher updated successfully!');

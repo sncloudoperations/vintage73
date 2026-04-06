@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import { FiPrinter, FiEye, FiCheckCircle, FiFileText, FiDollarSign, FiX, FiSearch, FiTrash2, FiAlertTriangle } from 'react-icons/fi';
+import { FiPrinter, FiEye, FiCheckCircle, FiFileText, FiDollarSign, FiX, FiSearch, FiTrash2, FiAlertTriangle, FiEdit2 } from 'react-icons/fi';
 
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
-import DynamicInvoice from '@/components/DynamicInvoice';
 import ProfessionalInvoice from '@/components/ProfessionalInvoice';
 
 export default function InvoicesList() {
@@ -17,23 +16,35 @@ export default function InvoicesList() {
     const [searchTerm, setSearchTerm] = useState('');
     const router = useRouter();
 
-    // Print/View State
+    // Print/View State — separate refs for preview modal vs direct print
     const [printData, setPrintData] = useState(null);
     const [showPreview, setShowPreview] = useState(false);
-    const printRef = useRef();
-    const handlePrint = useReactToPrint({ contentRef: printRef });
+    const [viewLoading, setViewLoading] = useState(false);
 
-    // Cancellation State
+    // Two separate refs to avoid ref collision
+    const modalPrintRef = useRef();   // used inside preview modal
+    const directPrintRef = useRef();  // used for direct print (off-screen)
+
+    const handleModalPrint = useReactToPrint({ contentRef: modalPrintRef });
+    const handleDirectPrint = useReactToPrint({ contentRef: directPrintRef });
+
+    // Cancellation State — uses a DIFFERENT state var from printData
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const [selectedForDelete, setSelectedForDelete] = useState(null);
     const [deleteReason, setDeleteReason] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
-
 
     useEffect(() => {
         fetchInvoices();
         fetchSettings();
     }, []);
+
+    // Clear printData when preview modal closes to avoid stale data
+    useEffect(() => {
+        if (!showPreview) {
+            setPrintData(null);
+        }
+    }, [showPreview]);
 
     const fetchSettings = async () => {
         try {
@@ -62,12 +73,15 @@ export default function InvoicesList() {
         }
     };
 
-    const handleView = async (id) => {
+    // FIX: Pass invoiceNumber (not id) so backend query param ?invoice= works correctly
+    const handleView = async (invoiceNumber) => {
         try {
-            const { data } = await api.get(`/sales?id=${id}`);
+            setViewLoading(true);
+            const { data } = await api.get(`/sales?invoice=${encodeURIComponent(invoiceNumber)}`);
             const invoice = Array.isArray(data) ? data[0] : data;
-            
-            // Format data for DynamicInvoice
+
+            if (!invoice) { toast.error('Invoice not found'); return; }
+
             const formattedData = {
                 ...invoice,
                 items: invoice.items.map(item => ({
@@ -76,59 +90,73 @@ export default function InvoicesList() {
                     hsnCode: item.product?.hsnCode || ''
                 }))
             };
-            setPrintData(formattedData);
+            setPrintData(formattedData);   // set BEFORE opening modal
             setShowPreview(true);
         } catch (error) {
+            console.error(error);
             toast.error('Failed to load invoice details');
+        } finally {
+            setViewLoading(false);
         }
     };
 
-    const handleDirectPrint = async (invoice) => {
-        const formattedData = {
-            ...invoice,
-            items: invoice.items.map(item => ({
-                ...item,
-                name: item.product?.name || 'Unknown Product',
-                hsnCode: item.product?.hsnCode || ''
-            }))
-        };
-        setPrintData(formattedData);
-        setTimeout(() => handlePrint(), 100);
+    // Direct print: uses invoice row data already in the list (no extra API call)
+    // Only missing: product.hsnCode — still works for printing
+    const handleQuickPrint = async (inv) => {
+        try {
+            // Fetch full invoice data for accurate print
+            const { data } = await api.get(`/sales?invoice=${encodeURIComponent(inv.invoiceNumber)}`);
+            const invoice = Array.isArray(data) ? data[0] : data;
+            if (!invoice) { toast.error('Invoice not found'); return; }
+
+            const formattedData = {
+                ...invoice,
+                items: invoice.items.map(item => ({
+                    ...item,
+                    name: item.product?.name || 'Unknown Product',
+                    hsnCode: item.product?.hsnCode || ''
+                })),
+                settings: invoice.isReturn ? returnSettings : salesSettings
+            };
+            setPrintData(formattedData);
+            // small delay to let React update the off-screen ref
+            setTimeout(() => handleDirectPrint(), 150);
+        } catch (err) {
+            toast.error('Failed to load invoice for printing');
+        }
     };
 
     const handleDeleteClick = (invoice) => {
-        setSelectedInvoice(invoice);
+        setSelectedForDelete(invoice);
         setDeleteReason('');
         setShowDeleteModal(true);
     };
 
     const confirmDelete = async () => {
         if (!deleteReason.trim()) {
-            toast.warn("Please provide a reason for cancellation");
+            toast.warn('Please provide a reason for cancellation');
             return;
         }
 
         setIsDeleting(true);
         try {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            await api.put(`/sales/${selectedInvoice.id}/cancel`, {
+            await api.put(`/sales/${selectedForDelete.id}/cancel`, {
                 cancelledBy: user.name || user.username || 'Admin',
                 cancelReason: deleteReason
             });
-            
-            toast.success("Invoice cancelled successfully");
+            toast.success('Invoice cancelled successfully');
             setShowDeleteModal(false);
             fetchInvoices();
         } catch (error) {
             console.error(error);
-            toast.error(error.response?.data?.message || "Failed to cancel invoice");
+            toast.error(error.response?.data?.message || 'Failed to cancel invoice');
         } finally {
             setIsDeleting(false);
         }
     };
 
-
-    const filteredInvoices = invoices.filter(inv => 
+    const filteredInvoices = invoices.filter(inv =>
         inv.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (inv.customer?.name && inv.customer.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
@@ -142,7 +170,7 @@ export default function InvoicesList() {
                 </div>
                 <div className="relative w-full md:w-80">
                     <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
+                    <input
                         type="text"
                         placeholder="Search invoice # or customer..."
                         className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-primary bg-white shadow-sm"
@@ -162,14 +190,13 @@ export default function InvoicesList() {
                             <th className="px-6 py-4">Status</th>
                             <th className="px-6 py-4 text-right">Total Amount</th>
                             <th className="px-6 py-4 text-center">Actions</th>
-
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {loading ? (
                             Array(5).fill(0).map((_, i) => (
                                 <tr key={i} className="animate-pulse">
-                                    <td colSpan="5" className="p-4 bg-slate-50/50"></td>
+                                    <td colSpan="6" className="p-4 bg-slate-50/50"></td>
                                 </tr>
                             ))
                         ) : filteredInvoices.map((inv) => (
@@ -186,7 +213,7 @@ export default function InvoicesList() {
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter border ${
-                                        inv.status === 'cancelled' 
+                                        inv.status === 'cancelled'
                                         ? 'bg-red-50 text-red-600 border-red-100'
                                         : 'bg-emerald-50 text-emerald-600 border-emerald-100'
                                     }`}>
@@ -199,19 +226,33 @@ export default function InvoicesList() {
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex justify-center gap-2">
+                                        {/* VIEW: pass invoiceNumber, not id */}
                                         <button
-                                            onClick={() => handleView(inv.id)}
+                                            onClick={() => handleView(inv.invoiceNumber)}
+                                            disabled={viewLoading}
                                             className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
                                             title="View Invoice"
                                         >
                                             <FiEye size={16} />
                                         </button>
                                         <button
-                                            onClick={() => handleDirectPrint(inv)}
+                                            onClick={() => handleQuickPrint(inv)}
                                             className="p-1.5 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                                             title="Print Invoice"
                                         >
                                             <FiPrinter size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => router.push(`/pos?editId=${inv.id}`)}
+                                            disabled={inv.status === 'cancelled'}
+                                            className={`p-1.5 rounded-lg transition-all ${
+                                                inv.status === 'cancelled'
+                                                ? 'text-slate-200 cursor-not-allowed'
+                                                : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'
+                                            }`}
+                                            title="Edit Invoice"
+                                        >
+                                            <FiEdit2 size={16} />
                                         </button>
                                         <button
                                             onClick={() => handleDeleteClick(inv)}
@@ -227,12 +268,11 @@ export default function InvoicesList() {
                                         </button>
                                     </div>
                                 </td>
-
                             </tr>
                         ))}
                         {!loading && filteredInvoices.length === 0 && (
                             <tr>
-                                <td colSpan="5" className="text-center py-12 text-slate-400">
+                                <td colSpan="6" className="text-center py-12 text-slate-400">
                                     <FiFileText className="mx-auto mb-2 text-4xl opacity-20" />
                                     No invoices found.
                                 </td>
@@ -242,8 +282,8 @@ export default function InvoicesList() {
                 </table>
             </div>
 
-            {/* Preview Modal */}
-            {showPreview && (
+            {/* Preview Modal — uses modalPrintRef (separate from directPrintRef) */}
+            {showPreview && printData && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden flex flex-col h-[90vh]">
                         <div className="flex justify-between items-center p-4 border-b bg-white relative z-10">
@@ -253,7 +293,7 @@ export default function InvoicesList() {
                             </div>
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => handlePrint()}
+                                    onClick={() => handleModalPrint()}
                                     className="bg-primary text-white flex items-center gap-2 px-6 py-2 rounded-lg font-bold hover:bg-primary-dark transition-all"
                                 >
                                     <FiPrinter /> Print Invoice
@@ -266,13 +306,13 @@ export default function InvoicesList() {
                                 </button>
                             </div>
                         </div>
-                        <div className="flex-1 p-8 bg-slate-100 overflow-y-auto pattern-grid-slate-200">
-                             <div className="mx-auto shadow-2xl bg-white max-w-[800px]" ref={printRef}>
+                        <div className="flex-1 p-8 bg-slate-100 overflow-y-auto">
+                            <div className="mx-auto shadow-2xl bg-white max-w-[800px]" ref={modalPrintRef}>
                                 <ProfessionalInvoice
-                                   printData={{...printData, settings: printData.isReturn ? returnSettings : salesSettings}}
-                                   companyProfile={companyProfile}
+                                    printData={{ ...printData, settings: printData.isReturn ? returnSettings : salesSettings }}
+                                    companyProfile={companyProfile}
                                 />
-                             </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -293,12 +333,12 @@ export default function InvoicesList() {
                         </div>
                         <div className="p-6 space-y-4">
                             <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 italic text-sm text-slate-500">
-                                Are you sure you want to cancel Invoice <span className="font-bold text-slate-800">{selectedInvoice?.invoiceNumber}</span>? 
+                                Are you sure you want to cancel Invoice <span className="font-bold text-slate-800">{selectedForDelete?.invoiceNumber}</span>?
                                 <p className="mt-1 text-[10px] non-italic text-slate-400">Stock will be restored and accounting reversed.</p>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest ml-1">Reason for Cancellation</label>
-                                <textarea 
+                                <textarea
                                     className="input min-h-[100px] bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm"
                                     value={deleteReason}
                                     onChange={(e) => setDeleteReason(e.target.value)}
@@ -319,20 +359,19 @@ export default function InvoicesList() {
                                 disabled={isDeleting || !deleteReason.trim()}
                                 className="flex-1 py-3 px-4 rounded-xl font-bold bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                             >
-                                {isDeleting ? <span className="animate-pulse">Processing...</span> : "Yes, Cancel Invoice"}
+                                {isDeleting ? <span className="animate-pulse">Processing...</span> : 'Yes, Cancel Invoice'}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-
-            {/* Off-screen Print Container */}
+            {/* Off-screen container for direct/quick print — uses directPrintRef */}
             <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', pointerEvents: 'none' }}>
-                <div ref={printRef}>
+                <div ref={directPrintRef}>
                     {printData && (
                         <ProfessionalInvoice
-                            printData={{...printData, settings: printData?.isReturn ? returnSettings : salesSettings}}
+                            printData={{ ...printData, settings: printData?.isReturn ? returnSettings : salesSettings }}
                             companyProfile={companyProfile}
                         />
                     )}

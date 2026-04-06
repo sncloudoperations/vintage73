@@ -8,6 +8,7 @@ router.use(authMiddleware);
 router.post('/', salesController.createSale);
 router.get('/', salesController.getAllSales);
 
+router.put('/:id', salesController.updateSale);
 router.put('/:id/cancel', salesController.cancelSale);
 
 module.exports = router;

@@ -20201,6 +20201,7 @@ export namespace Prisma {
     taxAmount: Decimal | null
     totalAmount: Decimal | null
     roundOffAmount: Decimal | null
+    discount: number | null
     exchangeRate: Decimal | null
     balanceAmount: Decimal | null
     paidAmount: Decimal | null
@@ -20219,6 +20220,7 @@ export namespace Prisma {
     taxAmount: Decimal | null
     totalAmount: Decimal | null
     roundOffAmount: Decimal | null
+    discount: number | null
     exchangeRate: Decimal | null
     balanceAmount: Decimal | null
     paidAmount: Decimal | null
@@ -20239,6 +20241,7 @@ export namespace Prisma {
     taxAmount: Decimal | null
     totalAmount: Decimal | null
     roundOffAmount: Decimal | null
+    discount: number | null
     paymentMethod: string | null
     status: string | null
     isReturn: boolean | null
@@ -20280,6 +20283,7 @@ export namespace Prisma {
     taxAmount: Decimal | null
     totalAmount: Decimal | null
     roundOffAmount: Decimal | null
+    discount: number | null
     paymentMethod: string | null
     status: string | null
     isReturn: boolean | null
@@ -20321,6 +20325,7 @@ export namespace Prisma {
     taxAmount: number
     totalAmount: number
     roundOffAmount: number
+    discount: number
     paymentMethod: number
     status: number
     isReturn: number
@@ -20362,6 +20367,7 @@ export namespace Prisma {
     taxAmount?: true
     totalAmount?: true
     roundOffAmount?: true
+    discount?: true
     exchangeRate?: true
     balanceAmount?: true
     paidAmount?: true
@@ -20380,6 +20386,7 @@ export namespace Prisma {
     taxAmount?: true
     totalAmount?: true
     roundOffAmount?: true
+    discount?: true
     exchangeRate?: true
     balanceAmount?: true
     paidAmount?: true
@@ -20400,6 +20407,7 @@ export namespace Prisma {
     taxAmount?: true
     totalAmount?: true
     roundOffAmount?: true
+    discount?: true
     paymentMethod?: true
     status?: true
     isReturn?: true
@@ -20441,6 +20449,7 @@ export namespace Prisma {
     taxAmount?: true
     totalAmount?: true
     roundOffAmount?: true
+    discount?: true
     paymentMethod?: true
     status?: true
     isReturn?: true
@@ -20482,6 +20491,7 @@ export namespace Prisma {
     taxAmount?: true
     totalAmount?: true
     roundOffAmount?: true
+    discount?: true
     paymentMethod?: true
     status?: true
     isReturn?: true
@@ -20610,6 +20620,7 @@ export namespace Prisma {
     taxAmount: Decimal
     totalAmount: Decimal
     roundOffAmount: Decimal
+    discount: number
     paymentMethod: string | null
     status: string
     isReturn: boolean
@@ -20670,6 +20681,7 @@ export namespace Prisma {
     taxAmount?: boolean
     totalAmount?: boolean
     roundOffAmount?: boolean
+    discount?: boolean
     paymentMethod?: boolean
     status?: boolean
     isReturn?: boolean
@@ -20721,6 +20733,7 @@ export namespace Prisma {
     taxAmount?: boolean
     totalAmount?: boolean
     roundOffAmount?: boolean
+    discount?: boolean
     paymentMethod?: boolean
     status?: boolean
     isReturn?: boolean
@@ -20789,6 +20802,7 @@ export namespace Prisma {
       taxAmount: Prisma.Decimal
       totalAmount: Prisma.Decimal
       roundOffAmount: Prisma.Decimal
+      discount: number
       paymentMethod: string | null
       status: string
       isReturn: boolean
@@ -21238,6 +21252,7 @@ export namespace Prisma {
     readonly taxAmount: FieldRef<"Sale", 'Decimal'>
     readonly totalAmount: FieldRef<"Sale", 'Decimal'>
     readonly roundOffAmount: FieldRef<"Sale", 'Decimal'>
+    readonly discount: FieldRef<"Sale", 'Float'>
     readonly paymentMethod: FieldRef<"Sale", 'String'>
     readonly status: FieldRef<"Sale", 'String'>
     readonly isReturn: FieldRef<"Sale", 'Boolean'>
@@ -69550,6 +69565,7 @@ export namespace Prisma {
     taxAmount: 'taxAmount',
     totalAmount: 'totalAmount',
     roundOffAmount: 'roundOffAmount',
+    discount: 'discount',
     paymentMethod: 'paymentMethod',
     status: 'status',
     isReturn: 'isReturn',
@@ -71686,6 +71702,7 @@ export namespace Prisma {
     taxAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
+    discount?: FloatFilter<"Sale"> | number
     paymentMethod?: StringNullableFilter<"Sale"> | string | null
     status?: StringFilter<"Sale"> | string
     isReturn?: BoolFilter<"Sale"> | boolean
@@ -71736,6 +71753,7 @@ export namespace Prisma {
     taxAmount?: SortOrder
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
+    discount?: SortOrder
     paymentMethod?: SortOrderInput | SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -71791,6 +71809,7 @@ export namespace Prisma {
     taxAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
+    discount?: FloatFilter<"Sale"> | number
     paymentMethod?: StringNullableFilter<"Sale"> | string | null
     status?: StringFilter<"Sale"> | string
     isReturn?: BoolFilter<"Sale"> | boolean
@@ -71840,6 +71859,7 @@ export namespace Prisma {
     taxAmount?: SortOrder
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
+    discount?: SortOrder
     paymentMethod?: SortOrderInput | SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -71889,6 +71909,7 @@ export namespace Prisma {
     taxAmount?: DecimalWithAggregatesFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalWithAggregatesFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalWithAggregatesFilter<"Sale"> | Decimal | DecimalJsLike | number | string
+    discount?: FloatWithAggregatesFilter<"Sale"> | number
     paymentMethod?: StringNullableWithAggregatesFilter<"Sale"> | string | null
     status?: StringWithAggregatesFilter<"Sale"> | string
     isReturn?: BoolWithAggregatesFilter<"Sale"> | boolean
@@ -77298,6 +77319,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -77343,6 +77365,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -77385,6 +77408,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -77430,6 +77454,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -77474,6 +77499,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -77513,6 +77539,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -77549,6 +77576,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -83056,6 +83084,17 @@ export namespace Prisma {
     totalCost?: SortOrder
   }
 
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -83102,6 +83141,7 @@ export namespace Prisma {
     taxAmount?: SortOrder
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
+    discount?: SortOrder
     paymentMethod?: SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -83141,6 +83181,7 @@ export namespace Prisma {
     taxAmount?: SortOrder
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
+    discount?: SortOrder
     exchangeRate?: SortOrder
     balanceAmount?: SortOrder
     paidAmount?: SortOrder
@@ -83161,6 +83202,7 @@ export namespace Prisma {
     taxAmount?: SortOrder
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
+    discount?: SortOrder
     paymentMethod?: SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -83202,6 +83244,7 @@ export namespace Prisma {
     taxAmount?: SortOrder
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
+    discount?: SortOrder
     paymentMethod?: SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -83241,6 +83284,7 @@ export namespace Prisma {
     taxAmount?: SortOrder
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
+    discount?: SortOrder
     exchangeRate?: SortOrder
     balanceAmount?: SortOrder
     paidAmount?: SortOrder
@@ -83250,6 +83294,22 @@ export namespace Prisma {
     terminalId?: SortOrder
     quotationId?: SortOrder
     financialYearId?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -83729,17 +83789,6 @@ export namespace Prisma {
     totalCost?: SortOrder
   }
 
-  export type FloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
   export type BarcodeSettingCountOrderByAggregateInput = {
     id?: SortOrder
     branchId?: SortOrder
@@ -83844,22 +83893,6 @@ export namespace Prisma {
     paperWidth?: SortOrder
     columnGap?: SortOrder
     rowGap?: SortOrder
-  }
-
-  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type UserRelationFilter = {
@@ -88942,6 +88975,14 @@ export namespace Prisma {
     connect?: LeadWhereUniqueInput
   }
 
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
   }
@@ -89540,14 +89581,6 @@ export namespace Prisma {
     create?: XOR<BranchCreateWithoutBarcodeSettingInput, BranchUncheckedCreateWithoutBarcodeSettingInput>
     connectOrCreate?: BranchCreateOrConnectWithoutBarcodeSettingInput
     connect?: BranchWhereUniqueInput
-  }
-
-  export type FloatFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type BranchUpdateOneRequiredWithoutBarcodeSettingNestedInput = {
@@ -91975,20 +92008,6 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -92003,6 +92022,20 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
   export type NestedJsonFilter<$PrismaModel = never> = 
     | PatchUndefined<
@@ -92139,6 +92172,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -92183,6 +92217,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -93438,6 +93473,7 @@ export namespace Prisma {
     taxAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
+    discount?: FloatFilter<"Sale"> | number
     paymentMethod?: StringNullableFilter<"Sale"> | string | null
     status?: StringFilter<"Sale"> | string
     isReturn?: BoolFilter<"Sale"> | boolean
@@ -94506,6 +94542,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -94550,6 +94587,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -96000,6 +96038,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -96043,6 +96082,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -98974,6 +99014,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -99018,6 +99059,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -99147,6 +99189,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -99191,6 +99234,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -99502,6 +99546,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -99546,6 +99591,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -99821,6 +99867,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -99865,6 +99912,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -100198,6 +100246,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -100242,6 +100291,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -100571,6 +100621,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -100615,6 +100666,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -103984,6 +104036,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -104028,6 +104081,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -104436,6 +104490,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -104480,6 +104535,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -107859,6 +107915,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -107903,6 +107960,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -109161,6 +109219,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -109205,6 +109264,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -112204,6 +112264,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -112589,6 +112650,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -112633,6 +112695,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -112676,6 +112739,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -113820,6 +113884,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -114287,6 +114352,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -114331,6 +114397,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -114374,6 +114441,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -115140,6 +115208,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -115286,6 +115355,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -115329,6 +115399,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -115372,6 +115443,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -117344,6 +117416,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -117439,6 +117512,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -117483,6 +117557,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -117526,6 +117601,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -117880,6 +117956,7 @@ export namespace Prisma {
     taxAmount: Decimal | DecimalJsLike | number | string
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
+    discount?: number
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -118020,6 +118097,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -118064,6 +118142,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -118107,6 +118186,7 @@ export namespace Prisma {
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean

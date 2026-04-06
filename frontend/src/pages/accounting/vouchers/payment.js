@@ -72,8 +72,13 @@ export default function PaymentVoucher() {
         try {
             let res;
             if (editId) {
+                const apiEntries = [
+                    { type: 'DEBIT', ledgerId: parseInt(formData.expenseAccount), amount: parseFloat(formData.amount), description: formData.narration },
+                    { type: 'CREDIT', ledgerId: parseInt(formData.paymentAccount), amount: parseFloat(formData.amount), description: formData.narration }
+                ];
                 res = await api.put(`/accounting/vouchers/${editId}`, {
                     ...formData,
+                    entries: apiEntries,
                     voucherType: 'PAYMENT'
                 });
                 toast.success('Payment voucher updated successfully!');

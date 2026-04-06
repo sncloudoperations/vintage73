@@ -281,6 +281,7 @@ exports.Prisma.SaleScalarFieldEnum = {
   taxAmount: 'taxAmount',
   totalAmount: 'totalAmount',
   roundOffAmount: 'roundOffAmount',
+  discount: 'discount',
   paymentMethod: 'paymentMethod',
   status: 'status',
   isReturn: 'isReturn',
