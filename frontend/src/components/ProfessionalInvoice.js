@@ -47,7 +47,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     const tpl = settings.template || 'modern';
     const pageSize = settings.pageSize || 'A5';
     const accent = settings.accentColor || '#10b981';
-    
+
     const isThermal = pageSize === 'Thermal';
     const isA5 = pageSize === 'A5';
     const isA4 = pageSize === 'A4';
@@ -59,6 +59,9 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     const isMinimal = tpl === 'minimal';
     const exRate = parseFloat(exchangeRate) || 1;
     const formatAmt = (amt) => (parseFloat(amt || 0) * exRate).toFixed(2);
+
+    // Use stored discount from DB — single source of truth, do NOT recalculate
+    const invoiceDiscount = parseFloat(printData.discount || 0);
 
     const taxBreakdown = useMemo(() => {
         const breakdown = {};
@@ -82,7 +85,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
             padding: isThermal ? '4mm' : (isA5 ? '4mm 12mm 12mm 12mm' : '5mm 18mm 15mm 18mm'),
             fontSize: isThermal ? '10px' : (isA5 ? '12px' : '13px'),
             backgroundColor: 'white',
-            color: '#1f2937', 
+            color: '#1f2937',
             margin: isMobile ? '0' : '0 auto',
             boxSizing: 'border-box',
             position: 'relative',
@@ -104,9 +107,9 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     };
 
     // Shared Typography Scale (Clean & Balanced)
-    const s_Title = "text-[20px] font-bold tracking-[0.5px] uppercase"; 
+    const s_Title = "text-[20px] font-bold tracking-[0.5px] uppercase";
     const s_Company = "text-[16px] font-semibold leading-tight mb-1";
-    const s_AddressLabel = "text-[12px] text-[#6b7280]"; 
+    const s_AddressLabel = "text-[12px] text-[#6b7280]";
     const s_SecHead = "text-[12px] font-bold uppercase tracking-wider mb-2";
     const s_Label = "text-[12px] font-medium text-[#6b7280]";
     const s_Value = "text-[13px] font-bold text-[#1f2937]";
@@ -142,6 +145,9 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                 </table>
                 <div className="space-y-1 text-[11px] font-bold flex flex-col items-end">
                     <div className="flex justify-between w-full"><span>Subtotal:</span><span>{currentSymbol}{formatAmt(subTotal)}</span></div>
+                    {invoiceDiscount > 0 && (
+                        <div className="flex justify-between w-full"><span>Discount:</span><span>- {currentSymbol}{formatAmt(invoiceDiscount)}</span></div>
+                    )}
                     <div className="flex justify-between w-full text-[13px] border-t border-black pt-1 mt-1 font-black"><span>TOTAL:</span><span>{currentSymbol}{formatAmt(totalAmount)}</span></div>
                 </div>
                 <div className="text-center mt-4 pt-2 border-t border-dashed border-black text-[9px] font-bold tracking-widest"><p>{settings.footerText || settings.footerNote || 'THANK YOU!'}</p></div>
@@ -203,9 +209,9 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <div className={`flex-1 ${isMinimal ? '' : 'border-r border-slate-100 pr-8'}`}>
                         <p className={`${s_SecHead}`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>Bill To</p>
                         <div className="space-y-1">
-                           <p className={s_Value}>{customer?.name || customerName || 'Walk-in'}</p>
-                           {customer?.email && <p className={s_AddressLabel}>{customer.email}</p>}
-                           {customer?.phone && <p className={s_AddressLabel}>{customer.phone}</p>}
+                            <p className={s_Value}>{customer?.name || customerName || 'Walk-in'}</p>
+                            {customer?.email && <p className={s_AddressLabel}>{customer.email}</p>}
+                            {customer?.phone && <p className={s_AddressLabel}>{customer.phone}</p>}
                         </div>
                     </div>
                 )}
@@ -214,11 +220,11 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                         <p className={`${s_SecHead}`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>Invoice Details</p>
                         <div className="space-y-2">
                             <div className="flex items-center gap-6">
-                                <span className={s_Label}>Invoice No:</span> 
+                                <span className={s_Label}>Invoice No:</span>
                                 <span className={s_Value}>{invoiceNumber || ''}</span>
                             </div>
                             <div className="flex items-center gap-6">
-                                <span className={s_Label}>Date:</span> 
+                                <span className={s_Label}>Date:</span>
                                 <span className={s_Value} style={{ letterSpacing: '0.2px' }}>{saleDate ? new Date(saleDate).toLocaleDateString('en-GB') : ''}</span>
                             </div>
                         </div>
@@ -245,14 +251,14 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                                 {settings.showColQty !== false && <td className={`${s_TableTd} text-center font-semibold text-slate-600`}>{item.quantity || 0}</td>}
                                 {settings.showColPrice !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{currentSymbol}{formatAmt(item.unitPrice)}</td>}
                                 {settings.showColTax !== false && parseFloat(taxAmount || 0) > 0 && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{parseFloat(item.taxRate || 0)}%</td>}
-                                {settings.showColTotal !== false && <td className={`${s_TableTd} text-right font-bold text-slate-800`}>{currentSymbol}{formatAmt(item.total)}</td>}
+                                {settings.showColTotal !== false && <td className={`${s_TableTd} text-right font-bold text-slate-800`}>{currentSymbol}{formatAmt((parseFloat(item.unitPrice) || 0) * (parseFloat(item.quantity) || 0))}</td>}
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
 
-                {/* TAX & TOTALS */}
+            {/* TAX & TOTALS */}
             <div className="flex justify-between items-start mb-8">
                 <div className="w-[42%]">
                     {settings.showTaxSummary !== false && parseFloat(taxAmount || 0) > 0 && Object.entries(taxBreakdown).filter(([rate]) => parseFloat(rate) > 0).length > 0 && (
@@ -262,17 +268,17 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                                 {Object.entries(taxBreakdown)
                                     .filter(([rate]) => parseFloat(rate) > 0)
                                     .map(([rate, data]) => (
-                                    <React.Fragment key={rate}>
-                                        <div className="flex justify-between font-normal text-slate-500">
-                                            <span>CGST ({parseFloat(rate)/2}%)</span>
-                                            <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(data.taxAmount / 2)}</span>
-                                        </div>
-                                        <div className="flex justify-between font-normal text-slate-500">
-                                            <span>SGST ({parseFloat(rate)/2}%)</span>
-                                            <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(data.taxAmount / 2)}</span>
-                                        </div>
-                                    </React.Fragment>
-                                ))}
+                                        <React.Fragment key={rate}>
+                                            <div className="flex justify-between font-normal text-slate-500">
+                                                <span>CGST ({parseFloat(rate) / 2}%)</span>
+                                                <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(data.taxAmount / 2)}</span>
+                                            </div>
+                                            <div className="flex justify-between font-normal text-slate-500">
+                                                <span>SGST ({parseFloat(rate) / 2}%)</span>
+                                                <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(data.taxAmount / 2)}</span>
+                                            </div>
+                                        </React.Fragment>
+                                    ))}
                             </div>
                         </div>
                     )}
@@ -282,8 +288,14 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <div className="space-y-1 mb-2">
                         <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
                             <span>Subtotal</span>
-                            <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(subTotal || (parseFloat(totalAmount) - parseFloat(taxAmount || 0)))}</span>
+                            <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(subTotal)}</span>
                         </div>
+                        {invoiceDiscount > 0 && (
+                            <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight mt-1">
+                                <span>Discount</span>
+                                <span className="font-semibold text-slate-700">- {currentSymbol}{formatAmt(invoiceDiscount)}</span>
+                            </div>
+                        )}
                         {parseFloat(taxAmount || 0) > 0 && (
                             <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
                                 <span>Total Tax</span>

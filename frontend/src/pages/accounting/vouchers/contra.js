@@ -73,8 +73,13 @@ export default function ContraEntry() {
         try {
             let res;
             if (editId) {
+                const apiEntries = [
+                    { type: 'DEBIT', ledgerId: parseInt(formData.toAccount), amount: parseFloat(formData.amount), description: formData.narration },
+                    { type: 'CREDIT', ledgerId: parseInt(formData.fromAccount), amount: parseFloat(formData.amount), description: formData.narration }
+                ];
                 res = await api.put(`/accounting/vouchers/${editId}`, {
                     ...formData,
+                    entries: apiEntries,
                     voucherType: 'CONTRA'
                 });
                 toast.success('Contra entry updated successfully!');

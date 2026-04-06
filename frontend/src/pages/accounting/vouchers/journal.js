@@ -127,7 +127,8 @@ export default function JournalEntry() {
                 const updatePayload = {
                     ...formData,
                     entries: apiEntries,
-                    totalAmount: totalDebit
+                    totalAmount: totalDebit,
+                    voucherType: 'JOURNAL'
                 };
                 res = await api.put(`/accounting/vouchers/${editId}`, updatePayload);
                 toast.success('Journal entry updated successfully!');
@@ -571,7 +572,7 @@ export default function JournalEntry() {
 
             <ProfessionalModal
                 isOpen={isSaveModalOpen}
-                onClose={() => setIsSaveModalOpen(true)} // Wait, should be false, but user might misclick? No, should be false.
+                onClose={() => setIsSaveModalOpen(false)}
                 onConfirm={confirmSave}
                 type="success"
                 title={editId ? "Update Journal Entry" : "Post Journal Entry"}

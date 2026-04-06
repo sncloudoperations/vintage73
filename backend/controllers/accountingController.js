@@ -52,10 +52,10 @@ exports.getLedgers = asyncHandler(async (req, res) => {
     })
   ]);
 
-  const debitMap = new Map(debitSums.map(s => [s.debitLedgerId, Number(s._sum.amount || 0)]));
-  const creditMap = new Map(creditSums.map(s => [s.creditLedgerId, Number(s._sum.amount || 0)]));
+  const debitMap = new Map((debitSums || []).map(s => [s.debitLedgerId, Number(s._sum.amount || 0)]));
+  const creditMap = new Map((creditSums || []).map(s => [s.creditLedgerId, Number(s._sum.amount || 0)]));
 
-  const ledgersWithBalance = ledgers.map(ledger => {
+  const ledgersWithBalance = (ledgers || []).map(ledger => {
     const totalDebit = debitMap.get(ledger.id) || 0;
     const totalCredit = creditMap.get(ledger.id) || 0;
     
@@ -474,6 +474,11 @@ exports.cancelVoucher = asyncHandler(async (req, res) => {
 exports.updateVoucher = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { date, narration, reference, totalAmount, entries } = req.body;
+
+  if (!entries || !Array.isArray(entries) || entries.length === 0) {
+    res.status(400);
+    throw new Error('Voucher must have at least one entry');
+  }
 
   const result = await prisma.$transaction(async (tx) => {
     // 1. Delete existing entries (Cascade is on schema, but explicit delete entries if needed)

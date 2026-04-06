@@ -1,17 +1,20 @@
 
+import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import { FiSearch, FiUser, FiX, FiPlus, FiTrash2, FiCreditCard, FiMonitor, FiShoppingCart, FiClock, FiCalendar, FiEdit2 } from 'react-icons/fi';
+import { FiSearch, FiUser, FiX, FiPlus, FiTrash2, FiCreditCard, FiMonitor, FiShoppingCart, FiClock, FiCalendar, FiEdit2, FiAlertCircle } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
 import { getTerminalId, checkTerminalAccess } from '@/lib/terminal';
 import SearchableSelect from '@/components/SearchableSelect';
 import DynamicInvoice from '@/components/DynamicInvoice';
 import ProfessionalInvoice from '@/components/ProfessionalInvoice';
-
 export default function POS() {
+    const router = useRouter();
     const [products, setProducts] = useState([]);
     const [customers, setCustomers] = useState([]);
+    const [editingSaleId, setEditingSaleId] = useState(null);
+    const [loadingInvoice, setLoadingInvoice] = useState(false);
 
     // Parse user from localStorage safely at top level for UI use
     const [user, setUser] = useState(null);
@@ -181,9 +184,74 @@ const CURRENCY_SYMBOLS = {
             } catch (err) {
                 console.error('Failed to load professional invoice settings', err);
             }
+
         } catch (err) {
             console.error(err);
             toast.error('Failed to fetch initial data');
+        }
+    };
+
+    // --- STRICT EDIT MODE TRIGGER ---
+    useEffect(() => {
+        if (router.isReady) {
+            const { editId } = router.query;
+            if (editId) {
+                // Only load if it's a new ID or we're not currently editing
+                if (editingSaleId !== parseInt(editId)) {
+                    loadInvoiceForEdit(editId, products);
+                }
+            } else {
+                // If editId is not in the URL, explicitly exit edit mode
+                setEditingSaleId(null);
+            }
+        }
+    }, [router.isReady, router.query.editId]);
+
+    const loadInvoiceForEdit = async (id, currentProducts) => {
+        try {
+            setLoadingInvoice(true);
+            const { data } = await api.get(`/sales?isInvoice=true`);
+            const invoice = data.find(inv => inv.id === parseInt(id));
+
+            if (!invoice) {
+                toast.error('Invoice to edit not found');
+                return;
+            }
+
+            setEditingSaleId(invoice.id);
+            setCustomerId(invoice.customerId || '');
+            setCustomerName(invoice.customerName || 'Walk-in Customer');
+            setSalesmanId(invoice.salesmanId || '');
+            setSaleDate(new Date(invoice.saleDate).toISOString().split('T')[0]);
+            setRoundOff(invoice.roundOffAmount || 0);
+            setCurrencyCode(invoice.currencyCode || 'INR');
+            setCurrencySymbol(CURRENCY_SYMBOLS[invoice.currencyCode || 'INR']);
+            setExchangeRate(invoice.exchangeRate || 1);
+
+            // Map items to cart
+            const restoredCart = invoice.items.map(item => {
+                const product = (currentProducts || products).find(p => p.id === item.productId);
+                return {
+                    ...(product || item.product),
+                    id: item.productId,
+                    name: item.product?.name || 'Unknown Product',
+                    price: item.unitPrice,
+                    quantity: item.quantity,
+                    discountPercent: item.discountPercent || 0,
+                    discountAmount: item.discountAmount || 0,
+                    taxRate: item.taxRate || 0,
+                    taxPercent: item.taxRate || 0,
+                    isTaxInclusive: item.product?.isTaxInclusive || false
+                };
+            });
+
+            setCart(restoredCart);
+            // toast.info removed to prevent redundant alerts after sale
+        } catch (error) {
+            console.error('Error loading invoice:', error);
+            toast.error('Failed to load invoice for editing');
+        } finally {
+            setLoadingInvoice(false);
         }
     };
 
@@ -611,15 +679,27 @@ const CURRENCY_SYMBOLS = {
                 exchangeRate
             };
 
-            const res = await api.post('/sales', payload);
+            let res;
+            if (editingSaleId) {
+                res = await api.put(`/sales/${editingSaleId}`, payload);
+                toast.success('Invoice Updated Successfully!');
+                setEditingSaleId(null);
+            } else {
+                res = await api.post('/sales', payload);
+                toast.success('Sale Completed Successfully!');
+            }
+
+            // Always clear the URL query after successful transaction
+            // Using shallow: false to ensure state resets correctly
+            router.replace('/pos', undefined, { shallow: false });
 
             setLastSale({
                 ...res.data,
                 currencyCode,
                 currencySymbol,
                 exchangeRate,
-                settings: (lastSale?.isReturn ? returnSettings : salesSettings) || {}
-            }); // Save for printing
+                settings: (res.data.isReturn ? returnSettings : salesSettings) || {}
+            });
             setShowPaymentModal(false);
             // Delay print slightly to allow state update
             setTimeout(() => handlePrint(), 100);
@@ -629,7 +709,6 @@ const CURRENCY_SYMBOLS = {
             setRoundOff(0);
             setSalesmanId(cashier?.id || ''); // Reset to cashier
             localStorage.removeItem(`pos_state_${user?.id}`);
-            toast.success('Sale Completed Successfully!');
             
             // Refresh Products to update stock counts
             fetchData();
@@ -784,6 +863,30 @@ const CURRENCY_SYMBOLS = {
                             )}
                         </div>
                     </div>
+
+                    {/* Editing Indicator */}
+                    {editingSaleId && (
+                        <div className="bg-blue-50 border border-blue-100 rounded-lg p-2 flex justify-between items-center mb-2">
+                            <div className="flex items-center gap-2 text-blue-700">
+                                <FiAlertCircle size={14} className="animate-pulse" />
+                                <span className="text-[10px] font-bold uppercase tracking-wider">Editing Mode</span>
+                            </div>
+                            <button 
+                                onClick={() => {
+                                    setEditingSaleId(null);
+                                    setCart([]);
+                                    setCustomerId('');
+                                    setCustomerName('');
+                                    setRoundOff(0);
+                                    router.replace('/pos', undefined, { shallow: true });
+                                    toast.info('Edit mode cancelled');
+                                }}
+                                className="text-[10px] font-bold bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded transition-colors"
+                            >
+                                CANCEL EDIT
+                            </button>
+                        </div>
+                    )}
 
                     {/* Combined Salesman & Customer Row */}
                     <div className="grid grid-cols-2 gap-3">
@@ -978,14 +1081,6 @@ const CURRENCY_SYMBOLS = {
                                 {currencyCode === 'AED' ? `${tax.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${tax.toFixed(2)}`}
                             </span>
                         </div>
-                        {customerBalance !== 0 && (
-                            <div className="flex justify-between text-orange-600 font-bold">
-                                <span>Balance Due</span>
-                                <span>
-                                    {currencyCode === 'AED' ? `${(customerBalance * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(customerBalance * exchangeRate).toFixed(2)}`}
-                                </span>
-                            </div>
-                        )}
 
                         {/* Round Off Control */}
                         <div className="flex justify-between items-center text-slate-500">
