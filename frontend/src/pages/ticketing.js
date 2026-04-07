@@ -5,7 +5,7 @@ import {
   FiPlus, FiSearch, FiClock, FiCheckCircle, FiAlertCircle, FiUser, 
   FiArrowRight, FiMessageSquare, FiTrendingUp, FiFilter, FiActivity, FiRefreshCw,
   FiXCircle, FiLayers, FiFileText, FiSend, FiUserCheck, FiAlertTriangle,
-  FiEdit3, FiTag, FiMapPin, FiCalendar, FiChevronDown
+  FiEdit3, FiTag, FiMapPin, FiCalendar, FiChevronDown, FiBell
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,6 +15,9 @@ import Select from 'react-select';
 const TIMELINE_MAP = {
   Created:          { icon: <FiPlus />,          bg: 'bg-emerald-500', ring: 'ring-emerald-100',  text: 'text-emerald-700',  label: 'Created' },
   Assigned:         { icon: <FiUserCheck />,     bg: 'bg-blue-500',    ring: 'ring-blue-100',     text: 'text-blue-700',     label: 'Assigned' },
+  InProgress:       { icon: <FiActivity />,      bg: 'bg-violet-500',  ring: 'ring-violet-100',   text: 'text-violet-700',   label: 'In Progress' },
+  StatusChanged:    { icon: <FiEdit3 />,         bg: 'bg-violet-500',  ring: 'ring-violet-100',   text: 'text-violet-700',   label: 'Status Update' },
+  Waiting:          { icon: <FiClock />,         bg: 'bg-amber-400',   ring: 'ring-amber-100',    text: 'text-amber-700',    label: 'Waiting' },
   StatusChanged:    { icon: <FiEdit3 />,         bg: 'bg-violet-500',  ring: 'ring-violet-100',   text: 'text-violet-700',   label: 'Status Update' },
   MessageAdded:     { icon: <FiMessageSquare />, bg: 'bg-slate-400',   ring: 'ring-slate-100',    text: 'text-slate-600',    label: 'Message' },
   ClosureRequested: { icon: <FiAlertTriangle />, bg: 'bg-amber-500',   ring: 'ring-amber-100',    text: 'text-amber-700',    label: 'Closure Requested' },
@@ -56,11 +59,12 @@ export default function Ticketing() {
   const [reassignTargetStaffId, setReassignTargetStaffId] = useState('');
   const [nextStaffId, setNextStaffId] = useState('');
   const [previewFile, setPreviewFile] = useState(null);
-  const [filters, setFilters] = useState({ status: '', priority: '', categoryId: '', search: '' });
+  const [filters, setFilters] = useState({ status: '', priority: '', categoryId: '', search: '', viewType: 'all' });
+  const [activeSection, setActiveSection] = useState('all'); // 'my' | 'all'
   const [activeDetailTab, setActiveDetailTab] = useState('timeline'); // timeline | chat | actions
 
   const priorities = ['Low', 'Medium', 'High'];
-  const statuses = ['CREATED', 'ASSIGNED', 'IN_PROGRESS', 'CLOSED'];
+  const statuses = ['Created', 'Assigned', 'Waiting', 'InProgress', 'Closed'];
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -76,18 +80,18 @@ export default function Ticketing() {
     if (storedUser.role === 'customer') {
       fetchBranchAdmins(storedUser.branchId || '');
     }
-    if (storedUser.role === 'admin' || storedUser.role === 'superadmin') {
-      if (storedUser.branchId) {
-        fetchStaff(storedUser.branchId);
-        fetchBranchCustomers(storedUser.branchId);
-      } else if (storedUser.role === 'superadmin') {
-        fetchStaff();
-        fetchBranchCustomers();
-      }
-    }
+    const targetBranchId = storedUser.branchId || '';
+    fetchBranchAgents(targetBranchId);
+    fetchBranchCustomers(targetBranchId);
   }, []);
 
   useEffect(() => { if (user) fetchTickets(); }, [filters]);
+
+  // Calculate list segregation locally for instantaneous cart-like notification workflow
+  const pendingTickets = tickets.filter(t => t.assignedToId == user?.id && t.status === 'Assigned');
+  const myTicketsView = tickets.filter(t => t.assignedToId == user?.id);
+  const allTicketsView = tickets.filter(t => !(t.assignedToId == user?.id && t.status === 'Assigned'));
+  const displayedTickets = activeSection === 'my' ? myTicketsView : allTicketsView;
 
   // Deep Link
   useEffect(() => {
@@ -142,6 +146,7 @@ export default function Ticketing() {
     }
   };
   const fetchBranchAdmins = async (branchId) => { try { const { data } = await api.get(`/tickets/branch-admins${branchId ? `?branchId=${branchId}` : ''}`); setBranchAdmins(data); } catch {} };
+  const fetchBranchAgents = async (branchId) => { try { const { data } = await api.get(`/tickets/branch-agents${branchId ? `?branchId=${branchId}` : ''}`); setStaff(data); } catch {} };
 
   const handleCreateTicket = async (e) => {
     e.preventDefault();
@@ -274,7 +279,7 @@ export default function Ticketing() {
 
 
   // ─── STYLE HELPERS ───
-  const getStatusColor = (s) => ({ CREATED: 'bg-emerald-50 text-emerald-600', ASSIGNED: 'bg-blue-50 text-blue-600', IN_PROGRESS: 'bg-violet-50 text-violet-600', CLOSED: 'bg-slate-100 text-slate-600', REJECTED: 'bg-red-50 text-red-600' }[s] || 'bg-slate-50 text-slate-400');
+  const getStatusColor = (s) => ({ Created: 'bg-emerald-50 text-emerald-600', Assigned: 'bg-blue-50 text-blue-600', InProgress: 'bg-violet-50 text-violet-600', Closed: 'bg-slate-100 text-slate-600', Waiting: 'bg-amber-50 text-amber-600', REJECTED: 'bg-red-50 text-red-600' }[s] || 'bg-slate-50 text-slate-400');
   const getPriorityColor = (p) => ({ High: 'bg-red-500/10 text-red-600 border-red-200', Medium: 'bg-amber-500/10 text-amber-600 border-amber-200', Low: 'bg-blue-500/10 text-blue-600 border-blue-200' }[p] || 'bg-slate-100 text-slate-400');
 
   if (loading && tickets.length === 0) {
@@ -306,42 +311,69 @@ export default function Ticketing() {
           </div>
           
           <div className="flex items-center gap-4">
-            {user?.role !== 'staff' && (
-              <button 
-                onClick={() => { setNewTicket({ ...newTicket, branchId: user?.branchId || '' }); setShowCreateModal(true); }}
-                className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg">
-                <FiPlus size={18} />
-                <span>{user?.role === 'admin' ? 'New Ticket' : 'Create Ticket'}</span>
-              </button>
+            {user?.role !== 'customer' && (
+              <div className="hidden md:flex items-center bg-white border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
+                <FiUserCheck className="text-primary mr-2" />
+                <span className="text-xs font-bold text-slate-700">Logged in as: <span className="text-primary uppercase">{user.role}</span></span>
+              </div>
             )}
+            <button 
+              onClick={() => { setNewTicket({ ...newTicket, branchId: user?.branchId || '' }); setShowCreateModal(true); }}
+              className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg">
+              <FiPlus size={18} />
+              <span>{user?.role === 'admin' ? 'New Ticket' : 'Create Ticket'}</span>
+            </button>
           </div>
         </header>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* --- STATS --- */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-slate-800">
           {[
-            { label: 'Total Tickets', value: tickets.length, icon: <FiActivity />, color: 'text-slate-400', bg: 'bg-white', shadow: 'shadow-sm' },
-            { label: 'Unassigned', value: tickets.filter(t => t.status === 'CREATED').length, icon: <FiClock />, color: 'text-amber-500', bg: 'bg-white', shadow: 'shadow-sm' },
-            { label: 'In Progress', value: tickets.filter(t => t.status === 'IN_PROGRESS').length, icon: <FiRefreshCw />, color: 'text-blue-500', bg: 'bg-white', shadow: 'shadow-sm' },
-            { label: 'Done', value: tickets.filter(t => t.status === 'CLOSED').length, icon: <FiCheckCircle />, color: 'text-emerald-500', bg: 'bg-white', shadow: 'shadow-sm' },
+            { label: 'All Open', value: tickets.filter(t => t.status !== 'Closed').length, icon: <FiActivity />, color: 'text-slate-400', bg: 'bg-white', shadow: 'shadow-sm' },
+            { label: 'Pending Accept', value: pendingTickets.length, icon: <FiBell />, color: 'text-red-500', bg: 'bg-white', shadow: 'shadow-sm' },
+            { label: 'Waiting', value: tickets.filter(t => t.status === 'Waiting' && t.previousAssigneeId == user?.id).length, icon: <FiClock />, color: 'text-amber-500', bg: 'bg-white', shadow: 'shadow-sm' },
+            { label: 'Total Logs', value: tickets.length, icon: <FiFileText />, color: 'text-slate-600', bg: 'bg-white', shadow: 'shadow-sm' },
           ].map((s, i) => (
             <div key={i} className={`p-6 rounded-2xl ${s.bg} border border-slate-200 shadow-sm flex flex-col gap-4 hover:shadow-md transition-all duration-300`}>
               <div className={`w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-xl ${s.color}`}>{s.icon}</div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{s.label}</p>
-                <p className="text-2xl font-bold text-slate-800 tracking-tight">{s.value}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{s.label}</p>
+                <p className="text-2xl font-bold tracking-tight">{s.value}</p>
               </div>
             </div>
           ))}
         </div>
 
+
+        {/* --- TAB SWITCHER (Moved back to Top as requested) --- */}
+        <div className="flex bg-slate-100 p-1.5 rounded-2xl w-fit border border-slate-200 ml-auto lg:ml-0 mb-6 group hover:shadow-lg transition-all duration-300">
+          <button 
+            onClick={() => setActiveSection('all')}
+            className={`px-8 py-2.5 rounded-xl text-[11px] font-bold transition-all uppercase tracking-wider flex items-center gap-2 ${activeSection === 'all' ? 'bg-white shadow-md text-primary translate-x-0' : 'text-slate-400 hover:text-slate-600'}`}
+          >
+            <FiLayers size={14} />
+            All Tickets
+          </button>
+          <button 
+            onClick={() => setActiveSection('my')}
+            className={`px-8 py-2.5 rounded-xl text-[11px] font-bold transition-all uppercase tracking-wider flex items-center gap-2 ${activeSection === 'my' ? 'bg-white shadow-md text-primary' : 'text-slate-400 hover:text-slate-600'}`}
+          >
+            <FiUserCheck size={14} />
+            My Tickets
+            {pendingTickets.length > 0 && (
+               <span className="bg-red-500 text-white px-2 py-0.5 rounded-full text-[9px] shadow-sm animate-pulse">
+                  {pendingTickets.length}
+               </span>
+            )}
+          </button>
+        </div>
+
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative">
           {/* Dashboard Toolbar */}
           <div className="p-6 border-b border-slate-100 bg-white flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
-            <div>
-              <h3 className="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                Ticket Management
-              </h3>
-              <p className="text-xs text-slate-500 mt-1">Real-time support monitoring</p>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">{activeSection === 'my' ? 'My Focused Overview' : 'All Support Tickets'}</h3>
+              <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{activeSection === 'my' ? 'Your assigned and active tasks' : 'Real-time monitoring across branch'}</p>
             </div>
             
             <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
@@ -378,7 +410,7 @@ export default function Ticketing() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {tickets.map(ticket => (
+                {displayedTickets.map(ticket => (
                   <tr key={ticket.id} className="group cursor-pointer hover:bg-slate-50 transition-all duration-200" onClick={() => { setSelectedTicket(ticket); setShowDetailModal(true); }}>
                     <td className="px-6 py-4">
                        <div className="flex flex-col">
@@ -407,8 +439,16 @@ export default function Ticketing() {
                     </td>
                     <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                           <div className={`w-2 h-2 rounded-full ${ticket.status === 'IN_PROGRESS' ? 'bg-blue-500 animate-pulse' : ticket.status === 'CLOSED' ? 'bg-emerald-500' : 'bg-slate-300'}`} />
-                           <span className={`text-xs font-bold ${getStatusColor(ticket.status)} bg-transparent p-0`}>{ticket.status}</span>
+                           {(() => {
+                              const isWaiting = ticket.previousAssigneeId === user?.id && ticket.status === 'Assigned';
+                              const displayStatus = isWaiting ? 'Waiting' : ticket.status;
+                              return (
+                                <>
+                                  <div className={`w-2 h-2 rounded-full ${displayStatus === 'InProgress' ? 'bg-blue-500 animate-pulse' : displayStatus === 'Closed' ? 'bg-emerald-500' : displayStatus === 'Waiting' ? 'bg-amber-500' : 'bg-slate-300'}`} />
+                                  <span className={`text-xs font-bold ${getStatusColor(displayStatus)} bg-transparent p-0`}>{displayStatus}</span>
+                                </>
+                              );
+                           })()}
                         </div>
                      </td>
                     <td className="px-6 py-4 text-right">
@@ -445,7 +485,7 @@ export default function Ticketing() {
 
               <form onSubmit={handleCreateTicket} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar bg-white">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {user?.role !== 'customer' && (
+                  {(user?.role === 'admin' || user?.role === 'staff') && (
                     <div className="space-y-1">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Branch / Location</label>
                       <div className="relative">
@@ -454,7 +494,7 @@ export default function Ticketing() {
                             disabled={user?.role === 'admin' && user?.branchId}
                             className="w-full bg-slate-50 border border-slate-200 focus:border-primary rounded-xl px-4 py-2.5 text-sm font-medium outline-none appearance-none disabled:opacity-70" 
                             value={newTicket.branchId}
-                            onChange={e => { setNewTicket({...newTicket, branchId: e.target.value}); if (e.target.value) { fetchStaff(e.target.value); fetchBranchCustomers(e.target.value); fetchBranchAdmins(e.target.value); } }}>
+                            onChange={e => { setNewTicket({...newTicket, branchId: e.target.value}); if (e.target.value) { fetchBranchAgents(e.target.value); fetchBranchCustomers(e.target.value); fetchBranchAdmins(e.target.value); } }}>
                           <option value="">Select Branch</option>
                           {branches.map(b => <option key={b.id} value={b.id}>{b.name.toUpperCase()}</option>)}
                           </select>
@@ -479,7 +519,9 @@ export default function Ticketing() {
                   </div>
                 </div>
 
-                {(user?.role === 'admin' || user?.role === 'superadmin') && (
+                {/* REMOVED: Agent Selection during creation */}
+
+                {(user?.role === 'admin' || user?.role === 'superadmin' || user?.role === 'staff') && (
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 flex justify-between">
                       Link to Customer
@@ -745,70 +787,57 @@ export default function Ticketing() {
                       </div>
                    </div>
 
-                   {/* Admin controls */}
-                   {user?.role === 'admin' && (
+                   {/* Assignment Control - Only for Created tickets */}
+                   {(user?.role === 'admin' || user?.role === 'staff') && t.status === 'Created' && (
                       <div className="space-y-4 pt-6 border-t border-slate-200">
-                         <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assignment Control</h4>
+                         <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            Initial Assignment
+                         </h4>
+                         
                          <div className="relative">
                             <select className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider outline-none appearance-none"
                                value={assignStaffId} onChange={e => setAssignStaffId(e.target.value)}>
                                <option value="">Choose Agent</option>
-                               {staff.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                               {staff.map(s => <option key={s.id} value={s.id}>{s.name} ({s.id === user.id ? 'YOU' : s.role.toUpperCase()})</option>)}
                             </select>
                             <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300" />
                          </div>
+                         
                          <div className="space-y-2">
-                            <button disabled={t.status === 'CLOSED'} onClick={() => handleAssign(t.id)} className="w-full py-3 bg-blue-600 text-white rounded-xl text-[10px] font-bold uppercase hover:bg-blue-700 transition-all shadow-md disabled:opacity-50">
-                               {t.assignedTo ? 'Re-assign Agent' : 'Assign Agent'}
+                            <button onClick={() => handleAssign(t.id)} className="w-full py-3 bg-blue-600 text-white rounded-xl text-[10px] font-bold uppercase hover:bg-blue-700 transition-all shadow-md">
+                               Assign Agent
                             </button>
-                            {t.status !== 'CLOSED' && (
-                              <button onClick={() => handleMarkAsIgnored(t.id)} className="w-full py-2.5 text-red-500 text-[10px] font-bold uppercase hover:bg-red-50 rounded-lg transition-all">Flag as Ignored</button>
-                            )}
                          </div>
                       </div>
                     )}
 
-                    {/* Staff Actions */}
-                    {user?.role === 'staff' && t.assignedToId === user.id && t.status !== 'CLOSED' && (
+                    {/* Workflow Buttons for Current Assignee */}
+                    {(t.assignedToId == user?.id || (user?.role === 'admin' && t.assignedToId)) && t.status !== 'Closed' && (
                        <div className="space-y-3 pt-6 border-t border-slate-200">
-                          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ticket Management</h4>
+                          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Workflow Actions</h4>
                           
-                           {t.status === 'ASSIGNED' && (
+                           {t.assignedToId == user?.id && t.status === 'Assigned' && (
                               <button onClick={() => handleAccept(t.id)} className="w-full py-3 bg-emerald-600 text-white rounded-xl text-[10px] font-bold uppercase hover:bg-emerald-700 transition-all shadow-md flex items-center justify-center gap-2">
                                  <FiCheckCircle /> Accept Ticket
                               </button>
                            )}
 
-                           {t.status === 'IN_PROGRESS' && (
-                              <button onClick={() => { 
-                                fetchStaff(user.branchId);
-                                setReassignMode('STAFF'); 
-                                setShowReassignModal(true); 
-                              }} className="w-full py-3 bg-white border border-red-200 text-red-600 rounded-xl text-[10px] font-bold uppercase hover:bg-red-50 transition-all flex items-center justify-center gap-2">
-                                 <FiRefreshCw /> Reassign Ticket
+                           {t.assignedToId == user?.id && t.status === 'InProgress' && (
+                              <button onClick={() => handleComplete(t.id)} className="w-full py-3 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase hover:bg-black transition-all shadow-md flex items-center justify-center gap-2">
+                                 <FiFileText /> Complete Ticket
                               </button>
                            )}
-                        </div>
-                     )}
 
-                   {/* Staff status update */}
-                    {(user?.role === 'admin' || (user?.role === 'staff' && t.assignedToId === user.id)) && t.status !== 'CLOSED' && t.status !== 'CREATED' && (
-                       <div className="space-y-4 pt-6 border-t border-slate-200">
-                          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Update Progress</h4>
-                          
-                          {/* Complete Ticket Button (Moved here for Staff) */}
-                          {user?.role === 'staff' && t.status === 'IN_PROGRESS' && (
-                             <button onClick={() => handleComplete(t.id)} className="w-full py-3 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase hover:bg-black transition-all shadow-md flex items-center justify-center gap-2">
-                                <FiCheckCircle /> Complete Ticket
-                             </button>
-                          )}
-
-                          <textarea placeholder="Write update..." className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-medium outline-none focus:border-primary min-h-[100px] resize-none"
-                             value={statusUpdate.message} onChange={e => setStatusUpdate({...statusUpdate, message: e.target.value})} />
-                          <button disabled={!statusUpdate.status && !statusUpdate.message} onClick={() => handleStatusUpdate(t.id)}
-                             className="w-full py-3 bg-slate-900 text-white rounded-xl text-[11px] font-bold uppercase transition-all disabled:opacity-50 shadow-md">Update Status</button>
+                           {/* Show Reassign Button after initial assignment */}
+                           {t.status !== 'Created' && (
+                              <button onClick={() => { setReassignMode('STAFF'); setShowReassignModal(true); }} className="w-full py-3 bg-white border border-slate-200 text-slate-700 rounded-xl text-[10px] font-bold uppercase hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                                 <FiRefreshCw /> Re-assign Agent
+                              </button>
+                           )}
                        </div>
                     )}
+
+                    {/* REMOVED: Update Progress Section */}
 
                    {/* Closure Request Approval (Admin) */}
                    {user?.role === 'admin' && t.status === 'ClosureRequested' && (
@@ -833,21 +862,21 @@ export default function Ticketing() {
                                <span className="text-[10px] font-bold">{new Date(t.createdAt).toLocaleDateString()}</span>
                             </div>
                             <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                               <span className="text-[9px] font-bold uppercase text-white/30 truncate">Last Update</span>
-                               <span className="text-[10px] font-bold">{new Date(t.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                               <span className="text-[9px] font-bold uppercase text-white/30 truncate">Created By</span>
+                               <span className="text-[10px] font-bold text-primary">{t.createdBy?.name || 'Customer'}</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                               <span className="text-[9px] font-bold uppercase text-white/30 truncate">Category</span>
-                               <span className="text-[10px] font-bold text-primary">{t.category?.name || 'General'}</span>
+                            <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                               <span className="text-[9px] font-bold uppercase text-white/30 truncate">Current Agent</span>
+                               <span className="text-[10px] font-bold text-primary">{t.assignedTo?.name || 'Unassigned'}</span>
                             </div>
                          </div>
                       </div>
                    </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
+                 </div>
+               </div>
+             </motion.div>
+           </div>
+         )}
       </AnimatePresence>
 
       {/* ─── REASSIGN MODAL ─── */}

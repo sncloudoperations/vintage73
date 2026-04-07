@@ -5484,6 +5484,8 @@ export namespace Prisma {
     ticketHistoryActions: number
     ticketMessages: number
     ownedTickets: number
+    createdTickets: number
+    previousAssignedTickets: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5513,6 +5515,8 @@ export namespace Prisma {
     ticketHistoryActions?: boolean | UserCountOutputTypeCountTicketHistoryActionsArgs
     ticketMessages?: boolean | UserCountOutputTypeCountTicketMessagesArgs
     ownedTickets?: boolean | UserCountOutputTypeCountOwnedTicketsArgs
+    createdTickets?: boolean | UserCountOutputTypeCountCreatedTicketsArgs
+    previousAssignedTickets?: boolean | UserCountOutputTypeCountPreviousAssignedTicketsArgs
   }
 
   // Custom InputTypes
@@ -5732,6 +5736,22 @@ export namespace Prisma {
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountOwnedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TicketWhereInput
+  }
+
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreatedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TicketWhereInput
+  }
+
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPreviousAssignedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TicketWhereInput
   }
 
@@ -7324,6 +7344,8 @@ export namespace Prisma {
     ticketHistoryActions?: boolean | User$ticketHistoryActionsArgs<ExtArgs>
     ticketMessages?: boolean | User$ticketMessagesArgs<ExtArgs>
     ownedTickets?: boolean | User$ownedTicketsArgs<ExtArgs>
+    createdTickets?: boolean | User$createdTicketsArgs<ExtArgs>
+    previousAssignedTickets?: boolean | User$previousAssignedTicketsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -7374,6 +7396,8 @@ export namespace Prisma {
     ticketHistoryActions?: boolean | User$ticketHistoryActionsArgs<ExtArgs>
     ticketMessages?: boolean | User$ticketMessagesArgs<ExtArgs>
     ownedTickets?: boolean | User$ownedTicketsArgs<ExtArgs>
+    createdTickets?: boolean | User$createdTicketsArgs<ExtArgs>
+    previousAssignedTickets?: boolean | User$previousAssignedTicketsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -7410,6 +7434,8 @@ export namespace Prisma {
       ticketHistoryActions: Prisma.$TicketHistoryPayload<ExtArgs>[]
       ticketMessages: Prisma.$TicketMessagePayload<ExtArgs>[]
       ownedTickets: Prisma.$TicketPayload<ExtArgs>[]
+      createdTickets: Prisma.$TicketPayload<ExtArgs>[]
+      previousAssignedTickets: Prisma.$TicketPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -7848,6 +7874,10 @@ export namespace Prisma {
     ticketMessages<T extends User$ticketMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$ticketMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketMessagePayload<ExtArgs>, T, 'findMany'> | Null>;
 
     ownedTickets<T extends User$ownedTicketsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    createdTickets<T extends User$createdTicketsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    previousAssignedTickets<T extends User$previousAssignedTicketsArgs<ExtArgs> = {}>(args?: Subset<T, User$previousAssignedTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8779,6 +8809,48 @@ export namespace Prisma {
    * User.ownedTickets
    */
   export type User$ownedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ticket
+     */
+    select?: TicketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TicketInclude<ExtArgs> | null
+    where?: TicketWhereInput
+    orderBy?: TicketOrderByWithRelationInput | TicketOrderByWithRelationInput[]
+    cursor?: TicketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TicketScalarFieldEnum | TicketScalarFieldEnum[]
+  }
+
+
+  /**
+   * User.createdTickets
+   */
+  export type User$createdTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ticket
+     */
+    select?: TicketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TicketInclude<ExtArgs> | null
+    where?: TicketWhereInput
+    orderBy?: TicketOrderByWithRelationInput | TicketOrderByWithRelationInput[]
+    cursor?: TicketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TicketScalarFieldEnum | TicketScalarFieldEnum[]
+  }
+
+
+  /**
+   * User.previousAssignedTickets
+   */
+  export type User$previousAssignedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Ticket
      */
@@ -63330,6 +63402,8 @@ export namespace Prisma {
     adminId: number | null
     customerId: number | null
     assignedToId: number | null
+    createdById: number | null
+    previousAssigneeId: number | null
   }
 
   export type TicketSumAggregateOutputType = {
@@ -63338,6 +63412,8 @@ export namespace Prisma {
     adminId: number | null
     customerId: number | null
     assignedToId: number | null
+    createdById: number | null
+    previousAssigneeId: number | null
   }
 
   export type TicketMinAggregateOutputType = {
@@ -63351,10 +63427,13 @@ export namespace Prisma {
     status: string | null
     fileUrl: string | null
     resignReason: string | null
+    reassignReason: string | null
     branchId: number | null
     adminId: number | null
     customerId: number | null
     assignedToId: number | null
+    createdById: number | null
+    previousAssigneeId: number | null
     createdByRole: string | null
     slaStatus: string | null
     createdAt: Date | null
@@ -63372,10 +63451,13 @@ export namespace Prisma {
     status: string | null
     fileUrl: string | null
     resignReason: string | null
+    reassignReason: string | null
     branchId: number | null
     adminId: number | null
     customerId: number | null
     assignedToId: number | null
+    createdById: number | null
+    previousAssigneeId: number | null
     createdByRole: string | null
     slaStatus: string | null
     createdAt: Date | null
@@ -63393,10 +63475,13 @@ export namespace Prisma {
     status: number
     fileUrl: number
     resignReason: number
+    reassignReason: number
     branchId: number
     adminId: number
     customerId: number
     assignedToId: number
+    createdById: number
+    previousAssigneeId: number
     createdByRole: number
     slaStatus: number
     createdAt: number
@@ -63411,6 +63496,8 @@ export namespace Prisma {
     adminId?: true
     customerId?: true
     assignedToId?: true
+    createdById?: true
+    previousAssigneeId?: true
   }
 
   export type TicketSumAggregateInputType = {
@@ -63419,6 +63506,8 @@ export namespace Prisma {
     adminId?: true
     customerId?: true
     assignedToId?: true
+    createdById?: true
+    previousAssigneeId?: true
   }
 
   export type TicketMinAggregateInputType = {
@@ -63432,10 +63521,13 @@ export namespace Prisma {
     status?: true
     fileUrl?: true
     resignReason?: true
+    reassignReason?: true
     branchId?: true
     adminId?: true
     customerId?: true
     assignedToId?: true
+    createdById?: true
+    previousAssigneeId?: true
     createdByRole?: true
     slaStatus?: true
     createdAt?: true
@@ -63453,10 +63545,13 @@ export namespace Prisma {
     status?: true
     fileUrl?: true
     resignReason?: true
+    reassignReason?: true
     branchId?: true
     adminId?: true
     customerId?: true
     assignedToId?: true
+    createdById?: true
+    previousAssigneeId?: true
     createdByRole?: true
     slaStatus?: true
     createdAt?: true
@@ -63474,10 +63569,13 @@ export namespace Prisma {
     status?: true
     fileUrl?: true
     resignReason?: true
+    reassignReason?: true
     branchId?: true
     adminId?: true
     customerId?: true
     assignedToId?: true
+    createdById?: true
+    previousAssigneeId?: true
     createdByRole?: true
     slaStatus?: true
     createdAt?: true
@@ -63582,10 +63680,13 @@ export namespace Prisma {
     status: string
     fileUrl: string | null
     resignReason: string | null
+    reassignReason: string | null
     branchId: number
     adminId: number | null
     customerId: number | null
     assignedToId: number | null
+    createdById: number | null
+    previousAssigneeId: number | null
     createdByRole: string
     slaStatus: string | null
     createdAt: Date
@@ -63622,10 +63723,13 @@ export namespace Prisma {
     status?: boolean
     fileUrl?: boolean
     resignReason?: boolean
+    reassignReason?: boolean
     branchId?: boolean
     adminId?: boolean
     customerId?: boolean
     assignedToId?: boolean
+    createdById?: boolean
+    previousAssigneeId?: boolean
     createdByRole?: boolean
     slaStatus?: boolean
     createdAt?: boolean
@@ -63635,6 +63739,8 @@ export namespace Prisma {
     admin?: boolean | Ticket$adminArgs<ExtArgs>
     customer?: boolean | Ticket$customerArgs<ExtArgs>
     assignedTo?: boolean | Ticket$assignedToArgs<ExtArgs>
+    createdBy?: boolean | Ticket$createdByArgs<ExtArgs>
+    previousAssignee?: boolean | Ticket$previousAssigneeArgs<ExtArgs>
     history?: boolean | Ticket$historyArgs<ExtArgs>
     messages?: boolean | Ticket$messagesArgs<ExtArgs>
     closureRequests?: boolean | Ticket$closureRequestsArgs<ExtArgs>
@@ -63652,10 +63758,13 @@ export namespace Prisma {
     status?: boolean
     fileUrl?: boolean
     resignReason?: boolean
+    reassignReason?: boolean
     branchId?: boolean
     adminId?: boolean
     customerId?: boolean
     assignedToId?: boolean
+    createdById?: boolean
+    previousAssigneeId?: boolean
     createdByRole?: boolean
     slaStatus?: boolean
     createdAt?: boolean
@@ -63668,6 +63777,8 @@ export namespace Prisma {
     admin?: boolean | Ticket$adminArgs<ExtArgs>
     customer?: boolean | Ticket$customerArgs<ExtArgs>
     assignedTo?: boolean | Ticket$assignedToArgs<ExtArgs>
+    createdBy?: boolean | Ticket$createdByArgs<ExtArgs>
+    previousAssignee?: boolean | Ticket$previousAssigneeArgs<ExtArgs>
     history?: boolean | Ticket$historyArgs<ExtArgs>
     messages?: boolean | Ticket$messagesArgs<ExtArgs>
     closureRequests?: boolean | Ticket$closureRequestsArgs<ExtArgs>
@@ -63683,6 +63794,8 @@ export namespace Prisma {
       admin: Prisma.$UserPayload<ExtArgs> | null
       customer: Prisma.$CustomerPayload<ExtArgs> | null
       assignedTo: Prisma.$UserPayload<ExtArgs> | null
+      createdBy: Prisma.$UserPayload<ExtArgs> | null
+      previousAssignee: Prisma.$UserPayload<ExtArgs> | null
       history: Prisma.$TicketHistoryPayload<ExtArgs>[]
       messages: Prisma.$TicketMessagePayload<ExtArgs>[]
       closureRequests: Prisma.$TicketClosureRequestPayload<ExtArgs>[]
@@ -63698,10 +63811,13 @@ export namespace Prisma {
       status: string
       fileUrl: string | null
       resignReason: string | null
+      reassignReason: string | null
       branchId: number
       adminId: number | null
       customerId: number | null
       assignedToId: number | null
+      createdById: number | null
+      previousAssigneeId: number | null
       createdByRole: string
       slaStatus: string | null
       createdAt: Date
@@ -64081,6 +64197,10 @@ export namespace Prisma {
 
     assignedTo<T extends Ticket$assignedToArgs<ExtArgs> = {}>(args?: Subset<T, Ticket$assignedToArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
 
+    createdBy<T extends Ticket$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Ticket$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
+
+    previousAssignee<T extends Ticket$previousAssigneeArgs<ExtArgs> = {}>(args?: Subset<T, Ticket$previousAssigneeArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
+
     history<T extends Ticket$historyArgs<ExtArgs> = {}>(args?: Subset<T, Ticket$historyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketHistoryPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     messages<T extends Ticket$messagesArgs<ExtArgs> = {}>(args?: Subset<T, Ticket$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketMessagePayload<ExtArgs>, T, 'findMany'> | Null>;
@@ -64125,10 +64245,13 @@ export namespace Prisma {
     readonly status: FieldRef<"Ticket", 'String'>
     readonly fileUrl: FieldRef<"Ticket", 'String'>
     readonly resignReason: FieldRef<"Ticket", 'String'>
+    readonly reassignReason: FieldRef<"Ticket", 'String'>
     readonly branchId: FieldRef<"Ticket", 'Int'>
     readonly adminId: FieldRef<"Ticket", 'Int'>
     readonly customerId: FieldRef<"Ticket", 'Int'>
     readonly assignedToId: FieldRef<"Ticket", 'Int'>
+    readonly createdById: FieldRef<"Ticket", 'Int'>
+    readonly previousAssigneeId: FieldRef<"Ticket", 'Int'>
     readonly createdByRole: FieldRef<"Ticket", 'String'>
     readonly slaStatus: FieldRef<"Ticket", 'String'>
     readonly createdAt: FieldRef<"Ticket", 'DateTime'>
@@ -64496,6 +64619,38 @@ export namespace Prisma {
    * Ticket.assignedTo
    */
   export type Ticket$assignedToArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+
+  /**
+   * Ticket.createdBy
+   */
+  export type Ticket$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+
+  /**
+   * Ticket.previousAssignee
+   */
+  export type Ticket$previousAssigneeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -70272,10 +70427,13 @@ export namespace Prisma {
     status: 'status',
     fileUrl: 'fileUrl',
     resignReason: 'resignReason',
+    reassignReason: 'reassignReason',
     branchId: 'branchId',
     adminId: 'adminId',
     customerId: 'customerId',
     assignedToId: 'assignedToId',
+    createdById: 'createdById',
+    previousAssigneeId: 'previousAssigneeId',
     createdByRole: 'createdByRole',
     slaStatus: 'slaStatus',
     createdAt: 'createdAt',
@@ -70528,6 +70686,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryListRelationFilter
     ticketMessages?: TicketMessageListRelationFilter
     ownedTickets?: TicketListRelationFilter
+    createdTickets?: TicketListRelationFilter
+    previousAssignedTickets?: TicketListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -70574,6 +70734,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryOrderByRelationAggregateInput
     ticketMessages?: TicketMessageOrderByRelationAggregateInput
     ownedTickets?: TicketOrderByRelationAggregateInput
+    createdTickets?: TicketOrderByRelationAggregateInput
+    previousAssignedTickets?: TicketOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -70623,6 +70785,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryListRelationFilter
     ticketMessages?: TicketMessageListRelationFilter
     ownedTickets?: TicketListRelationFilter
+    createdTickets?: TicketListRelationFilter
+    previousAssignedTickets?: TicketListRelationFilter
   }, "id" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -75521,10 +75685,13 @@ export namespace Prisma {
     status?: StringFilter<"Ticket"> | string
     fileUrl?: StringNullableFilter<"Ticket"> | string | null
     resignReason?: StringNullableFilter<"Ticket"> | string | null
+    reassignReason?: StringNullableFilter<"Ticket"> | string | null
     branchId?: IntFilter<"Ticket"> | number
     adminId?: IntNullableFilter<"Ticket"> | number | null
     customerId?: IntNullableFilter<"Ticket"> | number | null
     assignedToId?: IntNullableFilter<"Ticket"> | number | null
+    createdById?: IntNullableFilter<"Ticket"> | number | null
+    previousAssigneeId?: IntNullableFilter<"Ticket"> | number | null
     createdByRole?: StringFilter<"Ticket"> | string
     slaStatus?: StringNullableFilter<"Ticket"> | string | null
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
@@ -75534,6 +75701,8 @@ export namespace Prisma {
     admin?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     assignedTo?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    previousAssignee?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     history?: TicketHistoryListRelationFilter
     messages?: TicketMessageListRelationFilter
     closureRequests?: TicketClosureRequestListRelationFilter
@@ -75550,10 +75719,13 @@ export namespace Prisma {
     status?: SortOrder
     fileUrl?: SortOrderInput | SortOrder
     resignReason?: SortOrderInput | SortOrder
+    reassignReason?: SortOrderInput | SortOrder
     branchId?: SortOrder
     adminId?: SortOrderInput | SortOrder
     customerId?: SortOrderInput | SortOrder
     assignedToId?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    previousAssigneeId?: SortOrderInput | SortOrder
     createdByRole?: SortOrder
     slaStatus?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -75563,6 +75735,8 @@ export namespace Prisma {
     admin?: UserOrderByWithRelationInput
     customer?: CustomerOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
+    createdBy?: UserOrderByWithRelationInput
+    previousAssignee?: UserOrderByWithRelationInput
     history?: TicketHistoryOrderByRelationAggregateInput
     messages?: TicketMessageOrderByRelationAggregateInput
     closureRequests?: TicketClosureRequestOrderByRelationAggregateInput
@@ -75582,10 +75756,13 @@ export namespace Prisma {
     status?: StringFilter<"Ticket"> | string
     fileUrl?: StringNullableFilter<"Ticket"> | string | null
     resignReason?: StringNullableFilter<"Ticket"> | string | null
+    reassignReason?: StringNullableFilter<"Ticket"> | string | null
     branchId?: IntFilter<"Ticket"> | number
     adminId?: IntNullableFilter<"Ticket"> | number | null
     customerId?: IntNullableFilter<"Ticket"> | number | null
     assignedToId?: IntNullableFilter<"Ticket"> | number | null
+    createdById?: IntNullableFilter<"Ticket"> | number | null
+    previousAssigneeId?: IntNullableFilter<"Ticket"> | number | null
     createdByRole?: StringFilter<"Ticket"> | string
     slaStatus?: StringNullableFilter<"Ticket"> | string | null
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
@@ -75595,6 +75772,8 @@ export namespace Prisma {
     admin?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     assignedTo?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    previousAssignee?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     history?: TicketHistoryListRelationFilter
     messages?: TicketMessageListRelationFilter
     closureRequests?: TicketClosureRequestListRelationFilter
@@ -75611,10 +75790,13 @@ export namespace Prisma {
     status?: SortOrder
     fileUrl?: SortOrderInput | SortOrder
     resignReason?: SortOrderInput | SortOrder
+    reassignReason?: SortOrderInput | SortOrder
     branchId?: SortOrder
     adminId?: SortOrderInput | SortOrder
     customerId?: SortOrderInput | SortOrder
     assignedToId?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    previousAssigneeId?: SortOrderInput | SortOrder
     createdByRole?: SortOrder
     slaStatus?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -75640,10 +75822,13 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"Ticket"> | string
     fileUrl?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     resignReason?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
+    reassignReason?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     branchId?: IntWithAggregatesFilter<"Ticket"> | number
     adminId?: IntNullableWithAggregatesFilter<"Ticket"> | number | null
     customerId?: IntNullableWithAggregatesFilter<"Ticket"> | number | null
     assignedToId?: IntNullableWithAggregatesFilter<"Ticket"> | number | null
+    createdById?: IntNullableWithAggregatesFilter<"Ticket"> | number | null
+    previousAssigneeId?: IntNullableWithAggregatesFilter<"Ticket"> | number | null
     createdByRole?: StringWithAggregatesFilter<"Ticket"> | string
     slaStatus?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Ticket"> | Date | string
@@ -75987,6 +76172,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -76031,6 +76218,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUpdateInput = {
@@ -76074,6 +76263,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -76118,6 +76309,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -81356,6 +81549,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -81365,6 +81559,8 @@ export namespace Prisma {
     admin?: UserCreateNestedOneWithoutOwnedTicketsInput
     customer?: CustomerCreateNestedOneWithoutTicketsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     history?: TicketHistoryCreateNestedManyWithoutTicketInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
@@ -81381,10 +81577,13 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -81404,6 +81603,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81413,6 +81613,8 @@ export namespace Prisma {
     admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
     customer?: CustomerUpdateOneWithoutTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     history?: TicketHistoryUpdateManyWithoutTicketNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
     closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
@@ -81429,10 +81631,13 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81453,10 +81658,13 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -81473,6 +81681,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81490,10 +81699,13 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -85724,10 +85936,13 @@ export namespace Prisma {
     status?: SortOrder
     fileUrl?: SortOrder
     resignReason?: SortOrder
+    reassignReason?: SortOrder
     branchId?: SortOrder
     adminId?: SortOrder
     customerId?: SortOrder
     assignedToId?: SortOrder
+    createdById?: SortOrder
+    previousAssigneeId?: SortOrder
     createdByRole?: SortOrder
     slaStatus?: SortOrder
     createdAt?: SortOrder
@@ -85740,6 +85955,8 @@ export namespace Prisma {
     adminId?: SortOrder
     customerId?: SortOrder
     assignedToId?: SortOrder
+    createdById?: SortOrder
+    previousAssigneeId?: SortOrder
   }
 
   export type TicketMaxOrderByAggregateInput = {
@@ -85753,10 +85970,13 @@ export namespace Prisma {
     status?: SortOrder
     fileUrl?: SortOrder
     resignReason?: SortOrder
+    reassignReason?: SortOrder
     branchId?: SortOrder
     adminId?: SortOrder
     customerId?: SortOrder
     assignedToId?: SortOrder
+    createdById?: SortOrder
+    previousAssigneeId?: SortOrder
     createdByRole?: SortOrder
     slaStatus?: SortOrder
     createdAt?: SortOrder
@@ -85774,10 +85994,13 @@ export namespace Prisma {
     status?: SortOrder
     fileUrl?: SortOrder
     resignReason?: SortOrder
+    reassignReason?: SortOrder
     branchId?: SortOrder
     adminId?: SortOrder
     customerId?: SortOrder
     assignedToId?: SortOrder
+    createdById?: SortOrder
+    previousAssigneeId?: SortOrder
     createdByRole?: SortOrder
     slaStatus?: SortOrder
     createdAt?: SortOrder
@@ -85790,6 +86013,8 @@ export namespace Prisma {
     adminId?: SortOrder
     customerId?: SortOrder
     assignedToId?: SortOrder
+    createdById?: SortOrder
+    previousAssigneeId?: SortOrder
   }
 
   export type TicketCategoryCountOrderByAggregateInput = {
@@ -86204,6 +86429,20 @@ export namespace Prisma {
     connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
   }
 
+  export type TicketCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<TicketCreateWithoutCreatedByInput, TicketUncheckedCreateWithoutCreatedByInput> | TicketCreateWithoutCreatedByInput[] | TicketUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: TicketCreateOrConnectWithoutCreatedByInput | TicketCreateOrConnectWithoutCreatedByInput[]
+    createMany?: TicketCreateManyCreatedByInputEnvelope
+    connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+  }
+
+  export type TicketCreateNestedManyWithoutPreviousAssigneeInput = {
+    create?: XOR<TicketCreateWithoutPreviousAssigneeInput, TicketUncheckedCreateWithoutPreviousAssigneeInput> | TicketCreateWithoutPreviousAssigneeInput[] | TicketUncheckedCreateWithoutPreviousAssigneeInput[]
+    connectOrCreate?: TicketCreateOrConnectWithoutPreviousAssigneeInput | TicketCreateOrConnectWithoutPreviousAssigneeInput[]
+    createMany?: TicketCreateManyPreviousAssigneeInputEnvelope
+    connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+  }
+
   export type StockTransferUncheckedCreateNestedManyWithoutReceivedByInput = {
     create?: XOR<StockTransferCreateWithoutReceivedByInput, StockTransferUncheckedCreateWithoutReceivedByInput> | StockTransferCreateWithoutReceivedByInput[] | StockTransferUncheckedCreateWithoutReceivedByInput[]
     connectOrCreate?: StockTransferCreateOrConnectWithoutReceivedByInput | StockTransferCreateOrConnectWithoutReceivedByInput[]
@@ -86388,6 +86627,20 @@ export namespace Prisma {
     create?: XOR<TicketCreateWithoutAdminInput, TicketUncheckedCreateWithoutAdminInput> | TicketCreateWithoutAdminInput[] | TicketUncheckedCreateWithoutAdminInput[]
     connectOrCreate?: TicketCreateOrConnectWithoutAdminInput | TicketCreateOrConnectWithoutAdminInput[]
     createMany?: TicketCreateManyAdminInputEnvelope
+    connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+  }
+
+  export type TicketUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<TicketCreateWithoutCreatedByInput, TicketUncheckedCreateWithoutCreatedByInput> | TicketCreateWithoutCreatedByInput[] | TicketUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: TicketCreateOrConnectWithoutCreatedByInput | TicketCreateOrConnectWithoutCreatedByInput[]
+    createMany?: TicketCreateManyCreatedByInputEnvelope
+    connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+  }
+
+  export type TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput = {
+    create?: XOR<TicketCreateWithoutPreviousAssigneeInput, TicketUncheckedCreateWithoutPreviousAssigneeInput> | TicketCreateWithoutPreviousAssigneeInput[] | TicketUncheckedCreateWithoutPreviousAssigneeInput[]
+    connectOrCreate?: TicketCreateOrConnectWithoutPreviousAssigneeInput | TicketCreateOrConnectWithoutPreviousAssigneeInput[]
+    createMany?: TicketCreateManyPreviousAssigneeInputEnvelope
     connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
   }
 
@@ -86808,6 +87061,34 @@ export namespace Prisma {
     deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
   }
 
+  export type TicketUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<TicketCreateWithoutCreatedByInput, TicketUncheckedCreateWithoutCreatedByInput> | TicketCreateWithoutCreatedByInput[] | TicketUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: TicketCreateOrConnectWithoutCreatedByInput | TicketCreateOrConnectWithoutCreatedByInput[]
+    upsert?: TicketUpsertWithWhereUniqueWithoutCreatedByInput | TicketUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: TicketCreateManyCreatedByInputEnvelope
+    set?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    disconnect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    delete?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    update?: TicketUpdateWithWhereUniqueWithoutCreatedByInput | TicketUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: TicketUpdateManyWithWhereWithoutCreatedByInput | TicketUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
+  }
+
+  export type TicketUpdateManyWithoutPreviousAssigneeNestedInput = {
+    create?: XOR<TicketCreateWithoutPreviousAssigneeInput, TicketUncheckedCreateWithoutPreviousAssigneeInput> | TicketCreateWithoutPreviousAssigneeInput[] | TicketUncheckedCreateWithoutPreviousAssigneeInput[]
+    connectOrCreate?: TicketCreateOrConnectWithoutPreviousAssigneeInput | TicketCreateOrConnectWithoutPreviousAssigneeInput[]
+    upsert?: TicketUpsertWithWhereUniqueWithoutPreviousAssigneeInput | TicketUpsertWithWhereUniqueWithoutPreviousAssigneeInput[]
+    createMany?: TicketCreateManyPreviousAssigneeInputEnvelope
+    set?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    disconnect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    delete?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    update?: TicketUpdateWithWhereUniqueWithoutPreviousAssigneeInput | TicketUpdateWithWhereUniqueWithoutPreviousAssigneeInput[]
+    updateMany?: TicketUpdateManyWithWhereWithoutPreviousAssigneeInput | TicketUpdateManyWithWhereWithoutPreviousAssigneeInput[]
+    deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -87194,6 +87475,34 @@ export namespace Prisma {
     connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
     update?: TicketUpdateWithWhereUniqueWithoutAdminInput | TicketUpdateWithWhereUniqueWithoutAdminInput[]
     updateMany?: TicketUpdateManyWithWhereWithoutAdminInput | TicketUpdateManyWithWhereWithoutAdminInput[]
+    deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
+  }
+
+  export type TicketUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<TicketCreateWithoutCreatedByInput, TicketUncheckedCreateWithoutCreatedByInput> | TicketCreateWithoutCreatedByInput[] | TicketUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: TicketCreateOrConnectWithoutCreatedByInput | TicketCreateOrConnectWithoutCreatedByInput[]
+    upsert?: TicketUpsertWithWhereUniqueWithoutCreatedByInput | TicketUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: TicketCreateManyCreatedByInputEnvelope
+    set?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    disconnect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    delete?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    update?: TicketUpdateWithWhereUniqueWithoutCreatedByInput | TicketUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: TicketUpdateManyWithWhereWithoutCreatedByInput | TicketUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
+  }
+
+  export type TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput = {
+    create?: XOR<TicketCreateWithoutPreviousAssigneeInput, TicketUncheckedCreateWithoutPreviousAssigneeInput> | TicketCreateWithoutPreviousAssigneeInput[] | TicketUncheckedCreateWithoutPreviousAssigneeInput[]
+    connectOrCreate?: TicketCreateOrConnectWithoutPreviousAssigneeInput | TicketCreateOrConnectWithoutPreviousAssigneeInput[]
+    upsert?: TicketUpsertWithWhereUniqueWithoutPreviousAssigneeInput | TicketUpsertWithWhereUniqueWithoutPreviousAssigneeInput[]
+    createMany?: TicketCreateManyPreviousAssigneeInputEnvelope
+    set?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    disconnect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    delete?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+    update?: TicketUpdateWithWhereUniqueWithoutPreviousAssigneeInput | TicketUpdateWithWhereUniqueWithoutPreviousAssigneeInput[]
+    updateMany?: TicketUpdateManyWithWhereWithoutPreviousAssigneeInput | TicketUpdateManyWithWhereWithoutPreviousAssigneeInput[]
     deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
   }
 
@@ -91445,6 +91754,18 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutCreatedTicketsInput = {
+    create?: XOR<UserCreateWithoutCreatedTicketsInput, UserUncheckedCreateWithoutCreatedTicketsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedTicketsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutPreviousAssignedTicketsInput = {
+    create?: XOR<UserCreateWithoutPreviousAssignedTicketsInput, UserUncheckedCreateWithoutPreviousAssignedTicketsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPreviousAssignedTicketsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type TicketHistoryCreateNestedManyWithoutTicketInput = {
     create?: XOR<TicketHistoryCreateWithoutTicketInput, TicketHistoryUncheckedCreateWithoutTicketInput> | TicketHistoryCreateWithoutTicketInput[] | TicketHistoryUncheckedCreateWithoutTicketInput[]
     connectOrCreate?: TicketHistoryCreateOrConnectWithoutTicketInput | TicketHistoryCreateOrConnectWithoutTicketInput[]
@@ -91533,6 +91854,26 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssignedTicketsInput, UserUpdateWithoutAssignedTicketsInput>, UserUncheckedUpdateWithoutAssignedTicketsInput>
+  }
+
+  export type UserUpdateOneWithoutCreatedTicketsNestedInput = {
+    create?: XOR<UserCreateWithoutCreatedTicketsInput, UserUncheckedCreateWithoutCreatedTicketsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedTicketsInput
+    upsert?: UserUpsertWithoutCreatedTicketsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedTicketsInput, UserUpdateWithoutCreatedTicketsInput>, UserUncheckedUpdateWithoutCreatedTicketsInput>
+  }
+
+  export type UserUpdateOneWithoutPreviousAssignedTicketsNestedInput = {
+    create?: XOR<UserCreateWithoutPreviousAssignedTicketsInput, UserUncheckedCreateWithoutPreviousAssignedTicketsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPreviousAssignedTicketsInput
+    upsert?: UserUpsertWithoutPreviousAssignedTicketsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPreviousAssignedTicketsInput, UserUpdateWithoutPreviousAssignedTicketsInput>, UserUncheckedUpdateWithoutPreviousAssignedTicketsInput>
   }
 
   export type TicketHistoryUpdateManyWithoutTicketNestedInput = {
@@ -92940,6 +93281,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutManagedStaffInput = {
@@ -92983,6 +93326,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutManagedStaffInput = {
@@ -93030,6 +93375,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutAdminInput = {
@@ -93073,6 +93420,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutAdminInput = {
@@ -93153,6 +93502,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -93161,6 +93511,8 @@ export namespace Prisma {
     branch: BranchCreateNestedOneWithoutTicketsInput
     admin?: UserCreateNestedOneWithoutOwnedTicketsInput
     customer?: CustomerCreateNestedOneWithoutTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     history?: TicketHistoryCreateNestedManyWithoutTicketInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
@@ -93177,9 +93529,12 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -93291,6 +93646,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -93299,6 +93655,8 @@ export namespace Prisma {
     branch: BranchCreateNestedOneWithoutTicketsInput
     customer?: CustomerCreateNestedOneWithoutTicketsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     history?: TicketHistoryCreateNestedManyWithoutTicketInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
@@ -93315,9 +93673,12 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -93334,6 +93695,130 @@ export namespace Prisma {
 
   export type TicketCreateManyAdminInputEnvelope = {
     data: TicketCreateManyAdminInput | TicketCreateManyAdminInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TicketCreateWithoutCreatedByInput = {
+    id?: string
+    ticketId: string
+    title: string
+    description: string
+    categoryName?: string | null
+    priority: string
+    status?: string
+    fileUrl?: string | null
+    resignReason?: string | null
+    reassignReason?: string | null
+    createdByRole: string
+    slaStatus?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    category?: TicketCategoryCreateNestedOneWithoutTicketsInput
+    branch: BranchCreateNestedOneWithoutTicketsInput
+    admin?: UserCreateNestedOneWithoutOwnedTicketsInput
+    customer?: CustomerCreateNestedOneWithoutTicketsInput
+    assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
+    history?: TicketHistoryCreateNestedManyWithoutTicketInput
+    messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
+  }
+
+  export type TicketUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    ticketId: string
+    title: string
+    description: string
+    categoryName?: string | null
+    categoryId?: number | null
+    priority: string
+    status?: string
+    fileUrl?: string | null
+    resignReason?: string | null
+    reassignReason?: string | null
+    branchId: number
+    adminId?: number | null
+    customerId?: number | null
+    assignedToId?: number | null
+    previousAssigneeId?: number | null
+    createdByRole: string
+    slaStatus?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    history?: TicketHistoryUncheckedCreateNestedManyWithoutTicketInput
+    messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    closureRequests?: TicketClosureRequestUncheckedCreateNestedManyWithoutTicketInput
+  }
+
+  export type TicketCreateOrConnectWithoutCreatedByInput = {
+    where: TicketWhereUniqueInput
+    create: XOR<TicketCreateWithoutCreatedByInput, TicketUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type TicketCreateManyCreatedByInputEnvelope = {
+    data: TicketCreateManyCreatedByInput | TicketCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TicketCreateWithoutPreviousAssigneeInput = {
+    id?: string
+    ticketId: string
+    title: string
+    description: string
+    categoryName?: string | null
+    priority: string
+    status?: string
+    fileUrl?: string | null
+    resignReason?: string | null
+    reassignReason?: string | null
+    createdByRole: string
+    slaStatus?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    category?: TicketCategoryCreateNestedOneWithoutTicketsInput
+    branch: BranchCreateNestedOneWithoutTicketsInput
+    admin?: UserCreateNestedOneWithoutOwnedTicketsInput
+    customer?: CustomerCreateNestedOneWithoutTicketsInput
+    assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    history?: TicketHistoryCreateNestedManyWithoutTicketInput
+    messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
+  }
+
+  export type TicketUncheckedCreateWithoutPreviousAssigneeInput = {
+    id?: string
+    ticketId: string
+    title: string
+    description: string
+    categoryName?: string | null
+    categoryId?: number | null
+    priority: string
+    status?: string
+    fileUrl?: string | null
+    resignReason?: string | null
+    reassignReason?: string | null
+    branchId: number
+    adminId?: number | null
+    customerId?: number | null
+    assignedToId?: number | null
+    createdById?: number | null
+    createdByRole: string
+    slaStatus?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    history?: TicketHistoryUncheckedCreateNestedManyWithoutTicketInput
+    messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    closureRequests?: TicketClosureRequestUncheckedCreateNestedManyWithoutTicketInput
+  }
+
+  export type TicketCreateOrConnectWithoutPreviousAssigneeInput = {
+    where: TicketWhereUniqueInput
+    create: XOR<TicketCreateWithoutPreviousAssigneeInput, TicketUncheckedCreateWithoutPreviousAssigneeInput>
+  }
+
+  export type TicketCreateManyPreviousAssigneeInputEnvelope = {
+    data: TicketCreateManyPreviousAssigneeInput | TicketCreateManyPreviousAssigneeInput[]
     skipDuplicates?: boolean
   }
 
@@ -94069,6 +94554,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagedStaffInput = {
@@ -94112,6 +94599,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutAdminInput = {
@@ -94226,10 +94715,13 @@ export namespace Prisma {
     status?: StringFilter<"Ticket"> | string
     fileUrl?: StringNullableFilter<"Ticket"> | string | null
     resignReason?: StringNullableFilter<"Ticket"> | string | null
+    reassignReason?: StringNullableFilter<"Ticket"> | string | null
     branchId?: IntFilter<"Ticket"> | number
     adminId?: IntNullableFilter<"Ticket"> | number | null
     customerId?: IntNullableFilter<"Ticket"> | number | null
     assignedToId?: IntNullableFilter<"Ticket"> | number | null
+    createdById?: IntNullableFilter<"Ticket"> | number | null
+    previousAssigneeId?: IntNullableFilter<"Ticket"> | number | null
     createdByRole?: StringFilter<"Ticket"> | string
     slaStatus?: StringNullableFilter<"Ticket"> | string | null
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
@@ -94336,6 +94828,38 @@ export namespace Prisma {
   export type TicketUpdateManyWithWhereWithoutAdminInput = {
     where: TicketScalarWhereInput
     data: XOR<TicketUpdateManyMutationInput, TicketUncheckedUpdateManyWithoutAdminInput>
+  }
+
+  export type TicketUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: TicketWhereUniqueInput
+    update: XOR<TicketUpdateWithoutCreatedByInput, TicketUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<TicketCreateWithoutCreatedByInput, TicketUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type TicketUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: TicketWhereUniqueInput
+    data: XOR<TicketUpdateWithoutCreatedByInput, TicketUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type TicketUpdateManyWithWhereWithoutCreatedByInput = {
+    where: TicketScalarWhereInput
+    data: XOR<TicketUpdateManyMutationInput, TicketUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type TicketUpsertWithWhereUniqueWithoutPreviousAssigneeInput = {
+    where: TicketWhereUniqueInput
+    update: XOR<TicketUpdateWithoutPreviousAssigneeInput, TicketUncheckedUpdateWithoutPreviousAssigneeInput>
+    create: XOR<TicketCreateWithoutPreviousAssigneeInput, TicketUncheckedCreateWithoutPreviousAssigneeInput>
+  }
+
+  export type TicketUpdateWithWhereUniqueWithoutPreviousAssigneeInput = {
+    where: TicketWhereUniqueInput
+    data: XOR<TicketUpdateWithoutPreviousAssigneeInput, TicketUncheckedUpdateWithoutPreviousAssigneeInput>
+  }
+
+  export type TicketUpdateManyWithWhereWithoutPreviousAssigneeInput = {
+    where: TicketScalarWhereInput
+    data: XOR<TicketUpdateManyMutationInput, TicketUncheckedUpdateManyWithoutPreviousAssigneeInput>
   }
 
   export type CustomerCreateWithoutBranchInput = {
@@ -94672,6 +95196,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutBranchInput = {
@@ -94715,6 +95241,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutBranchInput = {
@@ -95275,6 +95803,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -95283,6 +95812,8 @@ export namespace Prisma {
     admin?: UserCreateNestedOneWithoutOwnedTicketsInput
     customer?: CustomerCreateNestedOneWithoutTicketsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     history?: TicketHistoryCreateNestedManyWithoutTicketInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
@@ -95299,9 +95830,12 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -96246,6 +96780,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -96254,6 +96789,8 @@ export namespace Prisma {
     branch: BranchCreateNestedOneWithoutTicketsInput
     admin?: UserCreateNestedOneWithoutOwnedTicketsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     history?: TicketHistoryCreateNestedManyWithoutTicketInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
@@ -96270,9 +96807,12 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -98232,6 +98772,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutSalesInput = {
@@ -98275,6 +98817,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutSalesInput = {
@@ -98708,6 +99252,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalesInput = {
@@ -98751,6 +99297,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type SaleItemUpsertWithWhereUniqueWithoutSaleInput = {
@@ -101101,6 +101649,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutReceivedTransfersInput = {
@@ -101144,6 +101694,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutReceivedTransfersInput = {
@@ -101371,6 +101923,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedTransfersInput = {
@@ -101414,6 +101968,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type BranchUpsertWithoutOutgoingTransfersInput = {
@@ -101974,6 +102530,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutEmployeeProfileInput = {
@@ -102017,6 +102575,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutEmployeeProfileInput = {
@@ -102111,6 +102671,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEmployeeProfileInput = {
@@ -102154,6 +102716,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type DesignationUpsertWithoutEmployeesInput = {
@@ -102383,6 +102947,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutAttendanceInput = {
@@ -102426,6 +102992,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutAttendanceInput = {
@@ -102554,6 +103122,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAttendanceInput = {
@@ -102597,6 +103167,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type BranchUpsertWithoutAttendanceInput = {
@@ -102715,6 +103287,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutLeaveRequestsInput = {
@@ -102758,6 +103332,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutLeaveRequestsInput = {
@@ -102875,6 +103451,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutApprovedLeavesInput = {
@@ -102918,6 +103496,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutApprovedLeavesInput = {
@@ -103002,6 +103582,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeaveRequestsInput = {
@@ -103045,6 +103627,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type BranchUpsertWithoutLeaveRequestsInput = {
@@ -103174,6 +103758,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedLeavesInput = {
@@ -103217,6 +103803,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type LeaveTypeUpsertWithoutRequestsInput = {
@@ -103344,6 +103932,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsInput = {
@@ -103387,6 +103977,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsInput = {
@@ -103592,6 +104184,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsInput = {
@@ -103635,6 +104229,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type BranchUpsertWithoutPayrollsInput = {
@@ -103877,6 +104473,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutLeadsInput = {
@@ -103920,6 +104518,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutLeadsInput = {
@@ -104314,6 +104914,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeadsInput = {
@@ -104357,6 +104959,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type LeadActivityUpsertWithWhereUniqueWithoutLeadInput = {
@@ -104924,6 +105528,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutDealsInput = {
@@ -104967,6 +105573,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutDealsInput = {
@@ -105120,6 +105728,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDealsInput = {
@@ -105163,6 +105773,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type CRMTaskUpsertWithWhereUniqueWithoutDealInput = {
@@ -105305,6 +105917,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutCrmTasksInput = {
@@ -105348,6 +105962,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutCrmTasksInput = {
@@ -105502,6 +106118,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCrmTasksInput = {
@@ -105545,6 +106163,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserCreateWithoutMissPunchRequestsInput = {
@@ -105587,6 +106207,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutMissPunchRequestsInput = {
@@ -105630,6 +106252,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutMissPunchRequestsInput = {
@@ -105747,6 +106371,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutReviewedMissPunchesInput = {
@@ -105790,6 +106416,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutReviewedMissPunchesInput = {
@@ -105848,6 +106476,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMissPunchRequestsInput = {
@@ -105891,6 +106521,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type BranchUpsertWithoutMissPunchRequestsInput = {
@@ -106020,6 +106652,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewedMissPunchesInput = {
@@ -106063,6 +106697,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserCreateWithoutSalaryAdvancesInput = {
@@ -106105,6 +106741,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutSalaryAdvancesInput = {
@@ -106148,6 +106786,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutSalaryAdvancesInput = {
@@ -106265,6 +106905,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutApprovedAdvancesInput = {
@@ -106308,6 +106950,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutApprovedAdvancesInput = {
@@ -106442,6 +107086,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalaryAdvancesInput = {
@@ -106485,6 +107131,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type BranchUpsertWithoutSalaryAdvancesInput = {
@@ -106614,6 +107262,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedAdvancesInput = {
@@ -106657,6 +107307,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type PayrollUpsertWithoutSalaryAdvancesInput = {
@@ -107299,6 +107951,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutVouchersInput = {
@@ -107342,6 +107996,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutVouchersInput = {
@@ -107519,6 +108175,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVouchersInput = {
@@ -107562,6 +108220,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type JournalEntryUpsertWithWhereUniqueWithoutVoucherInput = {
@@ -109162,6 +109822,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutTerminalsInput = {
@@ -109205,6 +109867,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutTerminalsInput = {
@@ -109457,6 +110121,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutSentMessagesInput = {
@@ -109500,6 +110166,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutSentMessagesInput = {
@@ -109547,6 +110215,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutReceivedMessagesInput = {
@@ -109590,6 +110260,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutReceivedMessagesInput = {
@@ -109648,6 +110320,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentMessagesInput = {
@@ -109691,6 +110365,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUpsertWithoutReceivedMessagesInput = {
@@ -109744,6 +110420,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedMessagesInput = {
@@ -109787,6 +110465,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -109829,6 +110509,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -109872,6 +110554,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -109930,6 +110614,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -109973,6 +110659,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserCreateWithoutWorkLogsInput = {
@@ -110015,6 +110703,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutWorkLogsInput = {
@@ -110058,6 +110748,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutWorkLogsInput = {
@@ -110105,6 +110797,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutManagedWorkLogsInput = {
@@ -110148,6 +110842,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutManagedWorkLogsInput = {
@@ -110276,6 +110972,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkLogsInput = {
@@ -110319,6 +111017,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUpsertWithoutManagedWorkLogsInput = {
@@ -110372,6 +111072,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagedWorkLogsInput = {
@@ -110415,6 +111117,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type BranchUpsertWithoutWorkLogsInput = {
@@ -110617,6 +111321,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutRequestedByInput
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutOwnedTicketsInput = {
@@ -110660,6 +111366,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUncheckedCreateNestedManyWithoutRequestedByInput
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutOwnedTicketsInput = {
@@ -110761,6 +111469,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutAssignedTicketsInput = {
@@ -110804,11 +111514,201 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutAssignedTicketsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutAssignedTicketsInput, UserUncheckedCreateWithoutAssignedTicketsInput>
+  }
+
+  export type UserCreateWithoutCreatedTicketsInput = {
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: string | null
+    incentivePercentage?: Decimal | DecimalJsLike | number | string
+    imageUrl?: string | null
+    weeklyOff?: string | null
+    isActive?: boolean
+    branch?: BranchCreateNestedOneWithoutUsersInput
+    receivedTransfers?: StockTransferCreateNestedManyWithoutReceivedByInput
+    sales?: SaleCreateNestedManyWithoutSalesmanInput
+    employeeProfile?: EmployeeProfileCreateNestedOneWithoutUserInput
+    attendance?: AttendanceCreateNestedManyWithoutUserInput
+    leaveRequests?: LeaveRequestCreateNestedManyWithoutUserInput
+    approvedLeaves?: LeaveRequestCreateNestedManyWithoutApprovedByInput
+    payrolls?: PayrollCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutAssignedUserInput
+    deals?: DealCreateNestedManyWithoutAssignedUserInput
+    terminals?: TerminalCreateNestedManyWithoutUsersInput
+    crmTasks?: CRMTaskCreateNestedManyWithoutAssignedUserInput
+    missPunchRequests?: MissPunchRequestCreateNestedManyWithoutUserInput
+    reviewedMissPunches?: MissPunchRequestCreateNestedManyWithoutReviewerInput
+    salaryAdvances?: SalaryAdvanceCreateNestedManyWithoutUserInput
+    approvedAdvances?: SalaryAdvanceCreateNestedManyWithoutApproverInput
+    vouchers?: VoucherCreateNestedManyWithoutCreatorInput
+    sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
+    receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    admin?: UserCreateNestedOneWithoutManagedStaffInput
+    managedStaff?: UserCreateNestedManyWithoutAdminInput
+    workLogs?: WorkLogCreateNestedManyWithoutUserInput
+    managedWorkLogs?: WorkLogCreateNestedManyWithoutAdminInput
+    assignedTickets?: TicketCreateNestedManyWithoutAssignedToInput
+    closureRequests?: TicketClosureRequestCreateNestedManyWithoutRequestedByInput
+    ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
+    ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
+    ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
+  }
+
+  export type UserUncheckedCreateWithoutCreatedTicketsInput = {
+    id?: number
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: string | null
+    branchId?: number | null
+    incentivePercentage?: Decimal | DecimalJsLike | number | string
+    imageUrl?: string | null
+    weeklyOff?: string | null
+    isActive?: boolean
+    adminId?: number | null
+    receivedTransfers?: StockTransferUncheckedCreateNestedManyWithoutReceivedByInput
+    sales?: SaleUncheckedCreateNestedManyWithoutSalesmanInput
+    employeeProfile?: EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutUserInput
+    leaveRequests?: LeaveRequestUncheckedCreateNestedManyWithoutUserInput
+    approvedLeaves?: LeaveRequestUncheckedCreateNestedManyWithoutApprovedByInput
+    payrolls?: PayrollUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutAssignedUserInput
+    deals?: DealUncheckedCreateNestedManyWithoutAssignedUserInput
+    terminals?: TerminalUncheckedCreateNestedManyWithoutUsersInput
+    crmTasks?: CRMTaskUncheckedCreateNestedManyWithoutAssignedUserInput
+    missPunchRequests?: MissPunchRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedMissPunches?: MissPunchRequestUncheckedCreateNestedManyWithoutReviewerInput
+    salaryAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutUserInput
+    approvedAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutApproverInput
+    vouchers?: VoucherUncheckedCreateNestedManyWithoutCreatorInput
+    sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+    receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
+    workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
+    managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
+    assignedTickets?: TicketUncheckedCreateNestedManyWithoutAssignedToInput
+    closureRequests?: TicketClosureRequestUncheckedCreateNestedManyWithoutRequestedByInput
+    ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
+    ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+    ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
+  }
+
+  export type UserCreateOrConnectWithoutCreatedTicketsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreatedTicketsInput, UserUncheckedCreateWithoutCreatedTicketsInput>
+  }
+
+  export type UserCreateWithoutPreviousAssignedTicketsInput = {
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: string | null
+    incentivePercentage?: Decimal | DecimalJsLike | number | string
+    imageUrl?: string | null
+    weeklyOff?: string | null
+    isActive?: boolean
+    branch?: BranchCreateNestedOneWithoutUsersInput
+    receivedTransfers?: StockTransferCreateNestedManyWithoutReceivedByInput
+    sales?: SaleCreateNestedManyWithoutSalesmanInput
+    employeeProfile?: EmployeeProfileCreateNestedOneWithoutUserInput
+    attendance?: AttendanceCreateNestedManyWithoutUserInput
+    leaveRequests?: LeaveRequestCreateNestedManyWithoutUserInput
+    approvedLeaves?: LeaveRequestCreateNestedManyWithoutApprovedByInput
+    payrolls?: PayrollCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutAssignedUserInput
+    deals?: DealCreateNestedManyWithoutAssignedUserInput
+    terminals?: TerminalCreateNestedManyWithoutUsersInput
+    crmTasks?: CRMTaskCreateNestedManyWithoutAssignedUserInput
+    missPunchRequests?: MissPunchRequestCreateNestedManyWithoutUserInput
+    reviewedMissPunches?: MissPunchRequestCreateNestedManyWithoutReviewerInput
+    salaryAdvances?: SalaryAdvanceCreateNestedManyWithoutUserInput
+    approvedAdvances?: SalaryAdvanceCreateNestedManyWithoutApproverInput
+    vouchers?: VoucherCreateNestedManyWithoutCreatorInput
+    sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
+    receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    admin?: UserCreateNestedOneWithoutManagedStaffInput
+    managedStaff?: UserCreateNestedManyWithoutAdminInput
+    workLogs?: WorkLogCreateNestedManyWithoutUserInput
+    managedWorkLogs?: WorkLogCreateNestedManyWithoutAdminInput
+    assignedTickets?: TicketCreateNestedManyWithoutAssignedToInput
+    closureRequests?: TicketClosureRequestCreateNestedManyWithoutRequestedByInput
+    ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
+    ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
+    ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutPreviousAssignedTicketsInput = {
+    id?: number
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: string | null
+    branchId?: number | null
+    incentivePercentage?: Decimal | DecimalJsLike | number | string
+    imageUrl?: string | null
+    weeklyOff?: string | null
+    isActive?: boolean
+    adminId?: number | null
+    receivedTransfers?: StockTransferUncheckedCreateNestedManyWithoutReceivedByInput
+    sales?: SaleUncheckedCreateNestedManyWithoutSalesmanInput
+    employeeProfile?: EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutUserInput
+    leaveRequests?: LeaveRequestUncheckedCreateNestedManyWithoutUserInput
+    approvedLeaves?: LeaveRequestUncheckedCreateNestedManyWithoutApprovedByInput
+    payrolls?: PayrollUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutAssignedUserInput
+    deals?: DealUncheckedCreateNestedManyWithoutAssignedUserInput
+    terminals?: TerminalUncheckedCreateNestedManyWithoutUsersInput
+    crmTasks?: CRMTaskUncheckedCreateNestedManyWithoutAssignedUserInput
+    missPunchRequests?: MissPunchRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedMissPunches?: MissPunchRequestUncheckedCreateNestedManyWithoutReviewerInput
+    salaryAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutUserInput
+    approvedAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutApproverInput
+    vouchers?: VoucherUncheckedCreateNestedManyWithoutCreatorInput
+    sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+    receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
+    workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
+    managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
+    assignedTickets?: TicketUncheckedCreateNestedManyWithoutAssignedToInput
+    closureRequests?: TicketClosureRequestUncheckedCreateNestedManyWithoutRequestedByInput
+    ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
+    ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+    ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutPreviousAssignedTicketsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPreviousAssignedTicketsInput, UserUncheckedCreateWithoutPreviousAssignedTicketsInput>
   }
 
   export type TicketHistoryCreateWithoutTicketInput = {
@@ -111040,6 +111940,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUpdateManyWithoutRequestedByNestedInput
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedTicketsInput = {
@@ -111083,6 +111985,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUncheckedUpdateManyWithoutRequestedByNestedInput
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type CustomerUpsertWithoutTicketsInput = {
@@ -111196,6 +112100,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedTicketsInput = {
@@ -111239,6 +112145,208 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
+  }
+
+  export type UserUpsertWithoutCreatedTicketsInput = {
+    update: XOR<UserUpdateWithoutCreatedTicketsInput, UserUncheckedUpdateWithoutCreatedTicketsInput>
+    create: XOR<UserCreateWithoutCreatedTicketsInput, UserUncheckedCreateWithoutCreatedTicketsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreatedTicketsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreatedTicketsInput, UserUncheckedUpdateWithoutCreatedTicketsInput>
+  }
+
+  export type UserUpdateWithoutCreatedTicketsInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    incentivePercentage?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyOff?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    branch?: BranchUpdateOneWithoutUsersNestedInput
+    receivedTransfers?: StockTransferUpdateManyWithoutReceivedByNestedInput
+    sales?: SaleUpdateManyWithoutSalesmanNestedInput
+    employeeProfile?: EmployeeProfileUpdateOneWithoutUserNestedInput
+    attendance?: AttendanceUpdateManyWithoutUserNestedInput
+    leaveRequests?: LeaveRequestUpdateManyWithoutUserNestedInput
+    approvedLeaves?: LeaveRequestUpdateManyWithoutApprovedByNestedInput
+    payrolls?: PayrollUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutAssignedUserNestedInput
+    deals?: DealUpdateManyWithoutAssignedUserNestedInput
+    terminals?: TerminalUpdateManyWithoutUsersNestedInput
+    crmTasks?: CRMTaskUpdateManyWithoutAssignedUserNestedInput
+    missPunchRequests?: MissPunchRequestUpdateManyWithoutUserNestedInput
+    reviewedMissPunches?: MissPunchRequestUpdateManyWithoutReviewerNestedInput
+    salaryAdvances?: SalaryAdvanceUpdateManyWithoutUserNestedInput
+    approvedAdvances?: SalaryAdvanceUpdateManyWithoutApproverNestedInput
+    vouchers?: VoucherUpdateManyWithoutCreatorNestedInput
+    sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
+    receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    admin?: UserUpdateOneWithoutManagedStaffNestedInput
+    managedStaff?: UserUpdateManyWithoutAdminNestedInput
+    workLogs?: WorkLogUpdateManyWithoutUserNestedInput
+    managedWorkLogs?: WorkLogUpdateManyWithoutAdminNestedInput
+    assignedTickets?: TicketUpdateManyWithoutAssignedToNestedInput
+    closureRequests?: TicketClosureRequestUpdateManyWithoutRequestedByNestedInput
+    ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
+    ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
+    ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreatedTicketsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    incentivePercentage?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyOff?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    adminId?: NullableIntFieldUpdateOperationsInput | number | null
+    receivedTransfers?: StockTransferUncheckedUpdateManyWithoutReceivedByNestedInput
+    sales?: SaleUncheckedUpdateManyWithoutSalesmanNestedInput
+    employeeProfile?: EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
+    leaveRequests?: LeaveRequestUncheckedUpdateManyWithoutUserNestedInput
+    approvedLeaves?: LeaveRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+    payrolls?: PayrollUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutAssignedUserNestedInput
+    deals?: DealUncheckedUpdateManyWithoutAssignedUserNestedInput
+    terminals?: TerminalUncheckedUpdateManyWithoutUsersNestedInput
+    crmTasks?: CRMTaskUncheckedUpdateManyWithoutAssignedUserNestedInput
+    missPunchRequests?: MissPunchRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedMissPunches?: MissPunchRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    salaryAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutUserNestedInput
+    approvedAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutApproverNestedInput
+    vouchers?: VoucherUncheckedUpdateManyWithoutCreatorNestedInput
+    sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+    receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
+    workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
+    managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
+    assignedTickets?: TicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    closureRequests?: TicketClosureRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+    ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
+    ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+    ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
+  }
+
+  export type UserUpsertWithoutPreviousAssignedTicketsInput = {
+    update: XOR<UserUpdateWithoutPreviousAssignedTicketsInput, UserUncheckedUpdateWithoutPreviousAssignedTicketsInput>
+    create: XOR<UserCreateWithoutPreviousAssignedTicketsInput, UserUncheckedCreateWithoutPreviousAssignedTicketsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPreviousAssignedTicketsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPreviousAssignedTicketsInput, UserUncheckedUpdateWithoutPreviousAssignedTicketsInput>
+  }
+
+  export type UserUpdateWithoutPreviousAssignedTicketsInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    incentivePercentage?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyOff?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    branch?: BranchUpdateOneWithoutUsersNestedInput
+    receivedTransfers?: StockTransferUpdateManyWithoutReceivedByNestedInput
+    sales?: SaleUpdateManyWithoutSalesmanNestedInput
+    employeeProfile?: EmployeeProfileUpdateOneWithoutUserNestedInput
+    attendance?: AttendanceUpdateManyWithoutUserNestedInput
+    leaveRequests?: LeaveRequestUpdateManyWithoutUserNestedInput
+    approvedLeaves?: LeaveRequestUpdateManyWithoutApprovedByNestedInput
+    payrolls?: PayrollUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutAssignedUserNestedInput
+    deals?: DealUpdateManyWithoutAssignedUserNestedInput
+    terminals?: TerminalUpdateManyWithoutUsersNestedInput
+    crmTasks?: CRMTaskUpdateManyWithoutAssignedUserNestedInput
+    missPunchRequests?: MissPunchRequestUpdateManyWithoutUserNestedInput
+    reviewedMissPunches?: MissPunchRequestUpdateManyWithoutReviewerNestedInput
+    salaryAdvances?: SalaryAdvanceUpdateManyWithoutUserNestedInput
+    approvedAdvances?: SalaryAdvanceUpdateManyWithoutApproverNestedInput
+    vouchers?: VoucherUpdateManyWithoutCreatorNestedInput
+    sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
+    receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    admin?: UserUpdateOneWithoutManagedStaffNestedInput
+    managedStaff?: UserUpdateManyWithoutAdminNestedInput
+    workLogs?: WorkLogUpdateManyWithoutUserNestedInput
+    managedWorkLogs?: WorkLogUpdateManyWithoutAdminNestedInput
+    assignedTickets?: TicketUpdateManyWithoutAssignedToNestedInput
+    closureRequests?: TicketClosureRequestUpdateManyWithoutRequestedByNestedInput
+    ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
+    ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
+    ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPreviousAssignedTicketsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    incentivePercentage?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyOff?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    adminId?: NullableIntFieldUpdateOperationsInput | number | null
+    receivedTransfers?: StockTransferUncheckedUpdateManyWithoutReceivedByNestedInput
+    sales?: SaleUncheckedUpdateManyWithoutSalesmanNestedInput
+    employeeProfile?: EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
+    leaveRequests?: LeaveRequestUncheckedUpdateManyWithoutUserNestedInput
+    approvedLeaves?: LeaveRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+    payrolls?: PayrollUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutAssignedUserNestedInput
+    deals?: DealUncheckedUpdateManyWithoutAssignedUserNestedInput
+    terminals?: TerminalUncheckedUpdateManyWithoutUsersNestedInput
+    crmTasks?: CRMTaskUncheckedUpdateManyWithoutAssignedUserNestedInput
+    missPunchRequests?: MissPunchRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedMissPunches?: MissPunchRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    salaryAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutUserNestedInput
+    approvedAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutApproverNestedInput
+    vouchers?: VoucherUncheckedUpdateManyWithoutCreatorNestedInput
+    sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+    receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
+    workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
+    managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
+    assignedTickets?: TicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    closureRequests?: TicketClosureRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+    ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
+    ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+    ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type TicketHistoryUpsertWithWhereUniqueWithoutTicketInput = {
@@ -111299,6 +112407,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -111307,6 +112416,8 @@ export namespace Prisma {
     admin?: UserCreateNestedOneWithoutOwnedTicketsInput
     customer?: CustomerCreateNestedOneWithoutTicketsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     history?: TicketHistoryCreateNestedManyWithoutTicketInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
@@ -111322,10 +112433,13 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -111371,6 +112485,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -111380,6 +112495,8 @@ export namespace Prisma {
     admin?: UserCreateNestedOneWithoutOwnedTicketsInput
     customer?: CustomerCreateNestedOneWithoutTicketsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
   }
@@ -111395,10 +112512,13 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -111452,6 +112572,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutRequestedByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutTicketHistoryActionsInput = {
@@ -111495,6 +112617,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUncheckedCreateNestedManyWithoutRequestedByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutTicketHistoryActionsInput = {
@@ -111523,6 +112647,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -111532,6 +112657,8 @@ export namespace Prisma {
     admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
     customer?: CustomerUpdateOneWithoutTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
     closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
   }
@@ -111547,10 +112674,13 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -111610,6 +112740,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUpdateManyWithoutRequestedByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTicketHistoryActionsInput = {
@@ -111653,6 +112785,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUncheckedUpdateManyWithoutRequestedByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type TicketCreateWithoutMessagesInput = {
@@ -111665,6 +112799,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -111674,6 +112809,8 @@ export namespace Prisma {
     admin?: UserCreateNestedOneWithoutOwnedTicketsInput
     customer?: CustomerCreateNestedOneWithoutTicketsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     history?: TicketHistoryCreateNestedManyWithoutTicketInput
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutTicketInput
   }
@@ -111689,10 +112826,13 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -111746,6 +112886,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestCreateNestedManyWithoutRequestedByInput
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutTicketMessagesInput = {
@@ -111789,6 +112931,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUncheckedCreateNestedManyWithoutRequestedByInput
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutTicketMessagesInput = {
@@ -111817,6 +112961,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -111826,6 +112971,8 @@ export namespace Prisma {
     admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
     customer?: CustomerUpdateOneWithoutTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     history?: TicketHistoryUpdateManyWithoutTicketNestedInput
     closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
   }
@@ -111841,10 +112988,13 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -111904,6 +113054,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUpdateManyWithoutRequestedByNestedInput
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTicketMessagesInput = {
@@ -111947,6 +113099,8 @@ export namespace Prisma {
     closureRequests?: TicketClosureRequestUncheckedUpdateManyWithoutRequestedByNestedInput
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type TicketCreateWithoutClosureRequestsInput = {
@@ -111959,6 +113113,7 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -111968,6 +113123,8 @@ export namespace Prisma {
     admin?: UserCreateNestedOneWithoutOwnedTicketsInput
     customer?: CustomerCreateNestedOneWithoutTicketsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedTicketsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTicketsInput
+    previousAssignee?: UserCreateNestedOneWithoutPreviousAssignedTicketsInput
     history?: TicketHistoryCreateNestedManyWithoutTicketInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
   }
@@ -111983,10 +113140,13 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -112040,6 +113200,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserUncheckedCreateWithoutClosureRequestsInput = {
@@ -112083,6 +113245,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
     ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
   }
 
   export type UserCreateOrConnectWithoutClosureRequestsInput = {
@@ -112111,6 +113275,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -112120,6 +113285,8 @@ export namespace Prisma {
     admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
     customer?: CustomerUpdateOneWithoutTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     history?: TicketHistoryUpdateManyWithoutTicketNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
   }
@@ -112135,10 +113302,13 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -112198,6 +113368,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClosureRequestsInput = {
@@ -112241,6 +113413,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type StockTransferCreateManyReceivedByInput = {
@@ -112551,9 +113725,12 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -112597,9 +113774,58 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
+    createdByRole: string
+    slaStatus?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TicketCreateManyCreatedByInput = {
+    id?: string
+    ticketId: string
+    title: string
+    description: string
+    categoryName?: string | null
+    categoryId?: number | null
+    priority: string
+    status?: string
+    fileUrl?: string | null
+    resignReason?: string | null
+    reassignReason?: string | null
+    branchId: number
+    adminId?: number | null
+    customerId?: number | null
+    assignedToId?: number | null
+    previousAssigneeId?: number | null
+    createdByRole: string
+    slaStatus?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TicketCreateManyPreviousAssigneeInput = {
+    id?: string
+    ticketId: string
+    title: string
+    description: string
+    categoryName?: string | null
+    categoryId?: number | null
+    priority: string
+    status?: string
+    fileUrl?: string | null
+    resignReason?: string | null
+    reassignReason?: string | null
+    branchId: number
+    adminId?: number | null
+    customerId?: number | null
+    assignedToId?: number | null
+    createdById?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -113476,6 +114702,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAdminInput = {
@@ -113519,6 +114747,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutAdminInput = {
@@ -113605,6 +114835,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -113613,6 +114844,8 @@ export namespace Prisma {
     branch?: BranchUpdateOneRequiredWithoutTicketsNestedInput
     admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
     customer?: CustomerUpdateOneWithoutTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     history?: TicketHistoryUpdateManyWithoutTicketNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
     closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
@@ -113629,9 +114862,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -113652,9 +114888,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -113749,6 +114988,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -113757,6 +114997,8 @@ export namespace Prisma {
     branch?: BranchUpdateOneRequiredWithoutTicketsNestedInput
     customer?: CustomerUpdateOneWithoutTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     history?: TicketHistoryUpdateManyWithoutTicketNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
     closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
@@ -113773,9 +115015,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -113796,9 +115041,162 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdByRole?: StringFieldUpdateOperationsInput | string
+    slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TicketUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByRole?: StringFieldUpdateOperationsInput | string
+    slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: TicketCategoryUpdateOneWithoutTicketsNestedInput
+    branch?: BranchUpdateOneRequiredWithoutTicketsNestedInput
+    admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
+    customer?: CustomerUpdateOneWithoutTicketsNestedInput
+    assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
+    history?: TicketHistoryUpdateManyWithoutTicketNestedInput
+    messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
+  }
+
+  export type TicketUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableIntFieldUpdateOperationsInput | number | null
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    adminId?: NullableIntFieldUpdateOperationsInput | number | null
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
+    assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdByRole?: StringFieldUpdateOperationsInput | string
+    slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    history?: TicketHistoryUncheckedUpdateManyWithoutTicketNestedInput
+    messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    closureRequests?: TicketClosureRequestUncheckedUpdateManyWithoutTicketNestedInput
+  }
+
+  export type TicketUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableIntFieldUpdateOperationsInput | number | null
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    adminId?: NullableIntFieldUpdateOperationsInput | number | null
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
+    assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdByRole?: StringFieldUpdateOperationsInput | string
+    slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TicketUpdateWithoutPreviousAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByRole?: StringFieldUpdateOperationsInput | string
+    slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: TicketCategoryUpdateOneWithoutTicketsNestedInput
+    branch?: BranchUpdateOneRequiredWithoutTicketsNestedInput
+    admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
+    customer?: CustomerUpdateOneWithoutTicketsNestedInput
+    assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    history?: TicketHistoryUpdateManyWithoutTicketNestedInput
+    messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
+  }
+
+  export type TicketUncheckedUpdateWithoutPreviousAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableIntFieldUpdateOperationsInput | number | null
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    adminId?: NullableIntFieldUpdateOperationsInput | number | null
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
+    assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    createdByRole?: StringFieldUpdateOperationsInput | string
+    slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    history?: TicketHistoryUncheckedUpdateManyWithoutTicketNestedInput
+    messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    closureRequests?: TicketClosureRequestUncheckedUpdateManyWithoutTicketNestedInput
+  }
+
+  export type TicketUncheckedUpdateManyWithoutPreviousAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableIntFieldUpdateOperationsInput | number | null
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    adminId?: NullableIntFieldUpdateOperationsInput | number | null
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
+    assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -114119,9 +115517,12 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -114513,6 +115914,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBranchInput = {
@@ -114556,6 +115959,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutBranchInput = {
@@ -115128,6 +116533,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115136,6 +116542,8 @@ export namespace Prisma {
     admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
     customer?: CustomerUpdateOneWithoutTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     history?: TicketHistoryUpdateManyWithoutTicketNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
     closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
@@ -115152,9 +116560,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115175,9 +116586,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115292,9 +116706,12 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -115614,6 +117031,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115622,6 +117040,8 @@ export namespace Prisma {
     branch?: BranchUpdateOneRequiredWithoutTicketsNestedInput
     admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     history?: TicketHistoryUpdateManyWithoutTicketNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
     closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
@@ -115638,9 +117058,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115661,9 +117084,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118028,6 +119454,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTerminalsInput = {
@@ -118071,6 +119499,8 @@ export namespace Prisma {
     ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
     ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutTerminalsInput = {
@@ -118332,10 +119762,13 @@ export namespace Prisma {
     status?: string
     fileUrl?: string | null
     resignReason?: string | null
+    reassignReason?: string | null
     branchId: number
     adminId?: number | null
     customerId?: number | null
     assignedToId?: number | null
+    createdById?: number | null
+    previousAssigneeId?: number | null
     createdByRole: string
     slaStatus?: string | null
     createdAt?: Date | string
@@ -118352,6 +119785,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118360,6 +119794,8 @@ export namespace Prisma {
     admin?: UserUpdateOneWithoutOwnedTicketsNestedInput
     customer?: CustomerUpdateOneWithoutTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedTicketsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTicketsNestedInput
+    previousAssignee?: UserUpdateOneWithoutPreviousAssignedTicketsNestedInput
     history?: TicketHistoryUpdateManyWithoutTicketNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
     closureRequests?: TicketClosureRequestUpdateManyWithoutTicketNestedInput
@@ -118375,10 +119811,13 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118398,10 +119837,13 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     resignReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reassignReason?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: IntFieldUpdateOperationsInput | number
     adminId?: NullableIntFieldUpdateOperationsInput | number | null
     customerId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedToId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdById?: NullableIntFieldUpdateOperationsInput | number | null
+    previousAssigneeId?: NullableIntFieldUpdateOperationsInput | number | null
     createdByRole?: StringFieldUpdateOperationsInput | string
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

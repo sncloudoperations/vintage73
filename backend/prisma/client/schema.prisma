@@ -55,6 +55,7 @@ model User {
   ticketHistoryActions  TicketHistory[] @relation("TicketHistoryDoneBy")
   ticketMessages        TicketMessage[] @relation("TicketMessageSender")
   ownedTickets          Ticket[]        @relation("TicketAdmin")
+  createdTickets        Ticket[]        @relation("CreatedTickets")
 }
 
 model Branch {
@@ -1000,6 +1001,8 @@ model Ticket {
   customer      Customer? @relation(fields: [customerId], references: [id])
   assignedToId  Int?     // Staff ID
   assignedTo    User?    @relation("AssignedTo", fields: [assignedToId], references: [id])
+  createdById   Int?     // NEW: User who initiated the ticket
+  createdBy     User?    @relation("CreatedTickets", fields: [createdById], references: [id])
   createdByRole String   // customer / admin
   slaStatus     String?  // OnTime / Delayed
   createdAt     DateTime @default(now())
