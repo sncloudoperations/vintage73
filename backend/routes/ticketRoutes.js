@@ -18,7 +18,8 @@ const {
   reassignTicket,
   completeTicket,
   getBranchCustomers,
-  getBranchAdmins
+  getBranchAdmins,
+  getBranchAgents
 } = require('../controllers/ticketController');
 const authMiddleware = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
@@ -33,6 +34,7 @@ router.put('/decision', handleTicketDecision);
 router.get('/categories', getCategories);
 router.get('/branch-customers', getBranchCustomers);
 router.get('/branch-admins', getBranchAdmins);
+router.get('/branch-agents', getBranchAgents);
 router.post('/categories', createCategory);
 router.put('/categories/:id', updateCategory);
 router.delete('/categories/:id', deleteCategory);

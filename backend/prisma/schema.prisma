@@ -55,6 +55,8 @@ model User {
   ticketHistoryActions  TicketHistory[] @relation("TicketHistoryDoneBy")
   ticketMessages        TicketMessage[] @relation("TicketMessageSender")
   ownedTickets          Ticket[]        @relation("TicketAdmin")
+  createdTickets        Ticket[]        @relation("CreatedTickets")
+  previousAssignedTickets Ticket[]      @relation("PreviousAssignee")
 }
 
 model Branch {
@@ -989,9 +991,10 @@ model Ticket {
   categoryId    Int?
   category      TicketCategory? @relation(fields: [categoryId], references: [id])
   priority      String   // Low, Medium, High
-  status        String   @default("CREATED") // CREATED, ASSIGNED, IN_PROGRESS, CLOSED
+  status        String   @default("Created") // Created, Assigned, InProgress, Closed, Waiting
   fileUrl       String?  // uploaded file
   resignReason  String?  @db.Text
+  reassignReason String? @db.Text
   branchId      Int
   branch        Branch   @relation(fields: [branchId], references: [id])
   adminId       Int?     // Target Branch Admin ID (for partitioning)
@@ -1000,6 +1003,10 @@ model Ticket {
   customer      Customer? @relation(fields: [customerId], references: [id])
   assignedToId  Int?     // Staff ID
   assignedTo    User?    @relation("AssignedTo", fields: [assignedToId], references: [id])
+  createdById   Int?     // NEW: User who initiated the ticket
+  createdBy     User?    @relation("CreatedTickets", fields: [createdById], references: [id])
+  previousAssigneeId Int?    // ID of the user who reassigned the ticket
+  previousAssignee   User?   @relation("PreviousAssignee", fields: [previousAssigneeId], references: [id])
   createdByRole String   // customer / admin
   slaStatus     String?  // OnTime / Delayed
   createdAt     DateTime @default(now())

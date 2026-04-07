@@ -8,7 +8,29 @@ const generateTicketId = async () => {
   return `TKT-${1000 + count + 1}`;
 };
 
-// @desc    Get branch admins (for customer selection)
+// @desc    Get branch agents (Admins + Staff for assignment)
+exports.getBranchAgents = asyncHandler(async (req, res) => {
+    const branchId = (req.user.role === 'admin' || req.user.role === 'staff') ? req.user.branchId : req.query.branchId;
+    
+    if (!branchId && req.user.role !== 'superadmin') {
+        res.status(400);
+        throw new Error('Branch ID is required');
+    }
+
+    const where = {
+        role: { in: ['admin', 'staff'] },
+        isActive: true
+    };
+    if (branchId) where.branchId = parseInt(branchId);
+
+    const agents = await prisma.user.findMany({
+        where,
+        select: { id: true, name: true, username: true, role: true }
+    });
+    res.json(agents);
+});
+
+// @desc    Get branch admins (Legacy, for customer selection)
 exports.getBranchAdmins = asyncHandler(async (req, res) => {
     const branchId = req.user.role === 'admin' ? req.user.branchId : req.query.branchId;
     
@@ -51,8 +73,8 @@ exports.createTicket = asyncHandler(async (req, res) => {
     finalCategoryId = category.id;
   }
 
-  // Auto-fill branch for branch admins
-  const targetBranchId = req.user.role === 'admin' && req.user.branchId 
+  // Auto-fill branch for branch admins/staff
+  const targetBranchId = (req.user.role === 'admin' || req.user.role === 'staff') && req.user.branchId 
     ? req.user.branchId 
     : (branchId ? parseInt(branchId) : (req.user.branchId || 1));
 
@@ -62,14 +84,11 @@ exports.createTicket = asyncHandler(async (req, res) => {
   let targetAdminId = null;
   if (req.user.role === 'admin') {
     targetAdminId = req.user.id; // Own system
-  } else if (req.user.role === 'customer') {
-    // Shared Branch Pool: No specific admin is targeted.
-    targetAdminId = null; 
-  }
+  } 
 
-  if (req.user.role === 'staff') {
+  if ((req.user.role === 'staff' || req.user.role === 'admin') && !targetBranchId) {
     res.status(403);
-    throw new Error('Staff are not authorized to create tickets');
+    throw new Error('User must belong to a branch to create tickets');
   }
 
   if (!title || !description || !priority) {
@@ -92,13 +111,13 @@ exports.createTicket = asyncHandler(async (req, res) => {
   let ticketStatus = 'CREATED';
   let finalAssignedToId = assignedToId ? parseInt(assignedToId) : null;
   
-  if (finalAssignedToId && (req.user.role === 'admin' || req.user.role === 'superadmin')) {
+  if (finalAssignedToId) {
     ticketStatus = 'ASSIGNED';
     const staff = await prisma.user.findUnique({ where: { id: finalAssignedToId } });
     if (staff) {
       historyData.push({
         action: 'Assigned',
-        message: `Support personnel ${staff.name || staff.username} assigned during initialization by ${req.user.name || req.user.username}`,
+        message: `Ticket assigned to ${staff.name || staff.username} by ${req.user.name || req.user.username}`,
         doneById: req.user.id,
         role: req.user.role
       });
@@ -112,17 +131,18 @@ exports.createTicket = asyncHandler(async (req, res) => {
     categoryName: categoryName || null,
     priority,
     createdByRole: req.user.role,
-    status: ticketStatus,
+    status: 'Created', // FORCE INITIAL STATUS
     slaStatus: 'OnTime',
     fileUrl: fileUrl,
     branch: { connect: { id: targetBranchId } },
     admin: targetAdminId ? { connect: { id: targetAdminId } } : undefined,
+    createdBy: { connect: { id: req.user.id } }, // Set the creator
     history: { create: historyData }
   };
 
   if (finalCategoryId) ticketData.category = { connect: { id: finalCategoryId } };
   if (requesterId) ticketData.customer = { connect: { id: requesterId } };
-  if (finalAssignedToId) ticketData.assignedTo = { connect: { id: finalAssignedToId } };
+  // REMOVED: Initial assignment logic
 
   const ticket = await prisma.ticket.create({
     data: ticketData,
@@ -132,6 +152,7 @@ exports.createTicket = asyncHandler(async (req, res) => {
       customer: true,
       assignedTo: { select: { id: true, name: true, username: true } },
       admin: { select: { id: true, name: true, username: true } },
+      createdBy: { select: { id: true, name: true, username: true, role: true } },
       branch: true
     }
   });
@@ -203,22 +224,35 @@ exports.getTickets = asyncHandler(async (req, res) => {
   };
 
   // --- STRICT VISIBILITY LOCKDOWN ---
+  const { viewType } = req.query; // 'created', 'assigned', or 'self'
+
   if (role === 'customer') {
     where.AND.push({ customerId: parseInt(id) });
+  } else if (viewType === 'self') {
+    // My Tickets: Created by me OR Assigned to me OR Waiting for handoff (Previous Assignee)
+    where.AND.push({
+      OR: [
+        { assignedToId: parseInt(id) },
+        { createdById: parseInt(id) },
+        { previousAssigneeId: parseInt(id) }
+      ]
+    });
+  } else if (viewType === 'created') {
+    where.AND.push({ createdById: parseInt(id) });
+  } else if (viewType === 'assigned') {
+    where.AND.push({ assignedToId: parseInt(id) });
   } else if (role === 'staff') {
-    // Staff only see tickets belonging to their assigned Admin (Successor partitioning)
-    if (req.user.adminId) {
-        where.AND.push({ adminId: req.user.adminId });
-    } else {
-        where.AND.push({ assignedToId: parseInt(id) }); // Fallback to personal only
-    }
+    // Staff role visibility: Only their own (Created, Assigned, or Waiting)
+    where.AND.push({
+      OR: [
+        { assignedToId: parseInt(id) },
+        { createdById: parseInt(id) },
+        { previousAssigneeId: parseInt(id) }
+      ]
+    });
   } else if (role === 'admin' && userBranchId) {
-    // Branch Admin sees all tickets for their branch
+    // Branch Admin: All branch tickets
     where.AND.push({ branchId: parseInt(userBranchId) });
-  } else if (role === 'superadmin' || (role === 'admin' && !userBranchId)) {
-    // Global access
-  } else {
-    where.AND.push({ id: 'ACCESS_DENIED_LOCKOUT' });
   }
 
   // --- FILTERS ---
@@ -242,6 +276,7 @@ exports.getTickets = asyncHandler(async (req, res) => {
       category: true,
       customer: { select: { name: true, phone: true } },
       assignedTo: { select: { id: true, name: true, username: true } },
+      previousAssignee: { select: { id: true, name: true, username: true } },
       branch: { select: { name: true } },
       history: {
         orderBy: { createdAt: 'asc' },
@@ -267,9 +302,9 @@ exports.getTickets = asyncHandler(async (req, res) => {
 exports.assignTicket = asyncHandler(async (req, res) => {
   const { ticketId, staffId, reason } = req.body;
 
-  if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+  if (req.user.role !== 'admin' && req.user.role !== 'superadmin' && req.user.role !== 'staff') {
     res.status(403);
-    throw new Error('Only admins can assign/reassign tickets');
+    throw new Error('Only admins and staff can assign/reassign tickets');
   }
 
   const ticket = await prisma.ticket.findUnique({ where: { id: String(ticketId) } });
@@ -291,15 +326,17 @@ exports.assignTicket = asyncHandler(async (req, res) => {
     where: { id: String(ticketId) },
     data: {
       assignedTo: { connect: { id: parseInt(staffId) } },
-      status: 'ASSIGNED',
+      previousAssignee: oldStaffId ? { connect: { id: oldStaffId } } : undefined,
+      status: 'Assigned',
+      reassignReason: isReassignment ? (reason || null) : null,
       history: {
         create: {
           action: isReassignment ? 'Reassigned' : 'Assigned',
           message: isReassignment 
-            ? `Ticket reassigned to ${staff.name || staff.username} by Admin ${req.user.name || req.user.username}. Reason: ${reason || 'N/A'}`
-            : `Ticket assigned to ${staff.name || staff.username} by Admin ${req.user.name || req.user.username}`,
+            ? `Ticket reassigned to ${staff.name || staff.username} by ${req.user.name || req.user.username} (${req.user.role}). Reason: ${reason || 'N/A'}`
+            : `Ticket assigned to ${staff.name || staff.username} by ${req.user.name || req.user.username} (${req.user.role})`,
           doneById: req.user.id,
-          role: 'admin',
+          role: req.user.role,
           reason: reason || null
         }
       }
@@ -665,7 +702,7 @@ exports.getBranchCustomers = asyncHandler(async (req, res) => {
     res.json(customers);
 });
 
-// @desc    Accept ticket (Staff only)
+// @desc    Accept ticket (Staff/Admin)
 exports.acceptTicket = asyncHandler(async (req, res) => {
     const { ticketId } = req.body;
     const ticket = await prisma.ticket.findUnique({ where: { id: String(ticketId) } });
@@ -678,13 +715,14 @@ exports.acceptTicket = asyncHandler(async (req, res) => {
     const updatedTicket = await prisma.ticket.update({
         where: { id: String(ticketId) },
         data: {
-            status: 'IN_PROGRESS',
+            status: 'InProgress',
+            previousAssignee: { disconnect: true }, // Clear previous assignee
             history: {
                 create: {
                     action: 'Accepted',
-                    message: `Staff (${req.user.name}) accepted the ticket and moved it to IN_PROGRESS`,
+                    message: `${req.user.role.toUpperCase()} (${req.user.name || req.user.username}) accepted the ticket and moved it to IN_PROGRESS`,
                     doneById: req.user.id,
-                    role: 'staff'
+                    role: req.user.role
                 }
             }
         }
@@ -693,7 +731,7 @@ exports.acceptTicket = asyncHandler(async (req, res) => {
     res.json(updatedTicket);
 });
 
-// @desc    Reassign ticket (Staff only)
+// @desc    Reassign ticket (Staff/Admin)
 exports.reassignTicket = asyncHandler(async (req, res) => {
     // Supporting both /reassign (POST) and /:id/reassign (PUT)
     const ticketId = req.params.id || req.body.ticketId;
@@ -707,22 +745,31 @@ exports.reassignTicket = asyncHandler(async (req, res) => {
 
     const ticket = await prisma.ticket.findUnique({ where: { id: String(ticketId) } });
 
-    if (!ticket || ticket.assignedToId !== req.user.id) {
+    if (!ticket) {
+        res.status(404);
+        throw new Error('Ticket not found');
+    }
+
+    const isAdmin = req.user.role === 'admin' || req.user.role === 'superadmin';
+    const isAssigned = ticket.assignedToId === req.user.id;
+
+    if (!isAdmin && !isAssigned) {
         res.status(403);
-        throw new Error('You are not assigned to this ticket or ticket not found');
+        throw new Error('Not authorized to reassign this ticket');
     }
 
     let updateData = {
-        status: staffId ? 'ASSIGNED' : 'CREATED', // Back to CREATED if no one assigned
-        resignReason: reason,
+        status: staffId ? 'Assigned' : 'Created', 
+        previousAssignee: ticket.assignedToId ? { connect: { id: ticket.assignedToId } } : undefined,
+        reassignReason: reason,
         history: {
             create: {
                 action: 'Reassigned',
                 message: staffId 
-                    ? `Staff reassign to another agent. Reason: ${reason}`
-                    : `Staff reassign requested. Reason: ${reason}`,
+                    ? `${req.user.role.toUpperCase()} reassign to another agent. Old Assignee is now Waiting. Reason: ${reason}`
+                    : `${req.user.role.toUpperCase()} reassign requested. Reason: ${reason}`,
                 doneById: req.user.id,
-                role: 'staff',
+                role: req.user.role,
                 reason: reason
             }
         }
@@ -794,7 +841,7 @@ exports.completeTicket = asyncHandler(async (req, res) => {
     const updatedTicket = await prisma.ticket.update({
         where: { id: String(ticketId) },
         data: {
-            status: 'CLOSED',
+            status: 'Closed',
             history: {
                 create: {
                     action: 'Completed',
