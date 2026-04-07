@@ -10,23 +10,27 @@ const generateTicketId = async () => {
 
 // @desc    Get branch agents (Admins + Staff for assignment)
 exports.getBranchAgents = asyncHandler(async (req, res) => {
-    const branchId = (req.user.role === 'admin' || req.user.role === 'staff') ? req.user.branchId : req.query.branchId;
+    // Robust Branch Fallback: Use explicit user branch or requested target branch (Fixes SuperAdmin/Global Admin empty dropdown issue)
+    const targetBranchId = req.user.branchId || req.query.branchId;
     
-    if (!branchId && req.user.role !== 'superadmin') {
-        res.status(400);
-        throw new Error('Branch ID is required');
-    }
-
     const where = {
-        role: { in: ['admin', 'staff'] },
-        isActive: true
+        // Safely include capitalization anomalies on production db
+        role: { in: ['admin', 'staff', 'Admin', 'Staff', 'branch-admin'] }
     };
-    if (branchId) where.branchId = parseInt(branchId);
+    
+    // Safety against legacy DB rows where isActive might be NULL instead of default TRUE
+    where.isActive = { not: false };
+
+    if (targetBranchId) {
+        where.branchId = parseInt(targetBranchId);
+    }
 
     const agents = await prisma.user.findMany({
         where,
-        select: { id: true, name: true, username: true, role: true }
+        select: { id: true, name: true, username: true, role: true },
+        orderBy: { name: 'asc' }
     });
+    
     res.json(agents);
 });
 
