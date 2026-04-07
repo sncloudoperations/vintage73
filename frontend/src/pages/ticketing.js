@@ -127,7 +127,25 @@ export default function Ticketing() {
 
   // ─── API CALLS ───
   const fetchTickets = async () => {
-    try { setLoading(true); const q = new URLSearchParams(filters).toString(); const { data } = await api.get(`/tickets?${q}`); setTickets(Array.isArray(data) ? data : []); }
+    try { 
+      setLoading(true); 
+      const q = new URLSearchParams(filters).toString(); 
+      const { data } = await api.get(`/tickets?${q}`); 
+      // Safely normalize case from backend to ensure enum exact-match across UI logic
+      const normalizeStatus = (s) => {
+        if (!s) return 'Created';
+        const l = s.toLowerCase();
+        if (l === 'created') return 'Created';
+        if (l === 'assigned') return 'Assigned';
+        if (l === 'inprogress') return 'InProgress';
+        if (l === 'closed') return 'Closed';
+        if (l === 'waiting') return 'Waiting';
+        if (l === 'closurerequested') return 'ClosureRequested';
+        return s;
+      };
+      const normalizedData = Array.isArray(data) ? data.map(t => ({ ...t, status: normalizeStatus(t.status) })) : [];
+      setTickets(normalizedData); 
+    }
     catch { toast.error('Failed to sync ticket pool'); } finally { setLoading(false); }
   };
   const fetchCategories = async () => { try { const { data } = await api.get('/tickets/categories'); setCategories(data); } catch {} };

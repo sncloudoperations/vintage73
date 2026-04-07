@@ -295,7 +295,26 @@ exports.getTickets = asyncHandler(async (req, res) => {
     orderBy: { createdAt: 'desc' }
   });
 
-  res.json(tickets);
+  // Fix Status Casing globally for production DB safety
+  const normalizeStatus = (s) => {
+    if (!s) return 'Created';
+    const l = s.toLowerCase();
+    if (l === 'created') return 'Created';
+    if (l === 'assigned') return 'Assigned';
+    if (l === 'inprogress') return 'InProgress';
+    if (l === 'closed') return 'Closed';
+    if (l === 'waiting') return 'Waiting';
+    if (l === 'closurerequested') return 'ClosureRequested';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
+  const normalizedTickets = tickets.map(t => {
+     const status = normalizeStatus(t.status);
+     console.log(`[DEBUG] Ticket ID: ${t.ticketId || t.id} - DB Status: ${t.status} -> Normalized: ${status}`);
+     return { ...t, status };
+  });
+
+  res.json(normalizedTickets);
 });
 
 // @desc    Assign/Reassign ticket
