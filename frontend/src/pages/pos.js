@@ -155,15 +155,18 @@ const CURRENCY_SYMBOLS = {
     const fetchData = async () => {
         try {
             const activeBranchId = selectedBranch || user?.branchId;
-            const [prodRes, custRes, compRes, userRes] = await Promise.all([
+            const [prodRes, custRes, compRes, userRes, branchRes] = await Promise.all([
                 api.get('/products', { params: { branchId: activeBranchId } }),
                 api.get('/customers'),
                 api.get('/company'),
-                // Fetch users as salesmen, filter by branch if needed
-                api.get('/users')
+                api.get('/users'),
+                activeBranchId ? api.get(`/branches/${activeBranchId}`) : Promise.resolve({ data: null })
             ]);
             setProducts(prodRes.data);
             setCustomers(custRes.data);
+            if (branchRes.data) {
+                setBranchSettings({ stockIncluded: branchRes.data.stockIncluded !== false });
+            }
 
 
             // Filter salesmen: match branchId or global (no branch)
@@ -409,7 +412,9 @@ const CURRENCY_SYMBOLS = {
     const updateQuantity = (id, newQty) => {
         if (newQty < 1) return;
         const item = cart.find(i => i.id === id);
-        if (branchSettings.stockIncluded && item && newQty > item.stock) {
+        
+        // Only block if stockIncluded is ON
+        if (branchSettings.stockIncluded === true && item && newQty > item.stock) {
             toast.error(`Only ${item.stock} units available in stock`);
             return;
         }
