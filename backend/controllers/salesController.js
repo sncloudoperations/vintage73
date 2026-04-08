@@ -313,6 +313,9 @@ exports.updateSale = asyncHandler(async (req, res) => {
     await tx.payment.deleteMany({ where: { saleId: validSaleId } });
     await tx.voucher.updateMany({ where: { reference: existing.invoiceNumber }, data: { status: 'CANCELLED' } });
 
+    const fetchBranch = await tx.branch.findUnique({ where: { id: existing.branchId } });
+    const stockIncluded = !!fetchBranch?.stockIncluded;
+
     // Recalculate
     let subTotal = 0;
     let taxAmount = 0;
@@ -320,7 +323,20 @@ exports.updateSale = asyncHandler(async (req, res) => {
     const saleItemsData = [];
 
     for (const item of items) {
-      const product = await tx.product.findUnique({ where: { id: parseInt(item.productId) } });
+      const productId = parseInt(item.productId);
+      const product = await tx.product.findUnique({ where: { id: productId } });
+      if (!product) throw new Error(`Product ${productId} not found.`);
+
+      // Stock Check
+      if (stockIncluded) {
+        const stock = await tx.productStock.findUnique({
+          where: { branchId_productId: { branchId: existing.branchId, productId } }
+        });
+        if (!stock || stock.quantity < item.quantity) {
+          throw new Error(`Insufficient stock for ${product.name}. Available: ${stock?.quantity || 0}`);
+        }
+      }
+
       const unitPrice = parseFloat(item.unitPrice || item.price || 0);
       const discAmt = parseFloat(item.discountAmount || 0);
       const netPrice = unitPrice - discAmt;
