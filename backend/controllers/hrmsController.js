@@ -784,5 +784,39 @@ exports.getWorkLogs = asyncHandler(async (req, res) => {
         orderBy: { date: 'desc' }
     });
 
+
     res.json(logs);
+});
+
+exports.updateWorkLog = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { date, description } = req.body;
+
+    const workLog = await prisma.workLog.findUnique({
+        where: { id: parseInt(id) }
+    });
+
+    if (!workLog) {
+        res.status(404);
+        throw new Error('Work log not found');
+    }
+
+    // RBAC: Only the staff member themselves or an admin can update a log
+    if (req.user.role !== 'admin' && req.user.id !== workLog.userId) {
+        res.status(403);
+        throw new Error('You can only update your own work logs');
+    }
+
+    const updated = await prisma.workLog.update({
+        where: { id: parseInt(id) },
+        data: {
+            date: date ? new Date(date) : undefined,
+            description: description || undefined
+        },
+        include: {
+            user: { select: { name: true, username: true } }
+        }
+    });
+
+    res.json(updated);
 });

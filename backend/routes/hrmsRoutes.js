@@ -39,6 +39,7 @@ router.post('/profile/:userId', hrmsController.updateEmployeeProfile);
 // Work Logs
 router.post('/work-logs', hrmsController.createWorkLog);
 router.get('/work-logs', hrmsController.getWorkLogs);
+router.put('/work-logs/:id', hrmsController.updateWorkLog);
 
 
 // Settings - Designations & Departments

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import { FiPlus, FiSearch, FiCalendar, FiX, FiFileText } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiCalendar, FiX, FiFileText, FiEdit2 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 export default function WorkLogPage() {
@@ -16,6 +16,7 @@ export default function WorkLogPage() {
     // Form state
     const [formData, setFormData] = useState({ date: '', description: '' });
     const [submitting, setSubmitting] = useState(false);
+    const [editingLog, setEditingLog] = useState(null);
 
     useEffect(() => {
         const u = JSON.parse(localStorage.getItem('user'));
@@ -49,25 +50,45 @@ export default function WorkLogPage() {
         }
         setSubmitting(true);
         try {
-            const res = await api.post('/hrms/work-logs', {
-                userId: user.id,
-                date: formData.date,
-                description: formData.description.trim()
-            });
-            setLogs(prev => [res.data, ...prev]);
+            if (editingLog) {
+                const res = await api.put(`/hrms/work-logs/${editingLog.id}`, {
+                    date: formData.date,
+                    description: formData.description.trim()
+                });
+                setLogs(prev => prev.map(l => l.id === editingLog.id ? res.data : l));
+                toast.success('Work log updated successfully');
+            } else {
+                const res = await api.post('/hrms/work-logs', {
+                    userId: user.id,
+                    date: formData.date,
+                    description: formData.description.trim()
+                });
+                setLogs(prev => [res.data, ...prev]);
+                toast.success('Work log added successfully');
+            }
             setShowModal(false);
             setFormData({ date: '', description: '' });
-            toast.success('Work log added successfully');
+            setEditingLog(null);
         } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to add work log');
+            toast.error(err.response?.data?.error || 'Failed to save work log');
         } finally {
             setSubmitting(false);
         }
     };
 
+    const handleEdit = (log) => {
+        setEditingLog(log);
+        setFormData({
+            date: log.date.split('T')[0],
+            description: log.description
+        });
+        setShowModal(true);
+    };
+
     const openModal = () => {
         const today = new Date().toISOString().split('T')[0];
         setFormData({ date: today, description: '' });
+        setEditingLog(null);
         setShowModal(true);
     };
 
@@ -154,6 +175,7 @@ export default function WorkLogPage() {
                                 {isAdmin && <th className="px-6 py-3">Employee</th>}
                                 <th className="px-6 py-3">Description</th>
                                 <th className="px-6 py-3">Added On</th>
+                                <th className="px-6 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -177,6 +199,17 @@ export default function WorkLogPage() {
                                     <td className="px-6 py-4 text-slate-400 text-xs">
                                         {new Date(log.createdAt).toLocaleDateString('en-GB')}
                                     </td>
+                                    <td className="px-6 py-4 text-right">
+                                        {(isAdmin || user?.id === log.userId) && (
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleEdit(log); }}
+                                                className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                                title="Edit Log"
+                                            >
+                                                <FiEdit2 size={16} />
+                                            </button>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -191,8 +224,8 @@ export default function WorkLogPage() {
                         {/* Modal Header */}
                         <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/40 rounded-t-2xl">
                             <div>
-                                <h2 className="text-lg font-bold text-slate-800">Add Work Log</h2>
-                                <p className="text-slate-400 text-xs mt-0.5">Record your daily work activities</p>
+                                <h2 className="text-lg font-bold text-slate-800">{editingLog ? 'Edit Work Log' : 'Add Work Log'}</h2>
+                                <p className="text-slate-400 text-xs mt-0.5">{editingLog ? 'Update your activity record' : 'Record your daily work activities'}</p>
                             </div>
                             <button
                                 onClick={() => setShowModal(false)}
@@ -243,7 +276,7 @@ export default function WorkLogPage() {
                                     disabled={submitting}
                                     className="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold hover:bg-primary-dark transition disabled:opacity-60"
                                 >
-                                    {submitting ? 'Saving...' : 'Save Work Log'}
+                                    {submitting ? 'Saving...' : editingLog ? 'Update Work Log' : 'Save Work Log'}
                                 </button>
                             </div>
                         </form>
