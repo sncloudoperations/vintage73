@@ -81,7 +81,8 @@ exports.createSale = asyncHandler(async (req, res) => {
 
   const result = await prisma.$transaction(async (tx) => {
     const fetchBranch = await tx.branch.findUnique({ where: { id: validBranchId } });
-    const stockIncluded = fetchBranch?.stockIncluded !== false;
+    // Robust check: ONLY block if explicitly true. Default to false (OFF) for server stability.
+    const stockIncluded = fetchBranch?.stockIncluded === true;
 
     // 1. Calculate Totals
     let subTotal = 0;
@@ -109,16 +110,13 @@ exports.createSale = asyncHandler(async (req, res) => {
       const netPrice = unitPrice - discAmt;
       
       const taxRate = item.taxPercent !== undefined ? parseFloat(item.taxPercent) : parseFloat(product.taxRate || 0);
-      const isTaxInclusive = product.isTaxInclusive || false;
-
+      // FORCE EXCLUSIVE FOR POS TAX (to ensure Total = Subtotal + Tax as per user req)
+      const isTaxInclusive = false; 
+      
       let lineTax = 0;
-      let lineTotal = 0;
+      let lineTotal = 0; // Exclusive
 
-      if (isTaxInclusive && taxRate > 0) {
-        const totalPayable = item.quantity * netPrice;
-        lineTax = totalPayable - (totalPayable / (1 + (taxRate / 100)));
-        lineTotal = totalPayable - lineTax;
-      } else if (taxRate > 0) {
+      if (taxRate > 0) {
         lineTotal = item.quantity * netPrice;
         lineTax = (lineTotal * taxRate) / 100;
       } else {
@@ -131,8 +129,8 @@ exports.createSale = asyncHandler(async (req, res) => {
       totalItemsDiscount += (discAmt * item.quantity);
 
       saleItemsData.push({
-        productId,
-        quantity: item.quantity,
+        productId: parseInt(item.productId),
+        quantity: parseFloat(item.quantity || 1),
         unitPrice: parseFloat(unitPrice.toFixed(2)),
         discountPercent: parseFloat(item.discountPercent || 0),
         discountAmount: parseFloat(discAmt.toFixed(2)),
@@ -342,18 +340,19 @@ exports.updateSale = asyncHandler(async (req, res) => {
       const discAmt = parseFloat(item.discountAmount || 0);
       const netPrice = unitPrice - discAmt;
       const taxRate = item.taxPercent !== undefined ? parseFloat(item.taxPercent) : parseFloat(product.taxRate || 0);
-      const isTaxInclusive = product.isTaxInclusive || false;
+      
+      // FORCE EXCLUSIVE FOR POS TAX (to ensure Total = Subtotal + Tax as per user req)
+      const isTaxInclusive = false;
 
-      let lineTax = 0, lineTotal = 0;
-      if (isTaxInclusive && taxRate > 0) {
-        const totalPayable = item.quantity * netPrice;
-        lineTax = totalPayable - (totalPayable / (1 + (taxRate / 100)));
-        lineTotal = totalPayable - lineTax;
-      } else if (taxRate > 0) {
+      let lineTax = 0;
+      let lineTotal = 0; // Exclusive
+
+      if (taxRate > 0) {
         lineTotal = item.quantity * netPrice;
         lineTax = (lineTotal * taxRate) / 100;
       } else {
         lineTotal = item.quantity * netPrice;
+        lineTax = 0;
       }
 
       subTotal += lineTotal;
@@ -361,8 +360,8 @@ exports.updateSale = asyncHandler(async (req, res) => {
       totalItemsDiscount += (discAmt * item.quantity);
 
       saleItemsData.push({
-        productId: product.id,
-        quantity: item.quantity,
+        productId: parseInt(item.productId),
+        quantity: parseFloat(item.quantity || 1),
         unitPrice: parseFloat(unitPrice.toFixed(2)),
         discountPercent: parseFloat(item.discountPercent || 0),
         discountAmount: parseFloat(discAmt.toFixed(2)),

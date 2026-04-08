@@ -82,7 +82,8 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
 
       // Stock check
       const branchRecord = await tx.branch.findUnique({ where: { id: parseInt(branchId) } });
-      const stockIncluded = branchRecord?.stockIncluded !== false;
+      // Robust check: ONLY block if explicitly true.
+      const stockIncluded = branchRecord?.stockIncluded === true;
 
       if (stockIncluded) {
         const productStock = await tx.productStock.findUnique({
@@ -98,8 +99,9 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
       const discountPercent = parseFloat(item.discountPercent || 0);
       const discountAmount = (unitPrice * discountPercent) / 100;
       const netPrice = unitPrice - discountAmount;
-      const taxRate = parseFloat(product.taxRate || 0);
+      const taxRate = parseFloat(item.taxRate || product.taxRate || 0);
       
+      // FORCE EXCLUSIVE FOR B2B TAX (to ensure Total = Subtotal + Tax)
       const lineTotal = quantity * netPrice;
       const lineTax = (lineTotal * taxRate) / 100;
 
