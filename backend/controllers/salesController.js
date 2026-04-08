@@ -406,10 +406,21 @@ exports.getAllSales = asyncHandler(async (req, res) => {
       alreadyReturnedQty: returnedQtyMap[item.productId] || 0
     }));
 
+    // Normalize: discount always numeric, customerName populated
+    mainSale.discount = Number(mainSale.discount || 0);
+    mainSale.customerName = mainSale.customer?.name || mainSale.customerName || 'Walk-in Customer';
+
     return res.json([mainSale]);
   }
 
-  res.json(sales);
+  // Normalize all sales
+  const normalized = sales.map(s => ({
+    ...s,
+    discount: Number(s.discount || 0),
+    customerName: s.customer?.name || s.customerName || 'Walk-in Customer'
+  }));
+
+  res.json(normalized);
 });
 
 // Cancel Sale (Invoice)

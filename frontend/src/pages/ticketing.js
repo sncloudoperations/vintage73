@@ -777,7 +777,7 @@ export default function Ticketing() {
                   <p className="text-xs text-slate-500 mt-1">Ticket management</p>
                 </div>
 
-                <div className="p-6 space-y-8 flex-1 overflow-y-auto custom-scrollbar">
+                <div className="p-6 space-y-8 flex-1 overflow-y-auto custom-scrollbar pb-40">
                    {/* Entities */}
                    <div className="space-y-4">
                       <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">

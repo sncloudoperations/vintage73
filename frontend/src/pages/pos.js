@@ -1075,12 +1075,14 @@ const CURRENCY_SYMBOLS = {
                                 {currencyCode === 'AED' ? `${subTotal.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${subTotal.toFixed(2)}`}
                             </span>
                         </div>
+                        {taxEnabled && (
                         <div className="flex justify-between text-slate-500">
                             <span>Tax</span>
-                            <span className="font-medium">
-                                {currencyCode === 'AED' ? `${tax.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${tax.toFixed(2)}`}
+                            <span className="font-medium text-emerald-600">
+                                +{currencyCode === 'AED' ? `${tax.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${tax.toFixed(2)}`}
                             </span>
                         </div>
+                        )}
 
                         {/* Round Off Control */}
                         <div className="flex justify-between items-center text-slate-500">
