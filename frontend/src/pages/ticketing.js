@@ -11,6 +11,16 @@ import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import Select from 'react-select';
 
+// Custom Dropdown Direction Fix
+const dropdownStyles = `
+  .dropdown-menu {
+    top: 100% !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: 50 !important;
+  }
+`;
+
 // ─── TIMELINE ICON & COLOR MAP ───
 const TIMELINE_MAP = {
   Created:          { icon: <FiPlus />,          bg: 'bg-emerald-500', ring: 'ring-emerald-100',  text: 'text-emerald-700',  label: 'Created' },
@@ -308,11 +318,11 @@ export default function Ticketing() {
       </div>
     );
   }
-
   const t = selectedTicket; // shorthand for modal
 
   return (
     <div className="relative min-h-screen bg-[#f8fafc] overflow-hidden">
+      <style>{dropdownStyles}</style>
       {/* Background Orbs for Depth */}
       <div className="fixed -top-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
