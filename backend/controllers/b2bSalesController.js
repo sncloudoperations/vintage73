@@ -82,16 +82,12 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
 
       // Stock check
       const branchRecord = await tx.branch.findUnique({ where: { id: parseInt(branchId) } });
-      const productStock = await tx.productStock.findUnique({
-        where: {
-          branchId_productId: {
-            branchId: parseInt(branchId),
-            productId: productId
-          }
-        }
-      });
+      const stockIncluded = branchRecord?.stockIncluded !== false;
 
-      if (branchRecord?.stockIncluded === true) {
+      if (stockIncluded) {
+        const productStock = await tx.productStock.findUnique({
+          where: { branchId_productId: { branchId: parseInt(branchId), productId } }
+        });
         if (!productStock || productStock.quantity < item.quantity) {
           throw new Error(`Insufficient stock for product: ${product.name}`);
         }
