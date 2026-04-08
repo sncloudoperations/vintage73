@@ -147,8 +147,9 @@ exports.createSale = asyncHandler(async (req, res) => {
     const finalDiscount = Math.max(parseFloat(discount || 0), totalItemsDiscount);
     const finalRoundOffAmount = parseFloat(req.body.roundOffAmount || 0);
 
-    // Explicit Calculation Logic: Total = Subtotal + Tax - Discount + RoundOff
-    const grandTotal = finalSubTotal + finalTaxAmount - finalDiscount + finalRoundOffAmount;
+    // Explicit Calculation Logic: Total = Subtotal + Tax + RoundOff
+    // Note: finalSubTotal is already Net (derived from UnitPrice - DiscountAmount)
+    const grandTotal = finalSubTotal + finalTaxAmount + finalRoundOffAmount;
     const finalGrandTotal = Number(grandTotal.toFixed(2));
     const finalPaidAmount = parseFloat(paidAmount || 0);
 
@@ -373,9 +374,11 @@ exports.updateSale = asyncHandler(async (req, res) => {
 
     const finalSubTotal = Number(subTotal.toFixed(2));
     const finalTaxAmount = Number(taxAmount.toFixed(2));
-    const finalDiscount = Math.max(parseFloat(discount || 0), totalItemsDiscount);
+    const finalDiscount = Math.max(parseFloat(discount || 0), totalItemsDiscount); // Still needed for display/record
     const finalRoundOffAmount = parseFloat(req.body.roundOffAmount || 0);
-    const finalGrandTotal = Number((finalSubTotal + finalTaxAmount - finalDiscount + finalRoundOffAmount).toFixed(2));
+    // Explicit Calculation Logic: Total = Subtotal + Tax + RoundOff
+    const grandTotal = finalSubTotal + finalTaxAmount + finalRoundOffAmount;
+    const finalGrandTotal = Number(grandTotal.toFixed(2));
     const finalPaidAmount = parseFloat(paidAmount || 0);
 
     const updated = await tx.sale.update({
