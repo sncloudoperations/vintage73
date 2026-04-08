@@ -136,7 +136,7 @@ exports.createSale = asyncHandler(async (req, res) => {
         unitPrice: parseFloat(unitPrice.toFixed(2)),
         discountPercent: parseFloat(item.discountPercent || 0),
         discountAmount: parseFloat(discAmt.toFixed(2)),
-        total: parseFloat((lineTotal + (!isTaxInclusive ? lineTax : 0)).toFixed(2)),
+        total: parseFloat((lineTotal + lineTax).toFixed(2)),
         taxAmount: parseFloat(lineTax.toFixed(2)),
         taxRate: parseFloat(taxRate)
       });
@@ -366,7 +366,7 @@ exports.updateSale = asyncHandler(async (req, res) => {
         unitPrice: parseFloat(unitPrice.toFixed(2)),
         discountPercent: parseFloat(item.discountPercent || 0),
         discountAmount: parseFloat(discAmt.toFixed(2)),
-        total: parseFloat((lineTotal + (!isTaxInclusive ? lineTax : 0)).toFixed(2)),
+        total: parseFloat((lineTotal + lineTax).toFixed(2)),
         taxAmount: parseFloat(lineTax.toFixed(2)),
         taxRate
       });
