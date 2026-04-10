@@ -165,7 +165,7 @@ const CURRENCY_SYMBOLS = {
             setProducts(prodRes.data);
             setCustomers(custRes.data);
             if (branchRes.data) {
-                setBranchSettings({ stockIncluded: branchRes.data.stockIncluded !== false });
+                setBranchSettings({ stockIncluded: branchRes.data.stockIncluded === true });
             }
 
 
@@ -316,7 +316,7 @@ const CURRENCY_SYMBOLS = {
                 try {
                     const { data } = await api.get(`/branches/${activeBranchId}`);
                     setBranchSettings({
-                        stockIncluded: data?.stockIncluded !== undefined ? data.stockIncluded : true
+                        stockIncluded: data?.stockIncluded === true
                     });
                     if (data?.invoiceSettings && Object.keys(data.invoiceSettings).length > 0) {
                         setSalesSettings(data.invoiceSettings);
@@ -366,14 +366,14 @@ const CURRENCY_SYMBOLS = {
     };
 
     const addToCart = (product) => {
-        if (branchSettings.stockIncluded && product.stock <= 0) {
+        if (branchSettings.stockIncluded === true && product.stock <= 0) {
             toast.error('Out of stock in your branch');
             return;
         }
 
         const existing = cart.find(item => item.id === product.id);
 
-        if (existing && branchSettings.stockIncluded && (existing.quantity + 1) > product.stock) {
+        if (existing && branchSettings.stockIncluded === true && (existing.quantity + 1) > product.stock) {
             toast.error(`Only ${product.stock} units available in stock`);
             return;
         }

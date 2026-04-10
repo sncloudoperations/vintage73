@@ -313,7 +313,7 @@ exports.updateSale = asyncHandler(async (req, res) => {
     await tx.voucher.updateMany({ where: { reference: existing.invoiceNumber }, data: { status: 'CANCELLED' } });
 
     const fetchBranch = await tx.branch.findUnique({ where: { id: existing.branchId } });
-    const stockIncluded = fetchBranch?.stockIncluded !== false;
+    const stockIncluded = fetchBranch?.stockIncluded === true;
 
     // Recalculate
     let subTotal = 0;
