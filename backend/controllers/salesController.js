@@ -81,8 +81,17 @@ exports.createSale = asyncHandler(async (req, res) => {
 
   const result = await prisma.$transaction(async (tx) => {
     const fetchBranch = await tx.branch.findUnique({ where: { id: validBranchId } });
-    // Robust truthy check (handles booleans, strings "true", numbers 0/1 from different DB drivers)
-    const stockIncluded = !!fetchBranch?.stockIncluded;
+    // Robust check for stockIncluded (environment-resilient)
+    const stockIncluded = fetchBranch?.stockIncluded !== false && 
+                          fetchBranch?.stockIncluded !== 'false' && 
+                          fetchBranch?.stockIncluded !== 0 && 
+                          fetchBranch?.stockIncluded !== '0';
+    
+    console.log(`[SalesController:createSale] Branch ${validBranchId} stockIncluded:`, {
+      rawValue: fetchBranch?.stockIncluded,
+      resolved: stockIncluded,
+      type: typeof fetchBranch?.stockIncluded
+    });
 
     // 1. Calculate Totals
     let subTotal = 0;
@@ -313,7 +322,17 @@ exports.updateSale = asyncHandler(async (req, res) => {
     await tx.voucher.updateMany({ where: { reference: existing.invoiceNumber }, data: { status: 'CANCELLED' } });
 
     const fetchBranch = await tx.branch.findUnique({ where: { id: existing.branchId } });
-    const stockIncluded = !!fetchBranch?.stockIncluded;
+    // Robust check for stockIncluded (environment-resilient)
+    const stockIncluded = fetchBranch?.stockIncluded !== false && 
+                          fetchBranch?.stockIncluded !== 'false' && 
+                          fetchBranch?.stockIncluded !== 0 && 
+                          fetchBranch?.stockIncluded !== '0';
+
+    console.log(`[SalesController:updateSale] Branch ${existing.branchId} stockIncluded:`, {
+      rawValue: fetchBranch?.stockIncluded,
+      resolved: stockIncluded,
+      type: typeof fetchBranch?.stockIncluded
+    });
 
     // Recalculate
     let subTotal = 0;

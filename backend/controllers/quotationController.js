@@ -133,8 +133,20 @@ exports.convertToSale = asyncHandler(async (req, res) => {
             where: { id: targetBranchId }
         });
 
+        // Robust check for stockIncluded (environment-resilient)
+        const stockIncluded = branch?.stockIncluded !== false && 
+                              branch?.stockIncluded !== 'false' && 
+                              branch?.stockIncluded !== 0 && 
+                              branch?.stockIncluded !== '0';
+
+        console.log(`[QuotationController] Branch ${targetBranchId} stockIncluded:`, {
+            rawValue: branch?.stockIncluded,
+            resolved: stockIncluded,
+            type: typeof branch?.stockIncluded
+        });
+
         // --- STOCK VALIDATION ---
-        if (!!branch?.stockIncluded) {
+        if (stockIncluded) {
             for (const item of quotation.items) {
                 const stock = await tx.productStock.findUnique({
                     where: {
