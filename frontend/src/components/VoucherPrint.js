@@ -69,7 +69,7 @@ export default function VoucherPrint({ voucher, onClose }) {
                 <div className="flex justify-between items-start mb-4 border-b border-slate-300 pb-4">
                     <div className="flex gap-4 items-start">
                         {company?.logoUrl && (
-                            <img src={`${process.env.NEXT_PUBLIC_API_URL}${company.logoUrl}`} alt="Logo" className="h-12 object-contain" />
+                            <img src={`${process.env.NEXT_PUBLIC_API_URL}${company.logoUrl}`} alt="Logo" className="h-20 object-contain" />
                         )}
                         <div>
                             <h1 className="text-lg font-black uppercase leading-tight tracking-tight">{company?.companyName || 'PILLOW SPOT'}</h1>

@@ -125,7 +125,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                 <div className="text-center border-b border-dashed border-black pb-2 mb-4">
                     {settings.showLogo !== false && (
                         companyProfile?.logoUrl ? (
-                            <img src={companyProfile.logoUrl} alt="Logo" className="w-8 h-8 object-contain mx-auto mb-1" />
+                            <img src={companyProfile.logoUrl} alt="Logo" className="w-12 h-12 object-contain mx-auto mb-1" />
                         ) : (
                             <div className="w-8 h-8 border border-black rounded flex items-center justify-center text-[8px] font-bold mx-auto mb-1 uppercase tracking-tighter">Logo</div>
                         )
@@ -181,9 +181,9 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                 <div className="flex-1">
                     {settings.showLogo !== false && (
                         companyProfile?.logoUrl ? (
-                            <img src={companyProfile.logoUrl} alt="Logo" style={{ width: '140px', height: 'auto', objectFit: 'contain' }} />
+                            <img src={companyProfile.logoUrl} alt="Logo" style={{ width: '200px', height: 'auto', objectFit: 'contain' }} />
                         ) : (
-                            <div style={{ width: '140px', height: '140px' }} className="bg-white rounded-xl flex items-center justify-center font-bold text-slate-300 border border-slate-100 shadow-sm uppercase text-[9px] tracking-widest">Logo</div>
+                            <div style={{ width: '200px', height: '200px' }} className="bg-white rounded-xl flex items-center justify-center font-bold text-slate-300 border border-slate-100 shadow-sm uppercase text-[9px] tracking-widest">Logo</div>
                         )
                     )}
                 </div>

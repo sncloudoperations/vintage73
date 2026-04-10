@@ -255,7 +255,7 @@ const DynamicInvoice = forwardRef(({ printData, companyProfile, invoiceSettings 
       case 'logo':
         return config.showLogo !== false && companyProfile?.logoUrl ? (
           <div key={id} style={componentStyle}>
-            <img src={companyProfile.logoUrl} alt="Logo" style={{ maxHeight: '64px', margin: '0 auto', display: 'block' }} />
+            <img src={companyProfile.logoUrl} alt="Logo" style={{ maxHeight: '120px', margin: '0 auto', display: 'block' }} />
           </div>
         ) : null;
 
