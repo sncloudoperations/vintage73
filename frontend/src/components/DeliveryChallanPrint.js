@@ -50,6 +50,7 @@ export default function DeliveryChallanPrint({ data }) {
         </div>
         <div className="border border-black p-3">
           <h3 className="font-bold border-b border-black mb-2 pb-1">Dispatch To:</h3>
+
           {challan.customer ? (
             <>
               <p className="font-semibold">{challan.customer.name}</p>

@@ -366,14 +366,14 @@ const CURRENCY_SYMBOLS = {
     };
 
     const addToCart = (product) => {
-        if (branchSettings.stockIncluded && product.stock <= 0) {
+        if (!!branchSettings.stockIncluded && product.stock <= 0) {
             toast.error('Out of stock in your branch');
             return;
         }
 
         const existing = cart.find(item => item.id === product.id);
 
-        if (existing && branchSettings.stockIncluded && (existing.quantity + 1) > product.stock) {
+        if (existing && !!branchSettings.stockIncluded && (existing.quantity + 1) > product.stock) {
             toast.error(`Only ${product.stock} units available in stock`);
             return;
         }
@@ -414,7 +414,7 @@ const CURRENCY_SYMBOLS = {
         const item = cart.find(i => i.id === id);
         
         // Only block if stockIncluded is ON
-        if (branchSettings.stockIncluded === true && item && newQty > item.stock) {
+        if (!!branchSettings.stockIncluded && item && newQty > item.stock) {
             toast.error(`Only ${item.stock} units available in stock`);
             return;
         }

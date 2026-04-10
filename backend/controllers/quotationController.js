@@ -134,7 +134,7 @@ exports.convertToSale = asyncHandler(async (req, res) => {
         });
 
         // --- STOCK VALIDATION ---
-        if (branch?.stockIncluded) {
+        if (!!branch?.stockIncluded) {
             for (const item of quotation.items) {
                 const stock = await tx.productStock.findUnique({
                     where: {
