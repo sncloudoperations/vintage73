@@ -81,8 +81,8 @@ exports.createSale = asyncHandler(async (req, res) => {
 
   const result = await prisma.$transaction(async (tx) => {
     const fetchBranch = await tx.branch.findUnique({ where: { id: validBranchId } });
-    // Robust check: ONLY block if explicitly true. Default to false (OFF) for server stability.
-    const stockIncluded = fetchBranch?.stockIncluded === true;
+    // Robust truthy check (handles booleans, strings "true", numbers 0/1 from different DB drivers)
+    const stockIncluded = !!fetchBranch?.stockIncluded;
 
     // 1. Calculate Totals
     let subTotal = 0;
@@ -313,7 +313,7 @@ exports.updateSale = asyncHandler(async (req, res) => {
     await tx.voucher.updateMany({ where: { reference: existing.invoiceNumber }, data: { status: 'CANCELLED' } });
 
     const fetchBranch = await tx.branch.findUnique({ where: { id: existing.branchId } });
-    const stockIncluded = fetchBranch?.stockIncluded === true;
+    const stockIncluded = !!fetchBranch?.stockIncluded;
 
     // Recalculate
     let subTotal = 0;

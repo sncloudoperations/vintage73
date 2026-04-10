@@ -82,8 +82,8 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
 
       // Stock check
       const branchRecord = await tx.branch.findUnique({ where: { id: parseInt(branchId) } });
-      // Robust check: ONLY block if explicitly true.
-      const stockIncluded = branchRecord?.stockIncluded === true;
+      // Robust truthy check (handles booleans, strings "true", numbers 0/1 from different DB drivers)
+      const stockIncluded = !!branchRecord?.stockIncluded;
 
       if (stockIncluded) {
         const productStock = await tx.productStock.findUnique({
