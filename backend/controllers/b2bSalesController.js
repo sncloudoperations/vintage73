@@ -81,9 +81,17 @@ exports.createB2BInvoice = asyncHandler(async (req, res) => {
       }
 
       // Stock check
-      const branchRecord = await tx.branch.findUnique({ where: { id: parseInt(branchId) } });
-      // Robust truthy check (handles booleans, strings "true", numbers 0/1 from different DB drivers)
-      const stockIncluded = !!branchRecord?.stockIncluded;
+      // Robust check for stockIncluded (environment-resilient)
+      const stockIncluded = branchRecord?.stockIncluded !== false && 
+                            branchRecord?.stockIncluded !== 'false' && 
+                            branchRecord?.stockIncluded !== 0 && 
+                            branchRecord?.stockIncluded !== '0';
+
+      console.log(`[B2BSalesController] Branch ${branchId} stockIncluded:`, {
+        rawValue: branchRecord?.stockIncluded,
+        resolved: stockIncluded,
+        type: typeof branchRecord?.stockIncluded
+      });
 
       if (stockIncluded) {
         const productStock = await tx.productStock.findUnique({

@@ -165,7 +165,12 @@ const CURRENCY_SYMBOLS = {
             setProducts(prodRes.data);
             setCustomers(custRes.data);
             if (branchRes.data) {
-                setBranchSettings({ stockIncluded: !!branchRes.data.stockIncluded });
+                // Robust check for stockIncluded
+                const isStockEnabled = branchRes.data.stockIncluded !== false && 
+                                       branchRes.data.stockIncluded !== 'false' && 
+                                       branchRes.data.stockIncluded !== 0 && 
+                                       branchRes.data.stockIncluded !== '0';
+                setBranchSettings({ stockIncluded: isStockEnabled });
             }
 
 
@@ -315,8 +320,12 @@ const CURRENCY_SYMBOLS = {
             if (activeBranchId) {
                 try {
                     const { data } = await api.get(`/branches/${activeBranchId}`);
+                    const isStockEnabled = data?.stockIncluded !== false && 
+                                           data?.stockIncluded !== 'false' && 
+                                           data?.stockIncluded !== 0 && 
+                                           data?.stockIncluded !== '0';
                     setBranchSettings({
-                        stockIncluded: !!data?.stockIncluded
+                        stockIncluded: isStockEnabled
                     });
                     if (data?.invoiceSettings && Object.keys(data.invoiceSettings).length > 0) {
                         setSalesSettings(data.invoiceSettings);
@@ -366,14 +375,16 @@ const CURRENCY_SYMBOLS = {
     };
 
     const addToCart = (product) => {
-        if (!!branchSettings.stockIncluded && product.stock <= 0) {
+        const isStockEnabled = branchSettings.stockIncluded !== false && branchSettings.stockIncluded !== 'false';
+
+        if (isStockEnabled && product.stock <= 0) {
             toast.error('Out of stock in your branch');
             return;
         }
 
         const existing = cart.find(item => item.id === product.id);
 
-        if (existing && !!branchSettings.stockIncluded && (existing.quantity + 1) > product.stock) {
+        if (existing && isStockEnabled && (existing.quantity + 1) > product.stock) {
             toast.error(`Only ${product.stock} units available in stock`);
             return;
         }
@@ -413,8 +424,10 @@ const CURRENCY_SYMBOLS = {
         if (newQty < 1) return;
         const item = cart.find(i => i.id === id);
         
+        const isStockEnabled = branchSettings.stockIncluded !== false && branchSettings.stockIncluded !== 'false';
+        
         // Only block if stockIncluded is ON
-        if (!!branchSettings.stockIncluded && item && newQty > item.stock) {
+        if (isStockEnabled && item && newQty > item.stock) {
             toast.error(`Only ${item.stock} units available in stock`);
             return;
         }
