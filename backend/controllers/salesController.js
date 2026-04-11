@@ -81,17 +81,11 @@ exports.createSale = asyncHandler(async (req, res) => {
 
   const result = await prisma.$transaction(async (tx) => {
     const fetchBranch = await tx.branch.findUnique({ where: { id: validBranchId } });
-    // Robust check for stockIncluded (environment-resilient)
-    const stockIncluded = fetchBranch?.stockIncluded !== false && 
-                          fetchBranch?.stockIncluded !== 'false' && 
-                          fetchBranch?.stockIncluded !== 0 && 
-                          fetchBranch?.stockIncluded !== '0';
+    // 1. Calculate Totals (Hardened Validation)
+    // Strictly only true/ "true" enables stock validation. Null/False/Falsy disabled it.
+    const stockIncluded = fetchBranch?.stockIncluded === true || fetchBranch?.stockIncluded === 'true';
     
-    console.log(`[SalesController:createSale] Branch ${validBranchId} stockIncluded:`, {
-      rawValue: fetchBranch?.stockIncluded,
-      resolved: stockIncluded,
-      type: typeof fetchBranch?.stockIncluded
-    });
+    console.log(`[POS Stock Resolution] Branch: ${validBranchId}, Raw: ${fetchBranch?.stockIncluded}, Final Decision: ${stockIncluded ? 'VALIDATING' : 'SKIPPING STOCK CHECK'}`);
 
     // 1. Calculate Totals
     let subTotal = 0;
@@ -322,17 +316,10 @@ exports.updateSale = asyncHandler(async (req, res) => {
     await tx.voucher.updateMany({ where: { reference: existing.invoiceNumber }, data: { status: 'CANCELLED' } });
 
     const fetchBranch = await tx.branch.findUnique({ where: { id: existing.branchId } });
-    // Robust check for stockIncluded (environment-resilient)
-    const stockIncluded = fetchBranch?.stockIncluded !== false && 
-                          fetchBranch?.stockIncluded !== 'false' && 
-                          fetchBranch?.stockIncluded !== 0 && 
-                          fetchBranch?.stockIncluded !== '0';
+    // Robust check for stockIncluded (Hardened)
+    const stockIncluded = fetchBranch?.stockIncluded === true || fetchBranch?.stockIncluded === 'true';
 
-    console.log(`[SalesController:updateSale] Branch ${existing.branchId} stockIncluded:`, {
-      rawValue: fetchBranch?.stockIncluded,
-      resolved: stockIncluded,
-      type: typeof fetchBranch?.stockIncluded
-    });
+    console.log(`[POS Stock Resolution:Update] Branch: ${existing.branchId}, Raw: ${fetchBranch?.stockIncluded}, Final Decision: ${stockIncluded ? 'VALIDATING' : 'SKIPPING STOCK CHECK'}`);
 
     // Recalculate
     let subTotal = 0;
