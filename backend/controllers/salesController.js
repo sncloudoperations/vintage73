@@ -196,7 +196,11 @@ exports.createSale = asyncHandler(async (req, res) => {
         exchangeRate: parseFloat(exchangeRate),
         items: { create: saleItemsData }
       },
-      include: { customer: true, items: { include: { product: true } } }
+      include: { 
+        customer: true, 
+        items: { include: { product: true } }, 
+        salesman: { include: { employeeProfile: true } } 
+      }
     });
 
     // Accounting
@@ -252,7 +256,7 @@ exports.getAllSales = asyncHandler(async (req, res) => {
     include: {
       customer: true,
       items: { include: { product: true } },
-      salesman: { select: { name: true } }
+      salesman: { include: { employeeProfile: true } }
     },
     orderBy: { createdAt: 'desc' }
   });
@@ -401,7 +405,11 @@ exports.updateSale = asyncHandler(async (req, res) => {
         status: (finalGrandTotal - finalPaidAmount) > 0.5 ? 'partial' : 'completed',
         items: { create: saleItemsData }
       },
-      include: { customer: true, items: { include: { product: true } } }
+      include: { 
+        customer: true, 
+        items: { include: { product: true } },
+        salesman: { include: { employeeProfile: true } } 
+      }
     });
 
     await processSalePosting(tx, updated, req.user?.id || 1);

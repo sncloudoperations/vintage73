@@ -97,10 +97,27 @@ export default function InvoiceSettings() {
         return: defaultReturnSettings
     });
 
+    const [currentUserBank, setCurrentUserBank] = useState(null);
+    const [currentUserName, setCurrentUserName] = useState('');
+
     useEffect(() => {
         fetchSettings();
         fetchFinancialYears();
+        fetchCurrentUserBank();
     }, []);
+
+    const fetchCurrentUserBank = async () => {
+        try {
+            const loggedUser = JSON.parse(localStorage.getItem('user') || '{}');
+            if (loggedUser?.id) {
+                const userRes = await api.get(`/users/${loggedUser.id}`);
+                setCurrentUserBank(userRes.data?.employeeProfile || null);
+                setCurrentUserName(userRes.data?.name || '');
+            }
+        } catch (err) {
+            console.error('Failed to fetch user bank details', err);
+        }
+    };
 
     const fetchFinancialYears = async () => {
         try {
@@ -363,6 +380,16 @@ export default function InvoiceSettings() {
                                     </div>
                                 </div>
 
+                                {/* Bank Details Note */}
+                                <div className="mt-4 border-t border-slate-100 pt-4 pb-2">
+                                    <div className="flex items-center gap-2 mb-2 text-sm font-bold text-slate-800">
+                                        <FiBriefcase className="text-slate-400" /> Bank Details
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 bg-blue-50/50 p-2 rounded border border-blue-100/50">
+                                        Bank details are automatically fetched from your user profile (Employee Settings) and displayed on the invoice.
+                                    </p>
+                                </div>
+
                             </div>
                             <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 z-10">
                                 <button onClick={handleSave} className="w-full bg-[#009262] hover:bg-[#047857] text-white py-3 rounded-lg font-bold text-sm transition-colors shadow-sm active:scale-[0.98]">
@@ -420,6 +447,10 @@ export default function InvoiceSettings() {
                                             totalAmount: 1000.00,
                                             roundOffAmount: 0,
                                             currentBalance: 1250,
+                                            salesman: {
+                                                name: currentUserName,
+                                                employeeProfile: currentUserBank
+                                            },
                                             settings: currentConfig,
                                             items: [
                                                 {
