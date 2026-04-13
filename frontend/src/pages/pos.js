@@ -285,7 +285,7 @@ const CURRENCY_SYMBOLS = {
                     const freshTaxPercent = parseFloat(freshProd.taxPercent || freshProd.taxRate || 0);
                     const freshIsInclusive = freshProd.isTaxInclusive === true || freshProd.isTaxInclusive === 'true';
 
-                    const isPriceDiff = Number(cartItem.price) !== freshPrice;
+                    const isPriceDiff = !cartItem.isPriceOverridden && Number(cartItem.price) !== freshPrice;
                     const isTaxDiff = parseFloat(cartItem.taxRate || 0) !== freshTaxRate || parseFloat(cartItem.taxPercent || 0) !== freshTaxPercent;
                     const isIncDiff = cartItem.isTaxInclusive !== freshIsInclusive;
 
@@ -293,7 +293,7 @@ const CURRENCY_SYMBOLS = {
                         hasChanges = true;
                         return {
                             ...cartItem,
-                            price: freshPrice,
+                            price: isPriceDiff ? freshPrice : cartItem.price,
                             taxRate: freshTaxRate,
                             taxPercent: freshTaxPercent,
                             isTaxInclusive: freshIsInclusive,
@@ -436,6 +436,14 @@ const CURRENCY_SYMBOLS = {
             return;
         }
         setCart(cart.map(item => item.id === id ? { ...item, quantity: newQty } : item));
+    };
+
+    const updatePrice = (id, newPrice) => {
+        setCart(cart.map(item => item.id === id ? { 
+            ...item, 
+            price: parseFloat(newPrice) || 0,
+            isPriceOverridden: true 
+        } : item));
     };
 
     const updateDiscount = (id, type, value) => {
@@ -1060,8 +1068,14 @@ const CURRENCY_SYMBOLS = {
 
                                         {/* Price */}
                                         <div className="flex-[2] text-right">
-                                            <div className="font-bold text-slate-600">
-                                                {currencyCode === 'AED' ? `${(item.price * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(item.price * exchangeRate).toFixed(2)}`}
+                                            <div className="flex items-center justify-end gap-1">
+                                                <span className="text-[10px] text-slate-400">{currencySymbol}</span>
+                                                <input
+                                                    className="w-16 p-0.5 font-bold text-right text-slate-700 bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
+                                                    value={item.price}
+                                                    onChange={e => updatePrice(item.id, e.target.value)}
+                                                    onClick={e => e.target.select()}
+                                                />
                                             </div>
                                             {item.discountAmount > 0 && (
                                                 <div className="text-[10px] text-orange-500 line-through">
