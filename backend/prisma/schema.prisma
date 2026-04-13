@@ -43,6 +43,7 @@ model User {
   imageUrl               String?
   weeklyOff              String?  @default("Sunday")
   isActive               Boolean  @default(true)
+  referredLeads          Lead[]   @relation("ReferredBy")
   // Admin assignment: links staff to their assigned admin
   adminId        Int?
   admin          User?    @relation("StaffAdmin", fields: [adminId], references: [id])
@@ -91,6 +92,7 @@ model Branch {
   financialYears    FinancialYear[]
   stockIncluded   Boolean    @default(true)
   tickets         Ticket[]
+  leads           Lead[]
 }
 
 model CompanyProfile {
@@ -582,6 +584,21 @@ model Lead {
   assignedUser      User?     @relation(fields: [assignedTo], references: [id])
   notes             String?
   followUpDate      DateTime?
+  lastFollowUpDate  DateTime?
+  nextFollowUpDate  DateTime?
+  outcome           String?
+  reminderFlag      Boolean   @default(false)
+  
+  // Negotiation & Referral
+  negotiationAmount     Decimal?  @db.Decimal(15, 2)
+  referredById          Int?
+  referredBy            User?     @relation("ReferredBy", fields: [referredById], references: [id])
+  commissionPercentage  Decimal?  @db.Decimal(5, 2)
+  commissionAmount      Decimal?  @db.Decimal(15, 2)
+  commissionPaid        Boolean   @default(false)
+
+  branchId          Int?
+  branch            Branch?   @relation(fields: [branchId], references: [id])
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   
@@ -605,6 +622,8 @@ model FollowUp {
   date              DateTime
   notes             String?
   status            String   @default("PENDING") // PENDING, COMPLETED, OVERDUE
+  outcome           String?
+  completedAt       DateTime?
   nextFollowUpDate  DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt

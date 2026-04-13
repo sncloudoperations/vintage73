@@ -5476,6 +5476,7 @@ export namespace Prisma {
     sentMessages: number
     receivedMessages: number
     notifications: number
+    referredLeads: number
     managedStaff: number
     workLogs: number
     managedWorkLogs: number
@@ -5507,6 +5508,7 @@ export namespace Prisma {
     sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
     receivedMessages?: boolean | UserCountOutputTypeCountReceivedMessagesArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    referredLeads?: boolean | UserCountOutputTypeCountReferredLeadsArgs
     managedStaff?: boolean | UserCountOutputTypeCountManagedStaffArgs
     workLogs?: boolean | UserCountOutputTypeCountWorkLogsArgs
     managedWorkLogs?: boolean | UserCountOutputTypeCountManagedWorkLogsArgs
@@ -5679,6 +5681,14 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
+  export type UserCountOutputTypeCountReferredLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
+  }
+
+
+  /**
+   * UserCountOutputType without action
+   */
   export type UserCountOutputTypeCountManagedStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserWhereInput
   }
@@ -5782,6 +5792,7 @@ export namespace Prisma {
     workLogs: number
     financialYears: number
     tickets: number
+    leads: number
   }
 
   export type BranchCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5805,6 +5816,7 @@ export namespace Prisma {
     workLogs?: boolean | BranchCountOutputTypeCountWorkLogsArgs
     financialYears?: boolean | BranchCountOutputTypeCountFinancialYearsArgs
     tickets?: boolean | BranchCountOutputTypeCountTicketsArgs
+    leads?: boolean | BranchCountOutputTypeCountLeadsArgs
   }
 
   // Custom InputTypes
@@ -5977,6 +5989,14 @@ export namespace Prisma {
    */
   export type BranchCountOutputTypeCountTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TicketWhereInput
+  }
+
+
+  /**
+   * BranchCountOutputType without action
+   */
+  export type BranchCountOutputTypeCountLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
   }
 
 
@@ -7335,6 +7355,7 @@ export namespace Prisma {
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
     receivedMessages?: boolean | User$receivedMessagesArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    referredLeads?: boolean | User$referredLeadsArgs<ExtArgs>
     admin?: boolean | User$adminArgs<ExtArgs>
     managedStaff?: boolean | User$managedStaffArgs<ExtArgs>
     workLogs?: boolean | User$workLogsArgs<ExtArgs>
@@ -7387,6 +7408,7 @@ export namespace Prisma {
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
     receivedMessages?: boolean | User$receivedMessagesArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    referredLeads?: boolean | User$referredLeadsArgs<ExtArgs>
     admin?: boolean | User$adminArgs<ExtArgs>
     managedStaff?: boolean | User$managedStaffArgs<ExtArgs>
     workLogs?: boolean | User$workLogsArgs<ExtArgs>
@@ -7425,6 +7447,7 @@ export namespace Prisma {
       sentMessages: Prisma.$ChatMessagePayload<ExtArgs>[]
       receivedMessages: Prisma.$ChatMessagePayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      referredLeads: Prisma.$LeadPayload<ExtArgs>[]
       admin: Prisma.$UserPayload<ExtArgs> | null
       managedStaff: Prisma.$UserPayload<ExtArgs>[]
       workLogs: Prisma.$WorkLogPayload<ExtArgs>[]
@@ -7856,6 +7879,8 @@ export namespace Prisma {
     receivedMessages<T extends User$receivedMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, 'findMany'> | Null>;
 
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    referredLeads<T extends User$referredLeadsArgs<ExtArgs> = {}>(args?: Subset<T, User$referredLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     admin<T extends User$adminArgs<ExtArgs> = {}>(args?: Subset<T, User$adminArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
 
@@ -8643,6 +8668,27 @@ export namespace Prisma {
 
 
   /**
+   * User.referredLeads
+   */
+  export type User$referredLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
+  }
+
+
+  /**
    * User.admin
    */
   export type User$adminArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9139,6 +9185,7 @@ export namespace Prisma {
     workLogs?: boolean | Branch$workLogsArgs<ExtArgs>
     financialYears?: boolean | Branch$financialYearsArgs<ExtArgs>
     tickets?: boolean | Branch$ticketsArgs<ExtArgs>
+    leads?: boolean | Branch$leadsArgs<ExtArgs>
     _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["branch"]>
 
@@ -9177,6 +9224,7 @@ export namespace Prisma {
     workLogs?: boolean | Branch$workLogsArgs<ExtArgs>
     financialYears?: boolean | Branch$financialYearsArgs<ExtArgs>
     tickets?: boolean | Branch$ticketsArgs<ExtArgs>
+    leads?: boolean | Branch$leadsArgs<ExtArgs>
     _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -9205,6 +9253,7 @@ export namespace Prisma {
       workLogs: Prisma.$WorkLogPayload<ExtArgs>[]
       financialYears: Prisma.$FinancialYearPayload<ExtArgs>[]
       tickets: Prisma.$TicketPayload<ExtArgs>[]
+      leads: Prisma.$LeadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -9623,6 +9672,8 @@ export namespace Prisma {
     financialYears<T extends Branch$financialYearsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$financialYearsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialYearPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     tickets<T extends Branch$ticketsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$ticketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    leads<T extends Branch$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -10406,6 +10457,27 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TicketScalarFieldEnum | TicketScalarFieldEnum[]
+  }
+
+
+  /**
+   * Branch.leads
+   */
+  export type Branch$leadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
 
@@ -37971,6 +38043,11 @@ export namespace Prisma {
     quantity: number | null
     budget: Decimal | null
     assignedTo: number | null
+    negotiationAmount: Decimal | null
+    referredById: number | null
+    commissionPercentage: Decimal | null
+    commissionAmount: Decimal | null
+    branchId: number | null
     quotationId: number | null
     saleId: number | null
   }
@@ -37981,6 +38058,11 @@ export namespace Prisma {
     quantity: number | null
     budget: Decimal | null
     assignedTo: number | null
+    negotiationAmount: Decimal | null
+    referredById: number | null
+    commissionPercentage: Decimal | null
+    commissionAmount: Decimal | null
+    branchId: number | null
     quotationId: number | null
     saleId: number | null
   }
@@ -38000,6 +38082,16 @@ export namespace Prisma {
     assignedTo: number | null
     notes: string | null
     followUpDate: Date | null
+    lastFollowUpDate: Date | null
+    nextFollowUpDate: Date | null
+    outcome: string | null
+    reminderFlag: boolean | null
+    negotiationAmount: Decimal | null
+    referredById: number | null
+    commissionPercentage: Decimal | null
+    commissionAmount: Decimal | null
+    commissionPaid: boolean | null
+    branchId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     quotationId: number | null
@@ -38022,6 +38114,16 @@ export namespace Prisma {
     assignedTo: number | null
     notes: string | null
     followUpDate: Date | null
+    lastFollowUpDate: Date | null
+    nextFollowUpDate: Date | null
+    outcome: string | null
+    reminderFlag: boolean | null
+    negotiationAmount: Decimal | null
+    referredById: number | null
+    commissionPercentage: Decimal | null
+    commissionAmount: Decimal | null
+    commissionPaid: boolean | null
+    branchId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     quotationId: number | null
@@ -38044,6 +38146,16 @@ export namespace Prisma {
     assignedTo: number
     notes: number
     followUpDate: number
+    lastFollowUpDate: number
+    nextFollowUpDate: number
+    outcome: number
+    reminderFlag: number
+    negotiationAmount: number
+    referredById: number
+    commissionPercentage: number
+    commissionAmount: number
+    commissionPaid: number
+    branchId: number
     createdAt: number
     updatedAt: number
     quotationId: number
@@ -38059,6 +38171,11 @@ export namespace Prisma {
     quantity?: true
     budget?: true
     assignedTo?: true
+    negotiationAmount?: true
+    referredById?: true
+    commissionPercentage?: true
+    commissionAmount?: true
+    branchId?: true
     quotationId?: true
     saleId?: true
   }
@@ -38069,6 +38186,11 @@ export namespace Prisma {
     quantity?: true
     budget?: true
     assignedTo?: true
+    negotiationAmount?: true
+    referredById?: true
+    commissionPercentage?: true
+    commissionAmount?: true
+    branchId?: true
     quotationId?: true
     saleId?: true
   }
@@ -38088,6 +38210,16 @@ export namespace Prisma {
     assignedTo?: true
     notes?: true
     followUpDate?: true
+    lastFollowUpDate?: true
+    nextFollowUpDate?: true
+    outcome?: true
+    reminderFlag?: true
+    negotiationAmount?: true
+    referredById?: true
+    commissionPercentage?: true
+    commissionAmount?: true
+    commissionPaid?: true
+    branchId?: true
     createdAt?: true
     updatedAt?: true
     quotationId?: true
@@ -38110,6 +38242,16 @@ export namespace Prisma {
     assignedTo?: true
     notes?: true
     followUpDate?: true
+    lastFollowUpDate?: true
+    nextFollowUpDate?: true
+    outcome?: true
+    reminderFlag?: true
+    negotiationAmount?: true
+    referredById?: true
+    commissionPercentage?: true
+    commissionAmount?: true
+    commissionPaid?: true
+    branchId?: true
     createdAt?: true
     updatedAt?: true
     quotationId?: true
@@ -38132,6 +38274,16 @@ export namespace Prisma {
     assignedTo?: true
     notes?: true
     followUpDate?: true
+    lastFollowUpDate?: true
+    nextFollowUpDate?: true
+    outcome?: true
+    reminderFlag?: true
+    negotiationAmount?: true
+    referredById?: true
+    commissionPercentage?: true
+    commissionAmount?: true
+    commissionPaid?: true
+    branchId?: true
     createdAt?: true
     updatedAt?: true
     quotationId?: true
@@ -38241,6 +38393,16 @@ export namespace Prisma {
     assignedTo: number | null
     notes: string | null
     followUpDate: Date | null
+    lastFollowUpDate: Date | null
+    nextFollowUpDate: Date | null
+    outcome: string | null
+    reminderFlag: boolean
+    negotiationAmount: Decimal | null
+    referredById: number | null
+    commissionPercentage: Decimal | null
+    commissionAmount: Decimal | null
+    commissionPaid: boolean
+    branchId: number | null
     createdAt: Date
     updatedAt: Date
     quotationId: number | null
@@ -38282,6 +38444,16 @@ export namespace Prisma {
     assignedTo?: boolean
     notes?: boolean
     followUpDate?: boolean
+    lastFollowUpDate?: boolean
+    nextFollowUpDate?: boolean
+    outcome?: boolean
+    reminderFlag?: boolean
+    negotiationAmount?: boolean
+    referredById?: boolean
+    commissionPercentage?: boolean
+    commissionAmount?: boolean
+    commissionPaid?: boolean
+    branchId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quotationId?: boolean
@@ -38289,6 +38461,8 @@ export namespace Prisma {
     company?: boolean
     product?: boolean | Lead$productArgs<ExtArgs>
     assignedUser?: boolean | Lead$assignedUserArgs<ExtArgs>
+    referredBy?: boolean | Lead$referredByArgs<ExtArgs>
+    branch?: boolean | Lead$branchArgs<ExtArgs>
     activities?: boolean | Lead$activitiesArgs<ExtArgs>
     followUps?: boolean | Lead$followUpsArgs<ExtArgs>
     quotation?: boolean | Lead$quotationArgs<ExtArgs>
@@ -38313,6 +38487,16 @@ export namespace Prisma {
     assignedTo?: boolean
     notes?: boolean
     followUpDate?: boolean
+    lastFollowUpDate?: boolean
+    nextFollowUpDate?: boolean
+    outcome?: boolean
+    reminderFlag?: boolean
+    negotiationAmount?: boolean
+    referredById?: boolean
+    commissionPercentage?: boolean
+    commissionAmount?: boolean
+    commissionPaid?: boolean
+    branchId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quotationId?: boolean
@@ -38323,6 +38507,8 @@ export namespace Prisma {
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Lead$productArgs<ExtArgs>
     assignedUser?: boolean | Lead$assignedUserArgs<ExtArgs>
+    referredBy?: boolean | Lead$referredByArgs<ExtArgs>
+    branch?: boolean | Lead$branchArgs<ExtArgs>
     activities?: boolean | Lead$activitiesArgs<ExtArgs>
     followUps?: boolean | Lead$followUpsArgs<ExtArgs>
     quotation?: boolean | Lead$quotationArgs<ExtArgs>
@@ -38338,6 +38524,8 @@ export namespace Prisma {
     objects: {
       product: Prisma.$ProductPayload<ExtArgs> | null
       assignedUser: Prisma.$UserPayload<ExtArgs> | null
+      referredBy: Prisma.$UserPayload<ExtArgs> | null
+      branch: Prisma.$BranchPayload<ExtArgs> | null
       activities: Prisma.$LeadActivityPayload<ExtArgs>[]
       followUps: Prisma.$FollowUpPayload<ExtArgs>[]
       quotation: Prisma.$QuotationPayload<ExtArgs> | null
@@ -38360,6 +38548,16 @@ export namespace Prisma {
       assignedTo: number | null
       notes: string | null
       followUpDate: Date | null
+      lastFollowUpDate: Date | null
+      nextFollowUpDate: Date | null
+      outcome: string | null
+      reminderFlag: boolean
+      negotiationAmount: Prisma.Decimal | null
+      referredById: number | null
+      commissionPercentage: Prisma.Decimal | null
+      commissionAmount: Prisma.Decimal | null
+      commissionPaid: boolean
+      branchId: number | null
       createdAt: Date
       updatedAt: Date
       quotationId: number | null
@@ -38734,6 +38932,10 @@ export namespace Prisma {
 
     assignedUser<T extends Lead$assignedUserArgs<ExtArgs> = {}>(args?: Subset<T, Lead$assignedUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
 
+    referredBy<T extends Lead$referredByArgs<ExtArgs> = {}>(args?: Subset<T, Lead$referredByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
+
+    branch<T extends Lead$branchArgs<ExtArgs> = {}>(args?: Subset<T, Lead$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
+
     activities<T extends Lead$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, Lead$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadActivityPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     followUps<T extends Lead$followUpsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$followUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpPayload<ExtArgs>, T, 'findMany'> | Null>;
@@ -38788,6 +38990,16 @@ export namespace Prisma {
     readonly assignedTo: FieldRef<"Lead", 'Int'>
     readonly notes: FieldRef<"Lead", 'String'>
     readonly followUpDate: FieldRef<"Lead", 'DateTime'>
+    readonly lastFollowUpDate: FieldRef<"Lead", 'DateTime'>
+    readonly nextFollowUpDate: FieldRef<"Lead", 'DateTime'>
+    readonly outcome: FieldRef<"Lead", 'String'>
+    readonly reminderFlag: FieldRef<"Lead", 'Boolean'>
+    readonly negotiationAmount: FieldRef<"Lead", 'Decimal'>
+    readonly referredById: FieldRef<"Lead", 'Int'>
+    readonly commissionPercentage: FieldRef<"Lead", 'Decimal'>
+    readonly commissionAmount: FieldRef<"Lead", 'Decimal'>
+    readonly commissionPaid: FieldRef<"Lead", 'Boolean'>
+    readonly branchId: FieldRef<"Lead", 'Int'>
     readonly createdAt: FieldRef<"Lead", 'DateTime'>
     readonly updatedAt: FieldRef<"Lead", 'DateTime'>
     readonly quotationId: FieldRef<"Lead", 'Int'>
@@ -39137,6 +39349,38 @@ export namespace Prisma {
 
 
   /**
+   * Lead.referredBy
+   */
+  export type Lead$referredByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+
+  /**
+   * Lead.branch
+   */
+  export type Lead$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BranchInclude<ExtArgs> | null
+    where?: BranchWhereInput
+  }
+
+
+  /**
    * Lead.activities
    */
   export type Lead$activitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -39296,6 +39540,8 @@ export namespace Prisma {
     date: Date | null
     notes: string | null
     status: string | null
+    outcome: string | null
+    completedAt: Date | null
     nextFollowUpDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -39307,6 +39553,8 @@ export namespace Prisma {
     date: Date | null
     notes: string | null
     status: string | null
+    outcome: string | null
+    completedAt: Date | null
     nextFollowUpDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -39318,6 +39566,8 @@ export namespace Prisma {
     date: number
     notes: number
     status: number
+    outcome: number
+    completedAt: number
     nextFollowUpDate: number
     createdAt: number
     updatedAt: number
@@ -39341,6 +39591,8 @@ export namespace Prisma {
     date?: true
     notes?: true
     status?: true
+    outcome?: true
+    completedAt?: true
     nextFollowUpDate?: true
     createdAt?: true
     updatedAt?: true
@@ -39352,6 +39604,8 @@ export namespace Prisma {
     date?: true
     notes?: true
     status?: true
+    outcome?: true
+    completedAt?: true
     nextFollowUpDate?: true
     createdAt?: true
     updatedAt?: true
@@ -39363,6 +39617,8 @@ export namespace Prisma {
     date?: true
     notes?: true
     status?: true
+    outcome?: true
+    completedAt?: true
     nextFollowUpDate?: true
     createdAt?: true
     updatedAt?: true
@@ -39461,6 +39717,8 @@ export namespace Prisma {
     date: Date
     notes: string | null
     status: string
+    outcome: string | null
+    completedAt: Date | null
     nextFollowUpDate: Date | null
     createdAt: Date
     updatedAt: Date
@@ -39491,6 +39749,8 @@ export namespace Prisma {
     date?: boolean
     notes?: boolean
     status?: boolean
+    outcome?: boolean
+    completedAt?: boolean
     nextFollowUpDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -39503,6 +39763,8 @@ export namespace Prisma {
     date?: boolean
     notes?: boolean
     status?: boolean
+    outcome?: boolean
+    completedAt?: boolean
     nextFollowUpDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -39524,6 +39786,8 @@ export namespace Prisma {
       date: Date
       notes: string | null
       status: string
+      outcome: string | null
+      completedAt: Date | null
       nextFollowUpDate: Date | null
       createdAt: Date
       updatedAt: Date
@@ -39927,6 +40191,8 @@ export namespace Prisma {
     readonly date: FieldRef<"FollowUp", 'DateTime'>
     readonly notes: FieldRef<"FollowUp", 'String'>
     readonly status: FieldRef<"FollowUp", 'String'>
+    readonly outcome: FieldRef<"FollowUp", 'String'>
+    readonly completedAt: FieldRef<"FollowUp", 'DateTime'>
     readonly nextFollowUpDate: FieldRef<"FollowUp", 'DateTime'>
     readonly createdAt: FieldRef<"FollowUp", 'DateTime'>
     readonly updatedAt: FieldRef<"FollowUp", 'DateTime'>
@@ -70027,6 +70293,16 @@ export namespace Prisma {
     assignedTo: 'assignedTo',
     notes: 'notes',
     followUpDate: 'followUpDate',
+    lastFollowUpDate: 'lastFollowUpDate',
+    nextFollowUpDate: 'nextFollowUpDate',
+    outcome: 'outcome',
+    reminderFlag: 'reminderFlag',
+    negotiationAmount: 'negotiationAmount',
+    referredById: 'referredById',
+    commissionPercentage: 'commissionPercentage',
+    commissionAmount: 'commissionAmount',
+    commissionPaid: 'commissionPaid',
+    branchId: 'branchId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     quotationId: 'quotationId',
@@ -70043,6 +70319,8 @@ export namespace Prisma {
     date: 'date',
     notes: 'notes',
     status: 'status',
+    outcome: 'outcome',
+    completedAt: 'completedAt',
     nextFollowUpDate: 'nextFollowUpDate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -70677,6 +70955,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageListRelationFilter
     receivedMessages?: ChatMessageListRelationFilter
     notifications?: NotificationListRelationFilter
+    referredLeads?: LeadListRelationFilter
     admin?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     managedStaff?: UserListRelationFilter
     workLogs?: WorkLogListRelationFilter
@@ -70725,6 +71004,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageOrderByRelationAggregateInput
     receivedMessages?: ChatMessageOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
+    referredLeads?: LeadOrderByRelationAggregateInput
     admin?: UserOrderByWithRelationInput
     managedStaff?: UserOrderByRelationAggregateInput
     workLogs?: WorkLogOrderByRelationAggregateInput
@@ -70776,6 +71056,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageListRelationFilter
     receivedMessages?: ChatMessageListRelationFilter
     notifications?: NotificationListRelationFilter
+    referredLeads?: LeadListRelationFilter
     admin?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     managedStaff?: UserListRelationFilter
     workLogs?: WorkLogListRelationFilter
@@ -70866,6 +71147,7 @@ export namespace Prisma {
     workLogs?: WorkLogListRelationFilter
     financialYears?: FinancialYearListRelationFilter
     tickets?: TicketListRelationFilter
+    leads?: LeadListRelationFilter
   }
 
   export type BranchOrderByWithRelationInput = {
@@ -70900,6 +71182,7 @@ export namespace Prisma {
     workLogs?: WorkLogOrderByRelationAggregateInput
     financialYears?: FinancialYearOrderByRelationAggregateInput
     tickets?: TicketOrderByRelationAggregateInput
+    leads?: LeadOrderByRelationAggregateInput
   }
 
   export type BranchWhereUniqueInput = Prisma.AtLeast<{
@@ -70937,6 +71220,7 @@ export namespace Prisma {
     workLogs?: WorkLogListRelationFilter
     financialYears?: FinancialYearListRelationFilter
     tickets?: TicketListRelationFilter
+    leads?: LeadListRelationFilter
   }, "id">
 
   export type BranchOrderByWithAggregationInput = {
@@ -73510,6 +73794,16 @@ export namespace Prisma {
     assignedTo?: IntNullableFilter<"Lead"> | number | null
     notes?: StringNullableFilter<"Lead"> | string | null
     followUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    lastFollowUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    nextFollowUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    outcome?: StringNullableFilter<"Lead"> | string | null
+    reminderFlag?: BoolFilter<"Lead"> | boolean
+    negotiationAmount?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    referredById?: IntNullableFilter<"Lead"> | number | null
+    commissionPercentage?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFilter<"Lead"> | boolean
+    branchId?: IntNullableFilter<"Lead"> | number | null
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     quotationId?: IntNullableFilter<"Lead"> | number | null
@@ -73517,6 +73811,8 @@ export namespace Prisma {
     company?: StringNullableFilter<"Lead"> | string | null
     product?: XOR<ProductNullableRelationFilter, ProductWhereInput> | null
     assignedUser?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    referredBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
     activities?: LeadActivityListRelationFilter
     followUps?: FollowUpListRelationFilter
     quotation?: XOR<QuotationNullableRelationFilter, QuotationWhereInput> | null
@@ -73540,6 +73836,16 @@ export namespace Prisma {
     assignedTo?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     followUpDate?: SortOrderInput | SortOrder
+    lastFollowUpDate?: SortOrderInput | SortOrder
+    nextFollowUpDate?: SortOrderInput | SortOrder
+    outcome?: SortOrderInput | SortOrder
+    reminderFlag?: SortOrder
+    negotiationAmount?: SortOrderInput | SortOrder
+    referredById?: SortOrderInput | SortOrder
+    commissionPercentage?: SortOrderInput | SortOrder
+    commissionAmount?: SortOrderInput | SortOrder
+    commissionPaid?: SortOrder
+    branchId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quotationId?: SortOrderInput | SortOrder
@@ -73547,6 +73853,8 @@ export namespace Prisma {
     company?: SortOrderInput | SortOrder
     product?: ProductOrderByWithRelationInput
     assignedUser?: UserOrderByWithRelationInput
+    referredBy?: UserOrderByWithRelationInput
+    branch?: BranchOrderByWithRelationInput
     activities?: LeadActivityOrderByRelationAggregateInput
     followUps?: FollowUpOrderByRelationAggregateInput
     quotation?: QuotationOrderByWithRelationInput
@@ -73575,11 +73883,23 @@ export namespace Prisma {
     assignedTo?: IntNullableFilter<"Lead"> | number | null
     notes?: StringNullableFilter<"Lead"> | string | null
     followUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    lastFollowUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    nextFollowUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    outcome?: StringNullableFilter<"Lead"> | string | null
+    reminderFlag?: BoolFilter<"Lead"> | boolean
+    negotiationAmount?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    referredById?: IntNullableFilter<"Lead"> | number | null
+    commissionPercentage?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFilter<"Lead"> | boolean
+    branchId?: IntNullableFilter<"Lead"> | number | null
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     company?: StringNullableFilter<"Lead"> | string | null
     product?: XOR<ProductNullableRelationFilter, ProductWhereInput> | null
     assignedUser?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    referredBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
     activities?: LeadActivityListRelationFilter
     followUps?: FollowUpListRelationFilter
     quotation?: XOR<QuotationNullableRelationFilter, QuotationWhereInput> | null
@@ -73603,6 +73923,16 @@ export namespace Prisma {
     assignedTo?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     followUpDate?: SortOrderInput | SortOrder
+    lastFollowUpDate?: SortOrderInput | SortOrder
+    nextFollowUpDate?: SortOrderInput | SortOrder
+    outcome?: SortOrderInput | SortOrder
+    reminderFlag?: SortOrder
+    negotiationAmount?: SortOrderInput | SortOrder
+    referredById?: SortOrderInput | SortOrder
+    commissionPercentage?: SortOrderInput | SortOrder
+    commissionAmount?: SortOrderInput | SortOrder
+    commissionPaid?: SortOrder
+    branchId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quotationId?: SortOrderInput | SortOrder
@@ -73633,6 +73963,16 @@ export namespace Prisma {
     assignedTo?: IntNullableWithAggregatesFilter<"Lead"> | number | null
     notes?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     followUpDate?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+    lastFollowUpDate?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+    nextFollowUpDate?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+    outcome?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    reminderFlag?: BoolWithAggregatesFilter<"Lead"> | boolean
+    negotiationAmount?: DecimalNullableWithAggregatesFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    referredById?: IntNullableWithAggregatesFilter<"Lead"> | number | null
+    commissionPercentage?: DecimalNullableWithAggregatesFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: DecimalNullableWithAggregatesFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolWithAggregatesFilter<"Lead"> | boolean
+    branchId?: IntNullableWithAggregatesFilter<"Lead"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
     quotationId?: IntNullableWithAggregatesFilter<"Lead"> | number | null
@@ -73649,6 +73989,8 @@ export namespace Prisma {
     date?: DateTimeFilter<"FollowUp"> | Date | string
     notes?: StringNullableFilter<"FollowUp"> | string | null
     status?: StringFilter<"FollowUp"> | string
+    outcome?: StringNullableFilter<"FollowUp"> | string | null
+    completedAt?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     nextFollowUpDate?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     createdAt?: DateTimeFilter<"FollowUp"> | Date | string
     updatedAt?: DateTimeFilter<"FollowUp"> | Date | string
@@ -73661,6 +74003,8 @@ export namespace Prisma {
     date?: SortOrder
     notes?: SortOrderInput | SortOrder
     status?: SortOrder
+    outcome?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
     nextFollowUpDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -73676,6 +74020,8 @@ export namespace Prisma {
     date?: DateTimeFilter<"FollowUp"> | Date | string
     notes?: StringNullableFilter<"FollowUp"> | string | null
     status?: StringFilter<"FollowUp"> | string
+    outcome?: StringNullableFilter<"FollowUp"> | string | null
+    completedAt?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     nextFollowUpDate?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     createdAt?: DateTimeFilter<"FollowUp"> | Date | string
     updatedAt?: DateTimeFilter<"FollowUp"> | Date | string
@@ -73688,6 +74034,8 @@ export namespace Prisma {
     date?: SortOrder
     notes?: SortOrderInput | SortOrder
     status?: SortOrder
+    outcome?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
     nextFollowUpDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -73707,6 +74055,8 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"FollowUp"> | Date | string
     notes?: StringNullableWithAggregatesFilter<"FollowUp"> | string | null
     status?: StringWithAggregatesFilter<"FollowUp"> | string
+    outcome?: StringNullableWithAggregatesFilter<"FollowUp"> | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"FollowUp"> | Date | string | null
     nextFollowUpDate?: DateTimeNullableWithAggregatesFilter<"FollowUp"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"FollowUp"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"FollowUp"> | Date | string
@@ -76163,6 +76513,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -76210,6 +76561,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -76254,6 +76606,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -76301,6 +76654,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -76392,6 +76746,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateInput = {
@@ -76426,6 +76781,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUpdateInput = {
@@ -76459,6 +76815,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateInput = {
@@ -76493,6 +76850,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchCreateManyInput = {
@@ -79251,11 +79609,21 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     product?: ProductCreateNestedOneWithoutLeadsInput
     assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     activities?: LeadActivityCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     quotation?: QuotationCreateNestedOneWithoutLeadInput
@@ -79279,6 +79647,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -79302,11 +79680,21 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneWithoutLeadsNestedInput
     assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     activities?: LeadActivityUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
@@ -79330,6 +79718,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -79356,6 +79754,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -79375,6 +79783,14 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79395,6 +79811,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -79406,6 +79832,8 @@ export namespace Prisma {
     date: Date | string
     notes?: string | null
     status?: string
+    outcome?: string | null
+    completedAt?: Date | string | null
     nextFollowUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79418,6 +79846,8 @@ export namespace Prisma {
     date: Date | string
     notes?: string | null
     status?: string
+    outcome?: string | null
+    completedAt?: Date | string | null
     nextFollowUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79427,6 +79857,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79439,6 +79871,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79450,6 +79884,8 @@ export namespace Prisma {
     date: Date | string
     notes?: string | null
     status?: string
+    outcome?: string | null
+    completedAt?: Date | string | null
     nextFollowUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -79459,6 +79895,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79470,6 +79908,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -84540,6 +84980,16 @@ export namespace Prisma {
     assignedTo?: SortOrder
     notes?: SortOrder
     followUpDate?: SortOrder
+    lastFollowUpDate?: SortOrder
+    nextFollowUpDate?: SortOrder
+    outcome?: SortOrder
+    reminderFlag?: SortOrder
+    negotiationAmount?: SortOrder
+    referredById?: SortOrder
+    commissionPercentage?: SortOrder
+    commissionAmount?: SortOrder
+    commissionPaid?: SortOrder
+    branchId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quotationId?: SortOrder
@@ -84553,6 +85003,11 @@ export namespace Prisma {
     quantity?: SortOrder
     budget?: SortOrder
     assignedTo?: SortOrder
+    negotiationAmount?: SortOrder
+    referredById?: SortOrder
+    commissionPercentage?: SortOrder
+    commissionAmount?: SortOrder
+    branchId?: SortOrder
     quotationId?: SortOrder
     saleId?: SortOrder
   }
@@ -84572,6 +85027,16 @@ export namespace Prisma {
     assignedTo?: SortOrder
     notes?: SortOrder
     followUpDate?: SortOrder
+    lastFollowUpDate?: SortOrder
+    nextFollowUpDate?: SortOrder
+    outcome?: SortOrder
+    reminderFlag?: SortOrder
+    negotiationAmount?: SortOrder
+    referredById?: SortOrder
+    commissionPercentage?: SortOrder
+    commissionAmount?: SortOrder
+    commissionPaid?: SortOrder
+    branchId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quotationId?: SortOrder
@@ -84594,6 +85059,16 @@ export namespace Prisma {
     assignedTo?: SortOrder
     notes?: SortOrder
     followUpDate?: SortOrder
+    lastFollowUpDate?: SortOrder
+    nextFollowUpDate?: SortOrder
+    outcome?: SortOrder
+    reminderFlag?: SortOrder
+    negotiationAmount?: SortOrder
+    referredById?: SortOrder
+    commissionPercentage?: SortOrder
+    commissionAmount?: SortOrder
+    commissionPaid?: SortOrder
+    branchId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quotationId?: SortOrder
@@ -84607,6 +85082,11 @@ export namespace Prisma {
     quantity?: SortOrder
     budget?: SortOrder
     assignedTo?: SortOrder
+    negotiationAmount?: SortOrder
+    referredById?: SortOrder
+    commissionPercentage?: SortOrder
+    commissionAmount?: SortOrder
+    branchId?: SortOrder
     quotationId?: SortOrder
     saleId?: SortOrder
   }
@@ -84622,6 +85102,8 @@ export namespace Prisma {
     date?: SortOrder
     notes?: SortOrder
     status?: SortOrder
+    outcome?: SortOrder
+    completedAt?: SortOrder
     nextFollowUpDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -84638,6 +85120,8 @@ export namespace Prisma {
     date?: SortOrder
     notes?: SortOrder
     status?: SortOrder
+    outcome?: SortOrder
+    completedAt?: SortOrder
     nextFollowUpDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -84649,6 +85133,8 @@ export namespace Prisma {
     date?: SortOrder
     notes?: SortOrder
     status?: SortOrder
+    outcome?: SortOrder
+    completedAt?: SortOrder
     nextFollowUpDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -86367,6 +86853,13 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
+  export type LeadCreateNestedManyWithoutReferredByInput = {
+    create?: XOR<LeadCreateWithoutReferredByInput, LeadUncheckedCreateWithoutReferredByInput> | LeadCreateWithoutReferredByInput[] | LeadUncheckedCreateWithoutReferredByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutReferredByInput | LeadCreateOrConnectWithoutReferredByInput[]
+    createMany?: LeadCreateManyReferredByInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type UserCreateNestedOneWithoutManagedStaffInput = {
     create?: XOR<UserCreateWithoutManagedStaffInput, UserUncheckedCreateWithoutManagedStaffInput>
     connectOrCreate?: UserCreateOrConnectWithoutManagedStaffInput
@@ -86572,6 +87065,13 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
     createMany?: NotificationCreateManyUserInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type LeadUncheckedCreateNestedManyWithoutReferredByInput = {
+    create?: XOR<LeadCreateWithoutReferredByInput, LeadUncheckedCreateWithoutReferredByInput> | LeadCreateWithoutReferredByInput[] | LeadUncheckedCreateWithoutReferredByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutReferredByInput | LeadCreateOrConnectWithoutReferredByInput[]
+    createMany?: LeadCreateManyReferredByInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type UserUncheckedCreateNestedManyWithoutAdminInput = {
@@ -86937,6 +87437,20 @@ export namespace Prisma {
     update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type LeadUpdateManyWithoutReferredByNestedInput = {
+    create?: XOR<LeadCreateWithoutReferredByInput, LeadUncheckedCreateWithoutReferredByInput> | LeadCreateWithoutReferredByInput[] | LeadUncheckedCreateWithoutReferredByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutReferredByInput | LeadCreateOrConnectWithoutReferredByInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutReferredByInput | LeadUpsertWithWhereUniqueWithoutReferredByInput[]
+    createMany?: LeadCreateManyReferredByInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutReferredByInput | LeadUpdateWithWhereUniqueWithoutReferredByInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutReferredByInput | LeadUpdateManyWithWhereWithoutReferredByInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type UserUpdateOneWithoutManagedStaffNestedInput = {
@@ -87366,6 +87880,20 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type LeadUncheckedUpdateManyWithoutReferredByNestedInput = {
+    create?: XOR<LeadCreateWithoutReferredByInput, LeadUncheckedCreateWithoutReferredByInput> | LeadCreateWithoutReferredByInput[] | LeadUncheckedCreateWithoutReferredByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutReferredByInput | LeadCreateOrConnectWithoutReferredByInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutReferredByInput | LeadUpsertWithWhereUniqueWithoutReferredByInput[]
+    createMany?: LeadCreateManyReferredByInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutReferredByInput | LeadUpdateWithWhereUniqueWithoutReferredByInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutReferredByInput | LeadUpdateManyWithWhereWithoutReferredByInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutAdminNestedInput = {
     create?: XOR<UserCreateWithoutAdminInput, UserUncheckedCreateWithoutAdminInput> | UserCreateWithoutAdminInput[] | UserUncheckedCreateWithoutAdminInput[]
     connectOrCreate?: UserCreateOrConnectWithoutAdminInput | UserCreateOrConnectWithoutAdminInput[]
@@ -87652,6 +88180,13 @@ export namespace Prisma {
     connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
   }
 
+  export type LeadCreateNestedManyWithoutBranchInput = {
+    create?: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput> | LeadCreateWithoutBranchInput[] | LeadUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutBranchInput | LeadCreateOrConnectWithoutBranchInput[]
+    createMany?: LeadCreateManyBranchInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type CustomerUncheckedCreateNestedManyWithoutBranchInput = {
     create?: XOR<CustomerCreateWithoutBranchInput, CustomerUncheckedCreateWithoutBranchInput> | CustomerCreateWithoutBranchInput[] | CustomerUncheckedCreateWithoutBranchInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutBranchInput | CustomerCreateOrConnectWithoutBranchInput[]
@@ -87796,6 +88331,13 @@ export namespace Prisma {
     connectOrCreate?: TicketCreateOrConnectWithoutBranchInput | TicketCreateOrConnectWithoutBranchInput[]
     createMany?: TicketCreateManyBranchInputEnvelope
     connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+  }
+
+  export type LeadUncheckedCreateNestedManyWithoutBranchInput = {
+    create?: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput> | LeadCreateWithoutBranchInput[] | LeadUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutBranchInput | LeadCreateOrConnectWithoutBranchInput[]
+    createMany?: LeadCreateManyBranchInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type CustomerUpdateManyWithoutBranchNestedInput = {
@@ -88088,6 +88630,20 @@ export namespace Prisma {
     deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
   }
 
+  export type LeadUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput> | LeadCreateWithoutBranchInput[] | LeadUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutBranchInput | LeadCreateOrConnectWithoutBranchInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutBranchInput | LeadUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: LeadCreateManyBranchInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutBranchInput | LeadUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutBranchInput | LeadUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
   export type CustomerUncheckedUpdateManyWithoutBranchNestedInput = {
     create?: XOR<CustomerCreateWithoutBranchInput, CustomerUncheckedCreateWithoutBranchInput> | CustomerCreateWithoutBranchInput[] | CustomerUncheckedCreateWithoutBranchInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutBranchInput | CustomerCreateOrConnectWithoutBranchInput[]
@@ -88376,6 +88932,20 @@ export namespace Prisma {
     update?: TicketUpdateWithWhereUniqueWithoutBranchInput | TicketUpdateWithWhereUniqueWithoutBranchInput[]
     updateMany?: TicketUpdateManyWithWhereWithoutBranchInput | TicketUpdateManyWithWhereWithoutBranchInput[]
     deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput> | LeadCreateWithoutBranchInput[] | LeadUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutBranchInput | LeadCreateOrConnectWithoutBranchInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutBranchInput | LeadUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: LeadCreateManyBranchInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutBranchInput | LeadUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutBranchInput | LeadUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type BankCreateNestedOneWithoutCompanyProfilesInput = {
@@ -90264,6 +90834,18 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutReferredLeadsInput = {
+    create?: XOR<UserCreateWithoutReferredLeadsInput, UserUncheckedCreateWithoutReferredLeadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReferredLeadsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BranchCreateNestedOneWithoutLeadsInput = {
+    create?: XOR<BranchCreateWithoutLeadsInput, BranchUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutLeadsInput
+    connect?: BranchWhereUniqueInput
+  }
+
   export type LeadActivityCreateNestedManyWithoutLeadInput = {
     create?: XOR<LeadActivityCreateWithoutLeadInput, LeadActivityUncheckedCreateWithoutLeadInput> | LeadActivityCreateWithoutLeadInput[] | LeadActivityUncheckedCreateWithoutLeadInput[]
     connectOrCreate?: LeadActivityCreateOrConnectWithoutLeadInput | LeadActivityCreateOrConnectWithoutLeadInput[]
@@ -90350,6 +90932,26 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLeadsInput, UserUpdateWithoutLeadsInput>, UserUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type UserUpdateOneWithoutReferredLeadsNestedInput = {
+    create?: XOR<UserCreateWithoutReferredLeadsInput, UserUncheckedCreateWithoutReferredLeadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReferredLeadsInput
+    upsert?: UserUpsertWithoutReferredLeadsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReferredLeadsInput, UserUpdateWithoutReferredLeadsInput>, UserUncheckedUpdateWithoutReferredLeadsInput>
+  }
+
+  export type BranchUpdateOneWithoutLeadsNestedInput = {
+    create?: XOR<BranchCreateWithoutLeadsInput, BranchUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutLeadsInput
+    upsert?: BranchUpsertWithoutLeadsInput
+    disconnect?: BranchWhereInput | boolean
+    delete?: BranchWhereInput | boolean
+    connect?: BranchWhereUniqueInput
+    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutLeadsInput, BranchUpdateWithoutLeadsInput>, BranchUncheckedUpdateWithoutLeadsInput>
   }
 
   export type LeadActivityUpdateManyWithoutLeadNestedInput = {
@@ -92431,6 +93033,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutUsersInput = {
@@ -92464,6 +93067,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutUsersInput = {
@@ -92803,10 +93407,20 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     product?: ProductCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     activities?: LeadActivityCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     quotation?: QuotationCreateNestedOneWithoutLeadInput
@@ -92829,6 +93443,16 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -93241,6 +93865,85 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LeadCreateWithoutReferredByInput = {
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    source?: string | null
+    quantity?: number | null
+    budget?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    priority?: string
+    notes?: string | null
+    followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company?: string | null
+    product?: ProductCreateNestedOneWithoutLeadsInput
+    assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
+    activities?: LeadActivityCreateNestedManyWithoutLeadInput
+    followUps?: FollowUpCreateNestedManyWithoutLeadInput
+    quotation?: QuotationCreateNestedOneWithoutLeadInput
+    sale?: SaleCreateNestedOneWithoutLeadInput
+    deals?: DealCreateNestedManyWithoutLeadInput
+    tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutReferredByInput = {
+    id?: number
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    source?: string | null
+    productId?: number | null
+    quantity?: number | null
+    budget?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    priority?: string
+    assignedTo?: number | null
+    notes?: string | null
+    followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quotationId?: number | null
+    saleId?: number | null
+    company?: string | null
+    activities?: LeadActivityUncheckedCreateNestedManyWithoutLeadInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
+    deals?: DealUncheckedCreateNestedManyWithoutLeadInput
+    tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutReferredByInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutReferredByInput, LeadUncheckedCreateWithoutReferredByInput>
+  }
+
+  export type LeadCreateManyReferredByInputEnvelope = {
+    data: LeadCreateManyReferredByInput | LeadCreateManyReferredByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserCreateWithoutManagedStaffInput = {
     username: string
     password: string
@@ -93273,6 +93976,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogCreateNestedManyWithoutAdminInput
@@ -93319,6 +94023,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
     assignedTickets?: TicketUncheckedCreateNestedManyWithoutAssignedToInput
@@ -93367,6 +94072,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogCreateNestedManyWithoutAdminInput
@@ -93412,6 +94118,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -93863,6 +94570,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutUsersInput = {
@@ -93896,6 +94604,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type StockTransferUpsertWithWhereUniqueWithoutReceivedByInput = {
@@ -94187,6 +94896,16 @@ export namespace Prisma {
     assignedTo?: IntNullableFilter<"Lead"> | number | null
     notes?: StringNullableFilter<"Lead"> | string | null
     followUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    lastFollowUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    nextFollowUpDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    outcome?: StringNullableFilter<"Lead"> | string | null
+    reminderFlag?: BoolFilter<"Lead"> | boolean
+    negotiationAmount?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    referredById?: IntNullableFilter<"Lead"> | number | null
+    commissionPercentage?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: DecimalNullableFilter<"Lead"> | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFilter<"Lead"> | boolean
+    branchId?: IntNullableFilter<"Lead"> | number | null
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     quotationId?: IntNullableFilter<"Lead"> | number | null
@@ -94503,6 +95222,22 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
+  export type LeadUpsertWithWhereUniqueWithoutReferredByInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutReferredByInput, LeadUncheckedUpdateWithoutReferredByInput>
+    create: XOR<LeadCreateWithoutReferredByInput, LeadUncheckedCreateWithoutReferredByInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutReferredByInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutReferredByInput, LeadUncheckedUpdateWithoutReferredByInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutReferredByInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutReferredByInput>
+  }
+
   export type UserUpsertWithoutManagedStaffInput = {
     update: XOR<UserUpdateWithoutManagedStaffInput, UserUncheckedUpdateWithoutManagedStaffInput>
     create: XOR<UserCreateWithoutManagedStaffInput, UserUncheckedCreateWithoutManagedStaffInput>
@@ -94546,6 +95281,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUpdateManyWithoutAdminNestedInput
@@ -94592,6 +95328,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
     assignedTickets?: TicketUncheckedUpdateManyWithoutAssignedToNestedInput
@@ -95187,6 +95924,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -95233,6 +95971,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -95855,6 +96594,85 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LeadCreateWithoutBranchInput = {
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    source?: string | null
+    quantity?: number | null
+    budget?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    priority?: string
+    notes?: string | null
+    followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company?: string | null
+    product?: ProductCreateNestedOneWithoutLeadsInput
+    assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    activities?: LeadActivityCreateNestedManyWithoutLeadInput
+    followUps?: FollowUpCreateNestedManyWithoutLeadInput
+    quotation?: QuotationCreateNestedOneWithoutLeadInput
+    sale?: SaleCreateNestedOneWithoutLeadInput
+    deals?: DealCreateNestedManyWithoutLeadInput
+    tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutBranchInput = {
+    id?: number
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    source?: string | null
+    productId?: number | null
+    quantity?: number | null
+    budget?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    priority?: string
+    assignedTo?: number | null
+    notes?: string | null
+    followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quotationId?: number | null
+    saleId?: number | null
+    company?: string | null
+    activities?: LeadActivityUncheckedCreateNestedManyWithoutLeadInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
+    deals?: DealUncheckedCreateNestedManyWithoutLeadInput
+    tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutBranchInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput>
+  }
+
+  export type LeadCreateManyBranchInputEnvelope = {
+    data: LeadCreateManyBranchInput | LeadCreateManyBranchInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CustomerUpsertWithWhereUniqueWithoutBranchInput = {
     where: CustomerWhereUniqueInput
     update: XOR<CustomerUpdateWithoutBranchInput, CustomerUncheckedUpdateWithoutBranchInput>
@@ -96392,6 +97210,22 @@ export namespace Prisma {
     data: XOR<TicketUpdateManyMutationInput, TicketUncheckedUpdateManyWithoutBranchInput>
   }
 
+  export type LeadUpsertWithWhereUniqueWithoutBranchInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutBranchInput, LeadUncheckedUpdateWithoutBranchInput>
+    create: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutBranchInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutBranchInput, LeadUncheckedUpdateWithoutBranchInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutBranchInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutBranchInput>
+  }
+
   export type BankCreateWithoutCompanyProfilesInput = {
     name: string
     accountNumber?: string | null
@@ -96484,6 +97318,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutCustomersInput = {
@@ -96517,6 +97352,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutCustomersInput = {
@@ -96873,6 +97709,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutCustomersInput = {
@@ -96906,6 +97743,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type PaymentUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -97415,10 +98253,20 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     activities?: LeadActivityCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     quotation?: QuotationCreateNestedOneWithoutLeadInput
@@ -97441,6 +98289,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -97696,6 +98554,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutProductStocksInput = {
@@ -97729,6 +98588,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutProductStocksInput = {
@@ -97843,6 +98703,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutProductStocksInput = {
@@ -97876,6 +98737,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type ProductUpsertWithoutStocksInput = {
@@ -97980,6 +98842,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutPurchasesInput = {
@@ -98013,6 +98876,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutPurchasesInput = {
@@ -98168,6 +99032,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutPurchasesInput = {
@@ -98201,6 +99066,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type SupplierUpsertWithoutPurchasesInput = {
@@ -98638,6 +99504,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutSalesInput = {
@@ -98671,6 +99538,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutSalesInput = {
@@ -98763,6 +99631,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -98809,6 +99678,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -98971,11 +99841,21 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     product?: ProductCreateNestedOneWithoutLeadsInput
     assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     activities?: LeadActivityCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     quotation?: QuotationCreateNestedOneWithoutLeadInput
@@ -98998,6 +99878,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -99106,6 +99996,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutSalesInput = {
@@ -99139,6 +100030,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type CustomerUpsertWithoutSalesInput = {
@@ -99243,6 +100135,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -99289,6 +100182,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -99452,11 +100346,21 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneWithoutLeadsNestedInput
     assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     activities?: LeadActivityUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
@@ -99479,6 +100383,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -99847,6 +100761,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutExpensesInput = {
@@ -99880,6 +100795,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutExpensesInput = {
@@ -99928,6 +100844,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutExpensesInput = {
@@ -99961,6 +100878,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchCreateWithoutPaymentsInput = {
@@ -99993,6 +100911,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutPaymentsInput = {
@@ -100026,6 +100945,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutPaymentsInput = {
@@ -100302,6 +101222,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutPaymentsInput = {
@@ -100335,6 +101256,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type CustomerUpsertWithoutPaymentsInput = {
@@ -100673,6 +101595,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutQuotationsInput = {
@@ -100706,6 +101629,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutQuotationsInput = {
@@ -100941,11 +101865,21 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     product?: ProductCreateNestedOneWithoutLeadsInput
     assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     activities?: LeadActivityCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     sale?: SaleCreateNestedOneWithoutLeadInput
@@ -100968,6 +101902,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     saleId?: number | null
@@ -101084,6 +102028,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutQuotationsInput = {
@@ -101117,6 +102062,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type QuotationItemUpsertWithWhereUniqueWithoutQuotationInput = {
@@ -101328,11 +102274,21 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneWithoutLeadsNestedInput
     assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     activities?: LeadActivityUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     sale?: SaleUpdateOneWithoutLeadNestedInput
@@ -101355,6 +102311,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     saleId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -101640,6 +102606,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -101686,6 +102653,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -101733,6 +102701,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutOutgoingTransfersInput = {
@@ -101766,6 +102735,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutOutgoingTransfersInput = {
@@ -101803,6 +102773,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutIncomingTransfersInput = {
@@ -101836,6 +102807,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutIncomingTransfersInput = {
@@ -101914,6 +102886,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -101960,6 +102933,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -102013,6 +102987,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutOutgoingTransfersInput = {
@@ -102046,6 +103021,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUpsertWithoutIncomingTransfersInput = {
@@ -102089,6 +103065,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutIncomingTransfersInput = {
@@ -102122,6 +103099,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type StockTransferItemUpsertWithWhereUniqueWithoutTransferInput = {
@@ -102374,6 +103352,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutBarcodeSettingInput = {
@@ -102407,6 +103386,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutBarcodeSettingInput = {
@@ -102455,6 +103435,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutBarcodeSettingInput = {
@@ -102488,6 +103469,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type UserCreateWithoutEmployeeProfileInput = {
@@ -102521,6 +103503,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -102567,6 +103550,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -102662,6 +103646,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -102708,6 +103693,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -102938,6 +103924,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -102984,6 +103971,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -103031,6 +104019,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutAttendanceInput = {
@@ -103064,6 +104053,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutAttendanceInput = {
@@ -103113,6 +104103,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -103159,6 +104150,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -103212,6 +104204,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutAttendanceInput = {
@@ -103245,6 +104238,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type UserCreateWithoutLeaveRequestsInput = {
@@ -103278,6 +104272,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -103324,6 +104319,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -103371,6 +104367,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutLeaveRequestsInput = {
@@ -103404,6 +104401,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutLeaveRequestsInput = {
@@ -103442,6 +104440,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -103488,6 +104487,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -103573,6 +104573,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -103619,6 +104620,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -103672,6 +104674,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutLeaveRequestsInput = {
@@ -103705,6 +104708,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type UserUpsertWithoutApprovedLeavesInput = {
@@ -103749,6 +104753,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -103795,6 +104800,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -103923,6 +104929,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -103969,6 +104976,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -104016,6 +105024,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutPayrollsInput = {
@@ -104049,6 +105058,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutPayrollsInput = {
@@ -104175,6 +105185,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -104221,6 +105232,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -104274,6 +105286,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutPayrollsInput = {
@@ -104307,6 +105320,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type SalaryAdvanceUpsertWithWhereUniqueWithoutPayrollInput = {
@@ -104464,6 +105478,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -104510,6 +105525,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -104525,6 +105541,174 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutLeadsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutLeadsInput, UserUncheckedCreateWithoutLeadsInput>
+  }
+
+  export type UserCreateWithoutReferredLeadsInput = {
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: string | null
+    incentivePercentage?: Decimal | DecimalJsLike | number | string
+    imageUrl?: string | null
+    weeklyOff?: string | null
+    isActive?: boolean
+    branch?: BranchCreateNestedOneWithoutUsersInput
+    receivedTransfers?: StockTransferCreateNestedManyWithoutReceivedByInput
+    sales?: SaleCreateNestedManyWithoutSalesmanInput
+    employeeProfile?: EmployeeProfileCreateNestedOneWithoutUserInput
+    attendance?: AttendanceCreateNestedManyWithoutUserInput
+    leaveRequests?: LeaveRequestCreateNestedManyWithoutUserInput
+    approvedLeaves?: LeaveRequestCreateNestedManyWithoutApprovedByInput
+    payrolls?: PayrollCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutAssignedUserInput
+    deals?: DealCreateNestedManyWithoutAssignedUserInput
+    terminals?: TerminalCreateNestedManyWithoutUsersInput
+    crmTasks?: CRMTaskCreateNestedManyWithoutAssignedUserInput
+    missPunchRequests?: MissPunchRequestCreateNestedManyWithoutUserInput
+    reviewedMissPunches?: MissPunchRequestCreateNestedManyWithoutReviewerInput
+    salaryAdvances?: SalaryAdvanceCreateNestedManyWithoutUserInput
+    approvedAdvances?: SalaryAdvanceCreateNestedManyWithoutApproverInput
+    vouchers?: VoucherCreateNestedManyWithoutCreatorInput
+    sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
+    receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    admin?: UserCreateNestedOneWithoutManagedStaffInput
+    managedStaff?: UserCreateNestedManyWithoutAdminInput
+    workLogs?: WorkLogCreateNestedManyWithoutUserInput
+    managedWorkLogs?: WorkLogCreateNestedManyWithoutAdminInput
+    assignedTickets?: TicketCreateNestedManyWithoutAssignedToInput
+    closureRequests?: TicketClosureRequestCreateNestedManyWithoutRequestedByInput
+    ticketHistoryActions?: TicketHistoryCreateNestedManyWithoutDoneByInput
+    ticketMessages?: TicketMessageCreateNestedManyWithoutSenderInput
+    ownedTickets?: TicketCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketCreateNestedManyWithoutPreviousAssigneeInput
+  }
+
+  export type UserUncheckedCreateWithoutReferredLeadsInput = {
+    id?: number
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: string | null
+    branchId?: number | null
+    incentivePercentage?: Decimal | DecimalJsLike | number | string
+    imageUrl?: string | null
+    weeklyOff?: string | null
+    isActive?: boolean
+    adminId?: number | null
+    receivedTransfers?: StockTransferUncheckedCreateNestedManyWithoutReceivedByInput
+    sales?: SaleUncheckedCreateNestedManyWithoutSalesmanInput
+    employeeProfile?: EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutUserInput
+    leaveRequests?: LeaveRequestUncheckedCreateNestedManyWithoutUserInput
+    approvedLeaves?: LeaveRequestUncheckedCreateNestedManyWithoutApprovedByInput
+    payrolls?: PayrollUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutAssignedUserInput
+    deals?: DealUncheckedCreateNestedManyWithoutAssignedUserInput
+    terminals?: TerminalUncheckedCreateNestedManyWithoutUsersInput
+    crmTasks?: CRMTaskUncheckedCreateNestedManyWithoutAssignedUserInput
+    missPunchRequests?: MissPunchRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedMissPunches?: MissPunchRequestUncheckedCreateNestedManyWithoutReviewerInput
+    salaryAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutUserInput
+    approvedAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutApproverInput
+    vouchers?: VoucherUncheckedCreateNestedManyWithoutCreatorInput
+    sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+    receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
+    workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
+    managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
+    assignedTickets?: TicketUncheckedCreateNestedManyWithoutAssignedToInput
+    closureRequests?: TicketClosureRequestUncheckedCreateNestedManyWithoutRequestedByInput
+    ticketHistoryActions?: TicketHistoryUncheckedCreateNestedManyWithoutDoneByInput
+    ticketMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+    ownedTickets?: TicketUncheckedCreateNestedManyWithoutAdminInput
+    createdTickets?: TicketUncheckedCreateNestedManyWithoutCreatedByInput
+    previousAssignedTickets?: TicketUncheckedCreateNestedManyWithoutPreviousAssigneeInput
+  }
+
+  export type UserCreateOrConnectWithoutReferredLeadsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReferredLeadsInput, UserUncheckedCreateWithoutReferredLeadsInput>
+  }
+
+  export type BranchCreateWithoutLeadsInput = {
+    name: string
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    invoiceSettings?: NullableJsonNullValueInput | InputJsonValue
+    stockIncluded?: boolean
+    customers?: CustomerCreateNestedManyWithoutBranchInput
+    expenses?: ExpenseCreateNestedManyWithoutBranchInput
+    payments?: PaymentCreateNestedManyWithoutBranchInput
+    productStocks?: ProductStockCreateNestedManyWithoutBranchInput
+    purchases?: PurchaseCreateNestedManyWithoutBranchInput
+    sales?: SaleCreateNestedManyWithoutBranchInput
+    users?: UserCreateNestedManyWithoutBranchInput
+    outgoingTransfers?: StockTransferCreateNestedManyWithoutFromBranchInput
+    incomingTransfers?: StockTransferCreateNestedManyWithoutToBranchInput
+    barcodeSetting?: BarcodeSettingCreateNestedOneWithoutBranchInput
+    challans?: DeliveryChallanCreateNestedManyWithoutBranchInput
+    quotations?: QuotationCreateNestedManyWithoutBranchInput
+    terminals?: TerminalCreateNestedManyWithoutBranchInput
+    attendance?: AttendanceCreateNestedManyWithoutBranchInput
+    leaveRequests?: LeaveRequestCreateNestedManyWithoutBranchInput
+    payrolls?: PayrollCreateNestedManyWithoutBranchInput
+    missPunchRequests?: MissPunchRequestCreateNestedManyWithoutBranchInput
+    salaryAdvances?: SalaryAdvanceCreateNestedManyWithoutBranchInput
+    workLogs?: WorkLogCreateNestedManyWithoutBranchInput
+    financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
+    tickets?: TicketCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUncheckedCreateWithoutLeadsInput = {
+    id?: number
+    name: string
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    invoiceSettings?: NullableJsonNullValueInput | InputJsonValue
+    stockIncluded?: boolean
+    customers?: CustomerUncheckedCreateNestedManyWithoutBranchInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutBranchInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutBranchInput
+    productStocks?: ProductStockUncheckedCreateNestedManyWithoutBranchInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutBranchInput
+    sales?: SaleUncheckedCreateNestedManyWithoutBranchInput
+    users?: UserUncheckedCreateNestedManyWithoutBranchInput
+    outgoingTransfers?: StockTransferUncheckedCreateNestedManyWithoutFromBranchInput
+    incomingTransfers?: StockTransferUncheckedCreateNestedManyWithoutToBranchInput
+    barcodeSetting?: BarcodeSettingUncheckedCreateNestedOneWithoutBranchInput
+    challans?: DeliveryChallanUncheckedCreateNestedManyWithoutBranchInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutBranchInput
+    terminals?: TerminalUncheckedCreateNestedManyWithoutBranchInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+    leaveRequests?: LeaveRequestUncheckedCreateNestedManyWithoutBranchInput
+    payrolls?: PayrollUncheckedCreateNestedManyWithoutBranchInput
+    missPunchRequests?: MissPunchRequestUncheckedCreateNestedManyWithoutBranchInput
+    salaryAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutBranchInput
+    workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
+    financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
+    tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchCreateOrConnectWithoutLeadsInput = {
+    where: BranchWhereUniqueInput
+    create: XOR<BranchCreateWithoutLeadsInput, BranchUncheckedCreateWithoutLeadsInput>
   }
 
   export type LeadActivityCreateWithoutLeadInput = {
@@ -104554,6 +105738,8 @@ export namespace Prisma {
     date: Date | string
     notes?: string | null
     status?: string
+    outcome?: string | null
+    completedAt?: Date | string | null
     nextFollowUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -104564,6 +105750,8 @@ export namespace Prisma {
     date: Date | string
     notes?: string | null
     status?: string
+    outcome?: string | null
+    completedAt?: Date | string | null
     nextFollowUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -104905,6 +106093,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -104951,6 +106140,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -104961,6 +106151,186 @@ export namespace Prisma {
     ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
     createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
     previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
+  }
+
+  export type UserUpsertWithoutReferredLeadsInput = {
+    update: XOR<UserUpdateWithoutReferredLeadsInput, UserUncheckedUpdateWithoutReferredLeadsInput>
+    create: XOR<UserCreateWithoutReferredLeadsInput, UserUncheckedCreateWithoutReferredLeadsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReferredLeadsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReferredLeadsInput, UserUncheckedUpdateWithoutReferredLeadsInput>
+  }
+
+  export type UserUpdateWithoutReferredLeadsInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    incentivePercentage?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyOff?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    branch?: BranchUpdateOneWithoutUsersNestedInput
+    receivedTransfers?: StockTransferUpdateManyWithoutReceivedByNestedInput
+    sales?: SaleUpdateManyWithoutSalesmanNestedInput
+    employeeProfile?: EmployeeProfileUpdateOneWithoutUserNestedInput
+    attendance?: AttendanceUpdateManyWithoutUserNestedInput
+    leaveRequests?: LeaveRequestUpdateManyWithoutUserNestedInput
+    approvedLeaves?: LeaveRequestUpdateManyWithoutApprovedByNestedInput
+    payrolls?: PayrollUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutAssignedUserNestedInput
+    deals?: DealUpdateManyWithoutAssignedUserNestedInput
+    terminals?: TerminalUpdateManyWithoutUsersNestedInput
+    crmTasks?: CRMTaskUpdateManyWithoutAssignedUserNestedInput
+    missPunchRequests?: MissPunchRequestUpdateManyWithoutUserNestedInput
+    reviewedMissPunches?: MissPunchRequestUpdateManyWithoutReviewerNestedInput
+    salaryAdvances?: SalaryAdvanceUpdateManyWithoutUserNestedInput
+    approvedAdvances?: SalaryAdvanceUpdateManyWithoutApproverNestedInput
+    vouchers?: VoucherUpdateManyWithoutCreatorNestedInput
+    sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
+    receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    admin?: UserUpdateOneWithoutManagedStaffNestedInput
+    managedStaff?: UserUpdateManyWithoutAdminNestedInput
+    workLogs?: WorkLogUpdateManyWithoutUserNestedInput
+    managedWorkLogs?: WorkLogUpdateManyWithoutAdminNestedInput
+    assignedTickets?: TicketUpdateManyWithoutAssignedToNestedInput
+    closureRequests?: TicketClosureRequestUpdateManyWithoutRequestedByNestedInput
+    ticketHistoryActions?: TicketHistoryUpdateManyWithoutDoneByNestedInput
+    ticketMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
+    ownedTickets?: TicketUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUpdateManyWithoutPreviousAssigneeNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReferredLeadsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    allowedModules?: NullableJsonNullValueInput | InputJsonValue
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    incentivePercentage?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyOff?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    adminId?: NullableIntFieldUpdateOperationsInput | number | null
+    receivedTransfers?: StockTransferUncheckedUpdateManyWithoutReceivedByNestedInput
+    sales?: SaleUncheckedUpdateManyWithoutSalesmanNestedInput
+    employeeProfile?: EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
+    leaveRequests?: LeaveRequestUncheckedUpdateManyWithoutUserNestedInput
+    approvedLeaves?: LeaveRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+    payrolls?: PayrollUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutAssignedUserNestedInput
+    deals?: DealUncheckedUpdateManyWithoutAssignedUserNestedInput
+    terminals?: TerminalUncheckedUpdateManyWithoutUsersNestedInput
+    crmTasks?: CRMTaskUncheckedUpdateManyWithoutAssignedUserNestedInput
+    missPunchRequests?: MissPunchRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedMissPunches?: MissPunchRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    salaryAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutUserNestedInput
+    approvedAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutApproverNestedInput
+    vouchers?: VoucherUncheckedUpdateManyWithoutCreatorNestedInput
+    sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+    receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
+    workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
+    managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
+    assignedTickets?: TicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    closureRequests?: TicketClosureRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+    ticketHistoryActions?: TicketHistoryUncheckedUpdateManyWithoutDoneByNestedInput
+    ticketMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+    ownedTickets?: TicketUncheckedUpdateManyWithoutAdminNestedInput
+    createdTickets?: TicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    previousAssignedTickets?: TicketUncheckedUpdateManyWithoutPreviousAssigneeNestedInput
+  }
+
+  export type BranchUpsertWithoutLeadsInput = {
+    update: XOR<BranchUpdateWithoutLeadsInput, BranchUncheckedUpdateWithoutLeadsInput>
+    create: XOR<BranchCreateWithoutLeadsInput, BranchUncheckedCreateWithoutLeadsInput>
+    where?: BranchWhereInput
+  }
+
+  export type BranchUpdateToOneWithWhereWithoutLeadsInput = {
+    where?: BranchWhereInput
+    data: XOR<BranchUpdateWithoutLeadsInput, BranchUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type BranchUpdateWithoutLeadsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceSettings?: NullableJsonNullValueInput | InputJsonValue
+    stockIncluded?: BoolFieldUpdateOperationsInput | boolean
+    customers?: CustomerUpdateManyWithoutBranchNestedInput
+    expenses?: ExpenseUpdateManyWithoutBranchNestedInput
+    payments?: PaymentUpdateManyWithoutBranchNestedInput
+    productStocks?: ProductStockUpdateManyWithoutBranchNestedInput
+    purchases?: PurchaseUpdateManyWithoutBranchNestedInput
+    sales?: SaleUpdateManyWithoutBranchNestedInput
+    users?: UserUpdateManyWithoutBranchNestedInput
+    outgoingTransfers?: StockTransferUpdateManyWithoutFromBranchNestedInput
+    incomingTransfers?: StockTransferUpdateManyWithoutToBranchNestedInput
+    barcodeSetting?: BarcodeSettingUpdateOneWithoutBranchNestedInput
+    challans?: DeliveryChallanUpdateManyWithoutBranchNestedInput
+    quotations?: QuotationUpdateManyWithoutBranchNestedInput
+    terminals?: TerminalUpdateManyWithoutBranchNestedInput
+    attendance?: AttendanceUpdateManyWithoutBranchNestedInput
+    leaveRequests?: LeaveRequestUpdateManyWithoutBranchNestedInput
+    payrolls?: PayrollUpdateManyWithoutBranchNestedInput
+    missPunchRequests?: MissPunchRequestUpdateManyWithoutBranchNestedInput
+    salaryAdvances?: SalaryAdvanceUpdateManyWithoutBranchNestedInput
+    workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
+    financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
+    tickets?: TicketUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchUncheckedUpdateWithoutLeadsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceSettings?: NullableJsonNullValueInput | InputJsonValue
+    stockIncluded?: BoolFieldUpdateOperationsInput | boolean
+    customers?: CustomerUncheckedUpdateManyWithoutBranchNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutBranchNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutBranchNestedInput
+    productStocks?: ProductStockUncheckedUpdateManyWithoutBranchNestedInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutBranchNestedInput
+    sales?: SaleUncheckedUpdateManyWithoutBranchNestedInput
+    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
+    outgoingTransfers?: StockTransferUncheckedUpdateManyWithoutFromBranchNestedInput
+    incomingTransfers?: StockTransferUncheckedUpdateManyWithoutToBranchNestedInput
+    barcodeSetting?: BarcodeSettingUncheckedUpdateOneWithoutBranchNestedInput
+    challans?: DeliveryChallanUncheckedUpdateManyWithoutBranchNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutBranchNestedInput
+    terminals?: TerminalUncheckedUpdateManyWithoutBranchNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+    leaveRequests?: LeaveRequestUncheckedUpdateManyWithoutBranchNestedInput
+    payrolls?: PayrollUncheckedUpdateManyWithoutBranchNestedInput
+    missPunchRequests?: MissPunchRequestUncheckedUpdateManyWithoutBranchNestedInput
+    salaryAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutBranchNestedInput
+    workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
+    financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
+    tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type LeadActivityUpsertWithWhereUniqueWithoutLeadInput = {
@@ -105015,6 +106385,8 @@ export namespace Prisma {
     date?: DateTimeFilter<"FollowUp"> | Date | string
     notes?: StringNullableFilter<"FollowUp"> | string | null
     status?: StringFilter<"FollowUp"> | string
+    outcome?: StringNullableFilter<"FollowUp"> | string | null
+    completedAt?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     nextFollowUpDate?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     createdAt?: DateTimeFilter<"FollowUp"> | Date | string
     updatedAt?: DateTimeFilter<"FollowUp"> | Date | string
@@ -105218,11 +106590,21 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     product?: ProductCreateNestedOneWithoutLeadsInput
     assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     activities?: LeadActivityCreateNestedManyWithoutLeadInput
     quotation?: QuotationCreateNestedOneWithoutLeadInput
     sale?: SaleCreateNestedOneWithoutLeadInput
@@ -105245,6 +106627,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -105283,11 +106675,21 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneWithoutLeadsNestedInput
     assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     activities?: LeadActivityUpdateManyWithoutLeadNestedInput
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
     sale?: SaleUpdateOneWithoutLeadNestedInput
@@ -105310,6 +106712,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -105332,11 +106744,21 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     product?: ProductCreateNestedOneWithoutLeadsInput
     assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     quotation?: QuotationCreateNestedOneWithoutLeadInput
     sale?: SaleCreateNestedOneWithoutLeadInput
@@ -105359,6 +106781,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -105397,11 +106829,21 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneWithoutLeadsNestedInput
     assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
     sale?: SaleUpdateOneWithoutLeadNestedInput
@@ -105424,6 +106866,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -105446,11 +106898,21 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     product?: ProductCreateNestedOneWithoutLeadsInput
     assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     activities?: LeadActivityCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     quotation?: QuotationCreateNestedOneWithoutLeadInput
@@ -105473,6 +106935,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -105519,6 +106991,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -105565,6 +107038,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -105640,11 +107114,21 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneWithoutLeadsNestedInput
     assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     activities?: LeadActivityUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
@@ -105667,6 +107151,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -105719,6 +107213,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -105765,6 +107260,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -105805,11 +107301,21 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: string | null
     product?: ProductCreateNestedOneWithoutLeadsInput
     assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
     activities?: LeadActivityCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     quotation?: QuotationCreateNestedOneWithoutLeadInput
@@ -105832,6 +107338,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -105908,6 +107424,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -105954,6 +107471,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -105994,11 +107512,21 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneWithoutLeadsNestedInput
     assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     activities?: LeadActivityUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
@@ -106021,6 +107549,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -106109,6 +107647,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -106155,6 +107694,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -106198,6 +107738,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -106244,6 +107785,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -106291,6 +107833,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutMissPunchRequestsInput = {
@@ -106324,6 +107867,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutMissPunchRequestsInput = {
@@ -106362,6 +107906,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -106408,6 +107953,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -106467,6 +108013,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -106513,6 +108060,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -106566,6 +108114,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutMissPunchRequestsInput = {
@@ -106599,6 +108148,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type UserUpsertWithoutReviewedMissPunchesInput = {
@@ -106643,6 +108193,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -106689,6 +108240,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -106732,6 +108284,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -106778,6 +108331,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -106825,6 +108379,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutSalaryAdvancesInput = {
@@ -106858,6 +108413,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutSalaryAdvancesInput = {
@@ -106896,6 +108452,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -106942,6 +108499,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -107077,6 +108635,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -107123,6 +108682,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -107176,6 +108736,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutSalaryAdvancesInput = {
@@ -107209,6 +108770,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type UserUpsertWithoutApprovedAdvancesInput = {
@@ -107253,6 +108815,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -107299,6 +108862,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -107942,6 +109506,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -107988,6 +109553,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -108166,6 +109732,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -108212,6 +109779,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -108528,6 +110096,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceCreateNestedManyWithoutBranchInput
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutFinancialYearsInput = {
@@ -108561,6 +110130,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutBranchInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutFinancialYearsInput = {
@@ -108859,6 +110429,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUpdateManyWithoutBranchNestedInput
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutFinancialYearsInput = {
@@ -108892,6 +110463,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutBranchNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type SaleUpsertWithWhereUniqueWithoutFinancialYearInput = {
@@ -109042,6 +110614,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutChallansInput = {
@@ -109075,6 +110648,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutChallansInput = {
@@ -109258,6 +110832,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutChallansInput = {
@@ -109291,6 +110866,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type DeliveryChallanItemUpsertWithWhereUniqueWithoutChallanInput = {
@@ -109742,6 +111318,7 @@ export namespace Prisma {
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutTerminalsInput = {
@@ -109775,6 +111352,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutTerminalsInput = {
@@ -109813,6 +111391,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -109859,6 +111438,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -110014,6 +111594,7 @@ export namespace Prisma {
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutTerminalsInput = {
@@ -110047,6 +111628,7 @@ export namespace Prisma {
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutTerminalsInput = {
@@ -110112,6 +111694,7 @@ export namespace Prisma {
     vouchers?: VoucherCreateNestedManyWithoutCreatorInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -110158,6 +111741,7 @@ export namespace Prisma {
     vouchers?: VoucherUncheckedCreateNestedManyWithoutCreatorInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -110206,6 +111790,7 @@ export namespace Prisma {
     vouchers?: VoucherCreateNestedManyWithoutCreatorInput
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -110252,6 +111837,7 @@ export namespace Prisma {
     vouchers?: VoucherUncheckedCreateNestedManyWithoutCreatorInput
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -110311,6 +111897,7 @@ export namespace Prisma {
     vouchers?: VoucherUpdateManyWithoutCreatorNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -110357,6 +111944,7 @@ export namespace Prisma {
     vouchers?: VoucherUncheckedUpdateManyWithoutCreatorNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -110411,6 +111999,7 @@ export namespace Prisma {
     vouchers?: VoucherUpdateManyWithoutCreatorNestedInput
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -110457,6 +112046,7 @@ export namespace Prisma {
     vouchers?: VoucherUncheckedUpdateManyWithoutCreatorNestedInput
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -110500,6 +112090,7 @@ export namespace Prisma {
     vouchers?: VoucherCreateNestedManyWithoutCreatorInput
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -110546,6 +112137,7 @@ export namespace Prisma {
     vouchers?: VoucherUncheckedCreateNestedManyWithoutCreatorInput
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -110605,6 +112197,7 @@ export namespace Prisma {
     vouchers?: VoucherUpdateManyWithoutCreatorNestedInput
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -110651,6 +112244,7 @@ export namespace Prisma {
     vouchers?: VoucherUncheckedUpdateManyWithoutCreatorNestedInput
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -110695,6 +112289,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     managedWorkLogs?: WorkLogCreateNestedManyWithoutAdminInput
@@ -110741,6 +112336,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
     assignedTickets?: TicketUncheckedCreateNestedManyWithoutAssignedToInput
@@ -110789,6 +112385,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -110835,6 +112432,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     assignedTickets?: TicketUncheckedCreateNestedManyWithoutAssignedToInput
@@ -110881,6 +112479,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
     tickets?: TicketCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutWorkLogsInput = {
@@ -110914,6 +112513,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
     tickets?: TicketUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutWorkLogsInput = {
@@ -110964,6 +112564,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     managedWorkLogs?: WorkLogUpdateManyWithoutAdminNestedInput
@@ -111010,6 +112611,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
     assignedTickets?: TicketUncheckedUpdateManyWithoutAssignedToNestedInput
@@ -111064,6 +112666,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -111110,6 +112713,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     assignedTickets?: TicketUncheckedUpdateManyWithoutAssignedToNestedInput
@@ -111162,6 +112766,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
     tickets?: TicketUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutWorkLogsInput = {
@@ -111195,6 +112800,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type TicketCategoryCreateWithoutTicketsInput = {
@@ -111241,6 +112847,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceCreateNestedManyWithoutBranchInput
     workLogs?: WorkLogCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutTicketsInput = {
@@ -111274,6 +112881,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUncheckedCreateNestedManyWithoutBranchInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutBranchInput
     financialYears?: FinancialYearUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutTicketsInput = {
@@ -111313,6 +112921,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -111359,6 +112968,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -111461,6 +113071,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -111507,6 +113118,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -111555,6 +113167,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -111601,6 +113214,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -111649,6 +113263,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -111695,6 +113310,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -111854,6 +113470,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUpdateManyWithoutBranchNestedInput
     workLogs?: WorkLogUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutTicketsInput = {
@@ -111887,6 +113504,7 @@ export namespace Prisma {
     salaryAdvances?: SalaryAdvanceUncheckedUpdateManyWithoutBranchNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutBranchNestedInput
     financialYears?: FinancialYearUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type UserUpsertWithoutOwnedTicketsInput = {
@@ -111932,6 +113550,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -111978,6 +113597,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -112092,6 +113712,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -112138,6 +113759,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -112192,6 +113814,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -112238,6 +113861,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -112292,6 +113916,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -112338,6 +113963,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -112564,6 +114190,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -112610,6 +114237,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -112732,6 +114360,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -112778,6 +114407,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -112878,6 +114508,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -112924,6 +114555,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -113046,6 +114678,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -113092,6 +114725,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -113192,6 +114826,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageCreateNestedManyWithoutReceiverInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    referredLeads?: LeadCreateNestedManyWithoutReferredByInput
     admin?: UserCreateNestedOneWithoutManagedStaffInput
     managedStaff?: UserCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogCreateNestedManyWithoutUserInput
@@ -113238,6 +114873,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: ChatMessageUncheckedCreateNestedManyWithoutReceiverInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    referredLeads?: LeadUncheckedCreateNestedManyWithoutReferredByInput
     managedStaff?: UserUncheckedCreateNestedManyWithoutAdminInput
     workLogs?: WorkLogUncheckedCreateNestedManyWithoutUserInput
     managedWorkLogs?: WorkLogUncheckedCreateNestedManyWithoutAdminInput
@@ -113360,6 +114996,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -113406,6 +115043,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -113540,6 +115178,16 @@ export namespace Prisma {
     priority?: string
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -113676,6 +115324,37 @@ export namespace Prisma {
     ticketId?: string | null
     link?: string | null
     createdAt?: Date | string
+  }
+
+  export type LeadCreateManyReferredByInput = {
+    id?: number
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    source?: string | null
+    productId?: number | null
+    quantity?: number | null
+    budget?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    priority?: string
+    assignedTo?: number | null
+    notes?: string | null
+    followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quotationId?: number | null
+    saleId?: number | null
+    company?: string | null
   }
 
   export type UserCreateManyAdminInput = {
@@ -114175,10 +115854,20 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     activities?: LeadActivityUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
@@ -114201,6 +115890,16 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -114226,6 +115925,16 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -114662,6 +116371,106 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type LeadUpdateWithoutReferredByInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: NullableIntFieldUpdateOperationsInput | number | null
+    budget?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    product?: ProductUpdateOneWithoutLeadsNestedInput
+    assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
+    activities?: LeadActivityUpdateManyWithoutLeadNestedInput
+    followUps?: FollowUpUpdateManyWithoutLeadNestedInput
+    quotation?: QuotationUpdateOneWithoutLeadNestedInput
+    sale?: SaleUpdateOneWithoutLeadNestedInput
+    deals?: DealUpdateManyWithoutLeadNestedInput
+    tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutReferredByInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableIntFieldUpdateOperationsInput | number | null
+    quantity?: NullableIntFieldUpdateOperationsInput | number | null
+    budget?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotationId?: NullableIntFieldUpdateOperationsInput | number | null
+    saleId?: NullableIntFieldUpdateOperationsInput | number | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    activities?: LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
+    deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
+    tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateManyWithoutReferredByInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableIntFieldUpdateOperationsInput | number | null
+    quantity?: NullableIntFieldUpdateOperationsInput | number | null
+    budget?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotationId?: NullableIntFieldUpdateOperationsInput | number | null
+    saleId?: NullableIntFieldUpdateOperationsInput | number | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type UserUpdateWithoutAdminInput = {
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
@@ -114694,6 +116503,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUpdateManyWithoutAdminNestedInput
@@ -114739,6 +116549,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -115529,6 +117340,37 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type LeadCreateManyBranchInput = {
+    id?: number
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    source?: string | null
+    productId?: number | null
+    quantity?: number | null
+    budget?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    priority?: string
+    assignedTo?: number | null
+    notes?: string | null
+    followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quotationId?: number | null
+    saleId?: number | null
+    company?: string | null
+  }
+
   export type CustomerUpdateWithoutBranchInput = {
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -115905,6 +117747,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -115951,6 +117794,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput
@@ -116596,6 +118440,106 @@ export namespace Prisma {
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadUpdateWithoutBranchInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: NullableIntFieldUpdateOperationsInput | number | null
+    budget?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    product?: ProductUpdateOneWithoutLeadsNestedInput
+    assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    activities?: LeadActivityUpdateManyWithoutLeadNestedInput
+    followUps?: FollowUpUpdateManyWithoutLeadNestedInput
+    quotation?: QuotationUpdateOneWithoutLeadNestedInput
+    sale?: SaleUpdateOneWithoutLeadNestedInput
+    deals?: DealUpdateManyWithoutLeadNestedInput
+    tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutBranchInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableIntFieldUpdateOperationsInput | number | null
+    quantity?: NullableIntFieldUpdateOperationsInput | number | null
+    budget?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotationId?: NullableIntFieldUpdateOperationsInput | number | null
+    saleId?: NullableIntFieldUpdateOperationsInput | number | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    activities?: LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
+    deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
+    tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateManyWithoutBranchInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableIntFieldUpdateOperationsInput | number | null
+    quantity?: NullableIntFieldUpdateOperationsInput | number | null
+    budget?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotationId?: NullableIntFieldUpdateOperationsInput | number | null
+    saleId?: NullableIntFieldUpdateOperationsInput | number | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaymentCreateManyCustomerInput = {
@@ -117407,6 +119351,16 @@ export namespace Prisma {
     assignedTo?: number | null
     notes?: string | null
     followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotationId?: number | null
@@ -117588,10 +119542,20 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
     assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
     activities?: LeadActivityUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
@@ -117614,6 +119578,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -117639,6 +119613,16 @@ export namespace Prisma {
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -118200,6 +120184,8 @@ export namespace Prisma {
     date: Date | string
     notes?: string | null
     status?: string
+    outcome?: string | null
+    completedAt?: Date | string | null
     nextFollowUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -118254,6 +120240,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118264,6 +120252,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118274,6 +120264,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119445,6 +121437,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUpdateManyWithoutReferredByNestedInput
     admin?: UserUpdateOneWithoutManagedStaffNestedInput
     managedStaff?: UserUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUpdateManyWithoutUserNestedInput
@@ -119491,6 +121484,7 @@ export namespace Prisma {
     sentMessages?: ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: ChatMessageUncheckedUpdateManyWithoutReceiverNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    referredLeads?: LeadUncheckedUpdateManyWithoutReferredByNestedInput
     managedStaff?: UserUncheckedUpdateManyWithoutAdminNestedInput
     workLogs?: WorkLogUncheckedUpdateManyWithoutUserNestedInput
     managedWorkLogs?: WorkLogUncheckedUpdateManyWithoutAdminNestedInput

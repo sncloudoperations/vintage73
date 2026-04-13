@@ -1,0 +1,8 @@
+Payment Voucher missing fields: {
+  "paymentAccount": 1,
+  "expenseAccount": "",
+  "amount": "10000",
+  "date": "2026-04-11",
+  "narration": "fghjk",
+  "reference": ""
+}

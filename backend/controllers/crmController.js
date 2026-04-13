@@ -3,7 +3,10 @@ const asyncHandler = require('../middleware/asyncHandler');
 
 // Leads
 exports.createLead = asyncHandler(async (req, res) => {
-    const { name, email, phone, address, source, productId, quantity, budget, assignedTo, notes, priority } = req.body;
+    const { 
+        name, email, phone, address, source, productId, quantity, budget, assignedTo, notes, priority, followUpDate,
+        branchId, negotiationAmount, referredById, commissionPercentage
+    } = req.body;
 
     // Normalize data (Convert empty strings from form to null for unique fields)
     const normalizedPhone = phone && phone.trim() !== '' ? phone.trim() : null;
@@ -23,6 +26,16 @@ exports.createLead = asyncHandler(async (req, res) => {
     const parsedQuantity = quantity ? parseInt(quantity) : null;
     const parsedBudget = budget ? parseFloat(budget) : null;
     const parsedAssignedTo = assignedTo ? parseInt(assignedTo) : null;
+    const parsedBranchId = branchId ? parseInt(branchId) : null;
+    const parsedNegotiationAmount = negotiationAmount ? parseFloat(negotiationAmount) : null;
+    const parsedReferredById = referredById ? parseInt(referredById) : null;
+    const parsedCommissionPercentage = commissionPercentage ? parseFloat(commissionPercentage) : 0;
+
+    // Auto-calculate commission if referral
+    let commissionAmount = 0;
+    if (source === 'Referral' && parsedNegotiationAmount && parsedCommissionPercentage) {
+        commissionAmount = (parsedNegotiationAmount * parsedCommissionPercentage) / 100;
+    }
 
     try {
         const lead = await prisma.lead.create({
@@ -36,11 +49,30 @@ exports.createLead = asyncHandler(async (req, res) => {
                 quantity: isNaN(parsedQuantity) ? null : parsedQuantity,
                 budget: isNaN(parsedBudget) ? null : parsedBudget,
                 assignedTo: isNaN(parsedAssignedTo) ? null : parsedAssignedTo,
+                branchId: isNaN(parsedBranchId) ? null : parsedBranchId,
+                negotiationAmount: isNaN(parsedNegotiationAmount) ? null : parsedNegotiationAmount,
+                referredById: isNaN(parsedReferredById) ? null : parsedReferredById,
+                commissionPercentage: isNaN(parsedCommissionPercentage) ? 0 : parsedCommissionPercentage,
+                commissionAmount: isNaN(commissionAmount) ? 0 : commissionAmount,
                 notes,
                 priority: priority || 'MEDIUM',
-                status: 'NEW'
+                status: 'NEW',
+                followUpDate: followUpDate ? new Date(followUpDate) : null,
+                nextFollowUpDate: followUpDate ? new Date(followUpDate) : null
             }
         });
+
+        // Create initial FollowUp record if date is provided
+        if (followUpDate) {
+            await prisma.followUp.create({
+                data: {
+                    leadId: lead.id,
+                    date: new Date(followUpDate),
+                    status: 'PENDING',
+                    notes: 'Initial follow-up'
+                }
+            });
+        }
 
         // Log Activity
         await prisma.leadActivity.create({
@@ -134,18 +166,53 @@ exports.updateLead = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error('Invalid Lead ID');
     }
+    const { 
+        id: bodyId, 
+        createdAt, 
+        updatedAt, 
+        product, 
+        assignedUser, 
+        activities, 
+        followUps, 
+        quotation, 
+        sale, 
+        ...data 
+    } = req.body;
+    
+    // Auto-recalculate commission if fields changed
+    if (data.negotiationAmount !== undefined || data.commissionPercentage !== undefined || data.source !== undefined) {
+        const currentLead = await prisma.lead.findUnique({ where: { id: leadId } });
+        const negAmt = data.negotiationAmount !== undefined ? parseFloat(data.negotiationAmount) : (currentLead.negotiationAmount ? parseFloat(currentLead.negotiationAmount) : 0);
+        const commPerc = data.commissionPercentage !== undefined ? parseFloat(data.commissionPercentage) : (currentLead.commissionPercentage ? parseFloat(currentLead.commissionPercentage) : 0);
+        const src = data.source !== undefined ? data.source : currentLead.source;
 
-    const data = req.body;
+        if (src === 'Referral' && negAmt && commPerc) {
+            data.commissionAmount = (negAmt * commPerc) / 100;
+        } else if (src !== 'Referral' && data.source !== undefined) {
+            data.commissionAmount = 0;
+            data.commissionPercentage = 0;
+            data.referredById = null;
+        } else if (src === 'Referral' && (!negAmt || !commPerc)) {
+            data.commissionAmount = 0;
+        }
+    }
+
     const lead = await prisma.lead.update({
         where: { id: leadId },
         data: {
             ...data,
             assignedTo: data.assignedTo && !isNaN(parseInt(data.assignedTo)) ? parseInt(data.assignedTo) : undefined,
             productId: data.productId && !isNaN(parseInt(data.productId)) ? parseInt(data.productId) : undefined,
-            quantity: data.quantity && !isNaN(parseInt(data.quantity)) ? parseInt(data.quantity) : undefined,
-            budget: data.budget && !isNaN(parseFloat(data.budget)) ? parseFloat(data.budget) : undefined
+            branchId: data.branchId && !isNaN(parseInt(data.branchId)) ? parseInt(data.branchId) : undefined,
+            referredById: data.referredById !== undefined ? (data.referredById && !isNaN(parseInt(data.referredById)) ? parseInt(data.referredById) : null) : undefined,
+            quantity: data.quantity !== undefined ? (parseInt(data.quantity) || 1) : undefined,
+            budget: data.budget !== undefined ? (parseFloat(data.budget) || 0) : undefined,
+            negotiationAmount: data.negotiationAmount !== undefined ? (parseFloat(data.negotiationAmount) || 0) : undefined,
+            commissionAmount: data.commissionAmount !== undefined ? parseFloat(data.commissionAmount) : undefined,
+            commissionPercentage: data.commissionPercentage !== undefined ? parseFloat(data.commissionPercentage) : undefined
         }
     });
+
 
     res.json(lead);
 });
@@ -252,28 +319,115 @@ exports.scheduleFollowUp = asyncHandler(async (req, res) => {
 });
 
 exports.getFollowUps = asyncHandler(async (req, res) => {
-    const todayEnd = new Date();
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(now);
     todayEnd.setHours(23, 59, 59, 999);
 
     const followUps = await prisma.followUp.findMany({
         where: {
-            status: 'PENDING',
-            date: { lte: todayEnd }
+            status: 'PENDING'
         },
-        include: { 
+        include: {
             lead: {
-                select: {
-                    id: true,
-                    name: true,
-                    phone: true,
-                    status: true
+                include: {
+                    product: { select: { name: true } },
+                    assignedUser: { select: { name: true } }
                 }
             }
         },
         orderBy: { date: 'asc' }
     });
 
-    res.json(followUps);
+    // Segment follow-ups
+    const result = {
+        overdue: followUps.filter(f => new Date(f.date) < todayStart),
+        today: followUps.filter(f => {
+            const d = new Date(f.date);
+            return d >= todayStart && d <= todayEnd;
+        }),
+        upcoming: followUps.filter(f => new Date(f.date) > todayEnd)
+    };
+
+    res.json(result);
+});
+
+exports.completeFollowUp = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { outcome, notes, nextFollowUpDate } = req.body;
+
+    const followUpId = parseInt(id);
+    if (isNaN(followUpId)) {
+        res.status(400);
+        throw new Error('Invalid Follow-up ID');
+    }
+
+    const currentFollowUp = await prisma.followUp.findUnique({
+        where: { id: followUpId },
+        include: { lead: true }
+    });
+
+    if (!currentFollowUp) {
+        res.status(404);
+        throw new Error('Follow-up not found');
+    }
+
+    // Update current follow-up
+    await prisma.followUp.update({
+        where: { id: followUpId },
+        data: {
+            status: 'COMPLETED',
+            outcome,
+            notes: notes || currentFollowUp.notes,
+            completedAt: new Date()
+        }
+    });
+
+    // Determine new status based on outcome
+    let nextStatus = currentFollowUp.lead.status;
+    if (outcome === 'Interested') nextStatus = 'QUALIFIED';
+    else if (outcome === 'Not Interested') nextStatus = 'LOST';
+    else if (outcome === 'Quotation Sent') nextStatus = 'QUOTATION_SENT';
+    else if (outcome === 'No Response' || outcome === 'Call Later') {
+        if (nextStatus === 'NEW') nextStatus = 'CONTACTED';
+    }
+
+    // Update Lead
+    const leadUpdateData = {
+        status: nextStatus,
+        lastFollowUpDate: new Date(),
+        outcome,
+        followUpDate: nextFollowUpDate ? new Date(nextFollowUpDate) : null,
+        nextFollowUpDate: nextFollowUpDate ? new Date(nextFollowUpDate) : null
+    };
+
+    await prisma.lead.update({
+        where: { id: currentFollowUp.leadId },
+        data: leadUpdateData
+    });
+
+    // Create next follow-up if not terminal outcome and next date provided
+    if (nextStatus !== 'WON' && nextStatus !== 'LOST' && nextFollowUpDate) {
+        await prisma.followUp.create({
+            data: {
+                leadId: currentFollowUp.leadId,
+                date: new Date(nextFollowUpDate),
+                status: 'PENDING'
+            }
+        });
+    }
+
+    // Log Activity
+    await prisma.leadActivity.create({
+        data: {
+            leadId: currentFollowUp.leadId,
+            type: 'FOLLOW_UP_SCHEDULED',
+            description: `Follow-up completed. Outcome: ${outcome}. Notes: ${notes || 'None'}. ${nextFollowUpDate ? 'Next follow-up scheduled for ' + new Date(nextFollowUpDate).toLocaleDateString() : ''}`
+        }
+    });
+
+    res.json({ message: 'Follow-up completed and next step processed' });
 });
 
 
@@ -385,6 +539,32 @@ exports.updateTask = asyncHandler(async (req, res) => {
 });
 
 
+exports.getMyReferralLeads = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+
+    const leads = await prisma.lead.findMany({
+        where: { referredById: userId },
+        include: {
+            product: { select: { name: true } }
+        },
+        orderBy: { createdAt: 'desc' }
+    });
+    res.json(leads);
+});
+
+exports.updateCommissionStatus = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { commissionPaid } = req.body;
+    const leadId = parseInt(id);
+
+    const lead = await prisma.lead.update({
+        where: { id: leadId },
+        data: { commissionPaid: !!commissionPaid }
+    });
+
+    res.json(lead);
+});
+
 exports.getDashboardStats = asyncHandler(async (req, res) => {
     const [totalLeads, newLeads, pipelines] = await Promise.all([
         prisma.lead.count(),
@@ -430,14 +610,16 @@ exports.convertToQuotation = asyncHandler(async (req, res) => {
     }
 
     // Create Quotation
+    const amountToUse = lead.negotiationAmount ? lead.negotiationAmount : (lead.budget || 0);
+
     const quotation = await prisma.quotation.create({
         data: {
             quotationNumber,
             branchId: bId,
             financialYearId: financialYearId && !isNaN(parseInt(financialYearId)) ? parseInt(financialYearId) : null,
-            subTotal: (lead.budget || 0),
+            subTotal: amountToUse,
             taxAmount: 0,
-            totalAmount: (lead.budget || 0),
+            totalAmount: amountToUse,
             status: 'SENT',
             notes: lead.notes,
             lead: { connect: { id: lead.id } }
@@ -499,15 +681,17 @@ exports.convertToOrder = asyncHandler(async (req, res) => {
     }
 
     // Create Sale (Order)
+    const amountToUse = lead.negotiationAmount ? lead.negotiationAmount : (lead.budget || 0);
+
     const sale = await prisma.sale.create({
         data: {
             invoiceNumber,
             branchId: bId,
             financialYearId: financialYearId && !isNaN(parseInt(financialYearId)) ? parseInt(financialYearId) : null,
 
-            subTotal: (lead.product?.price * (lead.quantity || 1)) || 0,
+            subTotal: amountToUse,
             taxAmount: 0,
-            totalAmount: (lead.product?.price * (lead.quantity || 1)) || 0,
+            totalAmount: amountToUse,
             paymentMethod,
             status: 'completed',
             lead: { connect: { id: lead.id } }
