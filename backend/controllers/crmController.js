@@ -121,15 +121,20 @@ exports.getLeads = asyncHandler(async (req, res) => {
 
 
 
-    const leads = await prisma.lead.findMany({
-        where,
-        include: { 
-            assignedUser: { select: { name: true, username: true } },
-            product: { select: { name: true, price: true } }
-        },
-        orderBy: { createdAt: 'desc' }
-    });
-    res.json(leads);
+    try {
+        const leads = await prisma.lead.findMany({
+            where,
+            include: { 
+                assignedUser: { select: { name: true, username: true } },
+                product: { select: { name: true, price: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(leads);
+    } catch (error) {
+        console.error('❌ CRM GET LEADS ERROR:', error.message);
+        throw error;
+    }
 });
 
 exports.getLeadById = asyncHandler(async (req, res) => {
@@ -325,32 +330,37 @@ exports.getFollowUps = asyncHandler(async (req, res) => {
     const todayEnd = new Date(now);
     todayEnd.setHours(23, 59, 59, 999);
 
-    const followUps = await prisma.followUp.findMany({
-        where: {
-            status: 'PENDING'
-        },
-        include: {
-            lead: {
-                include: {
-                    product: { select: { name: true } },
-                    assignedUser: { select: { name: true } }
+    try {
+        const followUps = await prisma.followUp.findMany({
+            where: {
+                status: 'PENDING'
+            },
+            include: {
+                lead: {
+                    include: {
+                        product: { select: { name: true } },
+                        assignedUser: { select: { name: true } }
+                    }
                 }
-            }
-        },
-        orderBy: { date: 'asc' }
-    });
+            },
+            orderBy: { date: 'asc' }
+        });
 
-    // Segment follow-ups
-    const result = {
-        overdue: followUps.filter(f => new Date(f.date) < todayStart),
-        today: followUps.filter(f => {
-            const d = new Date(f.date);
-            return d >= todayStart && d <= todayEnd;
-        }),
-        upcoming: followUps.filter(f => new Date(f.date) > todayEnd)
-    };
+        // Segment follow-ups
+        const result = {
+            overdue: followUps.filter(f => new Date(f.date) < todayStart),
+            today: followUps.filter(f => {
+                const d = new Date(f.date);
+                return d >= todayStart && d <= todayEnd;
+            }),
+            upcoming: followUps.filter(f => new Date(f.date) > todayEnd)
+        };
 
-    res.json(result);
+        res.json(result);
+    } catch (error) {
+        console.error('❌ CRM GET FOLLOWUPS ERROR:', error.message);
+        throw error;
+    }
 });
 
 exports.completeFollowUp = asyncHandler(async (req, res) => {

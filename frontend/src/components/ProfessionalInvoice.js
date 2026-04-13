@@ -144,9 +144,12 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <tbody>{items?.map((item, i) => (<tr key={i}><td className="py-1">{item.product?.name || item.name || 'Item'}</td><td className="text-right py-1">{item.quantity || 0}</td><td className="text-right py-1">{currentSymbol}{formatAmt(item.total)}</td></tr>))}</tbody>
                 </table>
                 <div className="space-y-1 text-[11px] font-bold flex flex-col items-end">
-                    <div className="flex justify-between w-full"><span>Subtotal:</span><span>{currentSymbol}{formatAmt(subTotal)}</span></div>
+                    <div className="flex justify-between w-full"><span>Subtotal:</span><span>{currentSymbol}{formatAmt(parseFloat(subTotal) + parseFloat(invoiceDiscount))}</span></div>
                     {invoiceDiscount > 0 && (
-                        <div className="flex justify-between w-full"><span>Discount:</span><span>- {currentSymbol}{formatAmt(invoiceDiscount)}</span></div>
+                        <div className="flex justify-between w-full text-red-600"><span>Discount:</span><span>- {currentSymbol}{formatAmt(invoiceDiscount)}</span></div>
+                    )}
+                    {parseFloat(taxAmount || 0) > 0 && (
+                        <div className="flex justify-between w-full"><span>Tax:</span><span>{currentSymbol}{formatAmt(taxAmount)}</span></div>
                     )}
                     <div className="flex justify-between w-full text-[13px] border-t border-black pt-1 mt-1 font-black"><span>TOTAL:</span><span>{currentSymbol}{formatAmt(totalAmount)}</span></div>
                 </div>
@@ -215,6 +218,16 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             {customer?.gstin && <p className={`${s_Label} font-semibold`}>GSTIN: {customer.gstin}</p>}
                             {customer?.email && <p className={s_AddressLabel}>{customer.email}</p>}
                         </div>
+                        {settings.showBankDetails !== false && companyProfile?.bankName && (
+                            <div className="mt-4">
+                                <p className={`${s_SecHead}`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>Bank Details</p>
+                                <div className="space-y-1">
+                                    <p className={s_AddressLabel}><span className="font-semibold">Bank:</span> {companyProfile.bankName}</p>
+                                    {companyProfile?.accountNumber && <p className={s_AddressLabel}><span className="font-semibold">A/C No:</span> {companyProfile.accountNumber}</p>}
+                                    {companyProfile?.ifscCode && <p className={s_AddressLabel}><span className="font-semibold">IFSC:</span> {companyProfile.ifscCode}</p>}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
                 {settings.showInvoiceMeta !== false && (
@@ -243,6 +256,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             {settings.showColQty !== false && <th className={`${s_TableTh} text-center w-14 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'QTY' : 'Qty'}</th>}
                             {settings.showColPrice !== false && <th className={`${s_TableTh} text-center w-24 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'PRICE' : 'Price'}</th>}
                             {settings.showColTax !== false && parseFloat(taxAmount || 0) > 0 && <th className={`${s_TableTh} text-center w-16 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'GST%' : 'Gst %'}</th>}
+                            {parseFloat(invoiceDiscount || 0) > 0 && <th className={`${s_TableTh} text-center w-16 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'DISC' : 'Disc'}</th>}
                             {settings.showColTotal !== false && <th className={`${s_TableTh} text-right w-28 ${isMinimal ? 'border-b border-slate-200' : isBold ? 'rounded-r-lg' : 'rounded-r-lg'}`}>{isBold ? 'TOTAL' : 'Total'}</th>}
                         </tr>
                     </thead>
@@ -253,6 +267,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                                 {settings.showColQty !== false && <td className={`${s_TableTd} text-center font-semibold text-slate-600`}>{item.quantity || 0}</td>}
                                 {settings.showColPrice !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{currentSymbol}{formatAmt(item.unitPrice)}</td>}
                                 {settings.showColTax !== false && parseFloat(taxAmount || 0) > 0 && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{parseFloat(item.taxRate || 0)}%</td>}
+                                {parseFloat(invoiceDiscount || 0) > 0 && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{parseFloat(item.discountAmount || 0) > 0 ? `${currentSymbol}${formatAmt(item.discountAmount)}` : '-'}</td>}
                                 {settings.showColTotal !== false && <td className={`${s_TableTd} text-right font-bold text-slate-800`}>{currentSymbol}{formatAmt((parseFloat(item.unitPrice) - parseFloat(item.discountAmount || 0)) * (parseFloat(item.quantity) || 0))}</td>}
                             </tr>
                         ))}
@@ -292,10 +307,10 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             <span>Subtotal</span>
                             <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(parseFloat(subTotal) + parseFloat(invoiceDiscount))}</span>
                         </div>
-                        {Number(invoiceDiscount) > 0 && (
+                        {parseFloat(invoiceDiscount) > 0 && (
                             <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight mt-1">
                                 <span>Discount</span>
-                                <span className="font-semibold text-red-500">- {currentSymbol}{(Number(invoiceDiscount) * (parseFloat(exchangeRate) || 1)).toFixed(2)}</span>
+                                <span className="font-semibold text-red-500">- {currentSymbol}{formatAmt(invoiceDiscount)}</span>
                             </div>
                         )}
                         {parseFloat(taxAmount || 0) > 0 && (
