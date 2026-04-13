@@ -4,7 +4,7 @@ import {
   FiDollarSign, FiBook, FiPackage, FiBriefcase, FiCheckCircle, FiLayers, FiCreditCard, FiClock,
   FiDatabase, FiTarget, FiShoppingCart, FiUsers as FiUserGroup, FiArchive, FiFileText,
   FiPieChart, FiClipboard, FiRefreshCw, FiList, FiActivity, FiCalendar, FiArrowDownLeft, FiArrowUpRight, FiKey, FiDroplet,
-  FiLock, FiMessageSquare, FiMonitor
+  FiLock, FiMessageSquare, FiMonitor, FiTrendingUp
 } from 'react-icons/fi';
 import { TbBarcode, TbReportAnalytics, TbReceipt } from 'react-icons/tb';
 
@@ -37,6 +37,7 @@ export const MENU_STRUCTURE = [
       { name: 'Deals Pipeline', icon: FiBriefcase, path: '/crm/deals' },
       { name: 'Leads', icon: FiUsers, path: '/crm/leads' },
       { name: 'Lead Follow-ups', icon: FiCalendar, path: '/crm/followups' },
+      { name: 'My Referral Leads', icon: FiTrendingUp, path: '/crm/my-leads' },
       { name: 'Won Leads', icon: FiCheckCircle, path: '/crm/converted' },
       { name: 'Tasks', icon: FiCheckCircle, path: '/crm/tasks' },
     ]

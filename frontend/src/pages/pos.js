@@ -375,6 +375,10 @@ const CURRENCY_SYMBOLS = {
     };
 
     const addToCart = (product) => {
+        if (!customerId) {
+            toast.error('Please select a customer first');
+            return;
+        }
         const isStockEnabled = branchSettings.stockIncluded !== false && branchSettings.stockIncluded !== 'false';
 
         if (isStockEnabled && product.stock <= 0) {

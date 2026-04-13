@@ -28,11 +28,22 @@ export default function LeadDetail() {
     const [followUpDate, setFollowUpDate] = useState('');
     const [followUpNotes, setFollowUpNotes] = useState('');
 
+    const [showOutcomeModal, setShowOutcomeModal] = useState(false);
+    const [selectedFollowUp, setSelectedFollowUp] = useState(null);
+    const [outcomeForm, setOutcomeForm] = useState({ outcome: 'No Response', notes: '', nextFollowUpDate: '' });
+
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editForm, setEditForm] = useState({});
+    const [products, setProducts] = useState([]);
+    const [users, setUsers] = useState([]);
+
 
     useEffect(() => {
         if (id) {
             fetchLeadDetails();
             fetchBranches();
+            fetchProducts();
+            fetchUsers();
         }
     }, [id]);
 
@@ -52,6 +63,24 @@ export default function LeadDetail() {
         try {
             const res = await api.get('/branches');
             setBranches(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchProducts = async () => {
+        try {
+            const res = await api.get('/products');
+            setProducts(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchUsers = async () => {
+        try {
+            const res = await api.get('/users');
+            setUsers(res.data);
         } catch (err) {
             console.error(err);
         }
@@ -97,6 +126,28 @@ export default function LeadDetail() {
         }
     };
 
+    const handleOpenOutcome = (fu) => {
+        setSelectedFollowUp(fu);
+        setOutcomeForm({ 
+            outcome: 'No Response', 
+            notes: fu.notes || '', 
+            nextFollowUpDate: moment().add(1, 'days').format('YYYY-MM-DDTHH:mm') 
+        });
+        setShowOutcomeModal(true);
+    };
+
+    const handleSubmitOutcome = async (e) => {
+        e.preventDefault();
+        try {
+            await api.put(`/crm/followups/${selectedFollowUp.id}`, outcomeForm);
+            toast.success("Follow-up updated successfully");
+            setShowOutcomeModal(false);
+            fetchLeadDetails();
+        } catch (err) {
+            toast.error("Failed to update follow-up");
+        }
+    };
+
     const handleConvert = async (e) => {
         e.preventDefault();
         const endpoint = showConvertModal === 'QUOTATION' ? 'convert-quotation' : 'convert-order';
@@ -111,6 +162,65 @@ export default function LeadDetail() {
             fetchLeadDetails();
         } catch (err) {
             toast.error(err.response?.data?.error || "Conversion failed");
+        }
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            // Clean up the object to send only editable fields
+            const { 
+                id: bodyId, 
+                createdAt, 
+                updatedAt, 
+                product, 
+                assignedUser, 
+                activities, 
+                followUps, 
+                quotation, 
+                sale, 
+                referredBy,
+                ...payload 
+            } = editForm;
+
+            await api.put(`/crm/leads/${id}`, payload);
+            toast.success("Lead updated successfully");
+            setShowEditModal(false);
+            fetchLeadDetails();
+        } catch (err) {
+            toast.error("Failed to update lead");
+        }
+    };
+
+    const handleEditChange = (e) => {
+        const { name, value } = e.target;
+        setEditForm(prev => {
+            const newForm = { ...prev, [name]: value };
+            
+            // Auto-calculate Budget
+            if (name === 'productId' || name === 'quantity') {
+                const product = products.find(p => p.id.toString() === newForm.productId);
+                if (product) {
+                    const price = parseFloat(product.price);
+                    const qty = parseInt(newForm.quantity || 1);
+                    newForm.budget = (price * qty).toFixed(2);
+                    // Also set negotiation amount same as budget initially if not manually changed
+                    if (!prev.negotiationAmount || prev.negotiationAmount === prev.budget) {
+                        newForm.negotiationAmount = newForm.budget;
+                    }
+                }
+            }
+            return newForm;
+        });
+    };
+
+    const toggleCommissionStatus = async () => {
+        try {
+            await api.put(`/crm/leads/${id}/commission`, { commissionPaid: !lead.commissionPaid });
+            toast.success("Commission status updated");
+            fetchLeadDetails();
+        } catch (err) {
+            toast.error("Failed to update commission status");
         }
     };
 
@@ -154,6 +264,7 @@ export default function LeadDetail() {
                         <>
                             <button onClick={() => setShowConvertModal('QUOTATION')} className="btn btn-secondary py-2 text-xs font-black uppercase border-purple-200 text-purple-600 hover:bg-purple-50">Convert to Quotation</button>
                             <button onClick={() => setShowConvertModal('ORDER')} className="btn btn-secondary py-2 text-xs font-black uppercase border-emerald-200 text-emerald-600 hover:bg-emerald-50">Convert to Order</button>
+                            <button onClick={() => { setEditForm(lead); setShowEditModal(true); }} className="btn btn-secondary py-2 text-xs font-black uppercase border-blue-200 text-blue-600 hover:bg-blue-50">Edit Lead</button>
                             <button onClick={() => setShowStatusModal(true)} className="btn btn-secondary py-2 text-xs font-black uppercase">Update Status</button>
                         </>
                     )}
@@ -212,6 +323,8 @@ export default function LeadDetail() {
                                 { label: 'Source', value: lead.source || 'Direct', icon: FiTrendingUp },
                                 { label: 'Priority', value: lead.priority, icon: FiActivity, color: lead.priority === 'HIGH' ? 'text-red-500' : 'text-slate-600' },
                                 { label: 'Assigned To', value: lead.assignedUser?.name || 'Unassigned', icon: FiUser },
+                                { label: 'Last Follow-up', value: lead.lastFollowUpDate ? moment(lead.lastFollowUpDate).format('DD MMM YYYY') : 'Never', icon: FiClock },
+                                { label: 'Last Outcome', value: lead.outcome || 'None', icon: FiTrendingUp },
                                 { label: 'Created On', value: moment(lead.createdAt).format('DD MMM YYYY'), icon: FiCalendar }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-3">
@@ -236,14 +349,42 @@ export default function LeadDetail() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-3 bg-slate-50 rounded-xl">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Quantity</p>
-                                    <p className="text-sm font-black text-slate-800">{lead.quantity || 1}</p>
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Budget</p>
+                                    <p className="text-sm font-black text-slate-600 mt-1">₹{lead.budget ? parseFloat(lead.budget).toLocaleString() : 'N/A'}</p>
                                 </div>
-                                <div className="p-3 bg-slate-50 rounded-xl">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Budget</p>
-                                    <p className="text-sm font-black text-emerald-600">₹{lead.budget ? parseFloat(lead.budget).toLocaleString() : 'N/A'}</p>
+                                <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest leading-none">Negotiation</p>
+                                    <p className="text-sm font-black text-blue-800 mt-1">₹{lead.negotiationAmount ? parseFloat(lead.negotiationAmount).toLocaleString() : 'N/A'}</p>
                                 </div>
                             </div>
+
+                            {lead.source === 'Referral' && (
+                                <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100 space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest leading-none">Referred By</p>
+                                            <p className="text-xs font-black text-purple-800 mt-1">{lead.referredBy?.name || 'Unknown'}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest leading-none">Commission ({lead.commissionPercentage}%)</p>
+                                            <p className="text-sm font-black text-purple-600 mt-1">₹{parseFloat(lead.commissionAmount || 0).toLocaleString()}</p>
+                                        </div>
+                                    </div>
+                                    <div className="pt-2 border-t border-purple-100 flex justify-between items-center">
+                                        <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${lead.commissionPaid ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-white'}`}>
+                                            {lead.commissionPaid ? 'Commission Paid' : 'Payment Pending'}
+                                        </span>
+                                        {lead.status === 'WON' && (
+                                            <button 
+                                                onClick={toggleCommissionStatus}
+                                                className="text-[9px] font-black text-purple-600 hover:underline uppercase tracking-widest"
+                                            >
+                                                Mark as {lead.commissionPaid ? 'Unpaid' : 'Paid'}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -325,7 +466,15 @@ export default function LeadDetail() {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
-                                            <button className="p-1.5 text-slate-300 hover:text-emerald-500 transition-colors"><FiCheckCircle /></button>
+                                            {fu.status === 'PENDING' && (
+                                                <button 
+                                                    onClick={() => handleOpenOutcome(fu)}
+                                                    className="p-1.5 text-slate-300 hover:text-emerald-500 transition-colors"
+                                                    title="Take Action"
+                                                >
+                                                    <FiCheckCircle />
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 ))
@@ -435,6 +584,161 @@ export default function LeadDetail() {
                             <button type="button" onClick={() => setShowConvertModal(null)} className="btn btn-secondary flex-1 font-black text-xs uppercase tracking-widest">Cancel</button>
                             <button type="submit" className="btn btn-primary flex-1 font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Confirm Conversion</button>
                         </div>
+                    </form>
+                </div>
+            )}
+
+            {showOutcomeModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                    <form onSubmit={handleSubmitOutcome} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
+                        <header className="flex justify-between items-start">
+                            <div>
+                                <h3 className="text-xl font-black text-slate-800 tracking-tight">Record Outcome</h3>
+                                <p className="text-xs text-slate-400 font-medium mt-1">Updating follow-up for {lead.name}</p>
+                            </div>
+                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiXCircle /></button>
+                        </header>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Action Outcome</label>
+                                <select 
+                                    required 
+                                    className="input" 
+                                    value={outcomeForm.outcome} 
+                                    onChange={e => setOutcomeForm({ ...outcomeForm, outcome: e.target.value })}
+                                >
+                                    <option value="No Response">No Response</option>
+                                    <option value="Interested">Interested</option>
+                                    <option value="Not Interested">Not Interested</option>
+                                    <option value="Call Later">Call Later</option>
+                                    <option value="Quotation Sent">Quotation Sent</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Internal Notes</label>
+                                <textarea 
+                                    className="input min-h-[80px]" 
+                                    placeholder="What happened during this follow-up?"
+                                    value={outcomeForm.notes}
+                                    onChange={e => setOutcomeForm({ ...outcomeForm, notes: e.target.value })}
+                                />
+                            </div>
+
+                            {outcomeForm.outcome !== 'Not Interested' && (
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest flex justify-between items-center">
+                                        Next Follow-up Date
+                                        <span className="text-primary text-[8px]">REQUIRED</span>
+                                    </label>
+                                    <input 
+                                        required 
+                                        type="datetime-local" 
+                                        className="input" 
+                                        value={outcomeForm.nextFollowUpDate} 
+                                        onChange={e => setOutcomeForm({ ...outcomeForm, nextFollowUpDate: e.target.value })} 
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex gap-3 pt-4">
+                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="btn btn-secondary flex-1 font-black text-xs uppercase tracking-widest">Cancel</button>
+                            <button type="submit" className="btn btn-primary flex-1 font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Update & Schedule</button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {showEditModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                    <form onSubmit={handleEditSubmit} className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300">
+                        <header className="p-6 border-b border-slate-50 flex justify-between items-center">
+                            <div>
+                                <h3 className="text-xl font-black text-slate-800 tracking-tight">Edit Lead Information</h3>
+                                <p className="text-xs text-slate-400 font-medium mt-1">Update lead profile and negotiation details</p>
+                            </div>
+                            <button type="button" onClick={() => setShowEditModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiXCircle /></button>
+                        </header>
+                        
+                        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Customer Name</label>
+                                    <input required name="name" className="input" value={editForm.name} onChange={handleEditChange} />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Lead Source</label>
+                                    <select name="source" className="input" value={editForm.source} onChange={handleEditChange}>
+                                        <option value="Walk-in">Walk-in</option>
+                                        <option value="Website">Website</option>
+                                        <option value="Call">Phone Call</option>
+                                        <option value="WhatsApp">WhatsApp</option>
+                                        <option value="Social Media">Social Media</option>
+                                        <option value="Referral">Referral</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Interested Product</label>
+                                    <select name="productId" className="input" value={editForm.productId} onChange={handleEditChange}>
+                                        <option value="">Select Product</option>
+                                        {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                    </select>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Quantity</label>
+                                        <input type="number" name="quantity" className="input" value={editForm.quantity} onChange={handleEditChange} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Budget (₹)</label>
+                                        <input type="number" name="budget" className="input bg-emerald-50/20 font-black text-emerald-600 border-emerald-100" value={editForm.budget} onChange={handleEditChange} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-[10px] font-black text-blue-500 uppercase mb-1 tracking-widest">Negotiation Amount (₹)</label>
+                                    <input type="number" name="negotiationAmount" className="input border-blue-100 bg-blue-50/20 font-black text-blue-600" value={editForm.negotiationAmount} onChange={handleEditChange} />
+                                </div>
+
+                                {editForm.source === 'Referral' && (
+                                    <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100 space-y-4">
+                                        <div>
+                                            <label className="block text-[10px] font-black text-purple-400 uppercase mb-1 tracking-widest">Referred By</label>
+                                            <select name="referredById" className="input bg-white" value={editForm.referredById} onChange={handleEditChange}>
+                                                <option value="">Select Employee</option>
+                                                {users.filter(u => !editForm.branchId || u.branchId === editForm.branchId).map(u => (
+                                                    <option key={u.id} value={u.id}>{u.name || u.username}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex-1">
+                                                <label className="block text-[10px] font-black text-purple-400 uppercase mb-1 tracking-widest">Commission %</label>
+                                                <input type="number" name="commissionPercentage" className="input bg-white" value={editForm.commissionPercentage} onChange={handleEditChange} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <label className="block text-[10px] font-black text-purple-400 uppercase mb-1 tracking-widest leading-none">Est. Amount</label>
+                                                <p className="text-lg font-black text-purple-600 mt-1">₹{(parseFloat(editForm.negotiationAmount || 0) * parseFloat(editForm.commissionPercentage || 0) / 100).toFixed(2)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Internal Notes</label>
+                                    <textarea name="notes" className="input min-h-[100px]" value={editForm.notes} onChange={handleEditChange}></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer className="p-6 bg-slate-50 flex gap-3">
+                            <button type="button" onClick={() => setShowEditModal(false)} className="btn btn-secondary flex-1 font-black text-xs uppercase">Cancel</button>
+                            <button type="submit" className="btn btn-primary flex-1 font-black text-xs uppercase shadow-lg shadow-emerald-500/20">Save Changes</button>
+                        </footer>
                     </form>
                 </div>
             )}

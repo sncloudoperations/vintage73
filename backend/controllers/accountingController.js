@@ -190,6 +190,7 @@ exports.createPaymentVoucher = asyncHandler(async (req, res) => {
   const user = req.user;
 
   if (!paymentAccount || !expenseAccount || !amount) {
+    require('fs').appendFileSync('debug_payment_error.log', `Payment Voucher missing fields: ${JSON.stringify({ paymentAccount, expenseAccount, amount, date, narration, reference }, null, 2)}\n`);
     res.status(400);
     throw new Error('Missing required fields');
   }

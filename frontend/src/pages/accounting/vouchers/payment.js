@@ -118,13 +118,13 @@ export default function PaymentVoucher() {
 
     const handleEdit = (v) => {
         setEditId(v.id);
-        const debitEntry = v.entries.find(e => e.debitLedgerId);
-        const creditEntry = v.entries.find(e => e.creditLedgerId);
+        const debitEntry = v.entries.find(e => e.type === 'DEBIT' || e.debitLedgerId);
+        const creditEntry = v.entries.find(e => e.type === 'CREDIT' || e.creditLedgerId);
 
         setFormData({
             date: new Date(v.date).toISOString().split('T')[0],
-            paymentAccount: creditEntry?.creditLedgerId || '',
-            expenseAccount: debitEntry?.debitLedgerId || '',
+            paymentAccount: creditEntry?.ledgerId || creditEntry?.creditLedgerId || '',
+            expenseAccount: debitEntry?.ledgerId || debitEntry?.debitLedgerId || '',
             amount: v.totalAmount,
             narration: v.narration || '',
             reference: v.reference || ''
@@ -384,8 +384,8 @@ export default function PaymentVoucher() {
                                         </tr>
                                     ) : (
                                         vouchers.map(v => {
-                                            const debitEntry = v.entries.find(e => e.debitLedgerId);
-                                            const creditEntry = v.entries.find(e => e.creditLedgerId);
+                                            const debitEntry = v.entries.find(e => e.type === 'DEBIT' || e.debitLedgerId);
+                                            const creditEntry = v.entries.find(e => e.type === 'CREDIT' || e.creditLedgerId);
                                             return (
                                                 <tr key={v.id} className="hover:bg-slate-50/50 transition-colors group">
                                                     <td className="px-6 py-4">
@@ -405,11 +405,11 @@ export default function PaymentVoucher() {
                                                         <div className="flex flex-col gap-1">
                                                             <div className="flex items-center gap-2">
                                                                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-600 border border-red-100 uppercase tracking-tighter">Debit:</span>
-                                                                <span className="text-[11px] font-bold text-slate-700">{debitEntry?.debitLedger?.name || 'Unknown'}</span>
+                                                                <span className="text-[11px] font-bold text-slate-700">{debitEntry?.ledger?.name || debitEntry?.debitLedger?.name || 'Unknown'}</span>
                                                             </div>
                                                             <div className="flex items-center gap-2">
                                                                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary-light/10 text-primary border border-primary/20 uppercase tracking-tighter">Credit:</span>
-                                                                <span className="text-[11px] font-bold text-slate-700">{creditEntry?.creditLedger?.name || 'Unknown'}</span>
+                                                                <span className="text-[11px] font-bold text-slate-700">{creditEntry?.ledger?.name || creditEntry?.creditLedger?.name || 'Unknown'}</span>
                                                             </div>
                                                             <p className="text-[10px] font-medium text-slate-500 italic truncate max-w-sm mt-1" title={v.narration}>
                                                                 {v.narration}
