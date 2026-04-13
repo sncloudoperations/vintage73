@@ -37,13 +37,17 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     if (!printData) return null;
 
     const {
-        invoiceNumber, saleDate, items, subTotal, taxAmount, totalAmount, roundOffAmount,
+        invoiceNumber, saleDate, createdAt, items, subTotal, taxAmount, totalAmount, roundOffAmount,
         customer, customerName, previousBalance, currentBalance, placeOfSupply,
-        currencyCode, currencySymbol, exchangeRate, discount, salesman
+        currencyCode, currencySymbol, exchangeRate, discount
     } = printData;
 
-    const sellerBankDetails = salesman?.employeeProfile || null;
-    const sellerAccountHolder = salesman?.name || '';
+    // Bank details come from Company Profile → default selected bank
+    const companyBank = companyProfile?.bank || null;
+    const companyBankHolder = companyProfile?.companyName || '';
+
+    // Use saleDate; fallback to createdAt if missing
+    const invoiceDate = saleDate || createdAt || null;
 
     const currentSymbol = currencySymbol || '₹';
     const settings = printData.settings || {};
@@ -139,7 +143,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <div className="border-t border-b border-black py-1 mt-1 font-bold">{settings.headerTitle || 'TAX INVOICE'}</div>
                 </div>
                 <div className="text-[10px] mb-4">
-                    <div className="flex justify-between"><span>Inv: {invoiceNumber || ''}</span><span>{saleDate ? new Date(saleDate).toLocaleDateString() : ''}</span></div>
+                    <div className="flex justify-between"><span>Inv: {invoiceNumber || ''}</span><span>{invoiceDate ? new Date(invoiceDate).toLocaleDateString() : ''}</span></div>
                     <div className="font-bold mt-1">Bill To: {customer?.name || customerName || 'Walk-in'}</div>
                 </div>
                 <table className="w-full text-[10px] border-b border-dashed border-black mb-4">
@@ -233,7 +237,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             </div>
                             <div className="flex items-center gap-6">
                                 <span className={s_Label}>Date:</span>
-                                <span className={s_Value} style={{ letterSpacing: '0.2px' }}>{saleDate ? new Date(saleDate).toLocaleDateString('en-GB') : ''}</span>
+                                <span className={s_Value} style={{ letterSpacing: '0.2px' }}>{invoiceDate ? new Date(invoiceDate).toLocaleDateString('en-GB') : ''}</span>
                             </div>
                         </div>
                     </div>
@@ -321,43 +325,43 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
             </div>
 
             {/* BANK DETAILS (Separate Section) */}
-            {settings.showBankDetails !== false && (sellerBankDetails?.bankName || sellerBankDetails?.accountNumber) && (
+            {settings.showBankDetails !== false && companyBank && (companyBank.name || companyBank.accountNumber) && (
                 <div className={`mb-6 p-4 bg-[#f8fafc] border border-slate-200 rounded-lg max-w-sm ${isBold || isModern ? 'border-t-[3px]' : ''}`} style={isBold || isModern ? { borderTopColor: accent } : {}}>
                     <p className={`${s_SecHead} mb-3 font-semibold tracking-wide`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>BANK DETAILS</p>
                     <div className="space-y-2 text-[11px]">
-                        {sellerBankDetails.bankName && (
+                        {companyBank.name && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">Bank Name</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{sellerBankDetails.bankName}</span>
+                                <span className="font-bold text-slate-700 flex-1">{companyBank.name}</span>
                             </div>
                         )}
-                        {sellerAccountHolder && (
+                        {companyBankHolder && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">Account Holder</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{sellerAccountHolder}</span>
+                                <span className="font-bold text-slate-700 flex-1">{companyBankHolder}</span>
                             </div>
                         )}
-                        {sellerBankDetails.accountNumber && (
+                        {companyBank.accountNumber && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">Account Number</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{sellerBankDetails.accountNumber}</span>
+                                <span className="font-bold text-slate-700 flex-1">{companyBank.accountNumber}</span>
                             </div>
                         )}
-                        {sellerBankDetails.ifscCode && (
+                        {companyBank.ifscCode && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">IFSC Code</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{sellerBankDetails.ifscCode}</span>
+                                <span className="font-bold text-slate-700 flex-1">{companyBank.ifscCode}</span>
                             </div>
                         )}
-                        {sellerBankDetails.branchName && (
+                        {companyBank.branchName && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">Branch</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{sellerBankDetails.branchName}</span>
+                                <span className="font-bold text-slate-700 flex-1">{companyBank.branchName}</span>
                             </div>
                         )}
                     </div>

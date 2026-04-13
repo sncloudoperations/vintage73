@@ -97,25 +97,20 @@ export default function InvoiceSettings() {
         return: defaultReturnSettings
     });
 
-    const [currentUserBank, setCurrentUserBank] = useState(null);
-    const [currentUserName, setCurrentUserName] = useState('');
+    const [previewCompanyProfile, setPreviewCompanyProfile] = useState(null);
 
     useEffect(() => {
         fetchSettings();
         fetchFinancialYears();
-        fetchCurrentUserBank();
+        fetchPreviewCompanyProfile();
     }, []);
 
-    const fetchCurrentUserBank = async () => {
+    const fetchPreviewCompanyProfile = async () => {
         try {
-            const loggedUser = JSON.parse(localStorage.getItem('user') || '{}');
-            if (loggedUser?.id) {
-                const userRes = await api.get(`/users/${loggedUser.id}`);
-                setCurrentUserBank(userRes.data?.employeeProfile || null);
-                setCurrentUserName(userRes.data?.name || '');
-            }
+            const res = await api.get('/company');
+            if (res.data) setPreviewCompanyProfile(res.data);
         } catch (err) {
-            console.error('Failed to fetch user bank details', err);
+            console.error('Failed to fetch company profile for preview', err);
         }
     };
 
@@ -426,7 +421,7 @@ export default function InvoiceSettings() {
                                 <div className={`transition-all duration-300 shadow-2xl ${previewMode === 'Mobile' ? 'w-[360px]' : 'w-auto'}`}>
                                     <ProfessionalInvoice 
                                         previewMode={previewMode}
-                                        companyProfile={{
+                                        companyProfile={previewCompanyProfile || {
                                             companyName: 'ABS HARDWARE & PAINTS',
                                             address: 'Ayiramkolly, Ambalavayal, Wayanad, Kerala - 673593',
                                             phone: '7510133133',
@@ -447,10 +442,6 @@ export default function InvoiceSettings() {
                                             totalAmount: 1000.00,
                                             roundOffAmount: 0,
                                             currentBalance: 1250,
-                                            salesman: {
-                                                name: currentUserName,
-                                                employeeProfile: currentUserBank
-                                            },
                                             settings: currentConfig,
                                             items: [
                                                 {
