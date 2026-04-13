@@ -39,8 +39,11 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     const {
         invoiceNumber, saleDate, items, subTotal, taxAmount, totalAmount, roundOffAmount,
         customer, customerName, previousBalance, currentBalance, placeOfSupply,
-        currencyCode, currencySymbol, exchangeRate
+        currencyCode, currencySymbol, exchangeRate, discount, salesman
     } = printData;
+
+    const sellerBankDetails = salesman?.employeeProfile || null;
+    const sellerAccountHolder = salesman?.name || '';
 
     const currentSymbol = currencySymbol || '₹';
     const settings = printData.settings || {};
@@ -218,16 +221,6 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             {customer?.gstin && <p className={`${s_Label} font-semibold`}>GSTIN: {customer.gstin}</p>}
                             {customer?.email && <p className={s_AddressLabel}>{customer.email}</p>}
                         </div>
-                        {settings.showBankDetails !== false && companyProfile?.bankName && (
-                            <div className="mt-4">
-                                <p className={`${s_SecHead}`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>Bank Details</p>
-                                <div className="space-y-1">
-                                    <p className={s_AddressLabel}><span className="font-semibold">Bank:</span> {companyProfile.bankName}</p>
-                                    {companyProfile?.accountNumber && <p className={s_AddressLabel}><span className="font-semibold">A/C No:</span> {companyProfile.accountNumber}</p>}
-                                    {companyProfile?.ifscCode && <p className={s_AddressLabel}><span className="font-semibold">IFSC:</span> {companyProfile.ifscCode}</p>}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 )}
                 {settings.showInvoiceMeta !== false && (
@@ -326,6 +319,50 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     </div>
                 </div>
             </div>
+
+            {/* BANK DETAILS (Separate Section) */}
+            {settings.showBankDetails !== false && (sellerBankDetails?.bankName || sellerBankDetails?.accountNumber) && (
+                <div className={`mb-6 p-4 bg-[#f8fafc] border border-slate-200 rounded-lg max-w-sm ${isBold || isModern ? 'border-t-[3px]' : ''}`} style={isBold || isModern ? { borderTopColor: accent } : {}}>
+                    <p className={`${s_SecHead} mb-3 font-semibold tracking-wide`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>BANK DETAILS</p>
+                    <div className="space-y-2 text-[11px]">
+                        {sellerBankDetails.bankName && (
+                            <div className="flex">
+                                <span className="w-28 font-medium text-slate-500">Bank Name</span>
+                                <span className="w-4 text-slate-400">:</span>
+                                <span className="font-bold text-slate-700 flex-1">{sellerBankDetails.bankName}</span>
+                            </div>
+                        )}
+                        {sellerAccountHolder && (
+                            <div className="flex">
+                                <span className="w-28 font-medium text-slate-500">Account Holder</span>
+                                <span className="w-4 text-slate-400">:</span>
+                                <span className="font-bold text-slate-700 flex-1">{sellerAccountHolder}</span>
+                            </div>
+                        )}
+                        {sellerBankDetails.accountNumber && (
+                            <div className="flex">
+                                <span className="w-28 font-medium text-slate-500">Account Number</span>
+                                <span className="w-4 text-slate-400">:</span>
+                                <span className="font-bold text-slate-700 flex-1">{sellerBankDetails.accountNumber}</span>
+                            </div>
+                        )}
+                        {sellerBankDetails.ifscCode && (
+                            <div className="flex">
+                                <span className="w-28 font-medium text-slate-500">IFSC Code</span>
+                                <span className="w-4 text-slate-400">:</span>
+                                <span className="font-bold text-slate-700 flex-1">{sellerBankDetails.ifscCode}</span>
+                            </div>
+                        )}
+                        {sellerBankDetails.branchName && (
+                            <div className="flex">
+                                <span className="w-28 font-medium text-slate-500">Branch</span>
+                                <span className="w-4 text-slate-400">:</span>
+                                <span className="font-bold text-slate-700 flex-1">{sellerBankDetails.branchName}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* FOOTER */}
             <div className={`mt-auto pt-8 border-t border-slate-50 flex justify-between items-end`}>
