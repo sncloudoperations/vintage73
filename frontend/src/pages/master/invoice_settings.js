@@ -359,7 +359,7 @@ export default function InvoiceSettings() {
                                     </div>
                                     <div className="bg-slate-50 border border-slate-100 p-3 rounded-xl grid grid-cols-2 gap-3 relative">
                                         {[
-                                            { id: 'showColHsn', label: 'HSN Code' },
+                                            { id: 'showColHsn', label: 'HSN/SAC' },
                                             { id: 'showColQty', label: 'Quantity' },
                                             { id: 'showColPrice', label: 'Price' },
                                             { id: 'showColTax', label: 'GST / Tax' },
