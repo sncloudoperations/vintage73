@@ -128,7 +128,7 @@ export default function Dashboard() {
     <div className="space-y-8 font-sans relative">
       <header className="flex justify-between items-end relative z-10">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Main Menu</h1>
+          <h1 className="text-3xl font-semibold text-slate-800 tracking-tight">Main Menu</h1>
           <p className="text-slate-500 mt-1">Welcome back, {userData?.name || userData?.username || 'User'}!</p>
         </div>
         <div className="text-sm text-slate-400 font-medium">
@@ -179,7 +179,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col transition-all hover:shadow-md">
             <div className="flex items-center space-x-2 mb-6 text-slate-800">
               <FiShoppingBag className="text-primary" />
-              <h3 className="text-lg font-bold">Recent Sales</h3>
+              <h3 className="text-lg font-medium">Recent Sales</h3>
             </div>
             <div className="space-y-4 flex-1">
               {data.recentSales.length === 0 ? (
@@ -192,7 +192,7 @@ export default function Dashboard() {
                       <p className="text-xs text-slate-400 mt-0.5">{new Date(sale.createdAt).toLocaleDateString()}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-bold text-primary text-sm">₹{Number(sale.totalAmount).toFixed(2)}</span>
+                      <span className="font-medium text-primary text-sm">₹{Number(sale.totalAmount).toFixed(2)}</span>
                       <button
                         onClick={() => triggerPrint(sale)}
                         className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary-light rounded-md transition-all opacity-0 group-hover:opacity-100"
@@ -213,7 +213,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col transition-all hover:shadow-md">
             <div className="flex items-center space-x-2 mb-6 text-slate-800">
               <FiBox className="text-blue-500" />
-              <h3 className="text-lg font-bold">Stock Balance</h3>
+              <h3 className="text-lg font-medium">Stock Balance</h3>
             </div>
             <div className="space-y-4 flex-1">
               {data.inventory.stockBalance.length === 0 ? (
@@ -226,7 +226,7 @@ export default function Dashboard() {
                       <p className="text-xs text-slate-400 mt-0.5">{item.category || 'Uncategorized'}</p>
                     </div>
                     <div className="text-right">
-                      <p className={`font-bold text-sm ${item.stock < 10 ? 'text-red-500' : 'text-slate-800'}`}>{item.stock} units</p>
+                      <p className={`font-medium text-sm ${item.stock < 10 ? 'text-red-500' : 'text-slate-800'}`}>{item.stock} units</p>
                       <p className="text-xs text-slate-400 mt-0.5">₹{Number(item.price).toFixed(2)}</p>
                     </div>
                   </div>
@@ -241,7 +241,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col transition-all hover:shadow-md">
             <div className="flex items-center space-x-2 mb-6 text-slate-800">
               <FiTrendingUp className="text-purple-500" />
-              <h3 className="text-lg font-bold">Fast Moving</h3>
+              <h3 className="text-lg font-medium">Fast Moving</h3>
             </div>
             <div className="space-y-4 flex-1">
               {!data.fastMovingProducts || data.fastMovingProducts.length === 0 ? (
@@ -250,7 +250,7 @@ export default function Dashboard() {
                 data.fastMovingProducts.map((item, idx) => (
                   <div key={idx} className="flex justify-between items-center py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 rounded-lg px-2 -mx-2 transition-colors">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-xs font-bold text-purple-600 border border-purple-100">
+                      <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-xs font-medium text-purple-600 border border-purple-100">
                         {idx + 1}
                       </div>
                       <div className="max-w-[120px]">
@@ -259,8 +259,8 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-slate-800 text-sm">{item.sold} Sold</p>
-                      <div className="flex items-center justify-end text-[10px] text-primary font-bold mt-0.5">
+                      <p className="font-medium text-slate-800 text-sm">{item.sold} Sold</p>
+                      <div className="flex items-center justify-end text-[10px] text-primary font-medium mt-0.5">
                         <FiArrowUpRight className="mr-0.5" />
                         TOP SELLER
                       </div>
@@ -276,7 +276,7 @@ export default function Dashboard() {
       {/* Financial Summary */}
       {hasAccess('ACCOUNTING') && (
         <div className="transition-all animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h3 className="text-lg font-bold text-slate-800 mb-4">Financial Summary</h3>
+          <h3 className="text-lg font-medium text-slate-800 mb-4">Financial Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <FinanceCard
               label="Total Receipts"
@@ -325,7 +325,7 @@ function DarkStatCard({ title, value, subtext, icon }) {
       <div className="relative z-10 flex justify-between items-start">
         <div>
           <p className="text-white/90 text-sm font-medium mb-2">{title}</p>
-          <h2 className="text-3xl font-bold tracking-tight mb-1 text-white">{value}</h2>
+          <h2 className="text-3xl font-semibold tracking-tight mb-1 text-white">{value}</h2>
           <p className="text-xs text-white/80 font-medium">{subtext}</p>
         </div>
         <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm group-hover:bg-white/30 transition-colors">
@@ -341,8 +341,8 @@ function DarkStatCard({ title, value, subtext, icon }) {
 function FinanceCard({ label, value, color, bgColor }) {
   return (
     <div className={`rounded-xl p-6 flex flex-col items-center justify-center text-center ${bgColor} border-2 border-white shadow-sm`}>
-      <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">{label}</p>
-      <p className={`text-2xl font-bold ${color}`}>
+      <p className="text-slate-500 text-xs font-medium uppercase tracking-wider mb-2">{label}</p>
+      <p className={`text-2xl font-semibold ${color}`}>
         {Number(value) < 0 ? '-' : ''}₹{Math.abs(Number(value)).toFixed(2)}
       </p>
     </div>

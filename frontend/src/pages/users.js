@@ -264,7 +264,7 @@ export default function Users() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Users</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">Users</h1>
           <p className="text-slate-500 text-sm mt-1">Manage system access and roles</p>
         </div>
         <button className="btn btn-primary" onClick={handleOpenAddUser}>
@@ -303,13 +303,13 @@ export default function Users() {
                         )}
                       </div>
                       <div>
-                        <div className="font-bold text-slate-800">{user.name || 'No Name'}</div>
+                        <div className="font-medium text-slate-800">{user.name || 'No Name'}</div>
                         <div className="text-[10px] text-slate-400 font-mono tracking-tighter">@{user.username}</div>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <span className="font-mono text-xs font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                    <span className="font-mono text-xs font-medium text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
                       {user.employeeProfile?.employeeCode || '-'}
                     </span>
                   </td>
@@ -319,7 +319,7 @@ export default function Users() {
                     </span>
                   </td>
                   <td>
-                    <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${user.role === 'admin' ? 'bg-purple-100 text-purple-700 font-bold' : 'bg-slate-100 text-slate-600'}`}>
+                    <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${user.role === 'admin' ? 'bg-purple-100 text-purple-700 font-medium' : 'bg-slate-100 text-slate-600'}`}>
                       {user.role}
                     </span>
                   </td>
@@ -352,7 +352,7 @@ export default function Users() {
                   <td>
                     <div className="flex flex-wrap gap-1">
                       {user.terminals && user.terminals.map(t => (
-                        <span key={t.id} className="px-2 py-0.5 bg-green-50 text-green-600 text-[10px] rounded border border-green-100 font-bold">{t.name}</span>
+                        <span key={t.id} className="px-2 py-0.5 bg-green-50 text-green-600 text-[10px] rounded border border-green-100 font-medium">{t.name}</span>
                       ))}
                       {(!user.terminals || user.terminals.length === 0) && <span className="text-slate-400 text-xs">-</span>}
                     </div>
@@ -361,7 +361,7 @@ export default function Users() {
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td>
-                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${user.isActive ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-medium uppercase ${user.isActive ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>
                       {user.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
@@ -406,7 +406,7 @@ export default function Users() {
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
               <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/30 flex-shrink-0">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">{editingId ? 'Edit User' : 'Add New User'}</h2>
+                  <h2 className="text-xl font-semibold text-slate-800 tracking-tight">{editingId ? 'Edit User' : 'Add New User'}</h2>
                   <p className="text-slate-500 text-[11px] font-medium mt-0.5 uppercase tracking-wider">{editingId ? 'Modify existing account' : 'Setup system access for staff'}</p>
                 </div>
                 <button onClick={() => { setShowModal(false); setEditingId(null); }} className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 transition-all">
@@ -420,28 +420,28 @@ export default function Users() {
                   <button
                     type="button"
                     onClick={() => setActiveTab('general')}
-                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'general' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                    className={`pb-3 text-xs font-medium uppercase tracking-wider transition-all border-b-2 ${activeTab === 'general' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                   >
                     General Info
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('access')}
-                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'access' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                    className={`pb-3 text-xs font-medium uppercase tracking-wider transition-all border-b-2 ${activeTab === 'access' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                   >
                     User Access
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('salary')}
-                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'salary' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                    className={`pb-3 text-xs font-medium uppercase tracking-wider transition-all border-b-2 ${activeTab === 'salary' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                   >
                     Salary & Info
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('bank')}
-                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'bank' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                    className={`pb-3 text-xs font-medium uppercase tracking-wider transition-all border-b-2 ${activeTab === 'bank' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                   >
                     Bank Details
                   </button>
@@ -477,13 +477,13 @@ export default function Users() {
                         <FiEdit2 size={20} />
                       </label>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-3">Profile Photo</p>
+                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-3">Profile Photo</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Full Name</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Full Name</label>
                         <input
                           required
                           name="name"
@@ -496,7 +496,7 @@ export default function Users() {
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Username</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Username</label>
                         <div className="relative">
                           <input
                             required
@@ -511,7 +511,7 @@ export default function Users() {
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex justify-between items-center">
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5 flex justify-between items-center">
                           <span>{editingId ? 'New Password (Optional)' : 'Initial Password'}</span>
                           {editingId && <span className="text-[9px] text-primary-dark normal-case font-medium">Leave blank to keep current</span>}
                         </label>
@@ -535,7 +535,7 @@ export default function Users() {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Assigned Branch</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Assigned Branch</label>
                         <select
                           className={`input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal py-2.5 text-sm ${currentUser?.branchId ? 'opacity-70 cursor-not-allowed bg-slate-100' : ''}`}
                           value={formData.branchId}
@@ -556,7 +556,7 @@ export default function Users() {
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Incentive (%)</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Incentive (%)</label>
                         <input
                           type="number"
                           max="100"
@@ -569,14 +569,14 @@ export default function Users() {
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">System Role</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">System Role</label>
                         <div className="flex gap-2">
                           {['staff', 'admin'].map(r => (
                             <button
                               key={r}
                               type="button"
                               onClick={() => setFormData({ ...formData, role: r })}
-                              className={`flex-1 py-2 px-3 rounded-lg border transition-all font-bold uppercase text-[9px] tracking-widest ${formData.role === r ? 'border-primary bg-primary-light text-primary-dark' : 'border-slate-100 text-slate-400 hover:border-slate-200'}`}
+                              className={`flex-1 py-2 px-3 rounded-lg border transition-all font-medium uppercase text-[9px] tracking-widest ${formData.role === r ? 'border-primary bg-primary-light text-primary-dark' : 'border-slate-100 text-slate-400 hover:border-slate-200'}`}
                             >
                               {r}
                             </button>
@@ -586,7 +586,7 @@ export default function Users() {
 
                       {formData.role === 'staff' && (
                         <div>
-                          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex items-center justify-between">
+                          <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5 flex items-center justify-between">
                             Assigned Admin
                             <span className="text-[9px] text-red-500 normal-case font-medium">Required for Staff</span>
                           </label>
@@ -601,7 +601,7 @@ export default function Users() {
 
                       {/* Status Toggle in Modal */}
                       <div className="pt-2">
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Account Status</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-3">Account Status</label>
                         <label className="relative inline-flex items-center cursor-pointer p-2 rounded-lg border border-slate-100 bg-white">
                           <input
                             type="checkbox"
@@ -611,7 +611,7 @@ export default function Users() {
                             disabled={currentUser?.role !== 'admin'}
                           />
                           <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                          <span className="ml-3 text-xs font-bold text-slate-700 uppercase tracking-tight">Account is Active</span>
+                          <span className="ml-3 text-xs font-medium text-slate-700 uppercase tracking-tight">Account is Active</span>
                         </label>
                       </div>
                     </div>
@@ -621,7 +621,7 @@ export default function Users() {
                 {/* Access Tab */}
                 <div className={activeTab === 'access' ? 'block' : 'hidden'}>
                   <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                       <div className="w-1 h-3 bg-primary rounded-full"></div>
                       Module Permissions
                     </label>
@@ -636,7 +636,7 @@ export default function Users() {
                           className="sr-only peer"
                         />
                         <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                        <span className={`ml-3 text-[10px] font-bold tracking-tight uppercase ${formData.allowedModules?.includes(dashboardModule) ? 'text-primary-dark' : 'text-slate-500'}`}>DASHBOARD</span>
+                        <span className={`ml-3 text-[10px] font-medium tracking-tight uppercase ${formData.allowedModules?.includes(dashboardModule) ? 'text-primary-dark' : 'text-slate-500'}`}>DASHBOARD</span>
                       </label>
                     </div>
 
@@ -663,7 +663,7 @@ export default function Users() {
                                 />
                                 <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
                               </label>
-                              <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
+                              <span className="font-semibold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
                             </div>
 
                             <div className="space-y-0.5">
@@ -696,7 +696,7 @@ export default function Users() {
 
                     {/* Terminal Selection */}
                     <div className="mt-4 bg-white p-3 rounded-lg border border-slate-200">
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                         <div className="w-1 h-3 bg-green-500 rounded-full"></div>
                         Authorized Terminals
                       </label>
@@ -720,7 +720,7 @@ export default function Users() {
                               }}
                             />
                             <div>
-                              <div className={`text-xs font-bold ${formData.terminalIds?.includes(t.id) ? 'text-green-700' : 'text-slate-600'}`}>{t.name}</div>
+                              <div className={`text-xs font-medium ${formData.terminalIds?.includes(t.id) ? 'text-green-700' : 'text-slate-600'}`}>{t.name}</div>
                               <div className="text-[10px] text-slate-400 font-mono">{t.terminalCode}</div>
                             </div>
                           </label>
@@ -734,7 +734,7 @@ export default function Users() {
                 <div className={activeTab === 'salary' ? 'block' : 'hidden'}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Weekly Off Day</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Weekly Off Day</label>
                       <select
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
                         value={formData.weeklyOff}
@@ -751,7 +751,7 @@ export default function Users() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5 flex justify-between">
                         Employee Code
                         <div className="flex items-center gap-1 cursor-pointer select-none" onClick={() => setFormData({ ...formData, autoCode: !formData.autoCode, employeeCode: !formData.autoCode ? '' : formData.employeeCode })}>
                           <div className={`w-3 h-3 rounded-full border-2 ${formData.autoCode ? 'bg-primary border-primary' : 'bg-white border-slate-300'}`}></div>
@@ -767,7 +767,7 @@ export default function Users() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Designation</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Designation</label>
                       <select
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
                         value={formData.designation}
@@ -780,7 +780,7 @@ export default function Users() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Department</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Department</label>
                       <select
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
                         value={formData.department}
@@ -793,7 +793,7 @@ export default function Users() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Joining Date</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Joining Date</label>
                       <input
                         type="date"
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
@@ -802,7 +802,7 @@ export default function Users() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Basic Salary ({companyProfile?.currencySymbol || '₹'})</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Basic Salary ({companyProfile?.currencySymbol || '₹'})</label>
                       <input
                         type="number"
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
@@ -811,7 +811,7 @@ export default function Users() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">
                         {companyProfile?.country === 'India' ? 'Labour Rule (ESI/PF)' :
                           companyProfile?.country === 'UAE' ? 'Labour Rule (WPS/MOL)' : 'Labour Rule'}
                       </label>
@@ -823,7 +823,7 @@ export default function Users() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">
                         {companyProfile?.country === 'India' ? 'Aadhar / PAN' :
                           companyProfile?.country === 'UAE' ? 'Emirates ID / Labor Card' : 'National ID'}
                       </label>
@@ -841,7 +841,7 @@ export default function Users() {
                 <div className={activeTab === 'bank' ? 'block' : 'hidden'}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Bank Name</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Bank Name</label>
                       <input
                         type="text"
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
@@ -851,7 +851,7 @@ export default function Users() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Account Number</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Account Number</label>
                       <input
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5 font-mono"
                         placeholder="1234567890"
@@ -860,7 +860,7 @@ export default function Users() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">IFSC / Routing Code</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">IFSC / Routing Code</label>
                       <input
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5 uppercase font-mono"
                         placeholder="HDFC0001234"
@@ -869,7 +869,7 @@ export default function Users() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Bank Branch</label>
+                      <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Bank Branch</label>
                       <input
                         className="input w-full bg-slate-50 border-slate-100 focus:bg-white transition-all font-normal text-sm py-2.5"
                         placeholder="Branch Name"
@@ -881,8 +881,8 @@ export default function Users() {
                 </div>
 
                 <div className="flex justify-end gap-3 mt-8">
-                  <button type="button" className="px-4 py-2 font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase text-[10px]" onClick={() => { setShowModal(false); setEditingId(null); }}>Cancel</button>
-                  <button type="submit" className="bg-slate-900 text-white font-bold px-8 py-2.5 rounded-lg hover:bg-black hover:shadow-lg transition-all active:scale-95 text-xs uppercase tracking-widest">
+                  <button type="button" className="px-4 py-2 font-medium text-slate-400 hover:text-slate-600 transition-colors uppercase text-[10px]" onClick={() => { setShowModal(false); setEditingId(null); }}>Cancel</button>
+                  <button type="submit" className="bg-slate-900 text-white font-medium px-8 py-2.5 rounded-lg hover:bg-black hover:shadow-lg transition-all active:scale-95 text-xs uppercase tracking-widest">
                     {editingId ? 'Save Changes' : 'Create Account'}
                   </button>
                 </div>
@@ -903,7 +903,7 @@ export default function Users() {
                   {statusTarget.isActive ? <FiToggleRight className="w-6 h-6" /> : <FiToggleLeft className="w-6 h-6" />}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">
+                  <h3 className="text-lg font-medium text-slate-900">
                     {statusTarget.isActive ? 'Deactivate Account?' : 'Activate Account?'}
                   </h3>
                   <p className="text-sm text-slate-600 mt-1 font-medium">
@@ -923,7 +923,7 @@ export default function Users() {
               <div className="flex gap-3 mt-8">
                 <button
                   onClick={() => setShowStatusModal(false)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors"
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -938,7 +938,7 @@ export default function Users() {
                       toast.error('Failed to update status');
                     }
                   }}
-                  className={`flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all active:scale-95 ${statusTarget.isActive ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-green-500 hover:bg-green-600 shadow-green-200'}`}
+                  className={`flex-1 px-4 py-2.5 rounded-xl font-medium text-sm text-white shadow-lg transition-all active:scale-95 ${statusTarget.isActive ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-green-500 hover:bg-green-600 shadow-green-200'}`}
                 >
                   Yes, {statusTarget.isActive ? 'Deactivate' : 'Activate'}
                 </button>

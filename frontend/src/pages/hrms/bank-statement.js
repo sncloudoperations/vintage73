@@ -67,8 +67,8 @@ export default function BankStatementPage() {
                         <FiCreditCard className="text-primary text-xl" />
                     </div>
                     <div>
-                        <h1 className="text-lg font-bold text-white leading-tight">Salary Disbursement</h1>
-                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mt-0.5">Bank Statement Report</p>
+                        <h1 className="text-lg font-semibold text-white leading-tight">Salary Disbursement</h1>
+                        <p className="text-slate-400 text-[10px] uppercase font-medium tracking-widest mt-0.5">Bank Statement Report</p>
                     </div>
                 </div>
 
@@ -113,7 +113,7 @@ export default function BankStatementPage() {
 
                     <button
                         onClick={fetchPayroll}
-                        className="h-9 bg-primary hover:bg-primary-dark text-white rounded-lg px-4 flex items-center gap-2 transition-all text-xs font-bold uppercase tracking-wider shadow-lg shadow-primary/20"
+                        className="h-9 bg-primary hover:bg-primary-dark text-white rounded-lg px-4 flex items-center gap-2 transition-all text-xs font-medium uppercase tracking-wider shadow-lg shadow-primary/20"
                     >
                         <FiSearch /> Search
                     </button>
@@ -121,7 +121,7 @@ export default function BankStatementPage() {
                     <button
                         onClick={handlePrint}
                         disabled={payrolls.length === 0}
-                        className="h-9 bg-white text-slate-900 hover:bg-slate-50 rounded-lg px-4 flex items-center gap-2 transition-all text-xs font-bold uppercase tracking-wider shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="h-9 bg-white text-slate-900 hover:bg-slate-50 rounded-lg px-4 flex items-center gap-2 transition-all text-xs font-medium uppercase tracking-wider shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <FiPrinter /> Print
                     </button>
@@ -133,7 +133,7 @@ export default function BankStatementPage() {
                 {loading ? (
                     <div className="mt-20 flex flex-col items-center gap-4">
                         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                        <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em]">Preparing Statement...</p>
+                        <p className="text-slate-400 font-medium uppercase text-[10px] tracking-[0.2em]">Preparing Statement...</p>
                     </div>
                 ) : payrolls.length === 0 ? (
                     <div className="mt-20 text-center">
@@ -145,29 +145,29 @@ export default function BankStatementPage() {
                     <div className="bg-white p-16 shadow-2xl rounded-[2rem] w-full max-w-4xl print:shadow-none print:p-0 print:m-0" ref={bankStatementRef}>
                         {/* Print Header */}
                         <div className="text-center border-b-2 border-slate-900 pb-8 mb-10">
-                            <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-1">{companyProfile?.companyName}</h2>
+                            <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-tighter mb-1">{companyProfile?.companyName}</h2>
                             <p className="text-slate-500 text-sm font-medium">{companyProfile?.address}, {companyProfile?.city}, {companyProfile?.state}</p>
-                            <p className="text-slate-500 text-xs mt-1 font-bold">GSTIN: {companyProfile?.gstin} | Pan: {companyProfile?.pan}</p>
+                            <p className="text-slate-500 text-xs mt-1 font-medium">GSTIN: {companyProfile?.gstin} | Pan: {companyProfile?.pan}</p>
                         </div>
 
                         <div className="flex justify-between items-end mb-8 border-b border-slate-100 pb-8">
                             <div>
-                                <h3 className="text-lg font-black text-slate-800 uppercase underline decoration-2 underline-offset-4 mb-4">SALARY DISBURSEMENT STATEMENT</h3>
+                                <h3 className="text-lg font-medium text-slate-800 uppercase underline decoration-2 underline-offset-4 mb-4">SALARY DISBURSEMENT STATEMENT</h3>
                                 <div className="space-y-1 text-sm text-slate-600 font-medium">
-                                    <p><span className="font-black text-slate-900">Period:</span> {filters.month} {filters.year}</p>
-                                    <p><span className="font-black text-slate-900">Document Type:</span> Bank Disbursement</p>
+                                    <p><span className="font-medium text-slate-900">Period:</span> {filters.month} {filters.year}</p>
+                                    <p><span className="font-medium text-slate-900">Document Type:</span> Bank Disbursement</p>
                                 </div>
                             </div>
                             <div className="text-right">
                                 {companyProfile?.bank && (
                                     <div className="mb-4 text-xs">
-                                        <p className="font-black text-slate-400 uppercase tracking-widest text-[9px] mb-1">Source Bank Details</p>
-                                        <p className="font-bold text-slate-800">{companyProfile.bank.name} - {companyProfile.bank.branchName}</p>
+                                        <p className="font-medium text-slate-400 uppercase tracking-widest text-[9px] mb-1">Source Bank Details</p>
+                                        <p className="font-medium text-slate-800">{companyProfile.bank.name} - {companyProfile.bank.branchName}</p>
                                         <p className="text-slate-600">A/C: <span className="font-mono">{companyProfile.bank.accountNumber}</span></p>
                                         <p className="text-slate-600 text-[10px]">IFSC: <span className="font-mono">{companyProfile.bank.ifscCode}</span></p>
                                     </div>
                                 )}
-                                <div className="text-xs font-bold text-slate-500 space-y-1">
+                                <div className="text-xs font-medium text-slate-500 space-y-1">
                                     <p>Date: {new Date().toLocaleDateString('en-GB')}</p>
                                     <p>Document No: BS-{filters.month?.substring(0, 3).toUpperCase()}-{filters.year}</p>
                                 </div>
@@ -190,14 +190,14 @@ export default function BankStatementPage() {
                                 {payrolls.map((p, idx) => (
                                     <tr key={p.id}>
                                         <td className="border border-slate-300 p-2 text-center">{idx + 1}</td>
-                                        <td className="border border-slate-300 p-2 font-bold uppercase">{p.user?.name}</td>
+                                        <td className="border border-slate-300 p-2 font-medium uppercase">{p.user?.name}</td>
                                         <td className="border border-slate-300 p-2">{p.user?.employeeProfile?.bankName || '-'}</td>
-                                        <td className="border border-slate-300 p-2 font-mono font-bold tracking-tight">{p.user?.employeeProfile?.accountNumber || '-'}</td>
+                                        <td className="border border-slate-300 p-2 font-mono font-medium tracking-tight">{p.user?.employeeProfile?.accountNumber || '-'}</td>
                                         <td className="border border-slate-300 p-2 font-mono uppercase text-[10px]">{p.user?.employeeProfile?.ifscCode || '-'}</td>
-                                        <td className="border border-slate-300 p-2 text-right font-black text-slate-900">{Number(p.netSalary).toLocaleString()}</td>
+                                        <td className="border border-slate-300 p-2 text-right font-medium text-slate-900">{Number(p.netSalary).toLocaleString()}</td>
                                     </tr>
                                 ))}
-                                <tr className="bg-slate-50 font-black">
+                                <tr className="bg-slate-50 font-medium">
                                     <td colSpan="5" className="border border-slate-300 p-3 text-right text-xs uppercase">Total Transfer Amount</td>
                                     <td className="border border-slate-300 p-3 text-right text-xs">{companyProfile?.currencySymbol || '₹'}{totalAmount.toLocaleString()}</td>
                                 </tr>
@@ -206,8 +206,8 @@ export default function BankStatementPage() {
 
                         {/* Summary */}
                         <div className="mb-16">
-                            <p className="text-[10px] text-slate-400 font-black uppercase mb-1 tracking-widest">Amount in Words</p>
-                            <p className="border-b border-slate-200 pb-2 text-sm font-bold italic text-slate-700">
+                            <p className="text-[10px] text-slate-400 font-medium uppercase mb-1 tracking-widest">Amount in Words</p>
+                            <p className="border-b border-slate-200 pb-2 text-sm font-medium italic text-slate-700">
                                 {totalAmount.toLocaleString()} {companyProfile?.currencyName || 'Rupees'} Only
                             </p>
                         </div>
@@ -216,18 +216,18 @@ export default function BankStatementPage() {
                         <div className="flex justify-between items-end mt-20 px-4">
                             <div className="text-center w-56">
                                 <div className="border-t-2 border-slate-900 pt-3">
-                                    <p className="text-[10px] font-black uppercase tracking-widest">Prepared By</p>
+                                    <p className="text-[10px] font-medium uppercase tracking-widest">Prepared By</p>
                                 </div>
                             </div>
                             <div className="text-center w-56">
                                 <div className="border-t-2 border-slate-900 pt-3">
-                                    <p className="text-[10px] font-black uppercase tracking-widest">Authorized Signatory</p>
+                                    <p className="text-[10px] font-medium uppercase tracking-widest">Authorized Signatory</p>
                                     <p className="text-[8px] text-slate-400 mt-1 uppercase">For {companyProfile?.companyName}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-16 text-center text-[9px] text-slate-300 font-bold uppercase tracking-[0.2em] print:hidden">
+                        <div className="mt-16 text-center text-[9px] text-slate-300 font-medium uppercase tracking-[0.2em] print:hidden">
                             This is a computer generated document
                         </div>
                     </div>

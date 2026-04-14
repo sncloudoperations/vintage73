@@ -178,7 +178,7 @@ export default function Customers() {
     <div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">Customers</h1>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Customers</h1>
           <p className="text-slate-500 text-sm">Manage your directory and view customer history</p>
         </div>
 
@@ -208,7 +208,7 @@ export default function Customers() {
                   <FiUsers />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-800">{customer.name}</h3>
+                  <h3 className="font-medium text-slate-800">{customer.name}</h3>
                   <p className="text-xs text-slate-500 flex items-center gap-1">
                     <FiPhone className="text-[10px]" /> {customer.phone || 'N/A'}
                   </p>
@@ -227,7 +227,7 @@ export default function Customers() {
                 <p className="text-xs font-mono bg-slate-50 px-2 py-1 rounded">GSTIN: {customer.gstin}</p>
               )}
               {customer.address && <p className="flex items-start gap-2"><FiMapPin className="mt-0.5 text-slate-400" /> {customer.address}</p>}
-              <div className="pt-3 mt-3 border-t border-slate-50 flex justify-between items-center text-[10px] uppercase tracking-wider font-bold">
+              <div className="pt-3 mt-3 border-t border-slate-50 flex justify-between items-center text-[10px] uppercase tracking-wider font-medium">
                 <div className="flex items-center gap-1.5 text-slate-400">
                   <FiMapPin size={12} className="text-primary" />
                   <span>{customer.branch?.name || 'Global'}</span>
@@ -250,7 +250,7 @@ export default function Customers() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white">
-              <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Customer' : 'Add Customer'}</h2>
+              <h2 className="text-xl font-semibold text-slate-800">{isEdit ? 'Edit Customer' : 'Add Customer'}</h2>
               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -259,14 +259,14 @@ export default function Customers() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('general')}
-                  className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'general' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                  className={`pb-3 text-xs font-medium uppercase tracking-wider transition-all border-b-2 ${activeTab === 'general' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                 >
                   General Info
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab('access')}
-                  className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'access' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                  className={`pb-3 text-xs font-medium uppercase tracking-wider transition-all border-b-2 ${activeTab === 'access' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                 >
                   Customer Access
                 </button>
@@ -355,7 +355,7 @@ export default function Customers() {
                   </div>
                   
                   <div className="col-span-2 pt-4 border-t border-slate-100 mt-2">
-                    <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2 mb-4">
+                    <h3 className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-4">
                       <FiKey className="text-primary" /> Login Credentials
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
@@ -375,7 +375,7 @@ export default function Customers() {
               {/* Access Tab */}
               <div className={activeTab === 'access' ? 'block space-y-4' : 'hidden'}>
                 <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <div className="w-1 h-3 bg-primary rounded-full"></div>
                     Customer Module Permissions
                   </label>
@@ -390,7 +390,7 @@ export default function Customers() {
                         className="sr-only peer"
                       />
                       <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                      <span className={`ml-3 text-[10px] font-bold tracking-tight uppercase ${formData.accessPermissions?.includes('DASHBOARD') ? 'text-primary-dark' : 'text-slate-500'}`}>DASHBOARD</span>
+                      <span className={`ml-3 text-[10px] font-medium tracking-tight uppercase ${formData.accessPermissions?.includes('DASHBOARD') ? 'text-primary-dark' : 'text-slate-500'}`}>DASHBOARD</span>
                     </label>
                   </div>
 
@@ -407,7 +407,7 @@ export default function Customers() {
                             />
                             <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
                           </label>
-                          <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
+                          <span className="font-semibold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
                         </div>
 
                         <div className="space-y-0.5">

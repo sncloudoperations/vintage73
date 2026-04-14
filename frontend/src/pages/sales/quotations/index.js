@@ -144,7 +144,7 @@ export default function QuotationsList() {
         <div className="p-6">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Quotations</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Quotations</h1>
                     <p className="text-slate-500 text-sm">Manage and track customer quotations</p>
                 </div>
                 <button
@@ -179,7 +179,7 @@ export default function QuotationsList() {
                                 <td className="px-6 py-4 text-sm text-gray-800">
                                     {q.customer?.name || 'Walk-in'}
                                 </td>
-                                <td className="px-6 py-4 text-sm text-right font-bold text-slate-700">
+                                <td className="px-6 py-4 text-sm text-right font-medium text-slate-700">
                                     ₹{Number(q.totalAmount).toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4">
@@ -258,7 +258,7 @@ export default function QuotationsList() {
                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
                         <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl relative">
                             <div className="flex justify-between items-center p-4 border-b">
-                                <h2 className="text-lg font-bold">Quotation Preview</h2>
+                                <h2 className="text-lg font-semibold">Quotation Preview</h2>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handlePrint()}

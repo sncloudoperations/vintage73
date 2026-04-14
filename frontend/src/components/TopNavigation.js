@@ -144,14 +144,14 @@ export default function TopNavigation() {
                 >
                   <div className="bg-white border text-left border-gray-100 rounded-lg shadow-xl py-2 overflow-hidden">
                     <div className="px-3 py-1.5 mb-1 bg-slate-50 border-b border-gray-50">
-                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">{group.title} Modules</h4>
+                      <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{group.title} Modules</h4>
                     </div>
                     {group.items.map((item) => (
                       <div
                         key={item.path}
                         onClick={() => handleItemClick(item)}
                         className={`flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors
-                                            ${router.pathname === item.path ? 'bg-primary-light text-primary-dark font-bold border-l-4 border-primary' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-dark'}
+                                            ${router.pathname === item.path ? 'bg-primary-light text-primary-dark font-medium border-l-4 border-primary' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-dark'}
                                         `}
                       >
                         <item.icon className={router.pathname === item.path ? 'text-primary' : 'text-slate-400'} />
@@ -184,7 +184,7 @@ export default function TopNavigation() {
         {/* Search Results Dropdown */}
         {searchTerm && searchResults.length > 0 && (
           <div className="absolute top-full right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-xl py-2 z-50 max-h-[400px] overflow-y-auto">
-            <div className="px-3 py-1.5 bg-slate-50 border-b border-gray-50 text-xs font-bold text-slate-400 uppercase mb-1">
+            <div className="px-3 py-1.5 bg-slate-50 border-b border-gray-50 text-xs font-medium text-slate-400 uppercase mb-1">
               Search Results
             </div>
             {searchResults.map((item, idx) => (

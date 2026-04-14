@@ -106,7 +106,7 @@ export default function WorkLogPage() {
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Daily Work Log Report</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Daily Work Log Report</h1>
                     <p className="text-slate-500 text-sm mt-0.5">
                         {isAdmin ? 'View work logs from your assigned staff' : 'Track your daily work activities'}
                     </p>
@@ -182,7 +182,7 @@ export default function WorkLogPage() {
                             {filteredLogs.map(log => (
                                 <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="px-6 py-4">
-                                        <span className="inline-flex items-center gap-1.5 bg-primary-light/10 text-primary px-2.5 py-1 rounded-full text-xs font-bold">
+                                        <span className="inline-flex items-center gap-1.5 bg-primary-light/10 text-primary px-2.5 py-1 rounded-full text-xs font-medium">
                                             <FiCalendar size={11} />
                                             {new Date(log.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                                         </span>
@@ -224,7 +224,7 @@ export default function WorkLogPage() {
                         {/* Modal Header */}
                         <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/40 rounded-t-2xl">
                             <div>
-                                <h2 className="text-lg font-bold text-slate-800">{editingLog ? 'Edit Work Log' : 'Add Work Log'}</h2>
+                                <h2 className="text-lg font-semibold text-slate-800">{editingLog ? 'Edit Work Log' : 'Add Work Log'}</h2>
                                 <p className="text-slate-400 text-xs mt-0.5">{editingLog ? 'Update your activity record' : 'Record your daily work activities'}</p>
                             </div>
                             <button
@@ -238,7 +238,7 @@ export default function WorkLogPage() {
                         {/* Modal Body */}
                         <form onSubmit={handleSubmit} className="p-5 space-y-4">
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">
                                     Date <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -250,7 +250,7 @@ export default function WorkLogPage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">
                                     Work Description <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
@@ -274,7 +274,7 @@ export default function WorkLogPage() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold hover:bg-primary-dark transition disabled:opacity-60"
+                                    className="flex-1 bg-primary text-white py-2.5 rounded-lg font-medium hover:bg-primary-dark transition disabled:opacity-60"
                                 >
                                     {submitting ? 'Saving...' : editingLog ? 'Update Work Log' : 'Save Work Log'}
                                 </button>

@@ -56,7 +56,7 @@ const ProfessionalModal = ({
                         </button>
                     </div>
 
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">{title}</h3>
+                    <h3 className="text-xl font-semibold text-slate-800 mb-2">{title}</h3>
                     <p className="text-sm font-medium text-slate-500 mb-6">{message}</p>
 
                     {/* Transaction Details Summary */}
@@ -64,8 +64,8 @@ const ProfessionalModal = ({
                         <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-100 space-y-3">
                             {details.map((detail, idx) => (
                                 <div key={idx} className="flex justify-between items-center text-xs">
-                                    <span className="text-slate-400 font-bold uppercase tracking-wider">{detail.label}</span>
-                                    <span className="text-slate-700 font-black tabular-nums">{detail.value}</span>
+                                    <span className="text-slate-400 font-medium uppercase tracking-wider">{detail.label}</span>
+                                    <span className="text-slate-700 font-medium tabular-nums">{detail.value}</span>
                                 </div>
                             ))}
                         </div>
@@ -74,13 +74,13 @@ const ProfessionalModal = ({
                     <div className="flex gap-3">
                         <button 
                             onClick={onClose}
-                            className="flex-1 px-5 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
+                            className="flex-1 px-5 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
                         >
                             {cancelText}
                         </button>
                         <button 
                             onClick={onConfirm}
-                            className={`flex-1 px-5 py-3 rounded-xl text-white font-bold text-xs uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 ${theme.button}`}
+                            className={`flex-1 px-5 py-3 rounded-xl text-white font-medium text-xs uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 ${theme.button}`}
                         >
                             {type === 'success' ? <FiSave /> : null}
                             {confirmText}
@@ -91,7 +91,7 @@ const ProfessionalModal = ({
                 {/* Footer Tip */}
                 <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Secure cloud transaction</span>
+                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Secure cloud transaction</span>
                 </div>
             </div>
         </div>

@@ -174,7 +174,7 @@ export default function ContraEntry() {
 
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                    <h1 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-md">
                             <FiRefreshCw className="text-white" size={20} />
                         </div>
@@ -186,13 +186,13 @@ export default function ContraEntry() {
                 <div className="flex bg-slate-100 p-1 rounded-lg w-fit shadow-inner">
                     <button
                         onClick={() => { setActiveTab('create'); if (!editId) resetForm(); }}
-                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'create' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                        className={`px-5 py-2 rounded-lg text-xs font-medium uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'create' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                     >
                         <FiPlus /> {editId ? 'EDIT ENTRY' : 'NEW ENTRY'}
                     </button>
                     <button
                         onClick={() => setActiveTab('history')}
-                        className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'history' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                        className={`px-5 py-2 rounded-lg text-xs font-medium uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'history' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                     >
                         <FiList /> HISTORY
                     </button>
@@ -205,13 +205,13 @@ export default function ContraEntry() {
                         {/* Status / Header Bar */}
                         <div className={`px-6 py-2 flex justify-between items-center ${editId ? 'bg-blue-600' : 'bg-primary-dark'} transition-colors`}>
                             <div className="flex items-center gap-4">
-                                <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Type:</span>
-                                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                                <span className="text-[10px] font-medium text-white/70 uppercase tracking-widest">Type:</span>
+                                <span className="text-xs font-medium text-white uppercase tracking-wider">
                                     {editId ? 'AMENDMENT MODE' : 'INTERNAL BANK/CASH CONTRA'}
                                 </span>
                             </div>
                             {editId && (
-                                <button onClick={resetForm} className="text-[10px] font-bold text-white uppercase tracking-wider hover:underline flex items-center gap-1">
+                                <button onClick={resetForm} className="text-[10px] font-medium text-white uppercase tracking-wider hover:underline flex items-center gap-1">
                                     <FiX size={14} /> Cancel Editing
                                 </button>
                             )}
@@ -220,7 +220,7 @@ export default function ContraEntry() {
                         <form onSubmit={handleSubmit} className="p-6">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                                 <div>
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Voucher Date</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-2">Voucher Date</label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-primary transition-colors">
                                             <FiCalendar size={18} className="text-slate-400 group-focus-within:text-primary" />
@@ -235,7 +235,7 @@ export default function ContraEntry() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Reference No. (Optional)</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-2">Reference No. (Optional)</label>
                                     <input
                                         type="text"
                                         className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm font-semibold transition-all font-mono"
@@ -245,15 +245,15 @@ export default function ContraEntry() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-primary">Transfer Amount (₹)</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-2 text-primary">Transfer Amount (₹)</label>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-primary">₹</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-primary">₹</span>
                                         <input
                                             required
                                             type="number"
                                             step="0.01"
                                             min="0.01"
-                                            className="w-full pl-8 pr-4 py-3 bg-primary-light/30 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent focus:bg-white text-lg font-bold text-primary tabular-nums transition-all"
+                                            className="w-full pl-8 pr-4 py-3 bg-primary-light/30 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent focus:bg-white text-lg font-medium text-primary tabular-nums transition-all"
                                             value={formData.amount}
                                             onChange={e => setFormData({ ...formData, amount: e.target.value })}
                                             placeholder="0.00"
@@ -265,13 +265,13 @@ export default function ContraEntry() {
                             <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
                                 <div className="flex-1 w-full p-4 rounded-xl border border-slate-200 bg-slate-50/50">
                                     <div className="flex justify-between items-center mb-3">
-                                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider">
                                             Transfer From (Credit)
                                         </label>
                                         {selectedFromAccount && (
                                             <div className="flex items-center gap-2">
                                                 <div className={`w-1.5 h-1.5 rounded-full ${selectedFromAccount.currentBalance >= 0 ? 'bg-primary' : 'bg-red-500'}`} />
-                                                <span className="text-[10px] font-bold text-slate-500">
+                                                <span className="text-[10px] font-medium text-slate-500">
                                                     Bal: ₹{Math.abs(selectedFromAccount.currentBalance).toFixed(2)} {selectedFromAccount.currentBalance >= 0 ? 'Dr' : 'Cr'}
                                                 </span>
                                             </div>
@@ -292,13 +292,13 @@ export default function ContraEntry() {
 
                                 <div className="flex-1 w-full p-4 rounded-xl border border-slate-200 bg-slate-50/50">
                                     <div className="flex justify-between items-center mb-3">
-                                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider">
                                             Transfer To (Debit)
                                         </label>
                                         {selectedToAccount && (
                                             <div className="flex items-center gap-2">
                                                 <div className={`w-1.5 h-1.5 rounded-full ${selectedToAccount.currentBalance >= 0 ? 'bg-primary' : 'bg-red-500'}`} />
-                                                <span className="text-[10px] font-bold text-slate-500">
+                                                <span className="text-[10px] font-medium text-slate-500">
                                                     Bal: ₹{Math.abs(selectedToAccount.currentBalance).toFixed(2)} {selectedToAccount.currentBalance >= 0 ? 'Dr' : 'Cr'}
                                                 </span>
                                             </div>
@@ -315,7 +315,7 @@ export default function ContraEntry() {
                             </div>
 
                             <div className="mb-8">
-                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Detailed Narration</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-2">Detailed Narration</label>
                                 <textarea
                                     required
                                     rows="2"
@@ -330,7 +330,7 @@ export default function ContraEntry() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="flex-1 bg-slate-900 text-white py-3.5 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-800 shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-1 bg-slate-900 text-white py-3.5 rounded-lg font-medium text-xs uppercase tracking-widest hover:bg-slate-800 shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     <FiSave size={16} />
                                     {isSubmitting ? 'PROCESSING...' : (editId ? 'UPDATE ENTRY' : 'POST CONTRA ENTRY')}
@@ -339,7 +339,7 @@ export default function ContraEntry() {
                                     <button
                                         type="button"
                                         onClick={resetForm}
-                                        className="px-8 py-3.5 rounded-lg font-bold text-xs uppercase tracking-widest border border-slate-200 text-slate-500 hover:bg-slate-50 transition-all"
+                                        className="px-8 py-3.5 rounded-lg font-medium text-xs uppercase tracking-widest border border-slate-200 text-slate-500 hover:bg-slate-50 transition-all"
                                     >
                                         CANCEL
                                     </button>
@@ -349,7 +349,7 @@ export default function ContraEntry() {
                     </div>
 
                     <div className="bg-slate-800 rounded-xl p-3 flex items-center gap-3 border-l-4 border-primary">
-                        <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">!</div>
+                        <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">!</div>
                         <p className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">
                             Contra entries are internal transfers. They do not affect the net worth of the business, only its liquidity distribution.
                         </p>
@@ -362,11 +362,11 @@ export default function ContraEntry() {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-slate-50 border-b border-slate-200">
-                                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider w-[15%]">Date</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider w-[15%]">Voucher No</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider w-[45%]">Movement Path</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right w-[15%]">Amount Moved</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center w-[10%]">Actions</th>
+                                        <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[15%]">Date</th>
+                                        <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[15%]">Voucher No</th>
+                                        <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[45%]">Movement Path</th>
+                                        <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider text-right w-[15%]">Amount Moved</th>
+                                        <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider text-center w-[10%]">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
@@ -374,12 +374,12 @@ export default function ContraEntry() {
                                         <tr>
                                             <td colSpan="5" className="px-6 py-12 text-center text-slate-400">
                                                 <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-3"></div>
-                                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Syncing Registry...</span>
+                                                <span className="text-[10px] font-medium uppercase tracking-widest text-slate-500">Syncing Registry...</span>
                                             </td>
                                         </tr>
                                     ) : vouchers.length === 0 ? (
                                         <tr>
-                                            <td colSpan="5" className="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+                                            <td colSpan="5" className="px-6 py-12 text-center text-slate-400 font-medium uppercase tracking-widest text-[10px]">
                                                 No contra history detected
                                             </td>
                                         </tr>
@@ -400,17 +400,17 @@ export default function ContraEntry() {
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className="text-sm font-bold text-slate-900">{v.voucherNumber}</span>
+                                                        <span className="text-sm font-medium text-slate-900">{v.voucherNumber}</span>
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <div className="flex flex-col gap-1">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary-light text-primary border border-primary-light uppercase tracking-tighter">Debit To:</span>
-                                                                <span className="text-[11px] font-bold text-slate-700">{debitEntry?.ledger?.name || debitEntry?.debitLedger?.name || 'Unknown'}</span>
+                                                                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-primary-light text-primary border border-primary-light uppercase tracking-tighter">Debit To:</span>
+                                                                <span className="text-[11px] font-medium text-slate-700">{debitEntry?.ledger?.name || debitEntry?.debitLedger?.name || 'Unknown'}</span>
                                                             </div>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-600 border border-red-100 uppercase tracking-tighter">Credit From:</span>
-                                                                <span className="text-[11px] font-bold text-slate-700">{creditEntry?.ledger?.name || creditEntry?.creditLedger?.name || 'Unknown'}</span>
+                                                                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-red-50 text-red-600 border border-red-100 uppercase tracking-tighter">Credit From:</span>
+                                                                <span className="text-[11px] font-medium text-slate-700">{creditEntry?.ledger?.name || creditEntry?.creditLedger?.name || 'Unknown'}</span>
                                                             </div>
                                                             <p className="text-[10px] font-medium text-slate-500 italic truncate max-w-sm mt-1" title={v.narration}>
                                                                 {v.narration}
@@ -419,13 +419,13 @@ export default function ContraEntry() {
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
                                                         <div className="flex flex-col items-end">
-                                                            <span className="text-sm font-bold text-slate-900 tabular-nums">
+                                                            <span className="text-sm font-medium text-slate-900 tabular-nums">
                                                                 ₹{parseFloat(v.totalAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                                             </span>
                                                             {v.status === 'CANCELLED' ? (
-                                                                <span className="mt-1 px-1.5 py-0.5 rounded bg-red-100 text-red-600 text-[8px] font-bold uppercase tracking-widest ring-1 ring-red-200">Reversed</span>
+                                                                <span className="mt-1 px-1.5 py-0.5 rounded bg-red-100 text-red-600 text-[8px] font-medium uppercase tracking-widest ring-1 ring-red-200">Reversed</span>
                                                             ) : (
-                                                                <span className="mt-1 px-1.5 py-0.5 rounded bg-primary-light text-primary text-[8px] font-bold uppercase tracking-widest ring-1 ring-primary/20">Balanced</span>
+                                                                <span className="mt-1 px-1.5 py-0.5 rounded bg-primary-light text-primary text-[8px] font-medium uppercase tracking-widest ring-1 ring-primary/20">Balanced</span>
                                                             )}
                                                         </div>
                                                     </td>

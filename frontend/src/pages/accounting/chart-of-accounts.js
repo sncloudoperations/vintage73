@@ -124,7 +124,7 @@ export default function ChartOfAccounts() {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Chart of Accounts</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Chart of Accounts</h1>
                     <p className="text-slate-500 text-sm mt-1">{filteredLedgers.length} ledgers</p>
                 </div>
                 <div className="flex gap-3">
@@ -203,7 +203,7 @@ export default function ChartOfAccounts() {
                                                 {ledger.group?.name || '-'}
                                             </td>
                                             <td>
-                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${ledger.group?.groupType === 'ASSETS' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium uppercase ${ledger.group?.groupType === 'ASSETS' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
                                                     ledger.group?.groupType === 'LIABILITIES' ? 'bg-red-50 text-red-700 border border-red-100' :
                                                         ledger.group?.groupType === 'EQUITY' ? 'bg-purple-50 text-purple-700 border border-purple-100' :
                                                             ledger.group?.groupType === 'INCOME' ? 'bg-primary-light/10 text-primary border border-primary/20' :
@@ -222,7 +222,7 @@ export default function ChartOfAccounts() {
                                                 </span>
                                             </td>
                                             <td className="text-center">
-                                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${ledger.balanceType === 'DEBIT'
+                                                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${ledger.balanceType === 'DEBIT'
                                                     ? 'bg-blue-50 text-blue-700 border border-blue-100'
                                                     : 'bg-green-50 text-green-700 border border-green-100'
                                                     }`}>
@@ -264,13 +264,13 @@ export default function ChartOfAccounts() {
                         <div className="flex gap-6 text-sm">
                             <div>
                                 <span className="text-slate-500">Total Opening Balance: </span>
-                                <span className="font-bold text-slate-800">
+                                <span className="font-medium text-slate-800">
                                     ₹{ledgers.reduce((sum, l) => sum + parseFloat(l.openingBalance), 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
                             <div>
                                 <span className="text-slate-500">Total Current Balance: </span>
-                                <span className="font-bold text-primary">
+                                <span className="font-medium text-primary">
                                     ₹{ledgers.reduce((sum, l) => sum + parseFloat(l.currentBalance || 0), 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
@@ -284,13 +284,13 @@ export default function ChartOfAccounts() {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
                     <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full">
                         <div className="p-6 border-b border-slate-200">
-                            <h2 className="text-xl font-bold text-slate-800">
+                            <h2 className="text-xl font-semibold text-slate-800">
                                 {editingId ? 'Edit Ledger' : 'Add New Ledger'}
                             </h2>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">
+                                <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
                                     Ledger Name *
                                 </label>
                                 <input
@@ -302,7 +302,7 @@ export default function ChartOfAccounts() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">
+                                <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
                                     Account Group *
                                 </label>
                                 <select
@@ -321,7 +321,7 @@ export default function ChartOfAccounts() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">
+                                    <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
                                         Opening Balance
                                     </label>
                                     <input
@@ -333,7 +333,7 @@ export default function ChartOfAccounts() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">
+                                    <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
                                         Balance Type
                                     </label>
                                     <select
@@ -347,7 +347,7 @@ export default function ChartOfAccounts() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">
+                                <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
                                     Description (Optional)
                                 </label>
                                 <textarea

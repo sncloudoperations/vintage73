@@ -15,7 +15,7 @@ export default function DeliveryChallanPrint({ data }) {
     <div className="p-8 bg-white text-black text-sm" style={{ fontFamily: 'Arial, sans-serif', width: '210mm', minHeight: '297mm' }}>
       {/* Header */}
       <div className="text-center border-b-2 border-black pb-4 mb-4">
-        <h1 className="text-2xl font-bold uppercase">{company.companyName}</h1>
+        <h1 className="text-2xl font-semibold uppercase">{company.companyName}</h1>
         <p className="text-sm">{company.address}, {company.city}, {company.state} - {company.pincode}</p>
         <p className="text-sm">Phone: {company.phone} | Email: {company.email}</p>
         <p className="text-sm font-semibold">GSTIN: {company.registrationNumber}</p>
@@ -23,7 +23,7 @@ export default function DeliveryChallanPrint({ data }) {
 
       {/* Title */}
       <div className="text-center mb-4">
-        <h2 className="text-xl font-bold border border-black inline-block px-6 py-1">DELIVERY CHALLAN</h2>
+        <h2 className="text-xl font-semibold border border-black inline-block px-6 py-1">DELIVERY CHALLAN</h2>
       </div>
 
       {/* Challan Details */}
@@ -43,13 +43,13 @@ export default function DeliveryChallanPrint({ data }) {
       {/* Dispatch Details */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="border border-black p-3">
-          <h3 className="font-bold border-b border-black mb-2 pb-1">Dispatch From:</h3>
+          <h3 className="font-medium border-b border-black mb-2 pb-1">Dispatch From:</h3>
           <p className="font-semibold">{company.companyName}</p>
           <p>{challan.dispatchFrom || company.address}</p>
           <p>{company.city}, {company.state} - {company.pincode}</p>
         </div>
         <div className="border border-black p-3">
-          <h3 className="font-bold border-b border-black mb-2 pb-1">Dispatch To:</h3>
+          <h3 className="font-medium border-b border-black mb-2 pb-1">Dispatch To:</h3>
 
           {challan.customer ? (
             <>
@@ -67,7 +67,7 @@ export default function DeliveryChallanPrint({ data }) {
       {/* Transporter Details */}
       {(challan.transporterName || challan.transporterId) && (
         <div className="border border-black p-3 mb-4">
-          <h3 className="font-bold border-b border-black mb-2 pb-1">Transporter Details:</h3>
+          <h3 className="font-medium border-b border-black mb-2 pb-1">Transporter Details:</h3>
           <div className="grid grid-cols-3 gap-4">
             {challan.transporterName && <p><strong>Name:</strong> {challan.transporterName}</p>}
             {challan.transporterId && <p><strong>GSTIN:</strong> {challan.transporterId}</p>}
@@ -110,8 +110,8 @@ export default function DeliveryChallanPrint({ data }) {
         </tbody>
         <tfoot>
           <tr className="bg-gray-100">
-            <td colSpan="3" className="border border-black p-2 text-right font-bold">Total Quantity:</td>
-            <td className="border border-black p-2 text-center font-bold">
+            <td colSpan="3" className="border border-black p-2 text-right font-medium">Total Quantity:</td>
+            <td className="border border-black p-2 text-center font-medium">
               {challan.items?.reduce((sum, item) => sum + item.quantity, 0) || 0}
             </td>
           </tr>
@@ -120,7 +120,7 @@ export default function DeliveryChallanPrint({ data }) {
 
       {/* Notes */}
       <div className="border border-black p-3 mb-8">
-        <h4 className="font-bold mb-2">Notes:</h4>
+        <h4 className="font-medium mb-2">Notes:</h4>
         <p className="text-xs text-gray-600">
           1. This challan is issued for the movement of goods as per the reason mentioned above.<br />
           2. The goods mentioned above are being sent without consideration (no sale).<br />

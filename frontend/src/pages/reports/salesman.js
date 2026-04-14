@@ -81,12 +81,12 @@ export default function SalesmanReport() {
         <div className="min-h-screen bg-slate-50/50 p-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-6">
                 <div>
-                    <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                        Salesman Performance <span className="bg-amber-100 text-amber-600 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-widest font-black">Elite</span>
+                    <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                        Salesman Performance <span className="bg-amber-100 text-amber-600 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-widest font-medium">Elite</span>
                     </h1>
                     <p className="text-slate-500 text-xs font-medium">Productivity tracking</p>
                 </div>
-                <button className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 text-xs font-black text-slate-600 hover:text-primary transition-all" onClick={() => window.print()}>
+                <button className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 text-xs font-medium text-slate-600 hover:text-primary transition-all" onClick={() => window.print()}>
                     <FiDownload size={14} /> Export
                 </button>
             </div>
@@ -96,9 +96,9 @@ export default function SalesmanReport() {
                 <div className="flex flex-wrap gap-4 items-end">
                     {user?.role === 'admin' && (
                         <div className="flex-1 min-w-[150px]">
-                            <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Branch</label>
+                            <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">Branch</label>
                             <select
-                                className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 transition-all font-bold text-slate-700"
+                                className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 transition-all font-medium text-slate-700"
                                 value={selectedBranch}
                                 onChange={(e) => setSelectedBranch(e.target.value)}
                             >
@@ -108,14 +108,14 @@ export default function SalesmanReport() {
                         </div>
                     )}
                     <div className="flex-1 min-w-[120px]">
-                        <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">From</label>
-                        <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 font-bold text-slate-700" value={startDate} onChange={e => setStartDate(e.target.value)} />
+                        <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">From</label>
+                        <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 font-medium text-slate-700" value={startDate} onChange={e => setStartDate(e.target.value)} />
                     </div>
                     <div className="flex-1 min-w-[120px]">
-                        <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">To</label>
-                        <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 font-bold text-slate-700" value={endDate} onChange={e => setEndDate(e.target.value)} />
+                        <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">To</label>
+                        <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 font-medium text-slate-700" value={endDate} onChange={e => setEndDate(e.target.value)} />
                     </div>
-                    <button className="px-4 py-2.5 text-xs font-black text-rose-500 hover:bg-rose-50 rounded-xl transition-all" onClick={() => { setStartDate(''); setEndDate(''); }}>Clear</button>
+                    <button className="px-4 py-2.5 text-xs font-medium text-rose-500 hover:bg-rose-50 rounded-xl transition-all" onClick={() => { setStartDate(''); setEndDate(''); }}>Clear</button>
                 </div>
             </div>
 
@@ -123,28 +123,28 @@ export default function SalesmanReport() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-slate-900 rounded-2xl p-5 relative overflow-hidden group">
                     <div className="relative z-10">
-                        <p className="text-indigo-300/80 text-[8px] font-black uppercase tracking-widest mb-1 text-xs">Managed Revenue</p>
-                        <h3 className="text-xl font-black text-white tabular-nums">₹{totals.revenue.toLocaleString()}</h3>
+                        <p className="text-indigo-300/80 text-[8px] font-medium uppercase tracking-widest mb-1 text-xs">Managed Revenue</p>
+                        <h3 className="text-xl font-extrabold text-white tabular-nums">₹{totals.revenue.toLocaleString()}</h3>
                     </div>
                     <FiDollarSign className="absolute right-[-10px] bottom-[-10px] text-white/5 text-[5rem] rotate-12" />
                 </div>
                 <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-                    <p className="text-slate-400 text-[8px] font-black uppercase tracking-widest mb-1 text-xs">Total Incentives</p>
-                    <h3 className="text-xl font-black text-slate-900 tabular-nums">₹{totals.incentive.toLocaleString()}</h3>
-                    <div className="mt-2 text-[9px] font-bold text-emerald-500 flex items-center gap-1">
+                    <p className="text-slate-400 text-[8px] font-extrabold uppercase tracking-widest mb-1 text-xs">Total Incentives</p>
+                    <h3 className="text-xl font-extrabold text-slate-900 tabular-nums">₹{totals.incentive.toLocaleString()}</h3>
+                    <div className="mt-2 text-[9px] font-medium text-emerald-500 flex items-center gap-1">
                         <FiTrendingUp size={10} /> {totals.revenue > 0 ? ((totals.incentive / totals.revenue) * 100).toFixed(1) : 0}% Efficiency
                     </div>
                 </div>
                 <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-                    <p className="text-slate-400 text-[8px] font-black uppercase tracking-widest mb-1 text-xs">Transact. Volume</p>
-                    <h3 className="text-xl font-black text-slate-900 tabular-nums">{totals.count}</h3>
+                    <p className="text-slate-400 text-[8px] font-medium uppercase tracking-widest mb-1 text-xs">Transact. Volume</p>
+                    <h3 className="text-xl font-extrabold text-slate-900 tabular-nums">{totals.count}</h3>
                 </div>
             </div>
 
             {/* Chart Section */}
             {reportData.length > 0 && (
                 <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm mb-6">
-                    <h3 className="text-sm font-black text-slate-800 tracking-tight mb-6">Performance Comparison</h3>
+                    <h3 className="text-sm font-medium text-slate-800 tracking-tight mb-6">Performance Comparison</h3>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={reportData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
@@ -175,26 +175,26 @@ export default function SalesmanReport() {
                                 {i === 0 && <FiStar size={12} className="absolute -top-1 -right-1 text-amber-500 fill-amber-500" />}
                             </div>
                             <div>
-                                <h3 className="font-extrabold text-sm text-slate-800 tracking-tight leading-none mb-1">{d.name}</h3>
-                                <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{d.salesCount} Closures</p>
+                                <h3 className="font-semibold text-sm text-slate-800 tracking-tight leading-none mb-1">{d.name}</h3>
+                                <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest">{d.salesCount} Closures</p>
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <div className="p-3 bg-slate-50/50 rounded-xl flex justify-between items-center text-xs">
-                                <span className="font-bold text-slate-400 uppercase text-[9px]">Revenue</span>
-                                <span className="font-black text-slate-800">₹{d.totalRevenue.toLocaleString()}</span>
+                                <span className="font-medium text-slate-400 uppercase text-[9px]">Revenue</span>
+                                <span className="font-extrabold text-slate-800">₹{d.totalRevenue.toLocaleString()}</span>
                             </div>
                             <div className="p-3 bg-indigo-50/50 rounded-xl flex justify-between items-center text-xs">
-                                <span className="font-bold text-indigo-400 uppercase text-[9px] flex items-center gap-1">
+                                <span className="font-medium text-indigo-400 uppercase text-[9px] flex items-center gap-1">
                                     <FiAward /> Incentive
                                 </span>
-                                <span className="font-black text-indigo-600">₹{d.totalIncentive.toLocaleString()}</span>
+                                <span className="font-extrabold text-indigo-600">₹{d.totalIncentive.toLocaleString()}</span>
                             </div>
                         </div>
 
                         <div className="mt-4">
-                            <div className="flex justify-between text-[9px] font-black uppercase text-slate-400 mb-2">
+                            <div className="flex justify-between text-[9px] font-medium uppercase text-slate-400 mb-2">
                                 <span>Market Share</span>
                                 <span>{((d.totalRevenue / totals.revenue) * 100).toFixed(0)}%</span>
                             </div>
@@ -207,7 +207,7 @@ export default function SalesmanReport() {
 
                 {reportData.length === 0 && (
                     <div className="col-span-full py-16 text-center rounded-2xl border-2 border-dashed border-slate-100">
-                        <p className="text-sm font-black text-slate-300 italic">No performance data found</p>
+                        <p className="text-sm font-medium text-slate-300 italic">No performance data found</p>
                     </div>
                 )}
             </div>

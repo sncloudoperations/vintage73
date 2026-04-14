@@ -86,7 +86,7 @@ export default function AttendanceSheet() {
         <div className="p-6">
             <header className="mb-8 flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Attendance Sheet</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Attendance Sheet</h1>
                     <p className="text-slate-500 text-sm mt-1">Monthly overview of employee attendance</p>
                 </div>
                 <div className="flex gap-3">
@@ -115,9 +115,9 @@ export default function AttendanceSheet() {
                     <table className="w-full text-left border-collapse min-w-max">
                         <thead className="sticky top-0 z-20">
                             <tr className="bg-slate-50 border-b border-slate-200">
-                                <th className="p-4 text-xs font-black text-slate-400 uppercase tracking-widest sticky left-0 bg-slate-50 z-30 w-48 shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">Employee</th>
+                                <th className="p-4 text-xs font-medium text-slate-400 uppercase tracking-widest sticky left-0 bg-slate-50 z-30 w-48 shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">Employee</th>
                                 {daysArr.map(d => (
-                                    <th key={d} className="p-2 text-[10px] font-black text-slate-400 uppercase text-center min-w-[36px] border-l border-slate-100">
+                                    <th key={d} className="p-2 text-[10px] font-medium text-slate-400 uppercase text-center min-w-[36px] border-l border-slate-100">
                                         {d}
                                     </th>
                                 ))}
@@ -135,14 +135,14 @@ export default function AttendanceSheet() {
                             ) : data.map(user => (
                                 <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors group">
                                     <td className="p-3 sticky left-0 bg-white group-hover:bg-slate-50 z-10 shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
-                                        <div className="font-bold text-slate-800 text-sm truncate">{user.name}</div>
-                                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{user.employeeProfile?.department?.name || 'No Dept'}</div>
+                                        <div className="font-medium text-slate-800 text-sm truncate">{user.name}</div>
+                                        <div className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">{user.employeeProfile?.department?.name || 'No Dept'}</div>
                                     </td>
                                     {daysArr.map(d => {
                                         const status = getStatus(user, d);
                                         return (
                                             <td key={d} className={`p-1 border-l border-slate-100 text-center`}>
-                                                <div className={`w-7 h-7 mx-auto rounded-lg flex items-center justify-center text-[8px] font-black ${getStatusColor(status)} shadow-sm`}>
+                                                <div className={`w-7 h-7 mx-auto rounded-lg flex items-center justify-center text-[8px] font-medium ${getStatusColor(status)} shadow-sm`}>
                                                     {status === 'PRESENT' ? <FiCheck size={12} /> :
                                                         status === 'ABSENT' ? <FiX size={12} /> :
                                                             status === 'HALF_DAY' ? <FiMinus size={12} /> :
@@ -158,7 +158,7 @@ export default function AttendanceSheet() {
                 </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-widest gap-4">
+            <div className="mt-6 flex flex-wrap justify-between items-center text-xs font-medium text-slate-400 uppercase tracking-widest gap-4">
                 <div className="flex gap-6">
                     <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-primary-light/10 text-primary flex items-center justify-center"><FiCheck size={10} /></div> Present</div>
                     <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-red-100 text-red-500 flex items-center justify-center"><FiX size={10} /></div> Absent</div>

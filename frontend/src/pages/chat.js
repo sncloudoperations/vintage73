@@ -162,7 +162,7 @@ const ChatPage = () => {
                 {/* Sidebar */}
                 <div className="w-80 border-r border-gray-200 flex flex-col bg-white">
                     <div className="p-4 border-b border-gray-200">
-                        <h2 className="text-xl font-bold mb-4 text-gray-800">Internal Chat</h2>
+                        <h2 className="text-xl font-semibold mb-4 text-gray-800">Internal Chat</h2>
                         <div className="relative">
                             <IoSearch className="absolute left-3 top-3 text-gray-400" />
                             <input
@@ -185,7 +185,7 @@ const ChatPage = () => {
                                 <div className="relative">
                                     <IoPersonCircleOutline className="text-4xl text-gray-400" />
                                     {convUser.unreadCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-medium">
                                             {convUser.unreadCount}
                                         </span>
                                     )}
@@ -211,7 +211,7 @@ const ChatPage = () => {
                                 <div className="flex items-center">
                                     <IoPersonCircleOutline className="text-4xl text-white/80" />
                                     <div className="ml-3">
-                                        <h3 className="font-bold text-white">{selectedUser.name || selectedUser.username}</h3>
+                                        <h3 className="font-medium text-white">{selectedUser.name || selectedUser.username}</h3>
                                         <p className="text-xs text-white/80">Active now</p>
                                     </div>
                                 </div>

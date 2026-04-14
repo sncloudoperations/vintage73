@@ -110,7 +110,7 @@ export default function StockMovementRegister() {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Stock Movement Register</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Stock Movement Register</h1>
                     <p className="text-slate-500 text-sm mt-1">Detailed transaction log for personal stock tracking</p>
                 </div>
                 <div className="flex gap-3">
@@ -143,7 +143,7 @@ export default function StockMovementRegister() {
             <div className="flex flex-col gap-4 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="lg:col-span-2 flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase">Select Product</label>
+                        <label className="text-[10px] font-medium text-slate-500 uppercase">Select Product</label>
                         <SearchableSelect
                             options={products}
                             value={selectedProduct}
@@ -152,7 +152,7 @@ export default function StockMovementRegister() {
                         />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1"><FiCalendar /> From Date</label>
+                        <label className="text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1"><FiCalendar /> From Date</label>
                         <input
                             type="date"
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -161,7 +161,7 @@ export default function StockMovementRegister() {
                         />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1"><FiCalendar /> To Date</label>
+                        <label className="text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1"><FiCalendar /> To Date</label>
                         <input
                             type="date"
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -174,7 +174,7 @@ export default function StockMovementRegister() {
                 <div className="flex flex-col md:flex-row gap-4 items-end">
                     {user?.role === 'admin' && (
                         <div className="flex flex-col gap-1 w-full md:w-64">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">Branch</label>
+                            <label className="text-[10px] font-medium text-slate-500 uppercase">Branch</label>
                             <select
                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary h-[38px]"
                                 value={selectedBranch}
@@ -202,20 +202,20 @@ export default function StockMovementRegister() {
             {reportData && (
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Opening Stock</p>
-                        <h3 className="text-xl font-bold text-slate-800">{reportData.openingStock.toLocaleString()}</h3>
+                        <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">Opening Stock</p>
+                        <h3 className="text-xl font-semibold text-slate-800">{reportData.openingStock.toLocaleString()}</h3>
                     </div>
                     <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-100 shadow-sm">
-                        <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Total In (+)</p>
+                        <p className="text-[10px] font-medium text-emerald-600 uppercase tracking-wider mb-1">Total In (+)</p>
                         <h3 className="text-xl font-bold text-emerald-700">+{totalIn.toLocaleString()}</h3>
                     </div>
                     <div className="bg-red-50 p-4 rounded-xl border border-red-100 shadow-sm">
-                        <p className="text-[10px] font-bold text-red-600 uppercase tracking-wider mb-1">Total Out (-)</p>
+                        <p className="text-[10px] font-medium text-red-600 uppercase tracking-wider mb-1">Total Out (-)</p>
                         <h3 className="text-xl font-bold text-red-700">-{totalOut.toLocaleString()}</h3>
                     </div>
                     <div className="bg-slate-900 p-4 rounded-xl shadow-md text-white">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Closing Stock</p>
-                        <h3 className="text-xl font-bold text-white">{reportData.closingStock.toLocaleString()}</h3>
+                        <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">Closing Stock</p>
+                        <h3 className="text-xl font-semibold text-white">{reportData.closingStock.toLocaleString()}</h3>
                     </div>
                 </div>
             )}
@@ -225,7 +225,7 @@ export default function StockMovementRegister() {
             ) : reportData ? (
                 <div className="card shadow-md border border-slate-200 overflow-hidden" ref={componentRef}>
                     <div className="p-8 hidden print:block border-b-2 border-slate-200">
-                        <h2 className="text-2xl font-bold text-slate-800">Stock Movement Register</h2>
+                        <h2 className="text-2xl font-semibold text-slate-800">Stock Movement Register</h2>
                         <p className="text-slate-600 font-medium">{products.find(p => p.value === selectedProduct)?.label}</p>
                         <p className="text-sm mt-1">Period: {startDate} to {endDate}</p>
                     </div>
@@ -245,9 +245,9 @@ export default function StockMovementRegister() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="bg-slate-50/50 font-bold text-slate-600">
+                                <tr className="bg-slate-50/50 font-medium text-slate-600">
                                     <td colSpan={7} className="text-sm py-2 px-6 italic">Opening Balance as on {startDate}</td>
-                                    <td className="text-right font-black text-slate-800 pr-4">{reportData.openingStock.toLocaleString()}</td>
+                                    <td className="text-right font-medium text-slate-800 pr-4">{reportData.openingStock.toLocaleString()}</td>
                                 </tr>
                                 {filteredMovements.length === 0 ? (
                                     <tr>
@@ -263,12 +263,12 @@ export default function StockMovementRegister() {
                                                 {new Date(move.date).toLocaleDateString()}
                                             </td>
                                             <td>
-                                                <span className="font-bold text-slate-700 text-xs text-primary" style={{ color: theme.primaryColor }}>
+                                                <span className="font-medium text-slate-700 text-xs text-primary" style={{ color: theme.primaryColor }}>
                                                     #{move.reference}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${move.inQty > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase ${move.inQty > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
                                                     }`}>
                                                     {move.type}
                                                 </span>
@@ -276,13 +276,13 @@ export default function StockMovementRegister() {
                                             <td className="text-xs font-semibold text-slate-700">
                                                 {move.party || '-'}
                                             </td>
-                                            <td className="text-center font-bold text-emerald-600 text-xs tabular-nums">
+                                            <td className="text-center font-medium text-emerald-600 text-xs tabular-nums">
                                                 {move.inQty > 0 ? `+${move.inQty.toLocaleString()}` : '-'}
                                             </td>
-                                            <td className="text-center font-bold text-red-500 text-xs tabular-nums">
+                                            <td className="text-center font-medium text-red-500 text-xs tabular-nums">
                                                 {move.outQty > 0 ? `-${move.outQty.toLocaleString()}` : '-'}
                                             </td>
-                                            <td className="text-right font-black text-slate-900 tabular-nums pr-4">
+                                            <td className="text-right font-medium text-slate-900 tabular-nums pr-4">
                                                 {move.balance.toLocaleString()}
                                             </td>
                                         </tr>
@@ -299,16 +299,16 @@ export default function StockMovementRegister() {
                         </div>
                         <div className="flex gap-8 text-[13px]">
                             <div className="flex flex-col items-center">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">Movement In</span>
-                                <span className="font-bold text-emerald-600">+{totalIn.toLocaleString()}</span>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase">Movement In</span>
+                                <span className="font-medium text-emerald-600">+{totalIn.toLocaleString()}</span>
                             </div>
                             <div className="flex flex-col items-center">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">Movement Out</span>
-                                <span className="font-bold text-red-500">-{totalOut.toLocaleString()}</span>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase">Movement Out</span>
+                                <span className="font-medium text-red-500">-{totalOut.toLocaleString()}</span>
                             </div>
                             <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">Net Closing</span>
-                                <span className="font-black text-slate-900 text-base" style={{ color: theme.primaryColor }}>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase">Net Closing</span>
+                                <span className="font-medium text-slate-900 text-base" style={{ color: theme.primaryColor }}>
                                     {reportData.closingStock.toLocaleString()}
                                 </span>
                             </div>
@@ -320,7 +320,7 @@ export default function StockMovementRegister() {
                     <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
                         <FiBox size={32} />
                     </div>
-                    <p className="font-bold text-slate-500">No Product Selected</p>
+                    <p className="font-medium text-slate-500">No Product Selected</p>
                     <p className="text-sm">Select a product above and click 'Generate' to view its history</p>
                 </div>
             )}

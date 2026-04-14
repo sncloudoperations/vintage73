@@ -104,11 +104,11 @@ export default function Login() {
             >
               <FiLock className="text-white text-3xl" />
             </motion.div>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Quick POS</h1>
+            <h1 className="text-xl font-semibold text-slate-900 tracking-tight">Quick POS</h1>
           </div>
 
           <div className="mb-10">
-            <h2 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">Welcome Back</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 mb-2 tracking-tight">Welcome Back</h2>
             <p className="text-slate-500 font-medium text-sm">Please enter your credentials to proceed.</p>
           </div>
 
@@ -118,7 +118,7 @@ export default function Login() {
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: [0, -5, 5, -5, 5, 0], opacity: 1 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="bg-rose-50 text-rose-600 text-xs font-bold uppercase tracking-widest p-4 rounded-xl mb-6 border border-rose-100 flex items-center gap-3 shadow-sm"
+                className="bg-rose-50 text-rose-600 text-xs font-medium uppercase tracking-widest p-4 rounded-xl mb-6 border border-rose-100 flex items-center gap-3 shadow-sm"
               >
                 <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
                 {error}
@@ -128,7 +128,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Username</label>
+              <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1">Username</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <FiUser className="text-slate-400 group-focus-within:text-[var(--primary)] transition-colors" style={{ color: 'var(--primary-dark)' }} />
@@ -145,7 +145,7 @@ export default function Login() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Secret Key</label>
+              <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1">Secret Key</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <FiLock className="text-slate-400 group-focus-within:text-[var(--primary)] transition-colors" style={{ color: 'var(--primary-dark)' }} />
@@ -169,7 +169,7 @@ export default function Login() {
                   className="sr-only peer"
                 />
                 <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-                <span className="ml-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Keep me signed in</span>
+                <span className="ml-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider">Keep me signed in</span>
               </label>
             </div>
 
@@ -178,7 +178,7 @@ export default function Login() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="group w-full text-white font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-primary/20 disabled:opacity-50 text-[11px] uppercase tracking-[0.2em] relative overflow-hidden"
+              className="group w-full text-white font-medium py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-primary/20 disabled:opacity-50 text-[11px] uppercase tracking-[0.2em] relative overflow-hidden"
               style={{
                 background: `linear-gradient(135deg, ${primaryColor} 0%, ${theme?.secondaryColor || primaryColor} 100%)`
               }}
@@ -190,7 +190,7 @@ export default function Login() {
           </form>
 
           <div className="mt-12 text-center">
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[3px] mb-1">
+            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[3px] mb-1">
               &copy; {new Date().getFullYear()} SN Tech Solutions
             </p>
             <div className="w-8 h-1 bg-slate-100 mx-auto rounded-full"></div>

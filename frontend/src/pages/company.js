@@ -89,7 +89,7 @@ export default function CompanyProfile() {
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Company Profile</h1>
+            <h1 className="text-2xl font-semibold text-slate-800">Company Profile</h1>
             <p className="text-slate-500 text-sm mt-1">Manage your business identity and billing details</p>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function CompanyProfile() {
           {/* Logo Section */}
           <div className="md:col-span-1">
             <div className="card bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center">
-              <h3 className="text-sm font-bold text-slate-700 mb-4 w-full text-center">Business Logo</h3>
+              <h3 className="text-sm font-medium text-slate-700 mb-4 w-full text-center">Business Logo</h3>
               <div className="relative group w-48 h-48 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden mb-4 hover:border-primary transition-colors">
                 {(logoPreview || formData.logoUrl) ? (
                   <img
@@ -112,7 +112,7 @@ export default function CompanyProfile() {
                     <p className="text-xs font-semibold">Upload Logo</p>
                   </div>
                 )}
-                <label className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer text-white text-sm font-bold">
+                <label className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer text-white text-sm font-medium">
                   Change Logo
                   <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                 </label>
@@ -214,7 +214,7 @@ export default function CompanyProfile() {
 
 
                   <div className="md:col-span-2 mt-2 pt-6 border-t border-slate-100">
-                    <h3 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <h3 className="text-base font-medium text-slate-800 mb-4 flex items-center gap-2">
                       <FiBriefcase /> Primary Bank (for Statements)
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

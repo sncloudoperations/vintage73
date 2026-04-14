@@ -99,7 +99,7 @@ export default function StockSummary() {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Stock Summary Report</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Stock Summary Report</h1>
                     <p className="text-slate-500 text-sm mt-1">{filteredSummary.length} products analyzed</p>
                 </div>
                 <div className="flex gap-3">
@@ -130,7 +130,7 @@ export default function StockSummary() {
             <div className="flex flex-col gap-4 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1"><FiCalendar /> From Date</label>
+                        <label className="text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1"><FiCalendar /> From Date</label>
                         <input
                             type="date"
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -139,7 +139,7 @@ export default function StockSummary() {
                         />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1"><FiCalendar /> To Date</label>
+                        <label className="text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1"><FiCalendar /> To Date</label>
                         <input
                             type="date"
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -148,7 +148,7 @@ export default function StockSummary() {
                         />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">Branch</label>
+                        <label className="text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1">Branch</label>
                         <select
                             disabled={user?.role !== 'admin'}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-slate-50"
@@ -160,7 +160,7 @@ export default function StockSummary() {
                         </select>
                     </div>
                     <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">Category</label>
+                        <label className="text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1">Category</label>
                         <select
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                             value={selectedCategory}
@@ -189,7 +189,7 @@ export default function StockSummary() {
             ) : (
                 <div className="card shadow-md border border-slate-200 overflow-hidden" ref={componentRef}>
                     <div className="p-8 hidden print:block border-b-2 border-slate-200">
-                        <h2 className="text-2xl font-bold text-slate-800">Stock Summary Report</h2>
+                        <h2 className="text-2xl font-semibold text-slate-800">Stock Summary Report</h2>
                         <p className="text-slate-500 font-medium">Period: {startDate} to {endDate}</p>
                         <p className="text-sm mt-1 font-semibold">
                             Branch: {selectedBranch === 'all' ? 'All Branches' : branches.find(b => b.id.toString() === selectedBranch)?.name || 'N/A'}
@@ -226,13 +226,13 @@ export default function StockSummary() {
                                             <td className="text-center font-mono text-sm text-slate-600 bg-slate-50/30 border-l border-slate-100">
                                                 {item.openingStock.toLocaleString()}
                                             </td>
-                                            <td className="text-center font-bold text-emerald-600 tabular-nums">
+                                            <td className="text-center font-medium text-emerald-600 tabular-nums">
                                                 {item.periodIn > 0 ? `+${item.periodIn.toLocaleString()}` : '-'}
                                             </td>
-                                            <td className="text-center font-bold text-red-500 tabular-nums">
+                                            <td className="text-center font-medium text-red-500 tabular-nums">
                                                 {item.periodOut > 0 ? `-${item.periodOut.toLocaleString()}` : '-'}
                                             </td>
-                                            <td className="text-right font-black text-slate-800 tabular-nums border-l border-slate-100 pr-4">
+                                            <td className="text-right font-medium text-slate-800 tabular-nums border-l border-slate-100 pr-4">
                                                 {item.closingStock.toLocaleString()}
                                             </td>
                                         </tr>
@@ -249,16 +249,16 @@ export default function StockSummary() {
                         </div>
                         <div className="flex gap-10 text-[13px]">
                             <div className="flex flex-col items-center">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total In</span>
-                                <span className="font-bold text-emerald-600">+{filteredSummary.reduce((sum, i) => sum + i.periodIn, 0).toLocaleString()}</span>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Total In</span>
+                                <span className="font-medium text-emerald-600">+{filteredSummary.reduce((sum, i) => sum + i.periodIn, 0).toLocaleString()}</span>
                             </div>
                             <div className="flex flex-col items-center">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Out</span>
-                                <span className="font-bold text-red-500">-{filteredSummary.reduce((sum, i) => sum + i.periodOut, 0).toLocaleString()}</span>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Total Out</span>
+                                <span className="font-medium text-red-500">-{filteredSummary.reduce((sum, i) => sum + i.periodOut, 0).toLocaleString()}</span>
                             </div>
                             <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Closing Value</span>
-                                <span className="font-black text-slate-900 text-base" style={{ color: theme.primaryColor }}>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Closing Value</span>
+                                <span className="font-medium text-slate-900 text-base" style={{ color: theme.primaryColor }}>
                                     {filteredSummary.reduce((sum, i) => sum + i.closingStock, 0).toLocaleString()}
                                 </span>
                             </div>

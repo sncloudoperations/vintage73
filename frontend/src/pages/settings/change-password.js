@@ -44,7 +44,7 @@ export default function ChangePassword() {
   return (
     <div className="max-w-2xl mx-auto py-10">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800">Security Settings</h1>
+        <h1 className="text-2xl font-semibold text-slate-800">Security Settings</h1>
         <p className="text-slate-500 text-sm mt-1">Update your account password to stay secure</p>
       </div>
 
@@ -55,7 +55,7 @@ export default function ChangePassword() {
               <FiKey size={24} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Change Password</h2>
+              <h2 className="text-lg font-semibold text-slate-800">Change Password</h2>
               <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">Secure your account</p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function ChangePassword() {
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div className="grid grid-cols-1 gap-6">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Current Password</label>
+              <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Current Password</label>
               <div className="relative">
                 <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
                 <input
@@ -80,7 +80,7 @@ export default function ChangePassword() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">New Password</label>
+                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">New Password</label>
                 <div className="relative">
                   <FiKey className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
                   <input
@@ -95,7 +95,7 @@ export default function ChangePassword() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Confirm New Password</label>
+                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2">Confirm New Password</label>
                 <div className="relative">
                   <FiCheckCircle className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
                   <input
@@ -115,7 +115,7 @@ export default function ChangePassword() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-slate-900 text-white font-bold px-10 py-4 rounded-2xl hover:bg-black hover:shadow-2xl hover:shadow-slate-200 transition-all active:scale-95 text-sm uppercase tracking-widest flex items-center gap-2 disabled:opacity-50"
+              className="bg-slate-900 text-white font-medium px-10 py-4 rounded-2xl hover:bg-black hover:shadow-2xl hover:shadow-slate-200 transition-all active:scale-95 text-sm uppercase tracking-widest flex items-center gap-2 disabled:opacity-50"
             >
               {loading ? 'Changing...' : 'Update Password'}
             </button>
@@ -128,7 +128,7 @@ export default function ChangePassword() {
           <FiLock size={20} />
         </div>
         <div>
-          <h4 className="text-sm font-bold text-blue-900 mb-1">Security Tip</h4>
+          <h4 className="text-sm font-medium text-blue-900 mb-1">Security Tip</h4>
           <p className="text-blue-700 text-xs leading-relaxed">
             Use a strong password that you don't use elsewhere. A mix of letters, numbers, and symbols is recommended for maximum account security.
           </p>

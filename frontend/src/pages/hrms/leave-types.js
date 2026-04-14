@@ -71,7 +71,7 @@ export default function LeaveTypes() {
         <div className="p-6 max-w-6xl mx-auto space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Leave Types Master</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Leave Types Master</h1>
                     <p className="text-slate-500 text-sm mt-1">Manage leave categories and limits</p>
                 </div>
                 <button
@@ -80,7 +80,7 @@ export default function LeaveTypes() {
                         setForm({ name: '', isPaid: true, monthlyLimit: 0, color: '#3B82F6' });
                         setIsModalOpen(true);
                     }}
-                    className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-bold hover:bg-primary-dark transition shadow-sm"
+                    className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-medium hover:bg-primary-dark transition shadow-sm"
                 >
                     <FiPlus /> Add New Type
                 </button>
@@ -157,7 +157,7 @@ export default function LeaveTypes() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
                     <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
                         <header className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h3 className="text-lg font-bold text-slate-800">{editingType ? 'Edit Leave Type' : 'Add Leave Type'}</h3>
+                            <h3 className="text-lg font-medium text-slate-800">{editingType ? 'Edit Leave Type' : 'Add Leave Type'}</h3>
                             <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 transition-colors">
                                 <FiX size={20} />
                             </button>
@@ -226,7 +226,7 @@ export default function LeaveTypes() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg font-bold hover:bg-primary-dark transition-colors shadow-sm"
+                                    className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors shadow-sm"
                                 >
                                     {editingType ? 'Update Type' : 'Create Type'}
                                 </button>

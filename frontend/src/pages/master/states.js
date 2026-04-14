@@ -84,7 +84,7 @@ export default function StateMaster() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">State Master</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">State Master</h1>
           <p className="text-slate-500 text-sm mt-1">{filteredStates.length} states</p>
         </div>
         <button
@@ -175,7 +175,7 @@ export default function StateMaster() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
             <div className="p-6 border-b border-slate-200 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-slate-800">
+              <h2 className="text-xl font-semibold text-slate-800">
                 {editingId ? 'Edit State' : 'Add New State'}
               </h2>
               <button onClick={closeModal} className="text-slate-400 hover:text-slate-600">
@@ -184,7 +184,7 @@ export default function StateMaster() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">State Name *</label>
+                <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">State Name *</label>
                 <input
                   type="text"
                   required
@@ -195,7 +195,7 @@ export default function StateMaster() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">GST Code</label>
+                <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">GST Code</label>
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"

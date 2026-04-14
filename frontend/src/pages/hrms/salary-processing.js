@@ -231,7 +231,7 @@ export default function SalaryProcessing() {
     return (
         <div className="p-6 max-w-7xl mx-auto">
             <header className="mb-8">
-                <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
                     <FiDollarSign className="text-primary" />
                     Salary Processing
                 </h1>
@@ -242,13 +242,13 @@ export default function SalaryProcessing() {
             <div className="mb-6 flex bg-slate-100 p-1 rounded-xl gap-1 w-fit">
                 <button
                     onClick={() => setProcessingMode('individual')}
-                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${processingMode === 'individual' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${processingMode === 'individual' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                     Individual Processing
                 </button>
                 <button
                     onClick={() => setProcessingMode('bulk')}
-                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${processingMode === 'bulk' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${processingMode === 'bulk' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                     Bulk Processing (All Employees)
                 </button>
@@ -260,7 +260,7 @@ export default function SalaryProcessing() {
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                             <FiLoader className="text-primary animate-spin" size={20} />
-                            <span className="font-bold text-slate-800">Processing Salaries...</span>
+                            <span className="font-medium text-slate-800">Processing Salaries...</span>
                         </div>
                         <span className="text-sm font-medium text-slate-600">
                             {bulkProgress.current} / {bulkProgress.total}
@@ -283,7 +283,7 @@ export default function SalaryProcessing() {
                 <div className="lg:col-span-1">
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-                            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
                                 <FiPlus className="text-primary" />
                                 {processingMode === 'individual' ? 'Process Individual' : 'Process All Employees'}
                             </h2>
@@ -291,7 +291,7 @@ export default function SalaryProcessing() {
                         <form onSubmit={processingMode === 'individual' ? handleProcessSalary : handleBulkProcess} className="p-6 space-y-5">
                             {processingMode === 'individual' && (
                                 <div>
-                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Employee</label>
+                                    <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">Employee</label>
                                     <SearchableSelect
                                         options={users.map(u => ({
                                             value: u.id,
@@ -309,7 +309,7 @@ export default function SalaryProcessing() {
                                     <div className="flex items-start gap-3">
                                         <FiUsers className="text-blue-600 mt-0.5 flex-shrink-0" size={20} />
                                         <div>
-                                            <p className="text-sm font-bold text-blue-900">Bulk Processing</p>
+                                            <p className="text-sm font-medium text-blue-900">Bulk Processing</p>
                                             <p className="text-xs text-blue-700 mt-1">
                                                 This will process salaries for all employees with configured basic salary ({users.filter(u => u.employeeProfile?.basicSalary > 0).length} employees)
                                             </p>
@@ -320,7 +320,7 @@ export default function SalaryProcessing() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">From Date</label>
+                                    <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">From Date</label>
                                     <input
                                         required
                                         type="date"
@@ -330,7 +330,7 @@ export default function SalaryProcessing() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">To Date</label>
+                                    <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">To Date</label>
                                     <input
                                         required
                                         type="date"
@@ -345,28 +345,28 @@ export default function SalaryProcessing() {
                             {processingMode === 'individual' && preview && (
                                 <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
                                     <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Calculation Summary</h3>
-                                        <span className="text-[10px] font-bold text-primary bg-primary-light/10 px-2 py-0.5 rounded-full">Attendance Driven</span>
+                                        <h3 className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Calculation Summary</h3>
+                                        <span className="text-[10px] font-medium text-primary bg-primary-light/10 px-2 py-0.5 rounded-full">Attendance Driven</span>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Days</p>
-                                            <p className="text-lg font-black text-slate-800">{preview.calculation.totalDays}</p>
+                                            <p className="text-[10px] text-slate-400 font-medium uppercase mb-1">Total Days</p>
+                                            <p className="text-lg font-extrabold text-slate-800">{preview.calculation.totalDays}</p>
                                         </div>
                                         <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                                            <p className="text-[10px] text-primary font-bold uppercase mb-1">Payable Days</p>
-                                            <p className="text-lg font-black text-primary">{preview.calculation.payableDays}</p>
+                                            <p className="text-[10px] text-primary font-medium uppercase mb-1">Payable Days</p>
+                                            <p className="text-lg font-medium text-primary">{preview.calculation.payableDays}</p>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2 px-1">
-                                        <div className="flex justify-between text-xs font-bold text-slate-600">
+                                        <div className="flex justify-between text-xs font-medium text-slate-600">
                                             <span>Monthly Basic</span>
                                             <span>{companyProfile?.currencySymbol || '₹'}{parseFloat(preview.basicSalary).toLocaleString()}</span>
                                         </div>
                                         {preview.calculation.totalDays > preview.calculation.payableDays && (
-                                            <div className="flex justify-between text-xs font-bold text-red-500">
+                                            <div className="flex justify-between text-xs font-medium text-red-500">
                                                 <span className="flex items-center gap-1">
                                                     Deductions ({Number(preview.calculation.totalDays - preview.calculation.payableDays).toFixed(1).replace(/\.0$/, '')} days)
                                                 </span>
@@ -374,14 +374,14 @@ export default function SalaryProcessing() {
                                             </div>
                                         )}
                                         {preview.pendingAdvances > 0 && (
-                                            <div className="flex justify-between text-xs font-bold text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-100 mt-2">
+                                            <div className="flex justify-between text-xs font-medium text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-100 mt-2">
                                                 <span>Salary Advances</span>
                                                 <span>-{companyProfile?.currencySymbol || '₹'}{parseFloat(preview.pendingAdvances).toLocaleString()}</span>
                                             </div>
                                         )}
                                         <div className="border-t border-slate-200 pt-2 flex justify-between items-center">
-                                            <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Final Pay</span>
-                                            <span className="text-lg font-black text-slate-900 leading-none">
+                                            <span className="text-xs font-medium text-slate-800 uppercase tracking-wider">Final Pay</span>
+                                            <span className="text-lg font-medium text-slate-900 leading-none">
                                                 {companyProfile?.currencySymbol || '₹'}{(parseFloat(preview.calculation.calculatedBasic) - parseFloat(preview.pendingAdvances || 0)).toLocaleString()}
                                             </span>
                                         </div>
@@ -392,12 +392,12 @@ export default function SalaryProcessing() {
                             {processingMode === 'individual' && loadingPreview && (
                                 <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                                     <FiLoader className="mx-auto text-primary animate-spin mb-2" size={24} />
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Calculating...</p>
+                                    <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">Calculating...</p>
                                 </div>
                             )}
 
                             <div>
-                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
                                     Allowances ({companyProfile?.currencySymbol || '₹'})
                                 </label>
                                 <input
@@ -410,7 +410,7 @@ export default function SalaryProcessing() {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
                                     Deductions ({companyProfile?.currencySymbol || '₹'})
                                 </label>
                                 <input
@@ -425,7 +425,7 @@ export default function SalaryProcessing() {
                             <button
                                 type="submit"
                                 disabled={isSubmitting || bulkProgress.processing}
-                                className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black hover:shadow-xl hover:shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-slate-900 text-white py-4 rounded-2xl font-medium text-xs uppercase tracking-widest hover:bg-black hover:shadow-xl hover:shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting || bulkProgress.processing ? (
                                     <span className="flex items-center justify-center gap-2">
@@ -444,7 +444,7 @@ export default function SalaryProcessing() {
                 <div className="lg:col-span-2 space-y-6">
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-                            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Recently Processed</h2>
+                            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Recently Processed</h2>
                         </div>
                         <div className="p-6">
                             {recentProcessed.length === 0 ? (
@@ -461,8 +461,8 @@ export default function SalaryProcessing() {
                                                     <FiCheckCircle className="text-primary" />
                                                 </div>
                                                 <div>
-                                                    <div className="font-bold text-slate-800">{p.user?.name || 'Unknown'}</div>
-                                                    <div className="text-xs text-slate-500 uppercase font-bold tracking-tighter">
+                                                    <div className="font-medium text-slate-800">{p.user?.name || 'Unknown'}</div>
+                                                    <div className="text-xs text-slate-500 uppercase font-medium tracking-tighter">
                                                         {p.fromDate && p.toDate ? (
                                                             `${new Date(p.fromDate).toLocaleDateString('en-GB')} - ${new Date(p.toDate).toLocaleDateString('en-GB')}`
                                                         ) : (
@@ -473,10 +473,10 @@ export default function SalaryProcessing() {
                                             </div>
                                             <div className="flex items-center gap-4">
                                                 <div className="text-right">
-                                                    <div className="font-bold text-primary">
+                                                    <div className="font-medium text-primary">
                                                         {companyProfile?.currencySymbol || '₹'}{parseFloat(p.netSalary).toFixed(2)}
                                                     </div>
-                                                    <div className={`text-[10px] font-black uppercase tracking-widest ${p.status === 'GENERATED' ? 'text-amber-500' : 'text-primary'}`}>
+                                                    <div className={`text-[10px] font-medium uppercase tracking-widest ${p.status === 'GENERATED' ? 'text-amber-500' : 'text-primary'}`}>
                                                         {p.status}
                                                     </div>
                                                 </div>

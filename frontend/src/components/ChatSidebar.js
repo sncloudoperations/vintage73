@@ -181,7 +181,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                                     <span className="ml-1 text-sm font-medium">Back</span>
                                 </button>
                             ) : (
-                                <h2 className="text-lg font-bold text-white">Internal Chat</h2>
+                                <h2 className="text-lg font-semibold text-white">Internal Chat</h2>
                             )}
                             <button onClick={onClose} className="p-2 hover:bg-black/10 rounded-full transition-colors">
                                 <IoClose className="text-2xl text-white" />
@@ -203,7 +203,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                                                 <div className="relative">
                                                     <IoPersonCircleOutline className="text-4xl text-gray-400" />
                                                     {convUser.unreadCount > 0 && (
-                                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold border-2 border-white dark:border-gray-900">
+                                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-medium border-2 border-white dark:border-gray-900">
                                                             {convUser.unreadCount}
                                                         </span>
                                                     )}
@@ -231,7 +231,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                                         <div className="flex items-center">
                                             <IoPersonCircleOutline className="text-3xl text-gray-400" />
                                             <div className="ml-2">
-                                                <h3 className="text-sm font-bold text-gray-800 leading-none">{selectedUser.name || selectedUser.username}</h3>
+                                                <h3 className="text-sm font-medium text-gray-800 leading-none">{selectedUser.name || selectedUser.username}</h3>
                                                 <span className="text-[10px] text-green-500 font-medium">Online</span>
                                             </div>
                                         </div>

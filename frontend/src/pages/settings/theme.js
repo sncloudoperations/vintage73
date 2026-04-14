@@ -90,7 +90,7 @@ export default function ThemeSettings() {
     return (
         <div className="max-w-5xl mx-auto space-y-8">
             <div>
-                <h1 className="text-2xl font-bold text-slate-800">Theme Settings</h1>
+                <h1 className="text-2xl font-semibold text-slate-800">Theme Settings</h1>
                 <p className="text-slate-500 text-sm">Customize the look and feel of the application.</p>
             </div>
 
@@ -101,7 +101,7 @@ export default function ThemeSettings() {
 
                     {/* Presets */}
                     <div className="card">
-                        <h3 className="text-sm font-bold text-slate-400 uppercase mb-4 flex items-center gap-2">
+                        <h3 className="text-sm font-medium text-slate-400 uppercase mb-4 flex items-center gap-2">
                             <FiDroplet /> Recommended Palettes
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
@@ -123,7 +123,7 @@ export default function ThemeSettings() {
 
                     {/* Customizer */}
                     <div className="card">
-                        <h3 className="text-sm font-bold text-slate-400 uppercase mb-4 flex items-center gap-2">
+                        <h3 className="text-sm font-medium text-slate-400 uppercase mb-4 flex items-center gap-2">
                             <FiLayout /> Custom Colors
                         </h3>
                         <div className="space-y-4">
@@ -166,7 +166,7 @@ export default function ThemeSettings() {
 
                     {/* Dashboard Visibility */}
                     <div className="card">
-                        <h3 className="text-sm font-bold text-slate-400 uppercase mb-4 flex items-center gap-2">
+                        <h3 className="text-sm font-medium text-slate-400 uppercase mb-4 flex items-center gap-2">
                             <FiLayout /> Dashboard Visibility
                         </h3>
                         <div className="flex items-center gap-3 py-2">
@@ -192,7 +192,7 @@ export default function ThemeSettings() {
                 {/* Right Column: Preview */}
                 <div className="space-y-6">
                     <div className="card sticky top-6">
-                        <h3 className="text-sm font-bold text-slate-400 uppercase mb-4">Live Preview</h3>
+                        <h3 className="text-sm font-medium text-slate-400 uppercase mb-4">Live Preview</h3>
 
                         {/* Mock Buttons */}
                         <div className="space-y-6">
@@ -230,7 +230,7 @@ export default function ThemeSettings() {
                                 <p className="text-xs text-slate-500 mb-2">Active Elements</p>
                                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                                     <div
-                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold"
+                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium"
                                         style={{ background: `${localTheme.primaryColor}20`, color: localTheme.primaryColor }}
                                     >
                                         Active Status
@@ -243,7 +243,7 @@ export default function ThemeSettings() {
                             <button
                                 onClick={handleSave}
                                 disabled={loading}
-                                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-white font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-white font-medium shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={getGradientStyle()}
                             >
                                 {loading ? <FiRefreshCw className="animate-spin" /> : <FiSave />}

@@ -70,7 +70,7 @@ export default function SalaryAdvance() {
     const getStatusBadge = (advance) => {
         if (advance.deductedInPayroll) {
             return (
-                <span className="px-3 py-1 rounded-full text-xs font-bold border bg-slate-50 text-slate-700 border-slate-200">
+                <span className="px-3 py-1 rounded-full text-xs font-medium border bg-slate-50 text-slate-700 border-slate-200">
                     DEDUCTED
                 </span>
             );
@@ -82,7 +82,7 @@ export default function SalaryAdvance() {
             REJECTED: 'bg-red-50 text-red-700 border-red-200'
         };
         return (
-            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${styles[advance.status] || styles.PENDING}`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${styles[advance.status] || styles.PENDING}`}>
                 {advance.status}
             </span>
         );
@@ -100,7 +100,7 @@ export default function SalaryAdvance() {
         <div className="p-6 max-w-7xl mx-auto">
             <header className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
                         <FiDollarSign className="text-primary" />
                         Salary Advance
                     </h1>
@@ -108,7 +108,7 @@ export default function SalaryAdvance() {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg"
+                    className="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg"
                 >
                     <FiPlus /> Request Advance
                 </button>
@@ -120,7 +120,7 @@ export default function SalaryAdvance() {
                     <div className="flex items-start gap-3">
                         <FiCheckCircle className="text-amber-600 mt-0.5 flex-shrink-0" size={20} />
                         <div>
-                            <p className="text-sm font-bold text-amber-900">Pending Deduction</p>
+                            <p className="text-sm font-medium text-amber-900">Pending Deduction</p>
                             <p className="text-xs text-amber-700 mt-1">
                                 You have {currencySymbol}{pendingTotal.toFixed(2)} in approved advances that will be deducted from your next salary.
                             </p>
@@ -132,7 +132,7 @@ export default function SalaryAdvance() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100 uppercase text-[10px] tracking-wider">
+                        <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100 uppercase text-[10px] tracking-wider">
                             <tr>
                                 <th className="px-6 py-4 text-left">Employee</th>
                                 <th className="px-6 py-4 text-right">Amount</th>
@@ -153,7 +153,7 @@ export default function SalaryAdvance() {
                                 advances.map(adv => (
                                     <tr key={adv.id} className="hover:bg-slate-50 transition-colors">
                                         <td className="px-6 py-4">
-                                            <div className="font-bold text-slate-800">{adv.user?.name}</div>
+                                            <div className="font-medium text-slate-800">{adv.user?.name}</div>
                                             <div className="text-xs text-slate-400">@{adv.user?.username}</div>
                                             {adv.user?.employeeProfile?.basicSalary && (
                                                 <div className="text-xs text-slate-500 mt-0.5">
@@ -162,7 +162,7 @@ export default function SalaryAdvance() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <span className="font-bold text-primary text-base">
+                                            <span className="font-medium text-primary text-base">
                                                 {currencySymbol}{parseFloat(adv.amount).toFixed(2)}
                                             </span>
                                         </td>
@@ -230,12 +230,12 @@ export default function SalaryAdvance() {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
                         <div className="p-6 border-b border-slate-100">
-                            <h2 className="text-xl font-bold text-slate-800">Request Salary Advance</h2>
+                            <h2 className="text-xl font-semibold text-slate-800">Request Salary Advance</h2>
                             <p className="text-sm text-slate-500 mt-1">Submit a request for salary advance</p>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
                                     Amount ({currencySymbol})
                                 </label>
                                 <input
@@ -243,14 +243,14 @@ export default function SalaryAdvance() {
                                     type="number"
                                     step="0.01"
                                     min="0.01"
-                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-bold text-lg"
+                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-medium text-lg"
                                     value={formData.amount}
                                     onChange={e => setFormData({ ...formData, amount: e.target.value })}
                                     placeholder="0.00"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
                                     Reason
                                 </label>
                                 <textarea
@@ -266,13 +266,13 @@ export default function SalaryAdvance() {
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-4 py-3 border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-all"
+                                    className="flex-1 px-4 py-3 border border-slate-200 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-50 transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all"
+                                    className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-medium text-sm hover:bg-black transition-all"
                                 >
                                     Submit Request
                                 </button>

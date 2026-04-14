@@ -107,24 +107,24 @@ export default function CategoryMaster() {
         <div>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Category Master</h1>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Category Master</h1>
                     <p className="text-slate-500 text-sm font-medium">Centralized management for system classification</p>
                 </div>
                 <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 shadow-inner">
                     <button 
                         onClick={() => setActiveTab('product')}
-                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'product' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
+                        className={`px-6 py-2.5 rounded-xl text-[10px] font-medium uppercase tracking-widest transition-all duration-300 ${activeTab === 'product' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
                     >
                         Product Inventory
                     </button>
                     <button 
                         onClick={() => setActiveTab('ticket')}
-                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'ticket' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
+                        className={`px-6 py-2.5 rounded-xl text-[10px] font-medium uppercase tracking-widest transition-all duration-300 ${activeTab === 'ticket' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
                     >
                         Ticketing system
                     </button>
                 </div>
-                <button onClick={() => openModal()} className="btn btn-primary shadow-primary/20 shadow-lg px-8 py-3 rounded-2xl text-[10px] uppercase font-black tracking-widest">
+                <button onClick={() => openModal()} className="btn btn-primary shadow-primary/20 shadow-lg px-8 py-3 rounded-2xl text-[10px] uppercase font-medium tracking-widest">
                     <FiPlus className="text-lg" /> New {activeTab === 'product' ? 'Product' : 'Ticket'} Category
                 </button>
             </div>
@@ -215,7 +215,7 @@ export default function CategoryMaster() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
                         <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-                            <h3 className="font-bold text-lg text-slate-800">
+                            <h3 className="font-medium text-lg text-slate-800">
                                 {editingCategory ? 'Edit Category' : 'Add New Category'}
                             </h3>
                             <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">&times;</button>

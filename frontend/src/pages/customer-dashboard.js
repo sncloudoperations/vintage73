@@ -50,14 +50,14 @@ export default function CustomerDashboard() {
         
         <div className="relative p-8 pt-12 flex flex-col md:flex-row items-center md:items-start gap-8">
           <div 
-            className="w-24 h-24 rounded-2xl shadow-xl flex items-center justify-center text-white text-4xl shrink-0 font-bold"
+            className="w-24 h-24 rounded-2xl shadow-xl flex items-center justify-center text-white text-4xl shrink-0 font-semibold"
             style={{ backgroundColor: primaryColor }}
           >
             {user.username?.charAt(0).toUpperCase() || <FiUser />}
           </div>
           
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Welcome, {user.name || user.username}</h1>
+            <h1 className="text-3xl font-semibold text-slate-800 tracking-tight">Welcome, {user.name || user.username}</h1>
             <p className="text-slate-500 mt-2">You are logged in as a <strong>Customer</strong>.</p>
             
             <div className="mt-6 flex flex-wrap gap-4 justify-center md:justify-start">
@@ -76,12 +76,12 @@ export default function CustomerDashboard() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <div className="flex items-center gap-3 mb-4 text-slate-800">
             <FiActivity className="text-primary text-xl" />
-            <h3 className="font-bold text-lg">Your Access</h3>
+            <h3 className="font-medium text-lg">Your Access</h3>
           </div>
           <p className="text-sm text-slate-500 mb-4">You have been granted access to the following modules. Use the top navigation or sidebar to explore these areas.</p>
           <div className="flex flex-wrap gap-2">
             {user.allowedModules?.map(mod => (
-              <span key={mod} className="px-3 py-1 bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-lg">
+              <span key={mod} className="px-3 py-1 bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-medium uppercase tracking-wider rounded-lg">
                 {mod.replace(':', ' - ')}
               </span>
             ))}
@@ -97,12 +97,12 @@ export default function CustomerDashboard() {
             className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
           >
             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><FiLock className="text-primary"/> Setup New Password</h2>
+              <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2"><FiLock className="text-primary"/> Setup New Password</h2>
               <button onClick={() => setShowPasswordModal(false)} className="text-slate-400 hover:text-slate-600 text-xl">&times;</button>
             </div>
             <form onSubmit={handlePasswordChange} className="p-6 space-y-4 text-left">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 mb-1">Current Password</label>
+                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1 mb-1">Current Password</label>
                 <input 
                   type="password" 
                   required 
@@ -112,7 +112,7 @@ export default function CustomerDashboard() {
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 mb-1">New Password</label>
+                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1 mb-1">New Password</label>
                 <input 
                   type="password" 
                   required 
@@ -122,7 +122,7 @@ export default function CustomerDashboard() {
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1 mb-1">Confirm New Password</label>
+                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1 mb-1">Confirm New Password</label>
                 <input 
                   type="password" 
                   required 
@@ -132,8 +132,8 @@ export default function CustomerDashboard() {
                 />
               </div>
               <div className="pt-4 flex gap-3">
-                <button type="button" onClick={() => setShowPasswordModal(false)} className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-colors">Cancel</button>
-                <button type="submit" disabled={loading} className="flex-1 py-3 bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors flex justify-center items-center">
+                <button type="button" onClick={() => setShowPasswordModal(false)} className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs uppercase tracking-wider rounded-xl transition-colors">Cancel</button>
+                <button type="submit" disabled={loading} className="flex-1 py-3 bg-primary hover:bg-primary-dark text-white font-medium text-xs uppercase tracking-wider rounded-xl transition-colors flex justify-center items-center">
                   {loading ? 'Saving...' : 'Update Password'}
                 </button>
               </div>

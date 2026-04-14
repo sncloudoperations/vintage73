@@ -221,14 +221,14 @@ export default function ReportDesign() {
         {/* Header Bar */}
         <div className="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center z-10">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-black flex items-center gap-2">
+            <h1 className="text-xl font-bold flex items-center gap-2">
               <FiLayout className="text-primary" /> Designer <span className="text-slate-300 font-light">|</span>
             </h1>
 
             <div className="flex items-center gap-2 ml-4">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Branch:</span>
+              <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Select Branch:</span>
               <select
-                className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-primary min-w-[200px]"
+                className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:ring-2 focus:ring-primary min-w-[200px]"
                 value={selectedBranchId}
                 onChange={e => setSelectedBranchId(e.target.value)}
               >
@@ -241,13 +241,13 @@ export default function ReportDesign() {
             <div className="flex bg-slate-100 p-1 rounded-lg ml-4">
               <button
                 onClick={() => setActiveTab('sales')}
-                className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'sales' ? 'bg-white shadow text-primary' : 'text-slate-400'}`}
+                className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeTab === 'sales' ? 'bg-white shadow text-primary' : 'text-slate-400'}`}
               >
                 SALES
               </button>
               <button
                 onClick={() => setActiveTab('return')}
-                className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'return' ? 'bg-white shadow text-red-600' : 'text-slate-400'}`}
+                className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeTab === 'return' ? 'bg-white shadow text-red-600' : 'text-slate-400'}`}
               >
                 RETURN
               </button>
@@ -255,7 +255,7 @@ export default function ReportDesign() {
           </div>
           <button
             onClick={handleSave}
-            className="px-6 py-2 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800 flex items-center gap-2 shadow-lg transition-transform active:scale-95"
+            className="px-6 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 flex items-center gap-2 shadow-lg transition-transform active:scale-95"
           >
             <FiSave /> Save for Branch
           </button>
@@ -265,12 +265,12 @@ export default function ReportDesign() {
 
           {/* Left: Component Toolbox */}
           <div className="w-72 bg-white border-r border-slate-200 p-6 overflow-y-auto">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Toolbar</h3>
+            <h3 className="text-xs font-medium text-slate-400 uppercase tracking-widest mb-4">Toolbar</h3>
             <div className="space-y-6">
 
               {/* Page Settings */}
               <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase">Page Configuration</label>
+                <label className="text-[10px] font-medium text-slate-400 uppercase">Page Configuration</label>
                 <div className="space-y-2">
                   <div>
                     <span className="text-xs text-slate-500">Page Size</span>
@@ -303,7 +303,7 @@ export default function ReportDesign() {
 
               {/* Elements */}
               <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase">Interactive Elements</label>
+                <label className="text-[10px] font-medium text-slate-400 uppercase">Interactive Elements</label>
                 <p className="text-[10px] text-slate-400 italic">Toggle an element to add or remove it from the layout</p>
                 <div className="grid grid-cols-1 gap-2">
                   {Object.entries(COMPONENT_METADATA).map(([id, meta]) => {
@@ -335,7 +335,7 @@ export default function ReportDesign() {
                         className="w-full p-2.5 rounded-lg border border-slate-100 bg-white shadow-sm flex items-center gap-3"
                       >
                         <meta.icon className={isOn ? 'text-primary' : 'text-slate-400'} />
-                        <span className={`text-xs font-bold flex-1 ${isOn ? 'text-slate-900' : 'text-slate-600'}`}>{meta.label}</span>
+                        <span className={`text-xs font-medium flex-1 ${isOn ? 'text-slate-900' : 'text-slate-600'}`}>{meta.label}</span>
                         <button
                           type="button"
                           onClick={handleToggle}
@@ -361,14 +361,14 @@ export default function ReportDesign() {
                 className={`bg-white shadow-2xl transition-all duration-300 relative ${currentTabSettings.pageSize === 'Thermal' ? 'w-[320px]' : currentTabSettings.pageSize === 'A5' ? 'w-[480px]' : 'w-[640px]'}`}
                 style={{ minHeight: '800px', padding: '40px' }}
               >
-                <div className="absolute -top-6 left-0 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <div className="absolute -top-6 left-0 text-[10px] font-medium text-slate-400 uppercase tracking-widest flex items-center gap-2">
                   <FiMaximize /> Preview Canvas ({currentTabSettings.pageSize})
                 </div>
 
                 {/* Header Zone */}
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                   <div className="bg-slate-50 px-6 py-3 border-b border-slate-100 flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Header Zone</span>
+                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Header Zone</span>
                     <FiLayout className="text-slate-300" />
                   </div>
                   <Droppable droppableId="header">
@@ -390,7 +390,7 @@ export default function ReportDesign() {
                 {/* Body Zone */}
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                   <div className="bg-slate-50 px-6 py-3 border-b border-slate-100 flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Body Zone (Details)</span>
+                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Body Zone (Details)</span>
                     <FiGrid className="text-slate-300" />
                   </div>
                   <Droppable droppableId="body">
@@ -412,7 +412,7 @@ export default function ReportDesign() {
                 {/* Footer Zone */}
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                   <div className="bg-slate-50 px-6 py-3 border-b border-slate-100 flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Footer Zone</span>
+                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Footer Zone</span>
                     <FiLayout className="text-slate-300" />
                   </div>
                   <Droppable droppableId="footer">
@@ -439,14 +439,14 @@ export default function ReportDesign() {
             {selectedId ? (
               <div className="space-y-6 animate-fade-in">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">{COMPONENT_METADATA[selectedId]?.label} Styles</h3>
+                  <h3 className="text-sm font-medium text-slate-800 uppercase tracking-widest">{COMPONENT_METADATA[selectedId]?.label} Styles</h3>
                   <button onClick={() => setSelectedId(null)} className="text-slate-400 hover:text-slate-600">&times;</button>
                 </div>
 
                 <div className="space-y-4">
                   {/* Font Family */}
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Font Family</label>
+                    <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Font Family</label>
                     <select
                       className="w-full p-2 bg-slate-50 border border-slate-200 rounded text-sm outline-none"
                       value={selectedStyle.fontFamily}
@@ -459,7 +459,7 @@ export default function ReportDesign() {
                   {/* Size & Weight */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Font Size (px)</label>
+                      <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Font Size (px)</label>
                       <input
                         type="number"
                         className="w-full p-2 bg-slate-50 border border-slate-200 rounded text-sm outline-none"
@@ -468,10 +468,10 @@ export default function ReportDesign() {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Weight</label>
+                      <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Weight</label>
                       <button
                         onClick={() => updateStyle('fontWeight', selectedStyle.fontWeight === 'bold' ? 'normal' : 'bold')}
-                        className={`w-full p-2 rounded text-sm font-bold border transition-all ${selectedStyle.fontWeight === 'bold' ? 'bg-primary text-white border-primary' : 'bg-slate-50 text-slate-600 border-slate-200'}`}
+                        className={`w-full p-2 rounded text-sm font-medium border transition-all ${selectedStyle.fontWeight === 'bold' ? 'bg-primary text-white border-primary' : 'bg-slate-50 text-slate-600 border-slate-200'}`}
                       >
                         BOLD
                       </button>
@@ -480,7 +480,7 @@ export default function ReportDesign() {
 
                   {/* Alignment */}
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Alignment</label>
+                    <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Alignment</label>
                     <div className="flex bg-slate-50 p-1 rounded border border-slate-200">
                       <button onClick={() => updateStyle('align', 'left')} className={`flex-1 py-1.5 flex justify-center rounded transition-all ${selectedStyle.align === 'left' ? 'bg-white shadow text-primary' : 'text-slate-400'}`}><FiAlignLeft /></button>
                       <button onClick={() => updateStyle('align', 'center')} className={`flex-1 py-1.5 flex justify-center rounded transition-all ${selectedStyle.align === 'center' ? 'bg-white shadow text-primary' : 'text-slate-400'}`}><FiAlignCenter /></button>
@@ -491,11 +491,11 @@ export default function ReportDesign() {
                   {/* Spacing */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Padding Top</label>
+                      <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Padding Top</label>
                       <input type="number" className="w-full p-2 bg-slate-50 border border-slate-200 rounded text-sm" value={selectedStyle.paddingTop} onChange={e => updateStyle('paddingTop', e.target.value)} />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Padding Bottom</label>
+                      <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Padding Bottom</label>
                       <input type="number" className="w-full p-2 bg-slate-50 border border-slate-200 rounded text-sm" value={selectedStyle.paddingBottom} onChange={e => updateStyle('paddingBottom', e.target.value)} />
                     </div>
                   </div>
@@ -503,7 +503,7 @@ export default function ReportDesign() {
                   {/* Table Specific Controls */}
                   {selectedId === 'details_table' && (
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Table Columns</label>
+                      <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Table Columns</label>
                       {[
                         { key: 'showHSN', label: 'HSN Code' },
                         { key: 'showDiscount', label: 'Discount %' },
@@ -512,7 +512,7 @@ export default function ReportDesign() {
                         <button
                           key={col.key}
                           onClick={() => updateStyle(col.key, !selectedStyle[col.key])}
-                          className={`w-full p-2.5 rounded-lg text-xs font-bold flex items-center justify-between border transition-all ${selectedStyle[col.key] ? 'bg-primary text-white border-primary' : 'bg-white text-slate-600 border-slate-200 hover:border-primary-light'}`}
+                          className={`w-full p-2.5 rounded-lg text-xs font-medium flex items-center justify-between border transition-all ${selectedStyle[col.key] ? 'bg-primary text-white border-primary' : 'bg-white text-slate-600 border-slate-200 hover:border-primary-light'}`}
                         >
                           {col.label}
                           {selectedStyle[col.key] ? <FiCheck /> : <div className="w-4 h-4 rounded border border-slate-200" />}
@@ -524,7 +524,7 @@ export default function ReportDesign() {
                   {/* UDF Fields Specific Controls */}
                   {selectedId === 'udf_fields' && (
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Custom Fields (Label: Value)</label>
+                      <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Custom Fields (Label: Value)</label>
                       <div className="space-y-2">
                         {(selectedStyle.fields || [{ label: 'Field Name', value: 'Value' }]).map((field, idx) => (
                           <div key={idx} className="flex gap-2">
@@ -564,7 +564,7 @@ export default function ReportDesign() {
                             const newFields = [...(selectedStyle.fields || []), { label: '', value: '' }];
                             updateStyle('fields', newFields);
                           }}
-                          className="w-full py-2 bg-primary-light/10 text-primary rounded text-[10px] font-black uppercase hover:bg-primary-light/20 transition-colors"
+                          className="w-full py-2 bg-primary-light/10 text-primary rounded text-[10px] font-medium uppercase hover:bg-primary-light/20 transition-colors"
                         >
                           + Add Field
                         </button>
@@ -575,7 +575,7 @@ export default function ReportDesign() {
                   {/* Custom Note Specific Controls */}
                   {selectedId === 'custom_note' && (
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Custom Note Content</label>
+                      <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Custom Note Content</label>
                       <textarea
                         className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-primary"
                         rows="4"
@@ -588,7 +588,7 @@ export default function ReportDesign() {
 
                   {/* Color */}
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Hex Color</label>
+                    <label className="text-[10px] font-medium text-slate-400 uppercase block mb-1">Hex Color</label>
                     <div className="flex items-center gap-2">
                       <input type="color" className="w-10 h-10 rounded border-none cursor-pointer" value={selectedStyle.color} onChange={e => updateStyle('color', e.target.value)} />
                       <input type="text" className="flex-1 p-2 bg-slate-50 border border-slate-200 rounded text-sm font-mono uppercase" value={selectedStyle.color} onChange={e => updateStyle('color', e.target.value)} />
@@ -599,7 +599,7 @@ export default function ReportDesign() {
 
                   <button
                     onClick={() => removeComponent(selectedId)}
-                    className="w-full py-4 bg-red-50 text-red-600 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-colors border border-red-100"
+                    className="w-full py-4 bg-red-50 text-red-600 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-red-100 transition-colors border border-red-100"
                   >
                     <FiTrash2 /> Remove Element
                   </button>
@@ -611,7 +611,7 @@ export default function ReportDesign() {
                   <FiLayout size={32} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-700">No element selected</p>
+                  <p className="text-sm font-medium text-slate-700">No element selected</p>
                   <p className="text-xs text-slate-400">Click an element on the canvas to customize its typography and layout</p>
                 </div>
               </div>
@@ -651,7 +651,7 @@ function DraggableElement({ id, index, styles, isSelected, onClick, removeCompon
         >
           {isSelected && (
             <>
-              <div className="absolute -top-3 -left-2 bg-primary text-white text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter shadow-sm z-20">
+              <div className="absolute -top-3 -left-2 bg-primary text-white text-[8px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-tighter shadow-sm z-20">
                 EDITING: {meta.label}
               </div>
               <button
@@ -689,7 +689,7 @@ function ComponentPreview({ id, styles }) {
     );
     case 'tax_summary': return (
       <div className="mt-4 border-t-2 border-slate-900 pt-2 text-[8px]">
-        <div className="flex justify-between border-b pb-1 font-bold">
+        <div className="flex justify-between border-b pb-1 font-medium">
           <span>GST BREAKDOWN</span>
           <span>AMOUNT</span>
         </div>
@@ -706,15 +706,15 @@ function ComponentPreview({ id, styles }) {
           { label: 'VEHICLE NO', value: 'KL-01-AB-1234' }
         ]).map((f, i) => (
           <div key={i} className="flex justify-between text-[8px] bg-slate-50 p-1 px-2 rounded border border-slate-100">
-            <span className="font-bold uppercase text-slate-400">{f.label}:</span>
-            <span className="font-bold">{f.value}</span>
+            <span className="font-medium uppercase text-slate-400">{f.label}:</span>
+            <span className="font-medium">{f.value}</span>
           </div>
         ))}
       </div>
     );
     case 'details_table': return (
       <div className="mt-4 border-y-2 border-slate-900 py-2">
-        <div className="flex justify-between text-[7px] font-black border-b border-slate-100 pb-1 mb-1 uppercase tracking-tighter">
+        <div className="flex justify-between text-[7px] font-medium border-b border-slate-100 pb-1 mb-1 uppercase tracking-tighter">
           <span className="w-1/3">ITEM</span>
           {styles.showHSN && <span className="w-16">HSN</span>}
           <span className="w-10 text-center">QTY</span>
@@ -724,13 +724,13 @@ function ComponentPreview({ id, styles }) {
           <span className="w-20 text-right">TOTAL</span>
         </div>
         <div className="flex justify-between text-[8px] text-slate-800 font-medium">
-          <span className="w-1/3 truncate font-bold">SAMPLE PRODUCT...</span>
+          <span className="w-1/3 truncate font-medium">SAMPLE PRODUCT...</span>
           {styles.showHSN && <span className="w-16">123456</span>}
           <span className="w-10 text-center">1</span>
           <span className="w-16 text-right">100.00</span>
           {styles.showDiscount && <span className="w-10 text-right">5%</span>}
           {styles.showTax && <span className="w-16 text-right">SGST 9%...</span>}
-          <span className="w-20 text-right font-black">₹95.00</span>
+          <span className="w-20 text-right font-medium">₹95.00</span>
         </div>
       </div>
     );
@@ -741,14 +741,14 @@ function ComponentPreview({ id, styles }) {
         <div className="flex justify-between w-40 text-[8px]"><span>CGST (9%):</span><span>₹4.50</span></div>
         <div className="flex justify-between w-40 text-[8px]"><span>SGST (9%):</span><span>₹4.50</span></div>
         <div className="flex justify-between w-40 text-[8px] italic"><span>Round Off:</span><span>₹0.00</span></div>
-        <div className="flex justify-between w-40 text-[10px] font-black border-t border-slate-200 pt-1 mt-1"><span>Grand Total:</span><span>₹104.00</span></div>
+        <div className="flex justify-between w-40 text-[10px] font-extrabold border-t border-slate-200 pt-1 mt-1"><span>Grand Total:</span><span>₹104.00</span></div>
       </div>
     );
     case 'payment_info': return <div className="text-left py-1 border-l-4 border-primary pl-2 bg-slate-50">Payment: CASH | Status: PAID</div>;
     case 'salesman': return <div>Sales Person: John Doe</div>;
     case 'bank_details': return (
       <div className="text-[8px] text-left border p-2 rounded bg-slate-50">
-        <p className="font-bold">BANK DETAILS:</p>
+        <p className="font-medium">BANK DETAILS:</p>
         <p>A/C: 1234567890 | IFSC: SBIN000123</p>
       </div>
     );
@@ -759,7 +759,7 @@ function ComponentPreview({ id, styles }) {
     );
     case 'customer': return (
       <div className="bg-slate-50 p-2 rounded text-left mt-2">
-        <p className="text-[8px] text-slate-400 font-bold">CLIENT:</p>
+        <p className="text-[8px] text-slate-400 font-medium">CLIENT:</p>
         <p>Walk-in Customer</p>
       </div>
     );

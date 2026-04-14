@@ -85,7 +85,7 @@ export default function MissPunchRequests() {
             REJECTED: 'bg-red-50 text-red-700 border-red-200'
         };
         return (
-            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${styles[status] || styles.PENDING}`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${styles[status] || styles.PENDING}`}>
                 {status}
             </span>
         );
@@ -97,7 +97,7 @@ export default function MissPunchRequests() {
         <div className="p-6 max-w-7xl mx-auto">
             <header className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
                         <FiClock className="text-primary" />
                         Miss Punch Requests
                     </h1>
@@ -105,7 +105,7 @@ export default function MissPunchRequests() {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg"
+                    className="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg"
                 >
                     <FiPlus /> Request Miss Punch
                 </button>
@@ -114,7 +114,7 @@ export default function MissPunchRequests() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100 uppercase text-[10px] tracking-wider">
+                        <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100 uppercase text-[10px] tracking-wider">
                             <tr>
                                 <th className="px-6 py-4 text-left">Employee</th>
                                 <th className="px-6 py-4 text-left">Date</th>
@@ -135,7 +135,7 @@ export default function MissPunchRequests() {
                                 requests.map(req => (
                                     <tr key={req.id} className="hover:bg-slate-50 transition-colors">
                                         <td className="px-6 py-4">
-                                            <div className="font-bold text-slate-800">{req.user?.name}</div>
+                                            <div className="font-medium text-slate-800">{req.user?.name}</div>
                                             <div className="text-xs text-slate-400">@{req.user?.username}</div>
                                         </td>
                                         <td className="px-6 py-4 font-medium text-slate-700">
@@ -198,12 +198,12 @@ export default function MissPunchRequests() {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
                         <div className="p-6 border-b border-slate-100">
-                            <h2 className="text-xl font-bold text-slate-800">Request Miss Punch</h2>
+                            <h2 className="text-xl font-semibold text-slate-800">Request Miss Punch</h2>
                             <p className="text-sm text-slate-500 mt-1">Submit a request for missed attendance punch</p>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
                                     Date
                                 </label>
                                 <input
@@ -213,13 +213,13 @@ export default function MissPunchRequests() {
                                     value={formData.date}
                                     onChange={e => setFormData({ ...formData, date: e.target.value })}
                                 />
-                                <p className="text-[10px] text-amber-600 font-bold flex items-center gap-1.5 px-1 uppercase tracking-tighter">
+                                <p className="text-[10px] text-amber-600 font-medium flex items-center gap-1.5 px-1 uppercase tracking-tighter">
                                     <FiCalendar size={12} /> Limit: Within 3 days from missed date
                                 </p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                    <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
                                         Check-In Time
                                     </label>
                                     <input
@@ -230,7 +230,7 @@ export default function MissPunchRequests() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                    <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
                                         Check-Out Time
                                     </label>
                                     <input
@@ -242,7 +242,7 @@ export default function MissPunchRequests() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
                                     Reason
                                 </label>
                                 <textarea
@@ -258,13 +258,13 @@ export default function MissPunchRequests() {
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-4 py-3 border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-all"
+                                    className="flex-1 px-4 py-3 border border-slate-200 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-50 transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all"
+                                    className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-medium text-sm hover:bg-black transition-all"
                                 >
                                     Submit Request
                                 </button>
