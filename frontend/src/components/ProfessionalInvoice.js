@@ -251,6 +251,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <thead>
                         <tr className={(isBold || isModern) ? 'text-white' : ''} style={(isBold || isModern) ? { backgroundColor: accent, height: (isBold || isModern) ? '36px' : 'auto' } : { backgroundColor: isMinimal ? 'white' : '#f9fbfd' }}>
                             <th className={`${s_TableTh} text-left ${isMinimal ? 'border-b border-slate-200' : isBold ? 'rounded-l-lg' : 'rounded-l-lg'}`}>{isBold ? 'DESCRIPTION' : 'Description'}</th>
+                            {settings.showColHsn !== false && <th className={`${s_TableTh} text-center w-20 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'HSN CODE' : 'HSN Code'}</th>}
                             {settings.showColQty !== false && <th className={`${s_TableTh} text-center w-14 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'QTY' : 'Qty'}</th>}
                             {settings.showColPrice !== false && <th className={`${s_TableTh} text-center w-24 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'PRICE' : 'Price'}</th>}
                             {settings.showColTax !== false && parseFloat(taxAmount || 0) > 0 && <th className={`${s_TableTh} text-center w-16 ${isMinimal ? 'border-b border-slate-200' : ''}`}>{isBold ? 'GST%' : 'Gst %'}</th>}
@@ -262,6 +263,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                         {items?.map((item, idx) => (
                             <tr key={idx} className="border-b border-transparent">
                                 <td className={`${s_TableTd} text-left font-medium text-slate-800`}>{item.product?.name || item.name || 'Item'}</td>
+                                {settings.showColHsn !== false && <td className={`${s_TableTd} text-center font-medium text-slate-500`}>{item.product?.hsnCode || '-'}</td>}
                                 {settings.showColQty !== false && <td className={`${s_TableTd} text-center font-semibold text-slate-600`}>{item.quantity || 0}</td>}
                                 {settings.showColPrice !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{currentSymbol}{formatAmt(item.unitPrice)}</td>}
                                 {settings.showColTax !== false && parseFloat(taxAmount || 0) > 0 && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{parseFloat(item.taxRate || 0)}%</td>}
