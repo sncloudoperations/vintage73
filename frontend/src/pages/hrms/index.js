@@ -56,13 +56,13 @@ export default function HRMSDashboard() {
     return (
         <div className="p-6 max-w-6xl mx-auto space-y-6">
             <header>
-                <h1 className="text-2xl font-bold text-slate-800">HRMS Dashboard</h1>
+                <h1 className="text-2xl font-semibold text-slate-800">HRMS Dashboard</h1>
                 <p className="text-slate-500">Welcome, {user?.name}</p>
             </header>
 
             {/* Attendance Card */}
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 max-w-md">
-                <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-medium text-slate-800 mb-4 flex items-center gap-2">
                     <FiClock className="text-primary" /> Today's Attendance
                 </h3>
 
@@ -74,7 +74,7 @@ export default function HRMSDashboard() {
 
                     <div className="flex justify-between items-center text-sm">
                         <span className="text-slate-500">Status</span>
-                        <span className={`px-2 py-1 rounded text-xs font-bold ${status ? 'bg-primary-light text-primary-dark' : 'bg-gray-100 text-gray-500'}`}>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${status ? 'bg-primary-light text-primary-dark' : 'bg-gray-100 text-gray-500'}`}>
                             {status ? status.status : 'NOT MARKED'}
                         </span>
                     </div>

@@ -44,7 +44,7 @@ export default function Setup() {
         <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mb-4">
           <FiCpu className="h-6 w-6 text-green-600" />
         </div>
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">
+        <h2 className="text-center text-3xl font-bold text-gray-900">
           Initial System Setup
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">

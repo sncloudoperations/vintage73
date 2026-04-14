@@ -72,7 +72,7 @@ export default function Branches() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Branches</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">Branches</h1>
           <p className="text-slate-500 text-sm mt-1">Manage multiple business locations</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>
@@ -87,10 +87,10 @@ export default function Branches() {
 
             <div className="relative">
               <div className="flex justify-between items-start mb-4">
-                <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${branch.isActive ? 'bg-primary-light/10 text-primary border border-primary/20' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+                <div className={`px-2 py-1 rounded text-[10px] font-medium uppercase tracking-wider ${branch.isActive ? 'bg-primary-light/10 text-primary border border-primary/20' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
                   {branch.isActive ? 'Active' : 'Inactive'}
                 </div>
-                <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${branch.stockIncluded ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+                <div className={`px-2 py-1 rounded text-[10px] font-medium uppercase tracking-wider ${branch.stockIncluded ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
                   Stock: {branch.stockIncluded ? 'Enabled' : 'Disabled'}
                 </div>
                 <div className="flex gap-2">
@@ -103,7 +103,7 @@ export default function Branches() {
                 </div>
               </div>
 
-              <h3 className="text-lg font-bold text-slate-800 mb-4">{branch.name}</h3>
+              <h3 className="text-lg font-medium text-slate-800 mb-4">{branch.name}</h3>
 
               <div className="space-y-3 text-sm text-slate-600">
                 <div className="flex items-center gap-3">
@@ -138,7 +138,7 @@ export default function Branches() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-slate-800">{editingId ? 'Edit Branch' : 'Add New Branch'}</h2>
+              <h2 className="text-xl font-semibold text-slate-800">{editingId ? 'Edit Branch' : 'Add New Branch'}</h2>
               <button onClick={() => { setShowModal(false); setEditingId(null); }} className="text-slate-400 hover:text-slate-600">&times;</button>
             </div>
 

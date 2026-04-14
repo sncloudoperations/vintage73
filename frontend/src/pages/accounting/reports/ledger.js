@@ -194,7 +194,7 @@ export default function LedgerReport() {
             <div className="mb-6 flex flex-wrap justify-between items-end gap-4 print:hidden bg-slate-50 p-4 rounded-lg border border-slate-200">
                 <div className="flex flex-wrap gap-4 items-end">
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1">Select Ledger</label>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">Select Ledger</label>
                         <select
                             className="border border-slate-300 rounded px-3 py-1.5 text-sm w-64 focus:ring-2 focus:ring-primary focus:outline-none"
                             value={selectedLedgerId}
@@ -207,7 +207,7 @@ export default function LedgerReport() {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1">From Date</label>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">From Date</label>
                         <input
                             type="date"
                             className="border border-slate-300 rounded px-3 py-1.5 text-sm"
@@ -216,7 +216,7 @@ export default function LedgerReport() {
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1">To Date</label>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">To Date</label>
                         <input
                             type="date"
                             className="border border-slate-300 rounded px-3 py-1.5 text-sm"
@@ -259,10 +259,10 @@ export default function LedgerReport() {
                 <>
                     {/* Report Header */}
                     <div className="text-center border-b-2 border-slate-800 pb-4 mb-6">
-                        <h1 className="text-2xl font-bold text-slate-900 uppercase tracking-wide">{company?.companyName || 'Company Name'}</h1>
+                        <h1 className="text-2xl font-semibold text-slate-900 uppercase tracking-wide">{company?.companyName || 'Company Name'}</h1>
                         <p className="text-sm text-slate-600 mt-1">{company?.address}, {company?.city} - {company?.pincode}</p>
                         <div className="mt-4 border-t border-slate-300 pt-2 inline-block px-8">
-                            <h2 className="text-xl font-bold text-slate-800 underline decoration-2 underline-offset-4 decoration-slate-400">
+                            <h2 className="text-xl font-semibold text-slate-800 underline decoration-2 underline-offset-4 decoration-slate-400">
                                 {ledgerInfo.name} Report
                             </h2>
                             <p className="text-xs text-slate-500 font-medium mt-1 uppercase">Period: {startDate} to {endDate}</p>
@@ -279,7 +279,7 @@ export default function LedgerReport() {
                                     <th className="border border-slate-300 px-3 py-2 text-left w-[35%]">Particulars</th>
                                     <th className="border border-slate-300 px-3 py-2 text-right w-[12%]">Debit (In)</th>
                                     <th className="border border-slate-300 px-3 py-2 text-right w-[12%]">Credit (Out)</th>
-                                    <th className="border border-slate-300 px-3 py-2 text-right w-[14%] font-bold">Balance</th>
+                                    <th className="border border-slate-300 px-3 py-2 text-right w-[14%] font-medium">Balance</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -351,7 +351,7 @@ export default function LedgerReport() {
                             </tbody>
                             <tfoot>
                                 {/* Closing Balance Row */}
-                                <tr className="bg-slate-100 font-bold border-t-2 border-slate-800 text-slate-900">
+                                <tr className="bg-slate-100 font-medium border-t-2 border-slate-800 text-slate-900">
                                     <td className="border border-slate-300 px-3 py-3" colSpan="3">Total Closing Balance</td>
                                     <td className="border border-slate-300 px-3 py-3 text-right">
                                         {/* Optional: Total Debits */}

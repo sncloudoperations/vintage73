@@ -115,16 +115,16 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     };
 
     // Shared Typography Scale (Slightly improved readability)
-    const s_Title = "text-[21px] font-bold tracking-[0.5px] uppercase";
+    const s_Title = "text-[21px] font-semibold tracking-[0.5px] uppercase";
     const s_Company = "text-[17px] font-semibold leading-tight mb-1";
     const s_AddressLabel = "text-[12.5px] text-[#6b7280] leading-[1.6]";
-    const s_SecHead = "text-[12.5px] font-bold uppercase tracking-wider mb-2.5";
+    const s_SecHead = "text-[12.5px] font-medium uppercase tracking-wider mb-2.5";
     const s_Label = "text-[12.5px] font-medium text-[#6b7280]";
-    const s_Value = "text-[13.5px] font-bold text-[#1f2937] leading-[1.6]";
-    const s_TableTh = "px-2.5 text-[10.5px] font-bold uppercase tracking-wider";
+    const s_Value = "text-[13.5px] font-medium text-[#1f2937] leading-[1.6]";
+    const s_TableTh = "px-2.5 text-[10.5px] font-medium uppercase tracking-wider";
     const s_TableTd = "py-2 px-2.5 text-[12.5px] font-medium border-b border-slate-50";
-    const s_TotalBox = "text-[14px] font-bold";
-    const s_GrandTotal = "text-[18px] font-bold";
+    const s_TotalBox = "text-[14px] font-medium";
+    const s_GrandTotal = "text-[18px] font-medium";
 
     if (isThermal) {
         return (
@@ -135,23 +135,23 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                         companyProfile?.logoUrl ? (
                             <img src={companyProfile.logoUrl} alt="Logo" className="w-12 h-12 object-contain mx-auto mb-1" />
                         ) : (
-                            <div className="w-8 h-8 border border-black rounded flex items-center justify-center text-[8px] font-bold mx-auto mb-1 uppercase tracking-tighter">Logo</div>
+                            <div className="w-8 h-8 border border-black rounded flex items-center justify-center text-[8px] font-medium mx-auto mb-1 uppercase tracking-tighter">Logo</div>
                         )
                     )}
-                    {settings.showCompanyName !== false && <h2 className="text-[14px] font-bold uppercase">{companyProfile?.companyName || 'OUR STORE'}</h2>}
+                    {settings.showCompanyName !== false && <h2 className="text-[14px] font-semibold uppercase">{companyProfile?.companyName || 'OUR STORE'}</h2>}
                     <p className="text-[10px]">{companyProfile?.address}</p>
                     <p className="text-[10px]">Ph: {companyProfile?.phone}</p>
-                    <div className="border-t border-b border-black py-1 mt-1 font-bold">{settings.headerTitle || 'TAX INVOICE'}</div>
+                    <div className="border-t border-b border-black py-1 mt-1 font-semibold">{settings.headerTitle || 'TAX INVOICE'}</div>
                 </div>
                 <div className="text-[10px] mb-4">
                     <div className="flex justify-between"><span>Inv: {invoiceNumber || ''}</span><span>{invoiceDate ? new Date(invoiceDate).toLocaleDateString() : ''}</span></div>
-                    <div className="font-bold mt-1">Bill To: {customer?.name || customerName || 'Walk-in'}</div>
+                    <div className="font-medium mt-1">Bill To: {customer?.name || customerName || 'Walk-in'}</div>
                 </div>
                 <table className="w-full text-[10px] border-b border-dashed border-black mb-4">
-                    <thead><tr><th className="text-left font-bold py-1">Item</th><th className="text-right font-bold w-12 py-1">Qty</th><th className="text-right font-bold w-16 py-1">Amt</th></tr></thead>
+                    <thead><tr><th className="text-left font-medium py-1">Item</th><th className="text-right font-medium w-12 py-1">Qty</th><th className="text-right font-medium w-16 py-1">Amt</th></tr></thead>
                     <tbody>{items?.map((item, i) => (<tr key={i}><td className="py-1">{item.product?.name || item.name || 'Item'}</td><td className="text-right py-1">{item.quantity || 0}</td><td className="text-right py-1">{currentSymbol}{formatAmt(item.total)}</td></tr>))}</tbody>
                 </table>
-                <div className="space-y-1 text-[11px] font-bold flex flex-col items-end">
+                <div className="space-y-1 text-[11px] font-medium flex flex-col items-end">
                     <div className="flex justify-between w-full"><span>Subtotal:</span><span>{currentSymbol}{formatAmt(parseFloat(subTotal) + parseFloat(invoiceDiscount))}</span></div>
                     {invoiceDiscount > 0 && (
                         <div className="flex justify-between w-full text-red-600"><span>Discount:</span><span>- {currentSymbol}{formatAmt(invoiceDiscount)}</span></div>
@@ -159,9 +159,9 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     {parseFloat(taxAmount || 0) > 0 && (
                         <div className="flex justify-between w-full"><span>Tax:</span><span>{currentSymbol}{formatAmt(taxAmount)}</span></div>
                     )}
-                    <div className="flex justify-between w-full text-[13px] border-t border-black pt-1 mt-1 font-black"><span>TOTAL:</span><span>{currentSymbol}{formatAmt(totalAmount)}</span></div>
+                    <div className="flex justify-between w-full text-[13px] border-t border-black pt-1 mt-1 font-extrabold"><span>TOTAL:</span><span>{currentSymbol}{formatAmt(totalAmount)}</span></div>
                 </div>
-                <div className="text-center mt-4 pt-2 border-t border-dashed border-black text-[9px] font-bold tracking-widest"><p>{settings.footerText || settings.footerNote || 'THANK YOU!'}</p></div>
+                <div className="text-center mt-4 pt-2 border-t border-dashed border-black text-[9px] font-medium tracking-widest"><p>{settings.footerText || settings.footerNote || 'THANK YOU!'}</p></div>
             </div>
         );
     }
@@ -194,7 +194,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                         companyProfile?.logoUrl ? (
                             <img src={companyProfile.logoUrl} alt="Logo" style={{ width: '200px', height: 'auto', objectFit: 'contain' }} />
                         ) : (
-                            <div style={{ width: '200px', height: '200px' }} className="bg-white rounded-xl flex items-center justify-center font-bold text-slate-300 border border-slate-100 shadow-sm uppercase text-[9px] tracking-widest">Logo</div>
+                            <div style={{ width: '200px', height: '200px' }} className="bg-white rounded-xl flex items-center justify-center font-medium text-slate-300 border border-slate-100 shadow-sm uppercase text-[9px] tracking-widest">Logo</div>
                         )
                     )}
                 </div>
@@ -261,12 +261,12 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     <tbody>
                         {items?.map((item, idx) => (
                             <tr key={idx} className="border-b border-transparent">
-                                <td className={`${s_TableTd} text-left font-bold text-slate-800`}>{item.product?.name || item.name || 'Item'}</td>
+                                <td className={`${s_TableTd} text-left font-medium text-slate-800`}>{item.product?.name || item.name || 'Item'}</td>
                                 {settings.showColQty !== false && <td className={`${s_TableTd} text-center font-semibold text-slate-600`}>{item.quantity || 0}</td>}
                                 {settings.showColPrice !== false && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{currentSymbol}{formatAmt(item.unitPrice)}</td>}
                                 {settings.showColTax !== false && parseFloat(taxAmount || 0) > 0 && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{parseFloat(item.taxRate || 0)}%</td>}
                                 {parseFloat(invoiceDiscount || 0) > 0 && <td className={`${s_TableTd} text-center text-slate-400 font-medium`}>{parseFloat(item.discountAmount || 0) > 0 ? `${currentSymbol}${formatAmt(item.discountAmount)}` : '-'}</td>}
-                                {settings.showColTotal !== false && <td className={`${s_TableTd} text-right font-bold text-slate-800`}>{currentSymbol}{formatAmt((parseFloat(item.unitPrice) - parseFloat(item.discountAmount || 0)) * (parseFloat(item.quantity) || 0))}</td>}
+                                {settings.showColTotal !== false && <td className={`${s_TableTd} text-right font-medium text-slate-800`}>{currentSymbol}{formatAmt((parseFloat(item.unitPrice) - parseFloat(item.discountAmount || 0)) * (parseFloat(item.quantity) || 0))}</td>}
                             </tr>
                         ))}
                     </tbody>
@@ -319,8 +319,8 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                         )}
                     </div>
                     <div className={`pt-2.5 border-t border-slate-200/50 flex justify-between items-center mt-1`}>
-                        <span className="font-bold uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>GRAND TOTAL</span>
-                        <span className="font-bold text-[16px] tracking-tighter" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>{currentSymbol}{formatAmt(totalAmount)}</span>
+                        <span className="font-medium uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>GRAND TOTAL</span>
+                        <span className="font-medium text-[16px] tracking-tighter" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>{currentSymbol}{formatAmt(totalAmount)}</span>
                     </div>
                 </div>
             </div>
@@ -334,35 +334,35 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">Bank Name</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{companyBank.name}</span>
+                                <span className="font-medium text-slate-700 flex-1">{companyBank.name}</span>
                             </div>
                         )}
                         {companyBankHolder && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">Account Holder</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{companyBankHolder}</span>
+                                <span className="font-medium text-slate-700 flex-1">{companyBankHolder}</span>
                             </div>
                         )}
                         {companyBank.accountNumber && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">Account Number</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{companyBank.accountNumber}</span>
+                                <span className="font-medium text-slate-700 flex-1">{companyBank.accountNumber}</span>
                             </div>
                         )}
                         {companyBank.ifscCode && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">IFSC Code</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{companyBank.ifscCode}</span>
+                                <span className="font-medium text-slate-700 flex-1">{companyBank.ifscCode}</span>
                             </div>
                         )}
                         {companyBank.branchName && (
                             <div className="flex">
                                 <span className="w-28 font-medium text-slate-500">Branch</span>
                                 <span className="w-4 text-slate-400">:</span>
-                                <span className="font-bold text-slate-700 flex-1">{companyBank.branchName}</span>
+                                <span className="font-medium text-slate-700 flex-1">{companyBank.branchName}</span>
                             </div>
                         )}
                     </div>

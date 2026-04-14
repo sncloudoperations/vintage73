@@ -78,7 +78,7 @@ export default function CRMDashboard() {
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8">
             <header className="mb-8">
-                <h1 className="text-3xl font-black text-slate-800 tracking-tight">CRM Dashboard</h1>
+                <h1 className="text-3xl font-bold text-slate-800 tracking-tight">CRM Dashboard</h1>
                 <p className="text-slate-500 mt-2 font-medium">Overview of your sales pipeline and activities</p>
             </header>
 
@@ -89,8 +89,8 @@ export default function CRMDashboard() {
                         <FiUsers />
                     </div>
                     <div>
-                        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Total Leads</p>
-                        <h3 className="text-2xl font-black text-slate-800">{stats.totalLeads}</h3>
+                        <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Total Leads</p>
+                        <h3 className="text-2xl font-extrabold text-slate-800">{stats.totalLeads}</h3>
                     </div>
                 </div>
 
@@ -99,8 +99,8 @@ export default function CRMDashboard() {
                         <FiTrendingUp />
                     </div>
                     <div>
-                        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">New Leads</p>
-                        <h3 className="text-2xl font-black text-slate-800">{stats.newLeads}</h3>
+                        <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">New Leads</p>
+                        <h3 className="text-2xl font-bold text-slate-800">{stats.newLeads}</h3>
                     </div>
                 </div>
 
@@ -109,8 +109,8 @@ export default function CRMDashboard() {
                         <FiDollarSign />
                     </div>
                     <div>
-                        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Pipeline Value</p>
-                        <h3 className="text-2xl font-black text-slate-800">{formatCurrency(stats.totalPipelineValue)}</h3>
+                        <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Pipeline Value</p>
+                        <h3 className="text-2xl font-extrabold text-slate-800">{formatCurrency(stats.totalPipelineValue)}</h3>
                     </div>
                 </div>
 
@@ -119,8 +119,8 @@ export default function CRMDashboard() {
                         <FiBriefcase />
                     </div>
                     <div>
-                        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Active Deals</p>
-                        <h3 className="text-2xl font-black text-slate-800">
+                        <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Active Deals</p>
+                        <h3 className="text-2xl font-bold text-slate-800">
                             {Object.entries(stats.dealStages).reduce((acc, [k, v]) => k !== 'LOST' && k !== 'WON' ? acc + v : acc, 0)}
                         </h3>
                     </div>
@@ -130,7 +130,7 @@ export default function CRMDashboard() {
             {/* Charts Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 className="text-lg font-bold text-slate-800 mb-6">Deals by Stage</h3>
+                    <h3 className="text-lg font-medium text-slate-800 mb-6">Deals by Stage</h3>
                     <div className="h-64 flex justify-center">
                         {loading ? <p>Loading...</p> : (
                             Object.keys(stats.dealStages).length > 0 ?
@@ -142,14 +142,14 @@ export default function CRMDashboard() {
 
                 {/* Recent Activity Placeholder - To be implemented */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 className="text-lg font-bold text-slate-800 mb-6">Quick Actions</h3>
+                    <h3 className="text-lg font-medium text-slate-800 mb-6">Quick Actions</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <a href="/crm/leads" className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-primary/20 hover:bg-primary-light transition-all group cursor-pointer block">
-                            <div className="font-bold text-slate-700 group-hover:text-primary-dark">Add New Lead</div>
+                            <div className="font-medium text-slate-700 group-hover:text-primary-dark">Add New Lead</div>
                             <div className="text-xs text-slate-400 mt-1"> Capture a new potential client</div>
                         </a>
                         <a href="/crm/deals" className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition-all group cursor-pointer block">
-                            <div className="font-bold text-slate-700 group-hover:text-blue-700">Create Deal</div>
+                            <div className="font-medium text-slate-700 group-hover:text-blue-700">Create Deal</div>
                             <div className="text-xs text-slate-400 mt-1"> Start a new sales loop</div>
                         </a>
                     </div>

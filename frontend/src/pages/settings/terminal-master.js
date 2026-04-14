@@ -162,16 +162,16 @@ export default function TerminalMaster() {
         <div className="max-w-6xl mx-auto py-8 px-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-slate-900 flex items-center gap-2">
                         <FiMonitor className="text-primary" /> Terminal Master
                     </h1>
                     <p className="text-slate-500 text-sm">Manage authorized devices and access control settings.</p>
                 </div>
                 <div className="flex items-center gap-4 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
                     <div className="flex flex-col">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2">Access Control</span>
+                        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider px-2">Access Control</span>
                         <div className="flex items-center gap-2 px-2">
-                            <span className={`text-sm font-bold ${terminalLock ? 'text-primary' : 'text-slate-400'}`}>
+                            <span className={`text-sm font-medium ${terminalLock ? 'text-primary' : 'text-slate-400'}`}>
                                 {terminalLock ? 'STRICT MODE ACTIVE' : 'OPEN ACCESS'}
                             </span>
                             <button
@@ -192,7 +192,7 @@ export default function TerminalMaster() {
                 <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
                     <FiAlertTriangle className="text-amber-500 mt-1 shrink-0" />
                     <div>
-                        <h4 className="text-amber-800 font-bold text-sm text-balance">Strict Terminal Access is ON</h4>
+                        <h4 className="text-amber-800 font-medium text-sm text-balance">Strict Terminal Access is ON</h4>
                         <p className="text-amber-700 text-xs">Only approved and active terminals listed below will be able to log in to the system. Unknown devices will be blocked.</p>
                     </div>
                 </div>
@@ -200,14 +200,14 @@ export default function TerminalMaster() {
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
-                    <h3 className="font-bold text-slate-800">Authorized Terminals</h3>
+                    <h3 className="font-medium text-slate-800">Authorized Terminals</h3>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => {
                                 setIsBulkMode(true);
                                 setIsModalOpen(true);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-sm font-bold transition-all"
+                            className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-sm font-medium transition-all"
                         >
                             <FiPlus /> Bulk Create
                         </button>
@@ -216,7 +216,7 @@ export default function TerminalMaster() {
                                 setIsBulkMode(false);
                                 setIsModalOpen(true);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-bold transition-all"
+                            className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-all"
                         >
                             <FiMonitor /> Add Terminal
                         </button>
@@ -228,12 +228,12 @@ export default function TerminalMaster() {
                         {/* ... table content remains same ... */}
                         <thead>
                             <tr className="bg-slate-50/50">
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Terminal Info</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fingerprint (ID)</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Linked User</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Last Activity</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Terminal Info</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Fingerprint (ID)</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Linked User</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Last Activity</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider text-center">Status</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -252,7 +252,7 @@ export default function TerminalMaster() {
                                                     <FiMonitor />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                                    <p className="font-medium text-slate-800 text-sm flex items-center gap-2">
                                                         {term.name}
                                                         {isThisTerminal(term.terminalCode) && (
                                                             <span className="text-[10px] px-1.5 py-0.5 bg-primary text-white rounded-full">THIS DEVICE</span>
@@ -271,7 +271,7 @@ export default function TerminalMaster() {
                                             <select
                                                 value={term.userId || ''}
                                                 onChange={(e) => updateTerminalUser(term.id, e.target.value)}
-                                                className="text-xs font-bold bg-slate-50 border border-slate-100 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 w-40"
+                                                className="text-xs font-medium bg-slate-50 border border-slate-100 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 w-40"
                                             >
                                                 <option value="">No User Linked</option>
                                                 {users.map(u => (
@@ -287,7 +287,7 @@ export default function TerminalMaster() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex justify-center">
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider ${term.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-medium tracking-wider ${term.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
                                                     {term.isActive ? 'ACTIVE / AUTHORIZED' : 'INACTIVE / PENDING'}
                                                 </span>
                                             </div>
@@ -333,7 +333,7 @@ export default function TerminalMaster() {
                                     <FiMonitor size={32} />
                                 </div>
 
-                                <h3 className="text-2xl font-bold text-center text-slate-800 mb-2">
+                                <h3 className="text-2xl font-semibold text-center text-slate-800 mb-2">
                                     {isBulkMode ? 'Bulk Create Terminals' : 'Register Terminal'}
                                 </h3>
                                 <p className="text-center text-slate-500 text-sm mb-8 px-4">
@@ -344,9 +344,9 @@ export default function TerminalMaster() {
 
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Target Branch</label>
+                                        <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1">Target Branch</label>
                                         <select
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-800 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all"
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-800 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all"
                                             value={selectedBranchId}
                                             onChange={(e) => setSelectedBranchId(e.target.value)}
                                         >
@@ -359,9 +359,9 @@ export default function TerminalMaster() {
 
                                     {isBulkMode ? (
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">TERMINAL NAMES (COMMA SEPARATED)</label>
+                                            <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1">TERMINAL NAMES (COMMA SEPARATED)</label>
                                             <textarea
-                                                className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-800 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-300 min-h-[100px]"
+                                                className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-800 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-300 min-h-[100px]"
                                                 placeholder="Counter 1, Counter 2, Delivery PC..."
                                                 value={bulkNames}
                                                 onChange={(e) => setBulkNames(e.target.value)}
@@ -369,11 +369,11 @@ export default function TerminalMaster() {
                                         </div>
                                     ) : (
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">TERMINAL NAME</label>
+                                            <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1">TERMINAL NAME</label>
                                             <input
                                                 type="text"
                                                 autoFocus
-                                                className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-800 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-300"
+                                                className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-800 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-300"
                                                 placeholder="e.g. Sales Counter 1, Manager PC"
                                                 value={newTerminalName}
                                                 onChange={(e) => setNewTerminalName(e.target.value)}
@@ -390,13 +390,13 @@ export default function TerminalMaster() {
                                                 setBulkNames('');
                                                 setSelectedBranchId('');
                                             }}
-                                            className="flex-1 px-6 py-4 rounded-2xl border border-slate-100 text-slate-500 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
+                                            className="flex-1 px-6 py-4 rounded-2xl border border-slate-100 text-slate-500 font-medium text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
                                         >
                                             Cancel
                                         </button>
                                         <button
                                             onClick={handleRegister}
-                                            className="flex-1 px-6 py-4 rounded-2xl bg-primary text-white font-bold text-xs uppercase tracking-widest hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
+                                            className="flex-1 px-6 py-4 rounded-2xl bg-primary text-white font-medium text-xs uppercase tracking-widest hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
                                         >
                                             {isBulkMode ? 'Create All' : 'Register'}
                                         </button>
@@ -406,7 +406,7 @@ export default function TerminalMaster() {
 
                             <div className="bg-slate-50 p-4 flex items-center justify-center gap-2 border-t border-slate-100">
                                 <FiShield size={14} className="text-slate-400" />
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-0.5">Device Fingerprinting Active</span>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest leading-none mt-0.5">Device Fingerprinting Active</span>
                             </div>
                         </motion.div>
                     </div>
@@ -426,7 +426,7 @@ export default function TerminalMaster() {
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <h4 className="font-bold text-slate-800 flex items-center gap-2 mb-2">
+                    <h4 className="font-medium text-slate-800 flex items-center gap-2 mb-2">
                         <FiShield className="text-primary" /> Security Best Practices
                     </h4>
                     <ul className="text-xs text-slate-500 space-y-2 list-disc pl-4">
@@ -438,7 +438,7 @@ export default function TerminalMaster() {
                 </div>
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center">
                     <FiSmartphone className="text-3xl text-slate-300 mb-3" />
-                    <h4 className="font-bold text-slate-800 text-sm">Mobile & Table Access</h4>
+                    <h4 className="font-medium text-slate-800 text-sm">Mobile & Table Access</h4>
                     <p className="text-xs text-slate-500 max-w-xs mx-auto">
                         If you access this software from a phone or tablet, you must also register and approve the device here before logging in.
                     </p>

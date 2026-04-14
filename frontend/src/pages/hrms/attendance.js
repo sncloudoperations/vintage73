@@ -134,7 +134,7 @@ export default function AttendanceCalendar() {
 
                         <div className="flex flex-col items-end gap-1">
                             {record && (
-                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${record.status === 'PRESENT' ? 'bg-green-100 text-green-700' :
+                                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${record.status === 'PRESENT' ? 'bg-green-100 text-green-700' :
                                     record.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' :
                                         record.status === 'CHECKED_IN' ? 'bg-blue-100 text-blue-700' :
                                             'bg-red-100 text-red-700'
@@ -144,7 +144,7 @@ export default function AttendanceCalendar() {
                             )}
                             {leave && (
                                 <span
-                                    className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white shadow-sm"
+                                    className="text-[10px] font-medium px-1.5 py-0.5 rounded text-white shadow-sm"
                                     style={{ backgroundColor: leave.leaveType?.color || '#3B82F6' }}
                                 >
                                     {leave.leaveType?.name}
@@ -171,7 +171,7 @@ export default function AttendanceCalendar() {
                     ) : (
                         !isWeekend && !leave && currentDayDate < today && (
                             <div className="mt-4 flex justify-center">
-                                <span className="text-[10px] text-red-500 font-black tracking-widest bg-red-100 px-2 py-0.5 rounded-full">ABSENT</span>
+                                <span className="text-[10px] text-red-500 font-medium tracking-widest bg-red-100 px-2 py-0.5 rounded-full">ABSENT</span>
                             </div>
                         )
                     )}
@@ -186,14 +186,14 @@ export default function AttendanceCalendar() {
         <div className="p-6 max-w-6xl mx-auto font-sans">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">My Attendance</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">My Attendance</h1>
                     <p className="text-slate-500 text-sm mt-1">Track your daily check-ins and work hours</p>
                 </div>
 
                 {/* Legend/Stats */}
                 <div className="flex gap-4 text-sm">
                     <div className="flex flex-col items-center bg-white border border-slate-100 p-3 rounded-lg shadow-sm min-w-[100px]">
-                        <span className="text-2xl font-bold text-primary">{stats.present}</span>
+                        <span className="text-2xl font-semibold text-primary">{stats.present}</span>
                         <span className="text-slate-400 text-xs font-medium uppercase">Present</span>
                     </div>
                     <div className="flex flex-col items-center bg-white border border-slate-100 p-3 rounded-lg shadow-sm min-w-[100px]">
@@ -209,7 +209,7 @@ export default function AttendanceCalendar() {
                     <button onClick={handlePrevMonth} className="p-2 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200 hover:shadow-sm text-slate-600">
                         <FiChevronLeft size={20} />
                     </button>
-                    <h2 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                    <h2 className="text-lg font-semibold text-slate-700 flex items-center gap-2">
                         <FiCalendar className="text-primary mb-0.5" />
                         {date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
                     </h2>
@@ -221,7 +221,7 @@ export default function AttendanceCalendar() {
                 {/* Days Header */}
                 <div className="grid grid-cols-7 bg-white border-b border-slate-100">
                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                        <div key={day} className="py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <div key={day} className="py-3 text-center text-xs font-medium text-slate-400 uppercase tracking-wider">
                             {day}
                         </div>
                     ))}

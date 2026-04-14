@@ -63,19 +63,19 @@ export default function LeadFollowups() {
         window.location.href = `tel:${phone}`;
     };
 
-    if (loading) return <div className="p-12 text-center text-slate-400 font-black animate-pulse uppercase tracking-widest">Loading Follow-ups...</div>;
+    if (loading) return <div className="p-12 text-center text-slate-400 font-medium animate-pulse uppercase tracking-widest">Loading Follow-ups...</div>;
 
     return (
         <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
             <header className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-800 tracking-tight">Follow-up Dashboard</h1>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Follow-up Dashboard</h1>
                     <p className="text-slate-500 font-medium">Manage your active leads and scheduled tasks</p>
                 </div>
                 <div className="flex gap-4">
                     <div className="text-right">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Total Pending</p>
-                        <p className="text-2xl font-black text-primary">
+                        <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none">Total Pending</p>
+                        <p className="text-2xl font-bold text-primary">
                             {sections.overdue.length + sections.today.length + sections.upcoming.length}
                         </p>
                     </div>
@@ -123,7 +123,7 @@ export default function LeadFollowups() {
                     <form onSubmit={handleSubmitOutcome} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
                         <header className="flex justify-between items-start">
                             <div>
-                                <h3 className="text-xl font-black text-slate-800 tracking-tight">Record Outcome</h3>
+                                <h3 className="text-xl font-bold text-slate-800 tracking-tight">Record Outcome</h3>
                                 <p className="text-xs text-slate-400 font-medium mt-1">Updating follow-up for {selectedFollowUp.lead.name}</p>
                             </div>
                             <button type="button" onClick={() => setShowOutcomeModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiX /></button>
@@ -131,7 +131,7 @@ export default function LeadFollowups() {
                         
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Action Outcome</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Action Outcome</label>
                                 <select 
                                     required 
                                     className="input" 
@@ -147,7 +147,7 @@ export default function LeadFollowups() {
                             </div>
                             
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Internal Notes</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Internal Notes</label>
                                 <textarea 
                                     className="input min-h-[80px]" 
                                     placeholder="What happened during this follow-up?"
@@ -159,7 +159,7 @@ export default function LeadFollowups() {
                             {/* Next Follow-up required unless Not Interested */}
                             {outcomeForm.outcome !== 'Not Interested' && (
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest flex justify-between items-center">
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest flex justify-between items-center">
                                         Next Follow-up Date
                                         <span className="text-primary text-[8px]">REQUIRED</span>
                                     </label>
@@ -175,8 +175,8 @@ export default function LeadFollowups() {
                         </div>
 
                         <div className="flex gap-3 pt-4">
-                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="btn btn-secondary flex-1 font-black text-xs uppercase tracking-widest">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Update & Schedule</button>
+                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="btn btn-secondary flex-1 font-medium text-xs uppercase tracking-widest">Cancel</button>
+                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Update & Schedule</button>
                         </div>
                     </form>
                 </div>
@@ -196,12 +196,12 @@ function Section({ title, icon, color, items, onAction, onCall, onWhatsApp }) {
         <div className="flex flex-col space-y-4">
             <div className={`p-3 rounded-2xl border flex items-center gap-3 ${colors[color]}`}>
                 <div className="text-xl">{icon}</div>
-                <h2 className="text-xs font-black uppercase tracking-widest">{title} <span className="ml-2 bg-white/50 px-2 py-0.5 rounded-full">{items.length}</span></h2>
+                <h2 className="text-xs font-bold uppercase tracking-widest">{title} <span className="ml-2 bg-white/50 px-2 py-0.5 rounded-full">{items.length}</span></h2>
             </div>
             
             <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-250px)] pr-2 scrollbar-thin">
                 {items.length === 0 ? (
-                    <div className="bg-white border-2 border-dashed border-slate-100 p-8 rounded-3xl text-center text-slate-300 font-bold italic text-sm">
+                    <div className="bg-white border-2 border-dashed border-slate-100 p-8 rounded-3xl text-center text-slate-300 font-medium italic text-sm">
                         No tasks found
                     </div>
                 ) : (
@@ -211,32 +211,32 @@ function Section({ title, icon, color, items, onAction, onCall, onWhatsApp }) {
                         }`}>
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <h3 className="font-black text-slate-800 text-sm tracking-tight">{fu.lead.name}</h3>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
+                                    <h3 className="font-medium text-slate-800 text-sm tracking-tight">{fu.lead.name}</h3>
+                                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mb-1 flex items-center gap-1">
                                         <FiTrendingUp size={10} className="text-primary" /> {fu.lead.status.replace('_', ' ')}
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Follow-up At</p>
-                                    <p className="text-xs font-bold text-slate-700 mt-1">{moment(fu.date).format('DD MMM, hh:mm a')}</p>
+                                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest leading-none">Follow-up At</p>
+                                    <p className="text-xs font-medium text-slate-700 mt-1">{moment(fu.date).format('DD MMM, hh:mm a')}</p>
                                 </div>
                             </div>
 
                             <div className="bg-slate-50 rounded-2xl p-3 mb-4">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Interested In</p>
-                                <p className="text-xs font-bold text-slate-600 tracking-tight">{fu.lead.product?.name || 'Inquiry'}</p>
+                                <p className="text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1 leading-none">Interested In</p>
+                                <p className="text-xs font-medium text-slate-600 tracking-tight">{fu.lead.product?.name || 'Inquiry'}</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-2">
                                 <button 
                                     onClick={() => onCall(fu.lead.phone)}
-                                    className="p-2.5 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 text-xs font-bold"
+                                    className="p-2.5 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 text-xs font-medium"
                                 >
                                     <FiPhone /> Call
                                 </button>
                                 <button 
                                     onClick={() => onWhatsApp(fu.lead.phone)}
-                                    className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 text-xs font-bold"
+                                    className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 text-xs font-medium"
                                 >
                                     <FiMessageSquare /> WhatsApp
                                 </button>
@@ -245,13 +245,13 @@ function Section({ title, icon, color, items, onAction, onCall, onWhatsApp }) {
                             <div className="mt-2 flex gap-2">
                                 <Link 
                                     href={`/crm/leads/${fu.leadId}`}
-                                    className="flex-1 p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 text-xs font-bold"
+                                    className="flex-1 p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 text-xs font-medium"
                                 >
                                     Details <FiArrowRight />
                                 </Link>
                                 <button 
                                     onClick={() => onAction(fu)}
-                                    className="flex-1 p-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-xs font-bold"
+                                    className="flex-1 p-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-xs font-medium"
                                 >
                                     <FiCheckCircle /> Mark Done
                                 </button>

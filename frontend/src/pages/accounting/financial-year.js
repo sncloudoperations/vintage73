@@ -95,7 +95,7 @@ export default function FinancialYear() {
     return (
         <div className="p-6">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Financial Years</h1>
+                <h1 className="text-2xl font-semibold">Financial Years</h1>
                 <button
                     onClick={() => setShowModal(true)}
                     className="flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
@@ -128,10 +128,10 @@ export default function FinancialYear() {
                                     <td className="px-6 py-4">{new Date(year.startDate).toLocaleDateString('en-GB')}</td>
                                     <td className="px-6 py-4">{new Date(year.endDate).toLocaleDateString('en-GB')}</td>
                                     <td className="px-6 py-4">
-                                        <span className="bg-slate-100 px-2 py-1 rounded text-xs font-bold font-mono">{year.invoicePrefix}</span>
+                                        <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium font-mono">{year.invoicePrefix}</span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-bold font-mono">{year.invoiceSequence}</span>
+                                        <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-medium font-mono">{year.invoiceSequence}</span>
                                     </td>
                                     <td className="px-6 py-4">
                                         {year.isClosed ? (
@@ -165,7 +165,7 @@ export default function FinancialYear() {
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <h2 className="text-xl font-bold mb-4">Create Financial Year</h2>
+                        <h2 className="text-xl font-semibold mb-4">Create Financial Year</h2>
                         <form onSubmit={handleCreate} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium mb-1">Name</label>
@@ -247,7 +247,7 @@ export default function FinancialYear() {
             {closingYear && previewData && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-lg">
-                        <h2 className="text-xl font-bold mb-4 text-red-600 flex items-center gap-2">
+                        <h2 className="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
                             <FiLock /> Close Financial Year: {closingYear.name}
                         </h2>
 
@@ -260,7 +260,7 @@ export default function FinancialYear() {
                                 <span className="text-gray-600">Total Expense</span>
                                 <span className="font-semibold text-red-600">{previewData.totalExpense?.toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between text-lg font-bold pt-2">
+                            <div className="flex justify-between text-lg font-medium pt-2">
                                 <span>Net {previewData.isProfit ? 'Profit' : 'Loss'}</span>
                                 <span className={previewData.isProfit ? 'text-green-700' : 'text-red-700'}>
                                     {Math.abs(previewData.netProfit)?.toFixed(2)}

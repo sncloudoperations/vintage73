@@ -86,7 +86,7 @@ export default function GSTSettings() {
           <FiSettings className="text-primary" size={20} />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-slate-800">GST & E-Invoice Bot Settings</h1>
+          <h1 className="text-xl font-semibold text-slate-800">GST & E-Invoice Bot Settings</h1>
           <p className="text-sm text-slate-500">Configure automated GST, E-Invoice, and E-Way Bill integrations</p>
         </div>
       </div>

@@ -131,7 +131,7 @@ export default function Products() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Products</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">Products</h1>
           <p className="text-slate-500 text-sm mt-1">Manage your inventory and stock levels</p>
         </div>
         <button className="btn btn-primary" onClick={() => {
@@ -199,7 +199,7 @@ export default function Products() {
                       {product.category?.name || product.categoryName || 'Uncategorized'}
                     </span>
                   </td>
-                  <td className="p-4 text-slate-800 font-bold">{companyProfile?.currencySymbol || '₹'}{Number(product.price).toFixed(2)}</td>
+                  <td className="p-4 text-slate-800 font-medium">{companyProfile?.currencySymbol || '₹'}{Number(product.price).toFixed(2)}</td>
                   <td>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.stock < 10 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-primary-light text-primary-dark border border-primary-light'}`}>
                       {product.stock} units
@@ -207,7 +207,7 @@ export default function Products() {
                   </td>
                   <td className="font-mono text-xs text-slate-500">{product.barcode}</td>
                   <td>
-                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${product.isActive ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-medium uppercase ${product.isActive ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>
                       {product.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
@@ -247,7 +247,7 @@ export default function Products() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-slate-800">{formData.id ? 'Edit Product' : 'Add New Product'}</h2>
+              <h2 className="text-xl font-semibold text-slate-800">{formData.id ? 'Edit Product' : 'Add New Product'}</h2>
               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">&times;</button>
             </div>
 
@@ -403,7 +403,7 @@ export default function Products() {
                   {statusTarget.isActive ? <FiToggleRight className="w-6 h-6" /> : <FiToggleLeft className="w-6 h-6" />}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">
+                  <h3 className="text-lg font-medium text-slate-900">
                     {statusTarget.isActive ? 'Deactivate Product?' : 'Activate Product?'}
                   </h3>
                   <p className="text-sm text-slate-600 mt-1">
@@ -423,7 +423,7 @@ export default function Products() {
               <div className="flex gap-3 mt-8">
                 <button
                   onClick={() => setShowStatusModal(false)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors"
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -438,7 +438,7 @@ export default function Products() {
                       toast.error('Failed to update status');
                     }
                   }}
-                  className={`flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all active:scale-95 ${statusTarget.isActive ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-green-500 hover:bg-green-600 shadow-green-200'}`}
+                  className={`flex-1 px-4 py-2.5 rounded-xl font-medium text-sm text-white shadow-lg transition-all active:scale-95 ${statusTarget.isActive ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-green-500 hover:bg-green-600 shadow-green-200'}`}
                 >
                   Yes, {statusTarget.isActive ? 'Deactivate' : 'Activate'}
                 </button>

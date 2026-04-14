@@ -200,7 +200,7 @@ export default function Purchase() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Purchase Management</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">Purchase Management</h1>
           <p className="text-slate-500 text-sm mt-1">Stock Inward & History</p>
         </div>
 
@@ -219,13 +219,13 @@ export default function Purchase() {
       <div className="flex gap-4 mb-6 border-b border-slate-200">
         <button
           onClick={() => setActiveTab('entry')}
-          className={`pb-3 px-4 font-bold flex items-center gap-2 transition-colors border-b-2 ${activeTab === 'entry' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`pb-3 px-4 font-medium flex items-center gap-2 transition-colors border-b-2 ${activeTab === 'entry' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
           <FiPlus /> New Entry
         </button>
         <button
           onClick={() => setActiveTab('history')}
-          className={`pb-3 px-4 font-bold flex items-center gap-2 transition-colors border-b-2 ${activeTab === 'history' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`pb-3 px-4 font-medium flex items-center gap-2 transition-colors border-b-2 ${activeTab === 'history' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
           <FiTruck /> Purchase History
         </button>
@@ -325,7 +325,7 @@ export default function Purchase() {
                     <td className="p-2">
                       <input type="number" min="0" className="input w-full p-2 border rounded bg-slate-50" value={row.taxPercent || 0} onChange={e => handleRowChange(index, 'taxPercent', e.target.value)} placeholder="0" />
                     </td>
-                    <td className="p-3 font-bold text-slate-700">
+                    <td className="p-3 font-medium text-slate-700">
                       {row.total?.toFixed(2)}
                     </td>
                     <td className="p-2 text-center">
@@ -397,7 +397,7 @@ export default function Purchase() {
               />
             </div>
             <button
-              className="text-sm font-bold text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="text-sm font-medium text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg flex items-center gap-2 transition-colors"
               onClick={() => { setHistSearch(''); setHistStartDate(''); setHistEndDate(''); }}
             >
               <FiRefreshCw size={14} /> Clear
@@ -426,12 +426,12 @@ export default function Purchase() {
                       <td className="p-4 font-medium">{new Date(p.purchaseDate).toLocaleDateString('en-GB')}</td>
                       <td className="p-4">{p.supplier?.name || "Unknown"}</td>
                       <td className="p-4 font-mono text-xs text-slate-500">#{p.id}</td>
-                      <td className="p-4 text-right font-bold text-slate-700">₹{parseFloat(p.totalAmount).toFixed(2)}</td>
+                      <td className="p-4 text-right font-medium text-slate-700">₹{parseFloat(p.totalAmount).toFixed(2)}</td>
                       <td className="p-4 text-center">
-                        <span className="text-[10px] font-bold text-slate-400 border border-slate-200 px-2 py-0.5 rounded uppercase">{p.paymentMethod || 'Cash'}</span>
+                        <span className="text-[10px] font-medium text-slate-400 border border-slate-200 px-2 py-0.5 rounded uppercase">{p.paymentMethod || 'Cash'}</span>
                       </td>
                       <td className="p-4 text-center">
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${p.status === 'CANCELLED' ? 'bg-red-100 text-red-700' : 'bg-primary-light text-primary-dark'}`}>{p.status}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium uppercase ${p.status === 'CANCELLED' ? 'bg-red-100 text-red-700' : 'bg-primary-light text-primary-dark'}`}>{p.status}</span>
                       </td>
                       <td className="p-4 text-center flex justify-center gap-2">
                         <button
@@ -466,7 +466,7 @@ export default function Purchase() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b flex justify-between items-center bg-slate-50">
               <div>
-                <h3 className="text-xl font-bold text-slate-800">Purchase Details #{selectedPurchase.id}</h3>
+                <h3 className="text-xl font-semibold text-slate-800">Purchase Details #{selectedPurchase.id}</h3>
                 <p className="text-sm text-slate-500">{new Date(selectedPurchase.purchaseDate).toLocaleDateString('en-GB')} • {selectedPurchase.supplier?.name}</p>
               </div>
               <button onClick={() => setSelectedPurchase(null)} className="text-slate-400 hover:text-slate-600">✕</button>
@@ -488,7 +488,7 @@ export default function Purchase() {
                       <td className="p-3 pl-6">{item.product?.name || "Deleted Product"}</td>
                       <td className="p-3 text-center">{item.quantity}</td>
                       <td className="p-3 text-right">₹{parseFloat(item.unitCost).toFixed(2)}</td>
-                      <td className="p-3 text-right pr-6 font-bold">₹{(item.quantity * item.unitCost).toFixed(2)}</td>
+                      <td className="p-3 text-right pr-6 font-medium">₹{(item.quantity * item.unitCost).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -497,7 +497,7 @@ export default function Purchase() {
 
             <div className="p-6 bg-slate-50 border-t flex justify-between items-center">
               <span className="text-slate-500 font-medium">Total Items: {selectedPurchase.items?.reduce((s, i) => s + i.quantity, 0)}</span>
-              <div className="text-xl font-bold text-slate-800">
+              <div className="text-xl font-semibold text-slate-800">
                 <span className="text-xs text-slate-400 uppercase mr-3">Paid via {selectedPurchase.paymentMethod || 'Cash'}</span>
                 Total: <span className="text-primary">₹{parseFloat(selectedPurchase.totalAmount).toFixed(2)}</span>
               </div>

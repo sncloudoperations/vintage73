@@ -54,7 +54,7 @@ export default function GSTInvoicePrint({ data }) {
     <div className="p-8 bg-white text-black text-sm" style={{ fontFamily: 'Arial, sans-serif', width: '210mm', minHeight: '297mm' }}>
       {/* Header */}
       <div className="text-center border-b-2 border-black pb-4 mb-4">
-        <h1 className="text-2xl font-bold uppercase">{company.companyName}</h1>
+        <h1 className="text-2xl font-semibold uppercase">{company.companyName}</h1>
         <p className="text-sm">{company.address}, {company.city}, {company.state} - {company.pincode}</p>
         <p className="text-sm">Phone: {company.phone} | Email: {company.email}</p>
         <p className="text-sm font-semibold">GSTIN: {company.registrationNumber}</p>
@@ -62,7 +62,7 @@ export default function GSTInvoicePrint({ data }) {
 
       {/* Invoice Title */}
       <div className="text-center mb-4">
-        <h2 className="text-xl font-bold border border-black inline-block px-6 py-1">TAX INVOICE</h2>
+        <h2 className="text-xl font-semibold border border-black inline-block px-6 py-1">TAX INVOICE</h2>
       </div>
 
       {/* Invoice Details */}
@@ -86,14 +86,14 @@ export default function GSTInvoicePrint({ data }) {
       {/* Party Details */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="border border-black p-3">
-          <h3 className="font-bold border-b border-black mb-2 pb-1">Bill To:</h3>
+          <h3 className="font-medium border-b border-black mb-2 pb-1">Bill To:</h3>
           <p className="font-semibold">{sale.customer?.name}</p>
           <p>{sale.customer?.address}</p>
           <p>{sale.customer?.city}, {sale.customer?.state} - {sale.customer?.pincode}</p>
           <p><strong>GSTIN:</strong> {sale.customer?.gstin}</p>
         </div>
         <div className="border border-black p-3">
-          <h3 className="font-bold border-b border-black mb-2 pb-1">Ship To:</h3>
+          <h3 className="font-medium border-b border-black mb-2 pb-1">Ship To:</h3>
           <p className="font-semibold">{sale.customer?.name}</p>
           <p>{sale.customer?.address}</p>
           <p>{sale.customer?.city}, {sale.customer?.state} - {sale.customer?.pincode}</p>
@@ -151,7 +151,7 @@ export default function GSTInvoicePrint({ data }) {
       {/* HSN Summary */}
       {hsnSummary && hsnSummary.length > 0 && (
         <div className="mb-4">
-          <h4 className="font-bold mb-2">HSN Summary:</h4>
+          <h4 className="font-medium mb-2">HSN Summary:</h4>
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-gray-100">
@@ -219,7 +219,7 @@ export default function GSTInvoicePrint({ data }) {
               <span>₹{parseFloat(sale.roundOffAmount).toFixed(2)}</span>
             </div>
           )}
-          <div className="flex justify-between p-2 font-bold bg-gray-100">
+          <div className="flex justify-between p-2 font-medium bg-gray-100">
             <span>Grand Total:</span>
             <span>₹{parseFloat(sale.totalAmount).toFixed(2)}</span>
           </div>
@@ -235,13 +235,13 @@ export default function GSTInvoicePrint({ data }) {
       <div className="grid grid-cols-2 gap-4 mb-8">
         {settings?.bankDetails && (
           <div className="border border-black p-3">
-            <h4 className="font-bold border-b border-black mb-2 pb-1">Bank Details:</h4>
+            <h4 className="font-medium border-b border-black mb-2 pb-1">Bank Details:</h4>
             <p className="whitespace-pre-wrap text-xs">{settings.bankDetails}</p>
           </div>
         )}
         {settings?.termsAndConditions && (
           <div className="border border-black p-3">
-            <h4 className="font-bold border-b border-black mb-2 pb-1">Terms & Conditions:</h4>
+            <h4 className="font-medium border-b border-black mb-2 pb-1">Terms & Conditions:</h4>
             <p className="whitespace-pre-wrap text-xs">{settings.termsAndConditions}</p>
           </div>
         )}

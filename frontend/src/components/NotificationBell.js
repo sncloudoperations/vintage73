@@ -99,7 +99,7 @@ const NotificationBell = ({ variant = 'default' }) => {
             >
                 <IoNotificationsOutline className={`text-2xl ${variant === 'white' ? 'text-white' : 'text-gray-600 dark:text-gray-300'}`} />
                 {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-white dark:border-gray-800">
+                    <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-medium border-2 border-white dark:border-gray-800">
                         {unreadCount}
                     </span>
                 )}
@@ -108,14 +108,14 @@ const NotificationBell = ({ variant = 'default' }) => {
             {showDropdown && (
                 <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 flex flex-col overflow-hidden">
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
-                        <h3 className="font-bold dark:text-white">Notifications</h3>
+                        <h3 className="font-medium dark:text-white">Notifications</h3>
                         <div className="flex gap-2">
                              {unreadCount > 0 && (
-                                <button onClick={handleMarkAllRead} className="text-[10px] text-blue-500 font-bold hover:underline">
+                                <button onClick={handleMarkAllRead} className="text-[10px] text-blue-500 font-medium hover:underline">
                                     Mark all read
                                 </button>
                              )}
-                             <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                             <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full font-medium uppercase tracking-tighter">
                                 {unreadCount} New
                              </span>
                         </div>

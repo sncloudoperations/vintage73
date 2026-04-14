@@ -17,7 +17,7 @@ export default function LeavesPage() {
     return (
         <div className="p-6 max-w-6xl mx-auto">
             <header className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-slate-800">Leaves Management</h1>
+                <h1 className="text-2xl font-semibold text-slate-800">Leaves Management</h1>
                 {isAdmin && (
                     <div className="flex bg-slate-100 rounded-lg p-1">
                         <button
@@ -103,7 +103,7 @@ function MyLeaves({ user }) {
 
             {showForm && (
                 <div className="bg-white p-6 rounded-xl border border-slate-200 max-w-lg mx-auto">
-                    <h3 className="text-lg font-bold mb-4">New Leave Request</h3>
+                    <h3 className="text-lg font-medium mb-4">New Leave Request</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Leave Type</label>
@@ -159,7 +159,7 @@ function MyLeaves({ user }) {
                                 value={formData.reason} onChange={e => setFormData({ ...formData, reason: e.target.value })}
                             ></textarea>
                         </div>
-                        <button type="submit" className="w-full bg-primary text-white py-2 rounded font-bold">Submit Request</button>
+                        <button type="submit" className="w-full bg-primary text-white py-2 rounded font-medium">Submit Request</button>
                     </form>
                 </div>
             )}
@@ -180,7 +180,7 @@ function MyLeaves({ user }) {
                             <tr key={l.id}>
                                 <td className="px-6 py-3 font-medium text-slate-800">
                                     {l.leaveType ? l.leaveType.name : 'Other'}
-                                    {l.isHalfDay && <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] rounded font-bold uppercase">Half Day</span>}
+                                    {l.isHalfDay && <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] rounded font-medium uppercase">Half Day</span>}
                                     {l.leaveType && <span className="text-xs text-slate-400 block">{l.leaveType.isPaid ? 'Paid' : 'Unpaid'}</span>}
                                 </td>
                                 <td className="px-6 py-3 text-slate-700">
@@ -251,11 +251,11 @@ function ManageLeaves() {
                                 </td>
                                 <td className="px-6 py-3">
                                     {l.leaveType ? (
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${l.leaveType.isPaid ? 'bg-primary-light/10 text-primary border-primary-light/20' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase border ${l.leaveType.isPaid ? 'bg-primary-light/10 text-primary border-primary-light/20' : 'bg-red-50 text-red-700 border-red-100'}`}>
                                             {l.leaveType.name}
                                         </span>
                                     ) : <span className="text-slate-400 text-xs">Other</span>}
-                                    {l.isHalfDay && <div className="mt-1"><span className="px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-100 text-[10px] rounded font-bold uppercase">Half Day</span></div>}
+                                    {l.isHalfDay && <div className="mt-1"><span className="px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-100 text-[10px] rounded font-medium uppercase">Half Day</span></div>}
                                 </td>
                                 <td className="px-6 py-3 text-slate-700">
                                     {new Date(l.startDate).toLocaleDateString('en-GB')}
@@ -268,8 +268,8 @@ function ManageLeaves() {
                                 <td className="px-6 py-3 space-x-2">
                                     {l.status === 'PENDING' && (
                                         <>
-                                            <button onClick={() => updateStatus(l.id, 'APPROVED')} className="text-primary hover:text-primary-dark font-bold text-xs uppercase">Approve</button>
-                                            <button onClick={() => updateStatus(l.id, 'REJECTED')} className="text-red-600 hover:text-red-700 font-bold text-xs uppercase">Reject</button>
+                                            <button onClick={() => updateStatus(l.id, 'APPROVED')} className="text-primary hover:text-primary-dark font-medium text-xs uppercase">Approve</button>
+                                            <button onClick={() => updateStatus(l.id, 'REJECTED')} className="text-red-600 hover:text-red-700 font-medium text-xs uppercase">Reject</button>
                                         </>
                                     )}
                                 </td>
@@ -289,7 +289,7 @@ function StatusBadge({ status }) {
         'REJECTED': 'bg-red-100 text-red-700'
     };
     return (
-        <span className={`px-2 py-1 rounded text-xs font-bold ${colors[status] || 'bg-gray-100'}`}>
+        <span className={`px-2 py-1 rounded text-xs font-medium ${colors[status] || 'bg-gray-100'}`}>
             {status}
         </span>
     );

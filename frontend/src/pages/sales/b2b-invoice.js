@@ -396,7 +396,7 @@ export default function B2BInvoice() {
             <FiFileText className="text-primary" size={20} />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-800">B2B Tax Invoice</h1>
+            <h1 className="text-xl font-semibold text-slate-800">B2B Tax Invoice</h1>
             <p className="text-sm text-slate-500">Create GST-compliant invoice for registered parties</p>
           </div>
         </div>
@@ -453,7 +453,7 @@ export default function B2BInvoice() {
                       <div className="text-xs text-slate-400">HSN: {product.hsnCode || 'N/A'} | GST: {product.taxRate}%</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-primary">₹{product.price}</div>
+                      <div className="font-medium text-primary">₹{product.price}</div>
                       <div className="text-xs text-slate-400">Stock: {product.stock || 0}</div>
                     </div>
                   </div>
@@ -509,7 +509,7 @@ export default function B2BInvoice() {
                 </div>
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-slate-600 mb-1">Tax Type</label>
-                  <div className={`font-bold text-lg ${taxType === 'INTER' ? 'text-orange-600' : 'text-primary'}`}>
+                  <div className={`font-medium text-lg ${taxType === 'INTER' ? 'text-orange-600' : 'text-primary'}`}>
                     {taxType === 'INTER' ? 'IGST' : 'CGST + SGST'}
                   </div>
                 </div>
@@ -627,7 +627,7 @@ export default function B2BInvoice() {
                           ) : (
                             <td className="p-3 text-right text-slate-600">₹{tax.toFixed(2)}</td>
                           )}
-                          <td className="p-3 text-right font-bold">₹{total.toFixed(2)}</td>
+                          <td className="p-3 text-right font-medium">₹{total.toFixed(2)}</td>
                           <td className="p-3">
                             <button onClick={() => removeItem(item.productId)} className="text-red-500 hover:text-red-700">
                               <FiTrash2 size={16} />
@@ -681,7 +681,7 @@ export default function B2BInvoice() {
                     />
                   </div>
                   <div className="flex justify-between pt-2 border-t border-slate-200">
-                    <span className="font-bold text-slate-700">Grand Total:</span>
+                    <span className="font-medium text-slate-700">Grand Total:</span>
                     <span className="font-bold text-lg text-primary">₹{grandTotal.toFixed(2)}</span>
                   </div>
                   {ewayRequired && (
@@ -783,7 +783,7 @@ export default function B2BInvoice() {
                       <td className="p-4">{new Date(inv.saleDate).toLocaleDateString('en-GB')}</td>
                       <td className="p-4 font-medium">{inv.customer?.name}</td>
                       <td className="p-4 text-slate-500 text-xs">{inv.customer?.gstin}</td>
-                      <td className="p-4 text-right font-bold">₹{parseFloat(inv.totalAmount).toFixed(2)}</td>
+                      <td className="p-4 text-right font-medium">₹{parseFloat(inv.totalAmount).toFixed(2)}</td>
                       <td className="p-4 text-center">
                         {inv.ewayBillNumber ? (
                           <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">{inv.ewayBillNumber}</span>
@@ -861,7 +861,7 @@ export default function B2BInvoice() {
       {showEwayModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">E-Way Bill Required</h3>
+            <h3 className="text-lg font-medium text-slate-800 mb-4">E-Way Bill Required</h3>
             <p className="text-sm text-slate-500 mb-4">Invoice value exceeds ₹{settings?.ewayBillThreshold}. Please enter E-Way Bill number.</p>
             <input
               type="text"

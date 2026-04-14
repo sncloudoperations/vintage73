@@ -122,7 +122,7 @@ const PostingSetup = () => {
 
     const selectedModel = metadata.find(m => m.id === (newPosting.targetTable || 'Sale'));
 
-    if (loading) return <div className="h-screen flex items-center justify-center text-xs font-black uppercase tracking-widest text-slate-400">Loading Configuration...</div>;
+    if (loading) return <div className="h-screen flex items-center justify-center text-xs font-medium uppercase tracking-widest text-slate-400">Loading Configuration...</div>;
 
     return (
         <div className="p-4 bg-slate-50 min-h-screen font-sans">
@@ -130,7 +130,7 @@ const PostingSetup = () => {
             <div className="mb-6 px-2">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h1 className="text-xl font-bold text-slate-800">Ledger Posting Setup</h1>
+                        <h1 className="text-xl font-semibold text-slate-800">Ledger Posting Setup</h1>
                         <p className="text-sm text-slate-500 mt-0.5">{postings.length} configurations</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ const PostingSetup = () => {
                         </button>
                         <button
                             onClick={() => { resetForm(); setShowAddModal(true); }}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white transition-all shadow-md active:scale-95"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-all shadow-md active:scale-95"
                             style={{ backgroundColor: theme.primaryColor }}
                         >
                             <FiPlus />
@@ -170,7 +170,7 @@ const PostingSetup = () => {
             <div className="mx-2 bg-white shadow-sm border border-slate-200 rounded-xl mb-12">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="text-white text-[12px] font-bold uppercase tracking-wider h-10" style={{ backgroundColor: theme.primaryColor }}>
+                        <tr className="text-white text-[12px] font-medium uppercase tracking-wider h-10" style={{ backgroundColor: theme.primaryColor }}>
                             <th className="px-4 py-2 border-r border-white/10 w-[20%]">Mapping Label</th>
                             <th className="px-4 py-2 border-r border-white/10 w-[15%]">Type / Role</th>
                             <th className="px-4 py-2 border-r border-white/10 w-[25%]">Ledger Mapping</th>
@@ -185,7 +185,7 @@ const PostingSetup = () => {
                                 <td className="px-4 py-3 font-medium text-slate-800 border-r border-slate-100" style={{ backgroundColor: theme.primaryColor + '08' }}>
                                     {p.label || `${p.transactionType}: ${p.role}`}
                                 </td>
-                                <td className="px-4 py-1 border-r border-slate-100 text-[11px] font-bold text-slate-500 uppercase">
+                                <td className="px-4 py-1 border-r border-slate-100 text-[11px] font-medium text-slate-500 uppercase">
                                     {p.transactionType} / {p.role}
                                 </td>
                                 <td className="px-4 py-1 border-r border-slate-100">
@@ -200,7 +200,7 @@ const PostingSetup = () => {
                                 <td className="px-4 py-1 border-r border-slate-100 text-center">
                                     <span
                                         onClick={() => handleUpsert({ ...p, side: p.side === 'DEBIT' ? 'CREDIT' : 'DEBIT' })}
-                                        className={`px-2 py-1 rounded text-[10px] font-black cursor-pointer select-none ${p.side === 'DEBIT' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}
+                                        className={`px-2 py-1 rounded text-[10px] font-medium cursor-pointer select-none ${p.side === 'DEBIT' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}
                                     >
                                         {p.side}
                                     </span>
@@ -233,9 +233,9 @@ const PostingSetup = () => {
             </div>
 
             {/* Total Count at footer */}
-            <div className="mt-4 px-4 flex items-center gap-10 text-[13px] font-bold italic" style={{ color: theme.primaryColor }}>
+            <div className="mt-4 px-4 flex items-center gap-10 text-[13px] font-medium italic" style={{ color: theme.primaryColor }}>
                 <span>Total Count</span>
-                <span className="text-xl font-black not-italic text-slate-900">{postings.length}</span>
+                <span className="text-xl font-bold not-italic text-slate-900">{postings.length}</span>
             </div>
 
             {/* Add Modal */}
@@ -244,17 +244,17 @@ const PostingSetup = () => {
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100">
                         <div className="bg-slate-50 px-8 py-6 border-b border-slate-100 flex justify-between items-center">
                             <div>
-                                <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">{isEdit ? 'Edit Posting Mapping' : 'New Posting Mapping'}</h3>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{isEdit ? 'Update existing rule' : 'Define Ledger Posting Rules'}</p>
+                                <h3 className="text-lg font-medium text-slate-800 uppercase tracking-tight">{isEdit ? 'Edit Posting Mapping' : 'New Posting Mapping'}</h3>
+                                <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-1">{isEdit ? 'Update existing rule' : 'Define Ledger Posting Rules'}</p>
                             </div>
                             <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><FiX /></button>
                         </div>
 
                         <div className="p-8 grid grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Friendly Label</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Friendly Label</label>
                                 <input
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 transition-all"
+                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all"
                                     style={{ ringColor: theme.primaryColor + '20' }}
                                     placeholder="e.g., Discount (Debit)"
                                     value={newPosting.label}
@@ -262,9 +262,9 @@ const PostingSetup = () => {
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Transaction Type</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Transaction Type</label>
                                 <select
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 transition-all"
+                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all"
                                     style={{ ringColor: theme.primaryColor + '20' }}
                                     value={newPosting.transactionType}
                                     onChange={(e) => setNewPosting({ ...newPosting, transactionType: e.target.value })}
@@ -278,9 +278,9 @@ const PostingSetup = () => {
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Posting Role/Key</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Posting Role/Key</label>
                                 <input
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 transition-all"
+                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all"
                                     style={{ ringColor: theme.primaryColor + '20' }}
                                     placeholder="e.g., DISCOUNT_EXP"
                                     value={newPosting.role}
@@ -288,21 +288,21 @@ const PostingSetup = () => {
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Ledger Side</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Ledger Side</label>
                                 <div className="flex gap-2 p-1 bg-slate-100 rounded-xl h-11">
                                     <button
                                         onClick={() => setNewPosting({ ...newPosting, side: 'DEBIT' })}
-                                        className={`flex-1 rounded-lg text-[10px] font-black transition-all ${newPosting.side === 'DEBIT' ? 'bg-white shadow-sm text-red-600' : 'text-slate-400'}`}
+                                        className={`flex-1 rounded-lg text-[10px] font-medium transition-all ${newPosting.side === 'DEBIT' ? 'bg-white shadow-sm text-red-600' : 'text-slate-400'}`}
                                     >DEBIT</button>
                                     <button
                                         onClick={() => setNewPosting({ ...newPosting, side: 'CREDIT' })}
-                                        className={`flex-1 rounded-lg text-[10px] font-black transition-all ${newPosting.side === 'CREDIT' ? 'bg-white shadow-sm text-green-600' : 'text-slate-400'}`}
+                                        className={`flex-1 rounded-lg text-[10px] font-medium transition-all ${newPosting.side === 'CREDIT' ? 'bg-white shadow-sm text-green-600' : 'text-slate-400'}`}
                                     >CREDIT</button>
                                 </div>
                             </div>
 
                             <div className="col-span-2 space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Link Account (Ledger)</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Link Account (Ledger)</label>
                                 <SearchableSelect
                                     options={ledgerOptions}
                                     value={newPosting.ledgerId}
@@ -312,9 +312,9 @@ const PostingSetup = () => {
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Target Model</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Target Model</label>
                                 <select
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 transition-all appearance-none"
+                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all appearance-none"
                                     style={{ ringColor: theme.primaryColor + '20' }}
                                     value={newPosting.targetTable}
                                     onChange={(e) => setNewPosting({ ...newPosting, targetTable: e.target.value })}
@@ -324,9 +324,9 @@ const PostingSetup = () => {
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Posting Mode</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Posting Mode</label>
                                 <select
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 transition-all appearance-none"
+                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all appearance-none"
                                     style={{ ringColor: theme.primaryColor + '20' }}
                                     value={newPosting.postingMethod}
                                     onChange={(e) => setNewPosting({ ...newPosting, postingMethod: e.target.value })}
@@ -337,9 +337,9 @@ const PostingSetup = () => {
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Source Field</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Source Field</label>
                                 <select
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 transition-all"
+                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all"
                                     style={{ ringColor: theme.primaryColor + '20' }}
                                     value={newPosting.amountField}
                                     onChange={(e) => setNewPosting({ ...newPosting, amountField: e.target.value, customFormula: '' })}
@@ -350,9 +350,9 @@ const PostingSetup = () => {
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Custom Formula</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Custom Formula</label>
                                 <input
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-[11px] font-mono font-bold text-slate-700 outline-none focus:ring-2 transition-all"
+                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-[11px] font-mono font-medium text-slate-700 outline-none focus:ring-2 transition-all"
                                     style={{ ringColor: theme.primaryColor + '20' }}
                                     placeholder="e.g. totalAmount * 0.05"
                                     value={newPosting.customFormula}
@@ -362,9 +362,9 @@ const PostingSetup = () => {
                             </div>
 
                             <div className="col-span-2 space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Condition (Post only if true)</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Condition (Post only if true)</label>
                                 <input
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-[11px] font-mono font-bold text-slate-700 outline-none focus:ring-2 transition-all"
+                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-[11px] font-mono font-medium text-slate-700 outline-none focus:ring-2 transition-all"
                                     style={{ ringColor: theme.primaryColor + '20' }}
                                     placeholder="e.g. taxAmount > 0"
                                     value={newPosting.condition}
@@ -376,7 +376,7 @@ const PostingSetup = () => {
                         <div className="px-8 pb-8 mt-4 flex gap-4">
                             <button
                                 onClick={() => handleUpsert(newPosting)}
-                                className="flex-1 h-14 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                                className="flex-1 h-14 text-white rounded-2xl font-medium text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all"
                                 style={{ backgroundColor: theme.primaryColor, boxShadow: `0 10px 15px -3px ${theme.primaryColor}30` }}
                             >
                                 {isEdit ? 'Update Posting Mapping' : 'Save Posting Mapping'}

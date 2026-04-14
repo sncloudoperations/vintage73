@@ -117,7 +117,7 @@ export default function BankReconciliation() {
         <div className="p-6 max-w-[1400px] mx-auto min-h-screen bg-slate-50 animate-in fade-in duration-500">
             <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg text-white">
                             <FiCheckCircle size={24} />
                         </div>
@@ -127,7 +127,7 @@ export default function BankReconciliation() {
                 </div>
 
                 <div className="w-full md:w-80">
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Select Bank Account</label>
+                    <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-2 ml-1">Select Bank Account</label>
                     <SearchableSelect
                         options={ledgers}
                         value={selectedLedgerId}
@@ -171,18 +171,18 @@ export default function BankReconciliation() {
                     <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
                         <FiCreditCard size={32} />
                     </div>
-                    <h3 className="text-lg font-bold text-slate-700">No Account Selected</h3>
+                    <h3 className="text-lg font-medium text-slate-700">No Account Selected</h3>
                     <p className="text-slate-400 max-w-xs mx-auto mt-2">Please select a bank or cash ledger above to start the reconciliation process.</p>
                 </div>
             ) : loading ? (
                 <div className="p-20 text-center">
                     <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent mx-auto mb-4"></div>
-                    <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Syncing Transactions...</p>
+                    <p className="text-slate-500 font-medium uppercase tracking-widest text-xs">Syncing Transactions...</p>
                 </div>
             ) : (
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Unreconciled Transactions</h2>
+                        <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Unreconciled Transactions</h2>
                         <div className="relative w-full md:w-64">
                             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                             <input
@@ -198,7 +198,7 @@ export default function BankReconciliation() {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200 text-[10px] uppercase tracking-wider font-bold text-slate-500">
+                                <tr className="bg-slate-50 border-b border-slate-200 text-[10px] uppercase tracking-wider font-medium text-slate-500">
                                     <th className="px-6 py-4">System Date</th>
                                     <th className="px-6 py-4">Voucher Info</th>
                                     <th className="px-6 py-4">Tx Path</th>
@@ -221,22 +221,22 @@ export default function BankReconciliation() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-slate-900">{tx.voucher.voucherNumber}</span>
-                                                    <span className="text-[10px] text-slate-400 uppercase font-bold">{tx.voucher.voucherType}</span>
+                                                    <span className="text-xs font-medium text-slate-900">{tx.voucher.voucherNumber}</span>
+                                                    <span className="text-[10px] text-slate-400 uppercase font-medium">{tx.voucher.voucherType}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col gap-1">
-                                                    <span className="text-[11px] font-bold text-slate-700">
+                                                    <span className="text-[11px] font-medium text-slate-700">
                                                         {tx.debitLedgerId === parseInt(selectedLedgerId) ? `From: ${tx.creditLedger?.name}` : `To: ${tx.debitLedger?.name}`}
                                                     </span>
                                                     {tx.description && <p className="text-[10px] text-slate-400 truncate max-w-[200px]">{tx.description}</p>}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-bold text-blue-600 tabular-nums">
+                                            <td className="px-6 py-4 text-right font-medium text-blue-600 tabular-nums">
                                                 {tx.debitLedgerId === parseInt(selectedLedgerId) ? `₹${parseFloat(tx.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-'}
                                             </td>
-                                            <td className="px-6 py-4 text-right font-bold text-red-500 tabular-nums">
+                                            <td className="px-6 py-4 text-right font-medium text-red-500 tabular-nums">
                                                 {tx.creditLedgerId === parseInt(selectedLedgerId) ? `₹${parseFloat(tx.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-'}
                                             </td>
                                             <td className="px-6 py-4">
@@ -250,7 +250,7 @@ export default function BankReconciliation() {
                                             <td className="px-6 py-4">
                                                 <button
                                                     onClick={() => handleReconcile(tx.id)}
-                                                    className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-all border border-emerald-100"
+                                                    className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-100 transition-all border border-emerald-100"
                                                 >
                                                     <FiSave size={14} /> Clear
                                                 </button>
@@ -271,14 +271,14 @@ function SummaryCard({ title, amount, icon, hint, highlight, warning }) {
     return (
         <div className={`p-5 rounded-2xl border ${highlight ? 'bg-emerald-50 border-emerald-100' : warning ? 'bg-red-50 border-red-100' : 'bg-white border-slate-200'} shadow-sm`}>
             <div className="flex justify-between items-start mb-2">
-                <span className={`text-[10px] font-black uppercase tracking-widest ${highlight ? 'text-emerald-600' : warning ? 'text-red-600' : 'text-slate-400'}`}>{title}</span>
+                <span className={`text-[10px] font-medium uppercase tracking-widest ${highlight ? 'text-emerald-600' : warning ? 'text-red-600' : 'text-slate-400'}`}>{title}</span>
                 <div className="p-2 rounded-lg bg-white shadow-sm ring-1 ring-slate-100">
                     {icon}
                 </div>
             </div>
-            <div className={`text-xl font-black tabular-nums ${highlight ? 'text-emerald-700' : warning ? 'text-red-700' : 'text-slate-900'}`}>
+            <div className={`text-xl font-bold tabular-nums ${highlight ? 'text-emerald-700' : warning ? 'text-red-700' : 'text-slate-900'}`}>
                 ₹{Math.abs(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                <span className="text-[10px] ml-1 font-bold">{(amount || 0) >= 0 ? 'Dr' : 'Cr'}</span>
+                <span className="text-[10px] ml-1 font-medium">{(amount || 0) >= 0 ? 'Dr' : 'Cr'}</span>
             </div>
             <p className="text-[10px] text-slate-400 mt-1 font-medium italic">{hint}</p>
         </div>

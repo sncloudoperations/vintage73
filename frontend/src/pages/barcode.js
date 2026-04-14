@@ -95,19 +95,19 @@ export default function BarcodeGenerator() {
         <div className="space-y-6 max-w-[1600px] mx-auto">
             <div className="flex justify-between items-center print:hidden">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Barcode Generator</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Barcode Generator</h1>
                     <p className="text-slate-500 text-sm">Design and print branch-specific barcodes</p>
                 </div>
                 <div className="flex gap-3">
                     <button
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-bold hover:bg-slate-200 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
                         onClick={handleSaveSettings}
                         disabled={loading}
                     >
                         {loading ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent animate-spin rounded-full" /> : <FiSave />}
                         Save Design
                     </button>
-                    <button className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20" onClick={handlePrint} disabled={!selectedProduct}>
+                    <button className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20" onClick={handlePrint} disabled={!selectedProduct}>
                         <FiPrinter className="text-lg" /> Print Barcode
                     </button>
                 </div>
@@ -116,7 +116,7 @@ export default function BarcodeGenerator() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Step 1: Product Selection */}
                 <div className="lg:col-span-3 card h-fit print:hidden">
-                    <div className="flex items-center gap-2 mb-4 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+                    <div className="flex items-center gap-2 mb-4 text-slate-400 font-medium uppercase text-[10px] tracking-widest">
                         <span className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">1</span>
                         Select Product
                     </div>
@@ -137,12 +137,12 @@ export default function BarcodeGenerator() {
                                 onClick={() => setSelectedProduct(product)}
                             >
                                 <div className="flex justify-between items-start">
-                                    <p className={`font-bold text-sm ${selectedProduct?.id === product.id ? 'text-primary' : 'text-slate-700'}`}>{product.name}</p>
+                                    <p className={`font-medium text-sm ${selectedProduct?.id === product.id ? 'text-primary' : 'text-slate-700'}`}>{product.name}</p>
                                     {selectedProduct?.id === product.id && <FiCheck className="text-primary" />}
                                 </div>
                                 <div className="flex justify-between items-center mt-1">
                                     <p className="text-[10px] text-slate-400 font-mono italic">{product.barcode || 'NO BARCODE'}</p>
-                                    <p className="text-xs font-bold text-slate-900">₹{Number(product.price).toFixed(2)}</p>
+                                    <p className="text-xs font-medium text-slate-900">₹{Number(product.price).toFixed(2)}</p>
                                 </div>
                             </div>
                         ))}
@@ -184,7 +184,7 @@ export default function BarcodeGenerator() {
                                 >
                                     {settings.showName && (
                                         <h3
-                                            className="font-bold mb-1 text-slate-800 print:text-black leading-tight"
+                                            className="font-medium mb-1 text-slate-800 print:text-black leading-tight"
                                             style={{ fontSize: `${settings.nameFontSize}px`, lineHeight: 1.1 }}
                                         >
                                             {selectedProduct.name}
@@ -222,14 +222,14 @@ export default function BarcodeGenerator() {
                         </div>
                     )}
 
-                    <div className="mt-8 px-4 py-2 bg-primary-light text-primary text-[10px] font-bold uppercase tracking-widest rounded-full border border-primary-light print:hidden animate-pulse">
+                    <div className="mt-8 px-4 py-2 bg-primary-light text-primary text-[10px] font-medium uppercase tracking-widest rounded-full border border-primary-light print:hidden animate-pulse">
                         Live Preview
                     </div>
                 </div>
 
                 {/* Step 3: Properties Panel */}
                 <div className="lg:col-span-3 card h-fit print:hidden max-h-[85vh] overflow-y-auto custom-scrollbar">
-                    <div className="flex items-center gap-2 mb-6 text-slate-400 font-bold uppercase text-[10px] tracking-widest sticky top-0 bg-white py-2 z-10 border-b border-slate-50">
+                    <div className="flex items-center gap-2 mb-6 text-slate-400 font-medium uppercase text-[10px] tracking-widest sticky top-0 bg-white py-2 z-10 border-b border-slate-50">
                         <FiSettings className="text-sm" />
                         Design Properties
                     </div>
@@ -237,7 +237,7 @@ export default function BarcodeGenerator() {
                     <div className="space-y-8">
                         {/* Page Setup Section (New for Multi-Column) */}
                         <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-3 block flex items-center gap-2">
+                            <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tighter mb-3 block flex items-center gap-2">
                                 <FiLayout /> Page & Grid Setup
                             </label>
                             <div className="space-y-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
@@ -246,13 +246,13 @@ export default function BarcodeGenerator() {
                                     <div className="flex bg-white rounded-lg p-1 border border-slate-200">
                                         <button
                                             onClick={() => setSettings({ ...settings, paperSize: 'Single' })}
-                                            className={`px-2 py-1 text-[10px] font-bold rounded ${settings.paperSize === 'Single' ? 'bg-primary text-white shadow-sm' : 'text-slate-500'}`}
+                                            className={`px-2 py-1 text-[10px] font-medium rounded ${settings.paperSize === 'Single' ? 'bg-primary text-white shadow-sm' : 'text-slate-500'}`}
                                         >
                                             Single
                                         </button>
                                         <button
                                             onClick={() => setSettings({ ...settings, paperSize: 'Grid' })}
-                                            className={`px-2 py-1 text-[10px] font-bold rounded ${settings.paperSize === 'Grid' ? 'bg-primary text-white shadow-sm' : 'text-slate-500'}`}
+                                            className={`px-2 py-1 text-[10px] font-medium rounded ${settings.paperSize === 'Grid' ? 'bg-primary text-white shadow-sm' : 'text-slate-500'}`}
                                         >
                                             Multi-up
                                         </button>
@@ -263,7 +263,7 @@ export default function BarcodeGenerator() {
                                     <>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-bold text-slate-500">Cols</span>
+                                                <span className="text-[10px] font-medium text-slate-500">Cols</span>
                                                 <input
                                                     type="number" className="input text-xs py-1"
                                                     value={settings.columns}
@@ -271,7 +271,7 @@ export default function BarcodeGenerator() {
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-bold text-slate-500">Total W (mm)</span>
+                                                <span className="text-[10px] font-medium text-slate-500">Total W (mm)</span>
                                                 <input
                                                     type="number" className="input text-xs py-1"
                                                     value={settings.paperWidth}
@@ -281,7 +281,7 @@ export default function BarcodeGenerator() {
                                         </div>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-bold text-slate-500">Label W (mm)</span>
+                                                <span className="text-[10px] font-medium text-slate-500">Label W (mm)</span>
                                                 <input
                                                     type="number" className="input text-xs py-1"
                                                     value={settings.labelWidth}
@@ -289,7 +289,7 @@ export default function BarcodeGenerator() {
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-bold text-slate-500">Label H (mm)</span>
+                                                <span className="text-[10px] font-medium text-slate-500">Label H (mm)</span>
                                                 <input
                                                     type="number" className="input text-xs py-1"
                                                     value={settings.labelHeight}
@@ -299,7 +299,7 @@ export default function BarcodeGenerator() {
                                         </div>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-bold text-slate-500">Col Gap</span>
+                                                <span className="text-[10px] font-medium text-slate-500">Col Gap</span>
                                                 <input
                                                     type="number" className="input text-xs py-1"
                                                     value={settings.columnGap}
@@ -307,7 +307,7 @@ export default function BarcodeGenerator() {
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-bold text-slate-500">Row Gap</span>
+                                                <span className="text-[10px] font-medium text-slate-500">Row Gap</span>
                                                 <input
                                                     type="number" className="input text-xs py-1"
                                                     value={settings.rowGap}
@@ -322,12 +322,12 @@ export default function BarcodeGenerator() {
 
                         {/* Typography Section */}
                         <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-3 block">Typography</label>
+                            <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tighter mb-3 block">Typography</label>
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
                                         <span className="text-xs font-semibold text-slate-600">Name Size</span>
-                                        <span className="text-[10px] font-mono font-bold bg-slate-100 px-1 rounded">{settings.nameFontSize}px</span>
+                                        <span className="text-[10px] font-mono font-medium bg-slate-100 px-1 rounded">{settings.nameFontSize}px</span>
                                     </div>
                                     <input
                                         type="range" min="10" max="40"
@@ -339,7 +339,7 @@ export default function BarcodeGenerator() {
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
                                         <span className="text-xs font-semibold text-slate-600">Price Size</span>
-                                        <span className="text-[10px] font-mono font-bold bg-slate-100 px-1 rounded">{settings.priceFontSize}px</span>
+                                        <span className="text-[10px] font-mono font-medium bg-slate-100 px-1 rounded">{settings.priceFontSize}px</span>
                                     </div>
                                     <input
                                         type="range" min="8" max="30"
@@ -353,12 +353,12 @@ export default function BarcodeGenerator() {
 
                         {/* Barcode Section */}
                         <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-3 block">Barcode Specs</label>
+                            <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tighter mb-3 block">Barcode Specs</label>
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
                                         <span className="text-xs font-semibold text-slate-600">Height</span>
-                                        <span className="text-[10px] font-mono font-bold bg-slate-100 px-1 rounded">{settings.barcodeHeight}px</span>
+                                        <span className="text-[10px] font-mono font-medium bg-slate-100 px-1 rounded">{settings.barcodeHeight}px</span>
                                     </div>
                                     <input
                                         type="range" min="20" max="200"
@@ -370,7 +370,7 @@ export default function BarcodeGenerator() {
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
                                         <span className="text-xs font-semibold text-slate-600">Line Width</span>
-                                        <span className="text-[10px] font-mono font-bold bg-slate-100 px-1 rounded">{settings.barcodeWidth}</span>
+                                        <span className="text-[10px] font-mono font-medium bg-slate-100 px-1 rounded">{settings.barcodeWidth}</span>
                                     </div>
                                     <input
                                         type="range" min="1" max="4" step="0.5"
@@ -384,7 +384,7 @@ export default function BarcodeGenerator() {
 
                         {/* Layout Section */}
                         <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-3 block">Arrangement</label>
+                            <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tighter mb-3 block">Arrangement</label>
                             <div className="flex p-1 bg-slate-100 rounded-lg gap-1">
                                 <button
                                     className={`flex-1 py-1.5 rounded-md flex justify-center transition-all ${settings.alignment === 'left' ? 'bg-white shadow-sm text-primary' : 'text-slate-400 hover:text-slate-600'}`}
@@ -410,7 +410,7 @@ export default function BarcodeGenerator() {
                         {/* Visibility Toggles */}
                         <div className="pt-4 border-t border-slate-100 space-y-3">
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-slate-600">Show Name</span>
+                                <span className="text-xs font-medium text-slate-600">Show Name</span>
                                 <button
                                     onClick={() => setSettings({ ...settings, showName: !settings.showName })}
                                     className={`w-8 h-4 rounded-full transition-colors relative ${settings.showName ? 'bg-primary' : 'bg-slate-300'}`}
@@ -419,7 +419,7 @@ export default function BarcodeGenerator() {
                                 </button>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-slate-600">Show Price</span>
+                                <span className="text-xs font-medium text-slate-600">Show Price</span>
                                 <button
                                     onClick={() => setSettings({ ...settings, showPrice: !settings.showPrice })}
                                     className={`w-8 h-4 rounded-full transition-colors relative ${settings.showPrice ? 'bg-primary' : 'bg-slate-300'}`}
@@ -428,7 +428,7 @@ export default function BarcodeGenerator() {
                                 </button>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-slate-600">Code Text</span>
+                                <span className="text-xs font-medium text-slate-600">Code Text</span>
                                 <button
                                     onClick={() => setSettings({ ...settings, showBarcodeValue: !settings.showBarcodeValue })}
                                     className={`w-8 h-4 rounded-full transition-colors relative ${settings.showBarcodeValue ? 'bg-primary' : 'bg-slate-300'}`}

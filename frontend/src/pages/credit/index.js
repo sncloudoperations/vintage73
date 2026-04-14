@@ -98,13 +98,13 @@ export default function CreditManagement() {
     return (
         <div className="p-8 max-w-7xl mx-auto">
             <div className="mb-8">
-                <span className="text-3xl font-black text-slate-800 tracking-tight">{companyProfile?.currencySymbol || '₹'}{Number(stats.totalCredit).toFixed(0)}</span>
+                <span className="text-3xl font-extrabold text-slate-800 tracking-tight">{companyProfile?.currencySymbol || '₹'}{Number(stats.totalCredit).toFixed(0)}</span>
                 <p className="text-slate-500 mt-1 font-medium">Track outstanding payments and send reminders</p>
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase tracking-wider text-xs">
+                    <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200 uppercase tracking-wider text-xs">
                         <tr>
                             <th className="px-6 py-5">Customer</th>
                             <th className="px-6 py-5">Phone</th>
@@ -116,14 +116,14 @@ export default function CreditManagement() {
                     <tbody className="divide-y divide-slate-100">
                         {debtors.map(c => (
                             <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
-                                <td className="px-6 py-4 font-bold text-slate-800">{c.name}</td>
+                                <td className="px-6 py-4 font-medium text-slate-800">{c.name}</td>
                                 <td className="px-6 py-4 text-slate-600 font-mono">{c.phone || '-'}</td>
                                 <td className="px-6 py-4">
-                                    <span className="bg-orange-100 text-orange-700 font-bold px-2 py-1 rounded-md text-xs">
+                                    <span className="bg-orange-100 text-orange-700 font-medium px-2 py-1 rounded-md text-xs">
                                         {c.pendingInvoices} Invoices
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 font-black text-red-600 text-base">{formatCurrency(c.totalDebt)}</td>
+                                <td className="px-6 py-4 font-extrabold text-red-600 text-base">{formatCurrency(c.totalDebt)}</td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex justify-end gap-2">
                                         <button
@@ -135,7 +135,7 @@ export default function CreditManagement() {
                                         </button>
                                         <button
                                             onClick={() => sendWhatsApp(c.phone, c.name, c.totalDebt, c.pendingInvoices)}
-                                            className="flex items-center gap-2 bg-primary text-white px-3 py-2 rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 text-xs"
+                                            className="flex items-center gap-2 bg-primary text-white px-3 py-2 rounded-xl font-medium hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 text-xs"
                                         >
                                             <FiMessageCircle size={16} /> WhatsApp
                                         </button>
@@ -156,14 +156,14 @@ export default function CreditManagement() {
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                             <div>
-                                <h2 className="text-xl font-black text-slate-800">{selectedCustomer.name}</h2>
-                                <p className="text-sm text-slate-500 font-bold">{selectedCustomer.phone}</p>
+                                <h2 className="text-xl font-bold text-slate-800">{selectedCustomer.name}</h2>
+                                <p className="text-sm text-slate-500 font-medium">{selectedCustomer.phone}</p>
                             </div>
-                            <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 font-bold transition">✕</button>
+                            <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 font-medium transition">✕</button>
                         </div>
                         <div className="p-6 max-h-[60vh] overflow-y-auto">
                             <table className="w-full text-sm">
-                                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-xs">
+                                <thead className="bg-slate-50 text-slate-500 font-medium uppercase text-xs">
                                     <tr>
                                         <th className="px-4 py-3 text-left">Date</th>
                                         <th className="px-4 py-3 text-left">Invoice No</th>
@@ -176,10 +176,10 @@ export default function CreditManagement() {
                                     {selectedCustomer.sales.map(sale => (
                                         <tr key={sale.id}>
                                             <td className="px-4 py-3 text-slate-600">{new Date(sale.saleDate).toLocaleDateString()}</td>
-                                            <td className="px-4 py-3 font-bold text-slate-700">{sale.invoiceNumber}</td>
+                                            <td className="px-4 py-3 font-medium text-slate-700">{sale.invoiceNumber}</td>
                                             <td className="px-4 py-3 text-right font-medium">₹{sale.totalAmount}</td>
                                             <td className="px-4 py-3 text-right text-primary">₹{sale.paidAmount}</td>
-                                            <td className="px-4 py-3 text-right font-bold text-red-600">₹{sale.balanceAmount}</td>
+                                            <td className="px-4 py-3 text-right font-medium text-red-600">₹{sale.balanceAmount}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -187,13 +187,13 @@ export default function CreditManagement() {
                         </div>
                         <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
                             <div>
-                                <span className="text-xs font-bold text-slate-400 uppercase">Total Outstanding</span>
-                                <p className="text-2xl font-black text-slate-800">₹{selectedCustomer.totalDebt}</p>
+                                <span className="text-xs font-medium text-slate-400 uppercase">Total Outstanding</span>
+                                <p className="text-2xl font-extrabold text-slate-800">₹{selectedCustomer.totalDebt}</p>
                             </div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => sendWhatsApp(selectedCustomer.phone, selectedCustomer.name, selectedCustomer.totalDebt, selectedCustomer.sales.length)}
-                                    className="bg-primary text-white px-4 py-2 rounded-xl font-bold hover:bg-primary-dark flex items-center gap-2 text-sm"
+                                    className="bg-primary text-white px-4 py-2 rounded-xl font-medium hover:bg-primary-dark flex items-center gap-2 text-sm"
                                 >
                                     <FiMessageCircle /> WhatsApp
                                 </button>
@@ -202,7 +202,7 @@ export default function CreditManagement() {
                                         setSettleForm({ amount: selectedCustomer.totalDebt, method: 'Cash', notes: '' });
                                         setShowSettleModal(true);
                                     }}
-                                    className="bg-slate-900 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-800 shadow-lg text-sm"
+                                    className="bg-slate-900 text-white px-6 py-2 rounded-xl font-medium hover:bg-slate-800 shadow-lg text-sm"
                                 >
                                     Settle Payment
                                 </button>
@@ -217,33 +217,33 @@ export default function CreditManagement() {
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h3 className="font-black text-slate-800">Record Payment</h3>
-                            <button onClick={() => setShowSettleModal(false)} className="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+                            <h3 className="font-medium text-slate-800">Record Payment</h3>
+                            <button onClick={() => setShowSettleModal(false)} className="text-slate-400 hover:text-slate-600 font-medium">✕</button>
                         </div>
                         <form onSubmit={handleSettle} className="p-5 space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Received Amount</label>
+                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Received Amount</label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">₹</span>
                                     <input
                                         autoFocus
                                         type="number"
                                         required
-                                        className="input w-full pl-8 font-bold text-lg text-primary"
+                                        className="input w-full pl-8 font-medium text-lg text-primary"
                                         value={settleForm.amount}
                                         onChange={e => setSettleForm({ ...settleForm, amount: e.target.value })}
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Payment Method</label>
+                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Payment Method</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {['Cash', 'UPI', 'Bank'].map(m => (
                                         <button
                                             key={m}
                                             type="button"
                                             onClick={() => setSettleForm({ ...settleForm, method: m })}
-                                            className={`py-2 text-xs font-bold rounded border ${settleForm.method === m ? 'bg-primary text-white border-primary' : 'bg-white text-slate-600 border-slate-200'}`}
+                                            className={`py-2 text-xs font-medium rounded border ${settleForm.method === m ? 'bg-primary text-white border-primary' : 'bg-white text-slate-600 border-slate-200'}`}
                                         >
                                             {m}
                                         </button>
@@ -251,10 +251,10 @@ export default function CreditManagement() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Notes</label>
+                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Notes</label>
                                 <input className="input w-full" placeholder="Reference No. etc" value={settleForm.notes} onChange={e => setSettleForm({ ...settleForm, notes: e.target.value })} />
                             </div>
-                            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary-dark transition">
+                            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-medium shadow-lg shadow-primary/30 hover:bg-primary-dark transition">
                                 Confirm Settlement
                             </button>
                         </form>

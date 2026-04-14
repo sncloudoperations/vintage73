@@ -838,7 +838,7 @@ const CURRENCY_SYMBOLS = {
                                     {product.imageUrl ? (
                                         <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                                     ) : (
-                                        <span className="text-2xl font-bold text-slate-300">{product.name.substring(0, 2)}</span>
+                                        <span className="text-2xl font-semibold text-slate-300">{product.name.substring(0, 2)}</span>
                                     )}
                                     <div className="absolute top-2 right-2 bg-slate-900/70 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur-sm">
                                         {product.stock}
@@ -846,7 +846,7 @@ const CURRENCY_SYMBOLS = {
                                 </div>
                                 <h3 className="font-semibold text-slate-700 text-sm truncate mb-1">{product.name}</h3>
                                 <div className="flex justify-between items-center">
-                                    <p className="text-primary font-bold">
+                                    <p className="text-primary font-medium">
                                         {currencyCode === 'AED' ? `${(product.price * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(product.price * exchangeRate).toFixed(2)}`}
                                     </p>
                                     <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors">
@@ -869,26 +869,26 @@ const CURRENCY_SYMBOLS = {
                         <div className="flex items-center gap-2">
                             <span className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><FiUser size={16} /></span>
                             <div>
-                                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Cashier</p>
-                                <p className="text-sm font-bold text-slate-700">{cashier?.name || 'Admin'}</p>
+                                <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Cashier</p>
+                                <p className="text-sm font-medium text-slate-700">{cashier?.name || 'Admin'}</p>
                             </div>
                         </div>
                         <div className="text-right">
                             {user?.role === 'admin' && !user.branchId ? (
                                 <div className="w-40 ml-auto">
-                                    <label className="block text-[10px] text-slate-400 font-bold uppercase mb-1 text-right">Branch / Terminal</label>
+                                    <label className="block text-[10px] text-slate-400 font-medium uppercase mb-1 text-right">Branch / Terminal</label>
                                     <SearchableSelect
                                         options={branches.map(b => ({ value: b.id, label: b.name }))}
                                         value={selectedBranch}
                                         onChange={val => setSelectedBranch(val)}
                                         placeholder="Select Branch"
-                                        className="h-8 text-xs font-bold"
+                                        className="h-8 text-xs font-medium"
                                     />
                                 </div>
                             ) : (
                                 <>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase">Terminal</p>
-                                    <p className="text-xs font-mono font-bold text-primary">POS-01</p>
+                                    <p className="text-[10px] text-slate-400 font-medium uppercase">Terminal</p>
+                                    <p className="text-xs font-mono font-medium text-primary">POS-01</p>
                                 </>
                             )}
                         </div>
@@ -899,7 +899,7 @@ const CURRENCY_SYMBOLS = {
                         <div className="bg-blue-50 border border-blue-100 rounded-lg p-2 flex justify-between items-center mb-2">
                             <div className="flex items-center gap-2 text-blue-700">
                                 <FiAlertCircle size={14} className="animate-pulse" />
-                                <span className="text-[10px] font-bold uppercase tracking-wider">Editing Mode</span>
+                                <span className="text-[10px] font-medium uppercase tracking-wider">Editing Mode</span>
                             </div>
                             <button 
                                 onClick={() => {
@@ -911,7 +911,7 @@ const CURRENCY_SYMBOLS = {
                                     router.replace('/pos', undefined, { shallow: true });
                                     toast.info('Edit mode cancelled');
                                 }}
-                                className="text-[10px] font-bold bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded transition-colors"
+                                className="text-[10px] font-medium bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded transition-colors"
                             >
                                 CANCEL EDIT
                             </button>
@@ -921,7 +921,7 @@ const CURRENCY_SYMBOLS = {
                     {/* Combined Salesman & Customer Row */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Salesman</label>
+                            <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1">Salesman</label>
                             <SearchableSelect
                                 options={availableSalesmen.map(s => ({ value: s.id, label: s.name }))}
                                 value={salesmanId}
@@ -930,9 +930,9 @@ const CURRENCY_SYMBOLS = {
                             />
                         </div>
                         <div ref={dropdownRef} className="relative">
-                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Customer</label>
+                            <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1">Customer</label>
                             <div
-                                className="flex items-center justify-between text-sm font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded p-1.5 cursor-pointer hover:bg-slate-100"
+                                className="flex items-center justify-between text-sm font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded p-1.5 cursor-pointer hover:bg-slate-100"
                                 onClick={() => setShowCustomerDropdown(!showCustomerDropdown)}
                             >
                                 <span className="truncate">{customerId ? (customers.find(c => c.id === customerId)?.name || customerName) : 'Walk-in Customer'}</span>
@@ -961,7 +961,7 @@ const CURRENCY_SYMBOLS = {
                                             </div>
                                         ))}
                                     </div>
-                                    <button onClick={() => { setShowCustomerModal(true); setShowCustomerDropdown(false); }} className="w-full mt-2 py-2 bg-primary-light/10 text-primary text-xs font-bold rounded hover:bg-primary-light/20 flex items-center justify-center gap-1">
+                                    <button onClick={() => { setShowCustomerModal(true); setShowCustomerDropdown(false); }} className="w-full mt-2 py-2 bg-primary-light/10 text-primary text-xs font-medium rounded hover:bg-primary-light/20 flex items-center justify-center gap-1">
                                         <FiPlus /> New Customer
                                     </button>
                                 </div>
@@ -972,9 +972,9 @@ const CURRENCY_SYMBOLS = {
                     {/* Options Panel (Currency & Tax) */}
                     <div className="grid grid-cols-2 gap-3 py-3 border-t border-slate-100">
                         <div>
-                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Currency</label>
+                            <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1">Currency</label>
                             <select 
-                                className="w-full h-9 bg-slate-50 border border-slate-200 rounded px-2 text-xs font-bold text-slate-700 outline-none focus:border-primary transition-all"
+                                className="w-full h-9 bg-slate-50 border border-slate-200 rounded px-2 text-xs font-medium text-slate-700 outline-none focus:border-primary transition-all"
                                 value={currencyCode}
                                 onChange={(e) => {
                                     const code = e.target.value;
@@ -990,10 +990,10 @@ const CURRENCY_SYMBOLS = {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Tax Calculation</label>
+                            <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1">Tax Calculation</label>
                             <button 
                                 onClick={() => setTaxEnabled(!taxEnabled)}
-                                className={`w-full h-9 rounded font-bold text-xs transition-all flex items-center justify-center gap-2 border ${
+                                className={`w-full h-9 rounded font-medium text-xs transition-all flex items-center justify-center gap-2 border ${
                                     taxEnabled 
                                     ? 'bg-primary/10 text-primary border-primary/20' 
                                     : 'bg-slate-50 text-slate-400 border-slate-200'
@@ -1007,7 +1007,7 @@ const CURRENCY_SYMBOLS = {
                 </div>
 
                 {/* Cart Headers */}
-                <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex text-[10px] font-medium text-slate-500 uppercase tracking-wide">
                     <div className="flex-[3]">Item</div>
                     <div className="flex-[2] text-center">Qty</div>
                     <div className="flex-[2] text-right">Price</div>
@@ -1031,7 +1031,7 @@ const CURRENCY_SYMBOLS = {
                                     <div className="flex items-center text-sm">
                                         {/* Item & Disc */}
                                         <div className="flex-[3] pr-2">
-                                            <h4 className="font-bold text-slate-700 leading-tight mb-1">{item.name}</h4>
+                                            <h4 className="font-medium text-slate-700 leading-tight mb-1">{item.name}</h4>
                                             <div className="flex items-center gap-1 mt-1">
                                                 <div className="flex items-center gap-0.5">
                                                     <input
@@ -1058,7 +1058,7 @@ const CURRENCY_SYMBOLS = {
                                             <div className="flex items-center border border-slate-200 rounded bg-white">
                                                 <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
                                                 <input
-                                                    className="w-8 text-center text-xs font-bold text-slate-700 outline-none"
+                                                    className="w-8 text-center text-xs font-medium text-slate-700 outline-none"
                                                     value={item.quantity}
                                                     onChange={e => updateQuantity(item.id, parseInt(e.target.value) || 1)}
                                                 />
@@ -1071,7 +1071,7 @@ const CURRENCY_SYMBOLS = {
                                             <div className="flex items-center justify-end gap-1">
                                                 <span className="text-[10px] text-slate-400">{currencySymbol}</span>
                                                 <input
-                                                    className="w-16 p-0.5 font-bold text-right text-slate-700 bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
+                                                    className="w-16 p-0.5 font-medium text-right text-slate-700 bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
                                                     value={item.price}
                                                     onChange={e => updatePrice(item.id, e.target.value)}
                                                     onClick={e => e.target.select()}
@@ -1085,7 +1085,7 @@ const CURRENCY_SYMBOLS = {
                                         </div>
 
                                         {/* Total */}
-                                        <div className="flex-[2] text-right font-bold text-slate-800">
+                                        <div className="flex-[2] text-right font-medium text-slate-800">
                                             {currencyCode === 'AED' ? `${(((item.price * exchangeRate) - ((item.discountAmount || 0) * exchangeRate)) * item.quantity).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(((item.price * exchangeRate) - ((item.discountAmount || 0) * exchangeRate)) * item.quantity).toFixed(2)}`}
                                         </div>
 
@@ -1124,7 +1124,7 @@ const CURRENCY_SYMBOLS = {
                         <div className="flex justify-between items-center text-slate-500">
                             <span className="flex items-center gap-2">
                                 Round Off
-                                <button onClick={handleAutoRound} className="text-[10px] bg-slate-200 px-1.5 py-0.5 rounded hover:bg-slate-300 font-bold text-slate-600">AUTO</button>
+                                <button onClick={handleAutoRound} className="text-[10px] bg-slate-200 px-1.5 py-0.5 rounded hover:bg-slate-300 font-medium text-slate-600">AUTO</button>
                             </span>
                             <input
                                 className="w-20 text-right bg-transparent border-b border-dashed border-slate-300 outline-none focus:border-primary font-mono"
@@ -1139,11 +1139,11 @@ const CURRENCY_SYMBOLS = {
                     <div className="flex justify-between items-end pt-2 border-t border-slate-200">
                         <span className="text-slate-800 font-bold text-lg">Total</span>
                         <div className="relative">
-                            <span className={`absolute top-1/2 -translate-y-1/2 font-black text-slate-800 pointer-events-none ${currencyCode === 'AED' ? 'text-sm right-0' : 'text-3xl left-0'}`}>
+                            <span className={`absolute top-1/2 -translate-y-1/2 font-bold text-slate-800 pointer-events-none ${currencyCode === 'AED' ? 'text-sm right-0' : 'text-3xl left-0'}`}>
                                 {currencySymbol}
                             </span>
                             <input
-                                className={`w-40 text-right text-3xl font-black text-slate-800 bg-transparent border-b-2 border-transparent hover:border-slate-200 focus:border-primary outline-none transition-all ${currencyCode === 'AED' ? 'pr-14' : 'pl-6'}`}
+                                className={`w-40 text-right text-3xl font-bold text-slate-800 bg-transparent border-b-2 border-transparent hover:border-slate-200 focus:border-primary outline-none transition-all ${currencyCode === 'AED' ? 'pr-14' : 'pl-6'}`}
                                 value={total.toFixed(2)}
                                 onChange={e => handleTotalChange(e.target.value)}
                                 onFocus={e => e.target.select()}
@@ -1154,7 +1154,7 @@ const CURRENCY_SYMBOLS = {
                     <button
                         onClick={initiateCheckout}
                         disabled={cart.length === 0}
-                        className="w-full py-4 bg-primary hover:bg-primary-dark disabled:bg-slate-300 text-white rounded-xl shadow-lg shadow-primary/20 disabled:shadow-none font-bold text-lg transition-all flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-primary hover:bg-primary-dark disabled:bg-slate-300 text-white rounded-xl shadow-lg shadow-primary/20 disabled:shadow-none font-medium text-lg transition-all flex items-center justify-center gap-2"
                     >
                         <FiMonitor /> Pay Now
                     </button>
@@ -1169,7 +1169,7 @@ const CURRENCY_SYMBOLS = {
 
                         {/* Standard Header */}
                         <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
-                            <h2 className="text-lg font-bold text-slate-800">Complete Payment</h2>
+                            <h2 className="text-lg font-semibold text-slate-800">Complete Payment</h2>
                             <button onClick={() => setShowPaymentModal(false)} className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
                                 <FiX />
                             </button>
@@ -1180,12 +1180,12 @@ const CURRENCY_SYMBOLS = {
                             {/* Total Amount Display */}
                             <div className="text-center mb-8">
                                 <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-1">Total Payable</p>
-                                <span className="text-2xl font-black text-slate-800">{currencySymbol}{total.toFixed(2)}</span>
+                                <span className="text-2xl font-extrabold text-slate-800">{currencySymbol}{total.toFixed(2)}</span>
                             </div>
 
                             {/* Payment Method Tabs */}
                             <div className="mb-6">
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Payment Method</label>
+                                <label className="block text-xs font-medium text-slate-500 uppercase mb-2">Payment Method</label>
                                 <div className="grid grid-cols-5 gap-2">
                                     {['Cash', 'Card', 'UPI', 'Credit', 'Sales Return'].map(method => (
                                         <button
@@ -1201,7 +1201,7 @@ const CURRENCY_SYMBOLS = {
                                                     paidAmount: isCredit ? '0' : remaining.toFixed(2)
                                                 });
                                             }}
-                                            className={`py-2 px-1 rounded-lg text-[10px] font-bold transition-all border whitespace-nowrap ${paymentData.method === method
+                                            className={`py-2 px-1 rounded-lg text-[10px] font-medium transition-all border whitespace-nowrap ${paymentData.method === method
                                                 ? 'bg-primary text-white border-primary shadow-md shadow-primary/20'
                                                 : 'bg-white text-slate-600 border-slate-200 hover:border-primary/50 hover:bg-primary-light/10'
                                                 }`}
@@ -1215,8 +1215,8 @@ const CURRENCY_SYMBOLS = {
                             {/* Payment Input */}
                             <div className="mb-6">
                                 <div className="flex justify-between items-center mb-2">
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Received Amount</label>
-                                    <span className={`text-xs font-bold ${(parseFloat(paymentData.paidAmount || 0) - (total - addedPayments.reduce((s, x) => s + x.amount, 0))) >= 0
+                                    <label className="text-xs font-medium text-slate-500 uppercase">Received Amount</label>
+                                    <span className={`text-xs font-medium ${(parseFloat(paymentData.paidAmount || 0) - (total - addedPayments.reduce((s, x) => s + x.amount, 0))) >= 0
                                         ? 'text-primary'
                                         : 'text-orange-500'
                                         }`}>
@@ -1233,13 +1233,13 @@ const CURRENCY_SYMBOLS = {
 
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
-                                        <span className={`absolute top-1/2 -translate-y-1/2 text-slate-400 font-bold ${currencyCode === 'AED' ? 'right-3' : 'left-3'}`}>
+                                        <span className={`absolute top-1/2 -translate-y-1/2 text-slate-400 font-medium ${currencyCode === 'AED' ? 'right-3' : 'left-3'}`}>
                                             {currencySymbol}
                                         </span>
                                         <input
                                             autoFocus
                                             type="number"
-                                            className={`w-full py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 font-bold text-lg text-slate-800 transition-all ${currencyCode === 'AED' ? 'pr-12 pl-4' : 'pl-8 pr-4'}`}
+                                            className={`w-full py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 font-medium text-lg text-slate-800 transition-all ${currencyCode === 'AED' ? 'pr-12 pl-4' : 'pl-8 pr-4'}`}
                                             placeholder="0.00"
                                             value={paymentData.paidAmount}
                                             onChange={e => setPaymentData({ ...paymentData, paidAmount: e.target.value })}
@@ -1250,7 +1250,7 @@ const CURRENCY_SYMBOLS = {
                                     </div>
                                     <button
                                         onClick={handleAddPayment}
-                                        className="px-4 py-3 bg-white border border-slate-200 text-primary rounded-lg font-bold hover:bg-primary-light/10 hover:border-primary/30 transition-all text-sm whitespace-nowrap"
+                                        className="px-4 py-3 bg-white border border-slate-200 text-primary rounded-lg font-medium hover:bg-primary-light/10 hover:border-primary/30 transition-all text-sm whitespace-nowrap"
                                         title="Add as Partial Payment"
                                     >
                                         + Add
@@ -1261,7 +1261,7 @@ const CURRENCY_SYMBOLS = {
                             {/* Added Payments List */}
                             {addedPayments.length > 0 && (
                                 <div className="mb-2 bg-slate-50 rounded-lg border border-slate-100 p-3">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Split Payments</p>
+                                    <p className="text-[10px] font-medium text-slate-400 uppercase mb-2">Split Payments</p>
                                     <div className="space-y-2">
                                         {addedPayments.map((p, i) => (
                                             <div key={i} className="flex justify-between items-center text-sm">
@@ -1270,7 +1270,7 @@ const CURRENCY_SYMBOLS = {
                                                     <span className="font-medium text-slate-700">{p.method}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="font-bold text-slate-800">₹{p.amount.toFixed(2)}</span>
+                                                    <span className="font-medium text-slate-800">₹{p.amount.toFixed(2)}</span>
                                                     <button onClick={() => removePayment(i)} className="text-slate-400 hover:text-red-500"><FiX size={14} /></button>
                                                 </div>
                                             </div>
@@ -1282,12 +1282,12 @@ const CURRENCY_SYMBOLS = {
 
                         {/* Footer */}
                         <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
-                            <button onClick={() => setShowPaymentModal(false)} className="px-5 py-3 rounded-xl font-bold text-slate-500 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 transition-all text-sm">
+                            <button onClick={() => setShowPaymentModal(false)} className="px-5 py-3 rounded-xl font-medium text-slate-500 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 transition-all text-sm">
                                 Cancel
                             </button>
                             <button
                                 onClick={handleCheckout}
-                                className="flex-1 py-3 px-6 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 text-sm"
+                                className="flex-1 py-3 px-6 bg-primary hover:bg-primary-dark text-white rounded-xl font-medium shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 text-sm"
                             >
                                 <FiMonitor size={16} />
                                 {addedPayments.length > 0 ? 'Complete Split Sale' : 'Complete Sale'}
@@ -1312,7 +1312,7 @@ const CURRENCY_SYMBOLS = {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowHistoryModal(false)}>
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="p-4 border-b flex justify-between items-center bg-slate-50">
-                            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2"><FiClock /> Sales History</h2>
+                            <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2"><FiClock /> Sales History</h2>
                             <button onClick={() => setShowHistoryModal(false)} className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center hover:bg-slate-300"><FiX /></button>
                         </div>
 
@@ -1332,11 +1332,11 @@ const CURRENCY_SYMBOLS = {
                                         {salesHistory.map(sale => (
                                             <tr key={sale.id} className={`border-b hover:bg-slate-50 cursor-pointer ${selectedHistorySale?.id === sale.id ? 'bg-primary-light/10' : ''}`} onClick={() => setSelectedHistorySale(sale)}>
                                                 <td className="p-3">
-                                                    <p className="font-bold text-slate-700">{new Date(sale.saleDate).toLocaleDateString('en-GB')}</p>
+                                                    <p className="font-medium text-slate-700">{new Date(sale.saleDate).toLocaleDateString('en-GB')}</p>
                                                     <p className="text-xs text-slate-400 font-mono">#{sale.invoiceNumber}</p>
                                                 </td>
                                                 <td className="p-3 text-slate-600 truncate max-w-[100px]">{sale.customer?.name || 'Walk-in'}</td>
-                                                <td className="p-3 text-right font-bold text-slate-800">
+                                                <td className="p-3 text-right font-medium text-slate-800">
                                                     {(() => {
                                                         const sym = CURRENCY_SYMBOLS[sale.currencyCode] || '₹';
                                                         const val = parseFloat(sale.totalAmount).toFixed(2);
@@ -1356,13 +1356,13 @@ const CURRENCY_SYMBOLS = {
                                     <div className="bg-white p-6 rounded-xl shadow-sm border">
                                         <div className="flex justify-between items-start mb-6 border-b pb-4">
                                             <div>
-                                                <h3 className="text-xl font-bold text-slate-800">Invoice #{selectedHistorySale.invoiceNumber}</h3>
+                                                <h3 className="text-xl font-semibold text-slate-800">Invoice #{selectedHistorySale.invoiceNumber}</h3>
                                                 <p className="text-sm text-slate-500">
                                                     {new Date(selectedHistorySale.saleDate).toLocaleDateString('en-GB')} {new Date(selectedHistorySale.saleDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${selectedHistorySale.isReturn ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase ${selectedHistorySale.isReturn ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
                                                     {selectedHistorySale.isReturn ? 'Return' : selectedHistorySale.status}
                                                 </span>
                                                 <button
@@ -1399,7 +1399,7 @@ const CURRENCY_SYMBOLS = {
 
                                         <div className="mb-6">
                                             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Customer</p>
-                                            <p className="font-bold text-slate-700">{selectedHistorySale.customer?.name || 'Walk-in Customer'}</p>
+                                            <p className="font-medium text-slate-700">{selectedHistorySale.customer?.name || 'Walk-in Customer'}</p>
                                         </div>
 
                                         <table className="w-full text-sm mb-6">
@@ -1424,7 +1424,7 @@ const CURRENCY_SYMBOLS = {
                                                                 return selectedHistorySale.currencyCode === 'AED' ? `${val} ${sym}` : `${sym}${val}`;
                                                             })()}
                                                         </td>
-                                                        <td className="p-2 text-right font-bold">
+                                                        <td className="p-2 text-right font-medium">
                                                             {(() => {
                                                                 const sym = CURRENCY_SYMBOLS[selectedHistorySale.currencyCode] || '₹';
                                                                 const rate = parseFloat(selectedHistorySale.exchangeRate || 1);
@@ -1437,7 +1437,7 @@ const CURRENCY_SYMBOLS = {
                                             </tbody>
                                         </table>
 
-                                        <div className="flex justify-between items-center text-xl font-black text-slate-900 border-t pt-4">
+                                        <div className="flex justify-between items-center text-xl font-bold text-slate-900 border-t pt-4">
                                             <span>Total Amount</span>
                                             <span>
                                                 {(() => {
@@ -1451,7 +1451,7 @@ const CURRENCY_SYMBOLS = {
                                         <div className="mt-6 flex gap-3">
                                             <button
                                                 onClick={() => { setLastSale(selectedHistorySale); setTimeout(() => handlePrint(), 100); }}
-                                                className="flex-1 py-2 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-900 flex items-center justify-center gap-2"
+                                                className="flex-1 py-2 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-900 flex items-center justify-center gap-2"
                                             >
                                                 <FiMonitor /> Reprint Invoice
                                             </button>
@@ -1469,7 +1469,7 @@ const CURRENCY_SYMBOLS = {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-slate-800">Add New Customer</h2>
+                            <h2 className="text-xl font-semibold text-slate-800">Add New Customer</h2>
                             <button onClick={() => setShowCustomerModal(false)} className="text-slate-400 hover:text-slate-600">&times;</button>
                         </div>
                         <form onSubmit={handleCreateCustomer} className="p-6 space-y-4">

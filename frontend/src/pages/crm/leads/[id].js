@@ -236,8 +236,8 @@ export default function LeadDetail() {
     const stages = ['NEW', 'CONTACTED', 'QUALIFIED', 'QUOTATION_SENT', 'NEGOTIATION', 'WON'];
     const currentStageIndex = stages.indexOf(lead ? (lead.status === 'LOST' ? 'WON' : lead.status) : 'NEW');
 
-    if (loading) return <div className="p-12 text-center text-slate-400 font-black animate-pulse uppercase tracking-widest">Loading Lead Details...</div>;
-    if (!lead) return <div className="p-12 text-center text-red-500 font-bold uppercase">Lead Not Found</div>;
+    if (loading) return <div className="p-12 text-center text-slate-400 font-medium animate-pulse uppercase tracking-widest">Loading Lead Details...</div>;
+    if (!lead) return <div className="p-12 text-center text-red-500 font-medium uppercase">Lead Not Found</div>;
 
     return (
         <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
@@ -248,13 +248,13 @@ export default function LeadDetail() {
                         <FiArrowLeft />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                        <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
                             {lead.name}
-                            <span className={`px-2 py-0.5 rounded text-[10px] text-white uppercase font-bold ${getStatusColor(lead.status)}`}>
+                            <span className={`px-2 py-0.5 rounded text-[10px] text-white uppercase font-medium ${getStatusColor(lead.status)}`}>
                                 {lead.status.replace('_', ' ')}
                             </span>
                         </h1>
-                        <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mt-1 flex items-center gap-2">
+                        <p className="text-slate-500 text-xs font-medium uppercase tracking-wider mt-1 flex items-center gap-2">
                             <FiPhone className="text-slate-300" /> {lead.phone} • <FiMapPin className="text-slate-300" /> {lead.address || 'Location Unknown'}
                         </p>
                     </div>
@@ -262,13 +262,13 @@ export default function LeadDetail() {
                 <div className="flex flex-wrap gap-2 w-full md:w-auto">
                     {lead.status !== 'WON' && lead.status !== 'LOST' && (
                         <>
-                            <button onClick={() => setShowConvertModal('QUOTATION')} className="btn btn-secondary py-2 text-xs font-black uppercase border-purple-200 text-purple-600 hover:bg-purple-50">Convert to Quotation</button>
-                            <button onClick={() => setShowConvertModal('ORDER')} className="btn btn-secondary py-2 text-xs font-black uppercase border-emerald-200 text-emerald-600 hover:bg-emerald-50">Convert to Order</button>
-                            <button onClick={() => { setEditForm(lead); setShowEditModal(true); }} className="btn btn-secondary py-2 text-xs font-black uppercase border-blue-200 text-blue-600 hover:bg-blue-50">Edit Lead</button>
-                            <button onClick={() => setShowStatusModal(true)} className="btn btn-secondary py-2 text-xs font-black uppercase">Update Status</button>
+                            <button onClick={() => setShowConvertModal('QUOTATION')} className="btn btn-secondary py-2 text-xs font-medium uppercase border-purple-200 text-purple-600 hover:bg-purple-50">Convert to Quotation</button>
+                            <button onClick={() => setShowConvertModal('ORDER')} className="btn btn-secondary py-2 text-xs font-medium uppercase border-emerald-200 text-emerald-600 hover:bg-emerald-50">Convert to Order</button>
+                            <button onClick={() => { setEditForm(lead); setShowEditModal(true); }} className="btn btn-secondary py-2 text-xs font-medium uppercase border-blue-200 text-blue-600 hover:bg-blue-50">Edit Lead</button>
+                            <button onClick={() => setShowStatusModal(true)} className="btn btn-secondary py-2 text-xs font-medium uppercase">Update Status</button>
                         </>
                     )}
-                    <button onClick={() => setShowFollowUpModal(true)} className="btn btn-primary py-2 text-xs font-black uppercase">Schedule Follow-up</button>
+                    <button onClick={() => setShowFollowUpModal(true)} className="btn btn-primary py-2 text-xs font-medium uppercase">Schedule Follow-up</button>
                 </div>
             </header>
 
@@ -293,7 +293,7 @@ export default function LeadDetail() {
                                 }`}>
                                     {isActive ? <FiCheckCircle className="text-white text-xs" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />}
                                 </div>
-                                <span className={`absolute top-10 text-[8px] font-black uppercase tracking-widest whitespace-nowrap ${
+                                <span className={`absolute top-10 text-[8px] font-medium uppercase tracking-widest whitespace-nowrap ${
                                     isActive ? 'text-emerald-600' : 'text-slate-400'
                                 }`}>
                                     {stage.replace('_', ' ')}
@@ -305,7 +305,7 @@ export default function LeadDetail() {
                 {lead.status === 'LOST' && (
                     <div className="mt-12 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3">
                         <FiXCircle className="text-red-500" />
-                        <p className="text-xs font-bold text-red-700 uppercase tracking-widest">Lead Marked as LOST</p>
+                        <p className="text-xs font-medium text-red-700 uppercase tracking-widest">Lead Marked as LOST</p>
                     </div>
                 )}
             </div>
@@ -314,7 +314,7 @@ export default function LeadDetail() {
                 {/* Info Column */}
                 <div className="space-y-6">
                     <div className="card shadow-sm">
-                        <h3 className="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 pb-2 border-b border-slate-50 flex items-center gap-2">
+                        <h3 className="font-medium text-slate-800 uppercase tracking-widest text-xs mb-4 pb-2 border-b border-slate-50 flex items-center gap-2">
                             <FiInfo className="text-blue-500" /> Basic Information
                         </h3>
                         <dl className="space-y-4">
@@ -330,8 +330,8 @@ export default function LeadDetail() {
                                 <div key={i} className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400"><item.icon /></div>
                                     <div>
-                                        <dt className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">{item.label}</dt>
-                                        <dd className={`text-xs font-bold mt-0.5 ${item.color || 'text-slate-700'}`}>{item.value}</dd>
+                                        <dt className="text-[9px] font-medium text-slate-400 uppercase tracking-widest leading-none">{item.label}</dt>
+                                        <dd className={`text-xs font-medium mt-0.5 ${item.color || 'text-slate-700'}`}>{item.value}</dd>
                                     </div>
                                 </div>
                             ))}
@@ -339,22 +339,22 @@ export default function LeadDetail() {
                     </div>
 
                     <div className="card shadow-sm border-emerald-100">
-                        <h3 className="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 pb-2 border-b border-slate-50 flex items-center gap-2">
+                        <h3 className="font-medium text-slate-800 uppercase tracking-widest text-xs mb-4 pb-2 border-b border-slate-50 flex items-center gap-2">
                             <FiShoppingCart className="text-emerald-500" /> Interest Details
                         </h3>
                         <div className="space-y-4">
                             <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                                <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Interested Product</p>
-                                <p className="text-sm font-black text-slate-800">{lead.product?.name || 'Generic Inquiry'}</p>
+                                <p className="text-[9px] font-medium text-emerald-600 uppercase tracking-widest">Interested Product</p>
+                                <p className="text-sm font-medium text-slate-800">{lead.product?.name || 'Generic Inquiry'}</p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-3 bg-slate-50 rounded-xl">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Budget</p>
-                                    <p className="text-sm font-black text-slate-600 mt-1">₹{lead.budget ? parseFloat(lead.budget).toLocaleString() : 'N/A'}</p>
+                                    <p className="text-[9px] font-medium text-slate-400 uppercase tracking-widest leading-none">Budget</p>
+                                    <p className="text-sm font-medium text-slate-600 mt-1">₹{lead.budget ? parseFloat(lead.budget).toLocaleString() : 'N/A'}</p>
                                 </div>
                                 <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
-                                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest leading-none">Negotiation</p>
-                                    <p className="text-sm font-black text-blue-800 mt-1">₹{lead.negotiationAmount ? parseFloat(lead.negotiationAmount).toLocaleString() : 'N/A'}</p>
+                                    <p className="text-[9px] font-medium text-blue-600 uppercase tracking-widest leading-none">Negotiation</p>
+                                    <p className="text-sm font-medium text-blue-800 mt-1">₹{lead.negotiationAmount ? parseFloat(lead.negotiationAmount).toLocaleString() : 'N/A'}</p>
                                 </div>
                             </div>
 
@@ -362,22 +362,22 @@ export default function LeadDetail() {
                                 <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100 space-y-3">
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest leading-none">Referred By</p>
-                                            <p className="text-xs font-black text-purple-800 mt-1">{lead.referredBy?.name || 'Unknown'}</p>
+                                            <p className="text-[9px] font-medium text-purple-400 uppercase tracking-widest leading-none">Referred By</p>
+                                            <p className="text-xs font-medium text-purple-800 mt-1">{lead.referredBy?.name || 'Unknown'}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest leading-none">Commission ({lead.commissionPercentage}%)</p>
-                                            <p className="text-sm font-black text-purple-600 mt-1">₹{parseFloat(lead.commissionAmount || 0).toLocaleString()}</p>
+                                            <p className="text-[9px] font-medium text-purple-400 uppercase tracking-widest leading-none">Commission ({lead.commissionPercentage}%)</p>
+                                            <p className="text-sm font-medium text-purple-600 mt-1">₹{parseFloat(lead.commissionAmount || 0).toLocaleString()}</p>
                                         </div>
                                     </div>
                                     <div className="pt-2 border-t border-purple-100 flex justify-between items-center">
-                                        <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${lead.commissionPaid ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-white'}`}>
+                                        <span className={`px-2 py-0.5 rounded text-[8px] font-medium uppercase tracking-widest ${lead.commissionPaid ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-white'}`}>
                                             {lead.commissionPaid ? 'Commission Paid' : 'Payment Pending'}
                                         </span>
                                         {lead.status === 'WON' && (
                                             <button 
                                                 onClick={toggleCommissionStatus}
-                                                className="text-[9px] font-black text-purple-600 hover:underline uppercase tracking-widest"
+                                                className="text-[9px] font-medium text-purple-600 hover:underline uppercase tracking-widest"
                                             >
                                                 Mark as {lead.commissionPaid ? 'Unpaid' : 'Paid'}
                                             </button>
@@ -397,7 +397,7 @@ export default function LeadDetail() {
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${
+                                className={`px-6 py-3 text-[10px] font-medium uppercase tracking-widest transition-all ${
                                     activeTab === tab ? 'border-b-2 border-emerald-500 text-emerald-600 bg-emerald-50/10' : 'text-slate-400'
                                 }`}
                             >
@@ -432,7 +432,7 @@ export default function LeadDetail() {
                                         </div>
                                         <div className="card p-4 shadow-sm flex-1">
                                             <div className="flex justify-between items-start mb-1">
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{activity.type.replace('_', ' ')}</p>
+                                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">{activity.type.replace('_', ' ')}</p>
                                                 <p className="text-[9px] text-slate-300 font-mono">
                                                     {moment(activity.createdAt).format('DD MMM, HH:mm')}
                                                 </p>
@@ -448,21 +448,21 @@ export default function LeadDetail() {
                     {activeTab === 'follow-ups' && (
                         <div className="space-y-4">
                             {lead.followUps.length === 0 ? (
-                                <div className="card p-12 text-center text-slate-400 font-bold italic border-dashed border-2 border-slate-100">
+                                <div className="card p-12 text-center text-slate-400 font-medium italic border-dashed border-2 border-slate-100">
                                     No follow-ups scheduled for this lead.
                                 </div>
                             ) : (
                                 lead.followUps.map(fu => (
                                     <div key={fu.id} className="card p-4 shadow-sm flex justify-between items-center bg-white hover:border-emerald-200 transition-colors">
                                         <div className="flex items-center gap-4">
-                                            <div className={`p-2 rounded-xl text-xs font-black uppercase tracking-tighter ${
+                                            <div className={`p-2 rounded-xl text-xs font-medium uppercase tracking-tighter ${
                                                 moment(fu.date).isBefore(moment()) ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
                                             }`}>
                                                 {moment(fu.date).format('DD MMM')}
                                             </div>
                                             <div>
-                                                <p className="text-xs font-bold text-slate-800">{fu.notes || 'No description provided'}</p>
-                                                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mt-0.5">{fu.status}</p>
+                                                <p className="text-xs font-medium text-slate-800">{fu.notes || 'No description provided'}</p>
+                                                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mt-0.5">{fu.status}</p>
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
@@ -489,7 +489,7 @@ export default function LeadDetail() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-6">
                         <header>
-                            <h3 className="text-lg font-black text-slate-800">Update Lead Status</h3>
+                            <h3 className="text-lg font-medium text-slate-800">Update Lead Status</h3>
                             <p className="text-xs text-slate-400 font-medium mt-1">Select the current stage of this lead</p>
                         </header>
                         
@@ -498,7 +498,7 @@ export default function LeadDetail() {
                                 <button 
                                     key={s}
                                     onClick={() => handleStatusUpdate(s)}
-                                    className={`p-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border-2 transition-all ${
+                                    className={`p-3 rounded-xl text-[10px] font-medium uppercase tracking-widest text-center border-2 transition-all ${
                                         lead.status === s ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-slate-50 border-transparent hover:border-slate-200'
                                     }`}
                                 >
@@ -507,7 +507,7 @@ export default function LeadDetail() {
                             ))}
                         </div>
                         
-                        <button onClick={() => setShowStatusModal(false)} className="w-full py-3 text-xs font-black text-slate-400 border border-slate-100 rounded-xl">Cancel</button>
+                        <button onClick={() => setShowStatusModal(false)} className="w-full py-3 text-xs font-medium text-slate-400 border border-slate-100 rounded-xl">Cancel</button>
                     </div>
                 </div>
             )}
@@ -516,24 +516,24 @@ export default function LeadDetail() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
                     <form onSubmit={handleScheduleFollowUp} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
                         <header>
-                            <h3 className="text-xl font-black text-slate-800 tracking-tight">Schedule Follow-up</h3>
+                            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Schedule Follow-up</h3>
                             <p className="text-xs text-slate-400 font-medium mt-1">Set a reminder to reach out back to {lead.name}</p>
                         </header>
                         
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Date & Time</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Date & Time</label>
                                 <input required type="datetime-local" className="input" value={followUpDate} onChange={e => setFollowUpDate(e.target.value)} />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Notes / Objective</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Notes / Objective</label>
                                 <textarea className="input min-h-[100px]" placeholder="e.g., Discuss bulk discount, Send catalogue..." value={followUpNotes} onChange={e => setFollowUpNotes(e.target.value)}></textarea>
                             </div>
                         </div>
 
                         <div className="flex gap-3 pt-4">
-                            <button type="button" onClick={() => setShowFollowUpModal(false)} className="btn btn-secondary flex-1 font-black text-xs uppercase tracking-widest">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Schedule</button>
+                            <button type="button" onClick={() => setShowFollowUpModal(false)} className="btn btn-secondary flex-1 font-medium text-xs uppercase tracking-widest">Cancel</button>
+                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Schedule</button>
                         </div>
                     </form>
                 </div>
@@ -543,20 +543,20 @@ export default function LeadDetail() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
                     <form onSubmit={handleConvert} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
                         <header>
-                            <h3 className="text-xl font-black text-slate-800 tracking-tight">Convert to {showConvertModal}</h3>
+                            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Convert to {showConvertModal}</h3>
                             <p className="text-xs text-slate-400 font-medium mt-1">Transform this lead inquiry into a formal {showConvertModal.toLowerCase()}</p>
                         </header>
                         
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Select Branch</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Select Branch</label>
                                 <select required className="input" value={convertForm.branchId} onChange={e => setConvertForm({ ...convertForm, branchId: e.target.value })}>
                                     <option value="">Select Branch</option>
                                     {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">
                                     {showConvertModal} Number
                                 </label>
                                 <input 
@@ -569,7 +569,7 @@ export default function LeadDetail() {
                             </div>
                             {showConvertModal === 'ORDER' && (
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Payment Method</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Payment Method</label>
                                     <select className="input" value={convertForm.paymentMethod} onChange={e => setConvertForm({ ...convertForm, paymentMethod: e.target.value })}>
                                         <option value="CASH">Cash</option>
                                         <option value="BANK_TRANSFER">Bank Transfer</option>
@@ -581,8 +581,8 @@ export default function LeadDetail() {
                         </div>
 
                         <div className="flex gap-3 pt-4">
-                            <button type="button" onClick={() => setShowConvertModal(null)} className="btn btn-secondary flex-1 font-black text-xs uppercase tracking-widest">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Confirm Conversion</button>
+                            <button type="button" onClick={() => setShowConvertModal(null)} className="btn btn-secondary flex-1 font-medium text-xs uppercase tracking-widest">Cancel</button>
+                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Confirm Conversion</button>
                         </div>
                     </form>
                 </div>
@@ -593,7 +593,7 @@ export default function LeadDetail() {
                     <form onSubmit={handleSubmitOutcome} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
                         <header className="flex justify-between items-start">
                             <div>
-                                <h3 className="text-xl font-black text-slate-800 tracking-tight">Record Outcome</h3>
+                                <h3 className="text-xl font-bold text-slate-800 tracking-tight">Record Outcome</h3>
                                 <p className="text-xs text-slate-400 font-medium mt-1">Updating follow-up for {lead.name}</p>
                             </div>
                             <button type="button" onClick={() => setShowOutcomeModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiXCircle /></button>
@@ -601,7 +601,7 @@ export default function LeadDetail() {
                         
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Action Outcome</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Action Outcome</label>
                                 <select 
                                     required 
                                     className="input" 
@@ -617,7 +617,7 @@ export default function LeadDetail() {
                             </div>
                             
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Internal Notes</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Internal Notes</label>
                                 <textarea 
                                     className="input min-h-[80px]" 
                                     placeholder="What happened during this follow-up?"
@@ -628,7 +628,7 @@ export default function LeadDetail() {
 
                             {outcomeForm.outcome !== 'Not Interested' && (
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest flex justify-between items-center">
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest flex justify-between items-center">
                                         Next Follow-up Date
                                         <span className="text-primary text-[8px]">REQUIRED</span>
                                     </label>
@@ -644,8 +644,8 @@ export default function LeadDetail() {
                         </div>
 
                         <div className="flex gap-3 pt-4">
-                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="btn btn-secondary flex-1 font-black text-xs uppercase tracking-widest">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Update & Schedule</button>
+                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="btn btn-secondary flex-1 font-medium text-xs uppercase tracking-widest">Cancel</button>
+                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Update & Schedule</button>
                         </div>
                     </form>
                 </div>
@@ -656,7 +656,7 @@ export default function LeadDetail() {
                     <form onSubmit={handleEditSubmit} className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300">
                         <header className="p-6 border-b border-slate-50 flex justify-between items-center">
                             <div>
-                                <h3 className="text-xl font-black text-slate-800 tracking-tight">Edit Lead Information</h3>
+                                <h3 className="text-xl font-bold text-slate-800 tracking-tight">Edit Lead Information</h3>
                                 <p className="text-xs text-slate-400 font-medium mt-1">Update lead profile and negotiation details</p>
                             </div>
                             <button type="button" onClick={() => setShowEditModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiXCircle /></button>
@@ -665,11 +665,11 @@ export default function LeadDetail() {
                         <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Customer Name</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Customer Name</label>
                                     <input required name="name" className="input" value={editForm.name} onChange={handleEditChange} />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Lead Source</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Lead Source</label>
                                     <select name="source" className="input" value={editForm.source} onChange={handleEditChange}>
                                         <option value="Walk-in">Walk-in</option>
                                         <option value="Website">Website</option>
@@ -680,7 +680,7 @@ export default function LeadDetail() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Interested Product</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Interested Product</label>
                                     <select name="productId" className="input" value={editForm.productId} onChange={handleEditChange}>
                                         <option value="">Select Product</option>
                                         {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -688,26 +688,26 @@ export default function LeadDetail() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Quantity</label>
+                                        <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Quantity</label>
                                         <input type="number" name="quantity" className="input" value={editForm.quantity} onChange={handleEditChange} />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Budget (₹)</label>
-                                        <input type="number" name="budget" className="input bg-emerald-50/20 font-black text-emerald-600 border-emerald-100" value={editForm.budget} onChange={handleEditChange} />
+                                        <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Budget (₹)</label>
+                                        <input type="number" name="budget" className="input bg-emerald-50/20 font-medium text-emerald-600 border-emerald-100" value={editForm.budget} onChange={handleEditChange} />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-blue-500 uppercase mb-1 tracking-widest">Negotiation Amount (₹)</label>
-                                    <input type="number" name="negotiationAmount" className="input border-blue-100 bg-blue-50/20 font-black text-blue-600" value={editForm.negotiationAmount} onChange={handleEditChange} />
+                                    <label className="block text-[10px] font-medium text-blue-500 uppercase mb-1 tracking-widest">Negotiation Amount (₹)</label>
+                                    <input type="number" name="negotiationAmount" className="input border-blue-100 bg-blue-50/20 font-medium text-blue-600" value={editForm.negotiationAmount} onChange={handleEditChange} />
                                 </div>
 
                                 {editForm.source === 'Referral' && (
                                     <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100 space-y-4">
                                         <div>
-                                            <label className="block text-[10px] font-black text-purple-400 uppercase mb-1 tracking-widest">Referred By</label>
+                                            <label className="block text-[10px] font-medium text-purple-400 uppercase mb-1 tracking-widest">Referred By</label>
                                             <select name="referredById" className="input bg-white" value={editForm.referredById} onChange={handleEditChange}>
                                                 <option value="">Select Employee</option>
                                                 {users.filter(u => !editForm.branchId || u.branchId === editForm.branchId).map(u => (
@@ -717,27 +717,27 @@ export default function LeadDetail() {
                                         </div>
                                         <div className="flex items-center gap-4">
                                             <div className="flex-1">
-                                                <label className="block text-[10px] font-black text-purple-400 uppercase mb-1 tracking-widest">Commission %</label>
+                                                <label className="block text-[10px] font-medium text-purple-400 uppercase mb-1 tracking-widest">Commission %</label>
                                                 <input type="number" name="commissionPercentage" className="input bg-white" value={editForm.commissionPercentage} onChange={handleEditChange} />
                                             </div>
                                             <div className="flex-1">
-                                                <label className="block text-[10px] font-black text-purple-400 uppercase mb-1 tracking-widest leading-none">Est. Amount</label>
-                                                <p className="text-lg font-black text-purple-600 mt-1">₹{(parseFloat(editForm.negotiationAmount || 0) * parseFloat(editForm.commissionPercentage || 0) / 100).toFixed(2)}</p>
+                                                <label className="block text-[10px] font-medium text-purple-400 uppercase mb-1 tracking-widest leading-none">Est. Amount</label>
+                                                <p className="text-lg font-medium text-purple-600 mt-1">₹{(parseFloat(editForm.negotiationAmount || 0) * parseFloat(editForm.commissionPercentage || 0) / 100).toFixed(2)}</p>
                                             </div>
                                         </div>
                                     </div>
                                 )}
 
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Internal Notes</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Internal Notes</label>
                                     <textarea name="notes" className="input min-h-[100px]" value={editForm.notes} onChange={handleEditChange}></textarea>
                                 </div>
                             </div>
                         </div>
 
                         <footer className="p-6 bg-slate-50 flex gap-3">
-                            <button type="button" onClick={() => setShowEditModal(false)} className="btn btn-secondary flex-1 font-black text-xs uppercase">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-black text-xs uppercase shadow-lg shadow-emerald-500/20">Save Changes</button>
+                            <button type="button" onClick={() => setShowEditModal(false)} className="btn btn-secondary flex-1 font-medium text-xs uppercase">Cancel</button>
+                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase shadow-lg shadow-emerald-500/20">Save Changes</button>
                         </footer>
                     </form>
                 </div>

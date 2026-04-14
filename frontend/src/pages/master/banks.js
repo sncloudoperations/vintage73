@@ -98,7 +98,7 @@ export default function BankMaster() {
         <div className="p-6 max-w-[1600px] mx-auto">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Bank Master</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">Bank Master</h1>
                     <p className="text-slate-500 text-sm mt-1">{filteredBanks.length} banks registered</p>
                 </div>
                 <button
@@ -154,13 +154,13 @@ export default function BankMaster() {
                                     filteredBanks.map((bank, index) => (
                                         <tr key={bank.id}>
                                             <td className="text-slate-500">{index + 1}</td>
-                                            <td className="font-bold text-slate-800 uppercase tracking-tight">{bank.name}</td>
-                                            <td className="font-mono text-slate-600 font-bold">{bank.accountNumber || '-'}</td>
+                                            <td className="font-medium text-slate-800 uppercase tracking-tight">{bank.name}</td>
+                                            <td className="font-mono text-slate-600 font-medium">{bank.accountNumber || '-'}</td>
                                             <td className="font-mono text-slate-600 uppercase text-xs">{bank.ifscCode || '-'}</td>
                                             <td className="text-slate-600">{bank.branchName || '-'}</td>
                                             <td className="text-slate-500 text-xs truncate max-w-[150px]">{bank.address || '-'}</td>
                                             <td className="text-center">
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${bank.isActive ? 'bg-primary-light/10 text-primary border border-primary-light/20' : 'bg-red-50 text-red-600 border border-red-100'}`}>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-widest ${bank.isActive ? 'bg-primary-light/10 text-primary border border-primary-light/20' : 'bg-red-50 text-red-600 border border-red-100'}`}>
                                                     {bank.isActive ? 'Active' : 'Inactive'}
                                                 </span>
                                             </td>
@@ -195,7 +195,7 @@ export default function BankMaster() {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
-                            <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+                            <h2 className="text-xl font-semibold text-slate-800 tracking-tight">
                                 {editingId ? 'Edit Bank' : 'Add New Bank'}
                             </h2>
                             <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-red-500 transition-colors">
@@ -204,7 +204,7 @@ export default function BankMaster() {
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Bank Name *</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Bank Name *</label>
                                 <input
                                     required
                                     type="text"
@@ -215,7 +215,7 @@ export default function BankMaster() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Account Number</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Account Number</label>
                                 <input
                                     type="text"
                                     placeholder="123456789012"
@@ -226,7 +226,7 @@ export default function BankMaster() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">IFSC Code</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">IFSC Code</label>
                                     <input
                                         type="text"
                                         placeholder="HDFC0001234"
@@ -236,7 +236,7 @@ export default function BankMaster() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Branch Name</label>
+                                    <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Branch Name</label>
                                     <input
                                         type="text"
                                         placeholder="City Branch"
@@ -247,7 +247,7 @@ export default function BankMaster() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Address</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">Address</label>
                                 <textarea
                                     rows="2"
                                     placeholder="Full street address..."
@@ -270,13 +270,13 @@ export default function BankMaster() {
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl font-bold text-[10px] uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all"
+                                    className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl font-medium text-[10px] uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-black hover:shadow-lg active:scale-95 transition-all"
+                                    className="flex-1 px-4 py-2.5 bg-slate-900 text-white rounded-xl font-medium text-[10px] uppercase tracking-widest hover:bg-black hover:shadow-lg active:scale-95 transition-all"
                                 >
                                     {editingId ? 'Update Bank' : 'Create Bank'}
                                 </button>

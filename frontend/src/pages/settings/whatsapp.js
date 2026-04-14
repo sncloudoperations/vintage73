@@ -48,7 +48,7 @@ export default function WhatsAppSettings() {
 
     const PlaceholderBadge = ({ text }) => (
         <span
-            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-medium uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
             onClick={() => {
                 navigator.clipboard.writeText(`[[${text}]]`);
                 toast.info(`Copied [[${text}]]`);
@@ -67,19 +67,19 @@ export default function WhatsAppSettings() {
         >
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">WhatsApp Integration</h1>
+                    <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">WhatsApp Integration</h1>
                     <p className="text-slate-500 text-sm">Configure your fastsmsindia API credentials and design message templates.</p>
                 </div>
                 <div className="flex gap-2">
                     <Link href="/settings/whatsapp-history">
-                        <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-sm hover:shadow-sm transition-all">
+                        <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-medium text-sm hover:shadow-sm transition-all">
                             <FiClock /> View History
                         </button>
                     </Link>
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-bold text-sm shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all disabled:opacity-50"
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all disabled:opacity-50"
                         style={{ backgroundColor: primaryColor }}
                     >
                         <FiSave />
@@ -97,12 +97,12 @@ export default function WhatsAppSettings() {
                             <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
                                 <FiMessageSquare className="w-5 h-5" />
                             </div>
-                            <h2 className="font-bold text-slate-800">Connection Settings</h2>
+                            <h2 className="font-semibold text-slate-800">Connection Settings</h2>
                         </div>
 
                         <div className="space-y-4">
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">API Endpoint</label>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest px-1">API Endpoint</label>
                                 <input
                                     type="text"
                                     value={settings.apiUrl}
@@ -113,7 +113,7 @@ export default function WhatsAppSettings() {
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">API Key</label>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest px-1">API Key</label>
                                 <input
                                     type="password"
                                     value={settings.apiKey || ''}
@@ -125,7 +125,7 @@ export default function WhatsAppSettings() {
 
                             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
                                 <div className="flex flex-col">
-                                    <span className="text-xs font-bold text-slate-700">Active Status</span>
+                                    <span className="text-xs font-medium text-slate-700">Active Status</span>
                                     <span className="text-[10px] text-slate-400">Enable/Disable integration</span>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
@@ -157,13 +157,13 @@ export default function WhatsAppSettings() {
                                 <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
                                     <FiCheckCircle className="w-5 h-5" />
                                 </div>
-                                <h2 className="font-bold text-slate-800">Custom Message Templates</h2>
+                                <h2 className="font-semibold text-slate-800">Custom Message Templates</h2>
                             </div>
                         </div>
 
                         {/* Available Tags */}
                         <div className="p-4 bg-slate-50 rounded-2xl space-y-3">
-                            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <h3 className="text-[10px] font-medium text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                 <FiCopy className="w-3 h-3" /> Click to copy placeholders
                             </h3>
                             <div className="flex flex-wrap gap-2">
@@ -182,7 +182,7 @@ export default function WhatsAppSettings() {
                             {/* Sales Template */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between px-1">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">POS Sales Invoice</label>
+                                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">POS Sales Invoice</label>
                                     <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Recommended for POS</span>
                                 </div>
                                 <textarea
@@ -196,7 +196,7 @@ export default function WhatsAppSettings() {
                             {/* Quotation Template */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between px-1">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Quotations Template</label>
+                                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Quotations Template</label>
                                     <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Used in Quotation Module</span>
                                 </div>
                                 <textarea
@@ -210,7 +210,7 @@ export default function WhatsAppSettings() {
                             {/* Payment Template */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between px-1">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Payment Receipts</label>
+                                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Payment Receipts</label>
                                     <span className="text-[10px] font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">For balance updates</span>
                                 </div>
                                 <textarea
@@ -224,7 +224,7 @@ export default function WhatsAppSettings() {
                             {/* Credit Template */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between px-1">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Credit Management</label>
+                                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Credit Management</label>
                                     <span className="text-[10px] font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Debt Reminders</span>
                                 </div>
                                 <textarea

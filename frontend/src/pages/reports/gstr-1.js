@@ -57,7 +57,7 @@ export default function GSTR1Report() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">GSTR-1 Report</h1>
+                        <h1 className="text-2xl font-semibold text-slate-800">GSTR-1 Report</h1>
                         <p className="text-slate-500 text-sm">Details of outward supplies of goods or services</p>
                     </div>
 
@@ -141,7 +141,7 @@ export default function GSTR1Report() {
                 {/* B2B Table */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
                     <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
-                        <h3 className="font-bold text-slate-700">4A, 4B, 4C, 6B, 6C - B2B Invoices</h3>
+                        <h3 className="font-medium text-slate-700">4A, 4B, 4C, 6B, 6C - B2B Invoices</h3>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="table-modern">
@@ -182,7 +182,7 @@ export default function GSTR1Report() {
                 {/* B2C Table */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
-                        <h3 className="font-bold text-slate-700">7 - B2C (Others)</h3>
+                        <h3 className="font-medium text-slate-700">7 - B2C (Others)</h3>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="table-modern">

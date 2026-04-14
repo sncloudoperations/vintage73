@@ -88,7 +88,7 @@ export default function Suppliers() {
     <div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">Suppliers</h1>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Suppliers</h1>
           <p className="text-slate-500 text-sm">Manage product vendors and supply chain</p>
         </div>
 
@@ -124,7 +124,7 @@ export default function Suppliers() {
           <tbody>
             {filteredSuppliers.map(supplier => (
               <tr key={supplier.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="font-bold text-slate-700">{supplier.name}</td>
+                <td className="font-medium text-slate-700">{supplier.name}</td>
                 <td className="text-sm text-slate-600">{supplier.contactPerson || '-'}</td>
                 <td className="text-sm text-slate-600">{supplier.phone}</td>
                 <td className="text-sm text-slate-600">{supplier.gstNumber || '-'}</td>
@@ -151,7 +151,7 @@ export default function Suppliers() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Supplier' : 'Add Supplier'}</h2>
+              <h2 className="text-xl font-semibold text-slate-800">{isEdit ? 'Edit Supplier' : 'Add Supplier'}</h2>
               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">&times;</button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">

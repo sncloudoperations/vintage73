@@ -74,8 +74,8 @@ const BulkPosting = () => {
                         <FiArrowLeft size={24} />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-black text-slate-800 tracking-tight">Bulk Posting Utility</h1>
-                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Manual Ledger Synchronization</p>
+                        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Bulk Posting Utility</h1>
+                        <p className="text-slate-400 text-xs font-medium uppercase tracking-widest mt-1">Manual Ledger Synchronization</p>
                     </div>
                 </div>
             </div>
@@ -84,28 +84,28 @@ const BulkPosting = () => {
                 {/* Left Side: Controls */}
                 <div className="md:col-span-1 space-y-6">
                     <div className="bg-white p-6 rounded-3xl shadow-xl shadow-slate-100 border border-slate-50">
-                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <h3 className="text-sm font-medium text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
                             <FiCalendar className="text-slate-400" /> Date Range
                         </h3>
 
                         <div className="space-y-4">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">From</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">From</label>
                                 <input
                                     type="date"
                                     value={fromDate}
                                     onChange={(e) => setFromDate(e.target.value)}
-                                    className="w-full h-12 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-bold text-slate-700 focus:ring-2 focus:bg-white transition-all outline-none"
+                                    className="w-full h-12 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 focus:ring-2 focus:bg-white transition-all outline-none"
                                     style={{ ringColor: theme.primaryColor + '20', borderColor: theme.primaryColor + '10' }}
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">To</label>
+                                <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">To</label>
                                 <input
                                     type="date"
                                     value={toDate}
                                     onChange={(e) => setToDate(e.target.value)}
-                                    className="w-full h-12 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-bold text-slate-700 focus:ring-2 focus:bg-white transition-all outline-none"
+                                    className="w-full h-12 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 focus:ring-2 focus:bg-white transition-all outline-none"
                                     style={{ ringColor: theme.primaryColor + '20', borderColor: theme.primaryColor + '10' }}
                                 />
                             </div>
@@ -114,7 +114,7 @@ const BulkPosting = () => {
                         <button
                             onClick={handleStartSync}
                             disabled={isProcessing}
-                            className="w-full mt-8 h-14 rounded-2xl text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all disabled:opacity-50"
+                            className="w-full mt-8 h-14 rounded-2xl text-white font-medium text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all disabled:opacity-50"
                             style={{ backgroundColor: theme.primaryColor }}
                         >
                             {isProcessing ? (
@@ -129,8 +129,8 @@ const BulkPosting = () => {
                     <div className="bg-slate-900 p-8 rounded-3xl text-white shadow-2xl overflow-hidden relative group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
                         <FiCpu className="text-slate-700 mb-4" size={32} />
-                        <h4 className="font-black text-xs uppercase tracking-widest mb-2">Engine Logic</h4>
-                        <p className="text-[10px] text-slate-400 font-bold leading-relaxed">
+                        <h4 className="font-medium text-xs uppercase tracking-widest mb-2">Engine Logic</h4>
+                        <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
                             This utility re-evaluates all transactions in the selected range using your current Ledger Posting Setup. Existing vouchers will be replaced to ensure reports match policies.
                         </p>
                     </div>
@@ -142,12 +142,12 @@ const BulkPosting = () => {
                     <div className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-100 border border-slate-50">
                         <div className="flex justify-between items-end mb-4">
                             <div>
-                                <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 mb-1">
+                                <h3 className="text-sm font-medium text-slate-800 uppercase tracking-widest flex items-center gap-2 mb-1">
                                     <FiActivity className="text-slate-400" /> Progress
                                 </h3>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{status}</p>
+                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">{status}</p>
                             </div>
-                            <div className="text-2xl font-black tabular-nums" style={{ color: theme.primaryColor }}>
+                            <div className="text-2xl font-bold tabular-nums" style={{ color: theme.primaryColor }}>
                                 {progress}%
                             </div>
                         </div>
@@ -166,19 +166,19 @@ const BulkPosting = () => {
                         {results && (
                             <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                    <div className="text-[10px] font-black uppercase text-slate-400 mb-4">Sales Postings</div>
+                                    <div className="text-[10px] font-medium uppercase text-slate-400 mb-4">Sales Postings</div>
                                     <div className="flex items-end justify-between">
-                                        <div className="text-3xl font-black text-slate-800">{results.sales.processed}<span className="text-xs text-slate-300 font-bold ml-1">/ {results.sales.total}</span></div>
-                                        <div className={`text-[10px] font-black px-2 py-1 rounded-lg ${results.sales.errors.length > 0 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'}`}>
+                                        <div className="text-3xl font-extrabold text-slate-800">{results.sales.processed}<span className="text-xs text-slate-300 font-bold ml-1">/ {results.sales.total}</span></div>
+                                        <div className={`text-[10px] font-medium px-2 py-1 rounded-lg ${results.sales.errors.length > 0 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'}`}>
                                             {results.sales.errors.length} ERRORS
                                         </div>
                                     </div>
                                 </div>
                                 <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                    <div className="text-[10px] font-black uppercase text-slate-400 mb-4">Purchase Postings</div>
+                                    <div className="text-[10px] font-medium uppercase text-slate-400 mb-4">Purchase Postings</div>
                                     <div className="flex items-end justify-between">
-                                        <div className="text-3xl font-black text-slate-800">{results.purchases.processed}<span className="text-xs text-slate-300 font-bold ml-1">/ {results.purchases.total}</span></div>
-                                        <div className={`text-[10px] font-black px-2 py-1 rounded-lg ${results.purchases.errors.length > 0 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'}`}>
+                                        <div className="text-3xl font-extrabold text-slate-800">{results.purchases.processed}<span className="text-xs text-slate-300 font-bold ml-1">/ {results.purchases.total}</span></div>
+                                        <div className={`text-[10px] font-medium px-2 py-1 rounded-lg ${results.purchases.errors.length > 0 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'}`}>
                                             {results.purchases.errors.length} ERRORS
                                         </div>
                                     </div>
@@ -189,7 +189,7 @@ const BulkPosting = () => {
                         {status === 'IDLE' && (
                             <div className="h-40 flex flex-col items-center justify-center text-center opacity-40">
                                 <FiPlay size={32} className="text-slate-300 mb-3" />
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Select dates and start</p>
+                                <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">Select dates and start</p>
                             </div>
                         )}
                     </div>
@@ -197,14 +197,14 @@ const BulkPosting = () => {
                     {/* Details Table if Errors */}
                     {(results?.sales.errors.length > 0 || results?.purchases.errors.length > 0) && (
                         <div className="bg-red-50/50 p-6 rounded-3xl border border-red-100">
-                            <h4 className="text-[10px] font-black uppercase text-red-400 mb-4 flex items-center gap-2">
+                            <h4 className="text-[10px] font-medium uppercase text-red-400 mb-4 flex items-center gap-2">
                                 <FiAlertCircle /> Transaction Failure Details
                             </h4>
                             <div className="max-h-40 overflow-y-auto space-y-2">
                                 {[...results.sales.errors.map(e => ({ ...e, type: 'Sale' })), ...results.purchases.errors.map(e => ({ ...e, type: 'Purchase' }))].map((err, i) => (
                                     <div key={i} className="flex justify-between items-center bg-white p-3 rounded-xl border border-red-50 shadow-sm">
-                                        <span className="text-[10px] font-bold text-slate-500">{err.type} ID: {err.id}</span>
-                                        <span className="text-[10px] font-black text-red-500">{err.error}</span>
+                                        <span className="text-[10px] font-medium text-slate-500">{err.type} ID: {err.id}</span>
+                                        <span className="text-[10px] font-medium text-red-500">{err.error}</span>
                                     </div>
                                 ))}
                             </div>

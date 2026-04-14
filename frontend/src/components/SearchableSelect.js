@@ -73,7 +73,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder = "Select opti
                                 <div
                                     key={opt.value}
                                     onClick={() => handleSelect(opt.value)}
-                                    className={`px-3 py-2 text-[12px] cursor-pointer transition-colors ${value === opt.value ? 'bg-slate-100 font-bold' : 'hover:bg-slate-50 text-slate-700'}`}
+                                    className={`px-3 py-2 text-[12px] cursor-pointer transition-colors ${value === opt.value ? 'bg-slate-100 font-medium' : 'hover:bg-slate-50 text-slate-700'}`}
                                     style={value === opt.value ? { color: theme.primaryColor } : {}}
                                 >
                                     {opt.label}

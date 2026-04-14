@@ -59,16 +59,16 @@ export default function LeadList() {
     };
 
     const priorityColors = {
-        'HIGH': 'text-red-600 font-bold',
-        'MEDIUM': 'text-amber-600 font-bold',
-        'LOW': 'text-slate-500 font-bold'
+        'HIGH': 'text-red-600 font-medium',
+        'MEDIUM': 'text-amber-600 font-medium',
+        'LOW': 'text-slate-500 font-medium'
     };
 
     return (
         <div className="p-4 md:p-8 space-y-6">
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-800 tracking-tight">Lead Management</h1>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Lead Management</h1>
                     <p className="text-slate-500 font-medium">Track and convert your sales inquiries</p>
                 </div>
                 <Link href="/crm/leads/create" className="btn btn-primary shadow-lg shadow-emerald-500/20">
@@ -85,8 +85,8 @@ export default function LeadList() {
                     { label: 'Conversion', value: leads.length ? `${((leads.filter(l => l.status === 'WON').length / leads.length) * 100).toFixed(1)}%` : '0%', color: 'indigo' }
                 ].map((kpi, i) => (
                     <div key={i} className="card p-4 flex flex-col justify-center">
-                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest leading-none mb-1">{kpi.label}</p>
-                        <h3 className={`text-2xl font-black text-${kpi.color}-600`}>{kpi.value}</h3>
+                        <p className="text-[10px] font-medium uppercase text-slate-400 tracking-widest leading-none mb-1">{kpi.label}</p>
+                        <h3 className={`text-2xl font-bold text-${kpi.color}-600`}>{kpi.value}</h3>
                     </div>
                 ))}
             </div>
@@ -95,14 +95,14 @@ export default function LeadList() {
             <div className="card shadow-sm">
                 <form onSubmit={applyFilters} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                     <div className="md:col-span-2">
-                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Search</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Search</label>
                         <div className="relative">
                             <FiSearch className="absolute left-3 top-3 text-slate-400" />
                             <input name="search" className="input pl-10" placeholder="Name or Phone..." value={filters.search} onChange={handleFilterChange} />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Status</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Status</label>
                         <select name="status" className="input" value={filters.status} onChange={handleFilterChange}>
                             <option value="">All Statuses</option>
                             <option value="NEW">New</option>
@@ -115,7 +115,7 @@ export default function LeadList() {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Assigned To</label>
+                        <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Assigned To</label>
                         <select name="assignedTo" className="input" value={filters.assignedTo} onChange={handleFilterChange}>
                             <option value="">All Employees</option>
                             {users.map(u => <option key={u.id} value={u.id}>{u.name || u.username}</option>)}
@@ -143,38 +143,38 @@ export default function LeadList() {
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {loading ? (
-                            <tr><td colSpan="7" className="p-12 text-center text-slate-400 animate-pulse font-bold uppercase tracking-widest">Loading Leads...</td></tr>
+                            <tr><td colSpan="7" className="p-12 text-center text-slate-400 animate-pulse font-medium uppercase tracking-widest">Loading Leads...</td></tr>
                         ) : leads.length === 0 ? (
-                            <tr><td colSpan="7" className="p-12 text-center text-slate-400 font-bold italic">No leads found matching your criteria.</td></tr>
+                            <tr><td colSpan="7" className="p-12 text-center text-slate-400 font-medium italic">No leads found matching your criteria.</td></tr>
                         ) : leads.map(lead => (
                             <tr key={lead.id} className="hover:bg-slate-50 transition-colors cursor-pointer group" onClick={() => router.push(`/crm/leads/${lead.id}`)}>
                                 <td className="font-mono text-slate-400 text-xs">#{lead.id}</td>
                                 <td>
-                                    <div className="font-black text-slate-700">{lead.name}</div>
+                                    <div className="font-medium text-slate-700">{lead.name}</div>
                                     <div className="flex items-center gap-2 mt-1">
                                         {lead.phone && <span className="text-[10px] text-slate-500 flex items-center gap-1"><FiPhone className="text-slate-300" /> {lead.phone}</span>}
                                         {lead.email && <span className="text-[10px] text-slate-500 flex items-center gap-1"><FiMail className="text-slate-300" /> {lead.email}</span>}
                                     </div>
                                 </td>
                                 <td>
-                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black border uppercase tracking-tighter ${statusColors[lead.status]}`}>
+                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border uppercase tracking-tighter ${statusColors[lead.status]}`}>
                                         {lead.status.replace('_', ' ')}
                                     </span>
-                                    <div className="text-[10px] text-slate-400 mt-1 font-bold uppercase">{lead.source || 'Direct'}</div>
+                                    <div className="text-[10px] text-slate-400 mt-1 font-medium uppercase">{lead.source || 'Direct'}</div>
                                 </td>
                                 <td>
-                                    <div className="text-xs font-bold text-slate-600">{lead.product?.name || 'Inquiry'}</div>
-                                    <div className="text-[10px] text-emerald-600 font-black mt-0.5">
+                                    <div className="text-xs font-medium text-slate-600">{lead.product?.name || 'Inquiry'}</div>
+                                    <div className="text-[10px] text-emerald-600 font-medium mt-0.5">
                                         {lead.budget ? `₹${parseFloat(lead.budget).toLocaleString()}` : <span className="text-slate-300 uppercase tracking-tighter">Budget Not Set</span>}
                                     </div>
                                 </td>
                                 <td>
                                     {lead.assignedUser ? (
                                         <div className="flex items-center gap-2">
-                                            <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[8px] font-black text-slate-500">
+                                            <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[8px] font-medium text-slate-500">
                                                 {lead.assignedUser.name?.[0] || 'U'}
                                             </div>
-                                            <span className="text-xs font-bold text-slate-600">{lead.assignedUser.name}</span>
+                                            <span className="text-xs font-medium text-slate-600">{lead.assignedUser.name}</span>
                                         </div>
                                     ) : <span className="text-[10px] text-slate-300 italic">Unassigned</span>}
                                 </td>

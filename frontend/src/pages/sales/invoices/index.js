@@ -165,7 +165,7 @@ export default function InvoicesList() {
         <div className="p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Tax Invoices</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Tax Invoices</h1>
                     <p className="text-slate-500 text-sm">View and manage converted quotation invoices</p>
                 </div>
                 <div className="relative w-full md:w-80">
@@ -183,7 +183,7 @@ export default function InvoicesList() {
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-slate-50 text-slate-500 font-bold border-b text-sm uppercase tracking-wider">
+                        <tr className="bg-slate-50 text-slate-500 font-medium border-b text-sm uppercase tracking-wider">
                             <th className="px-6 py-4">Date</th>
                             <th className="px-6 py-4">Invoice #</th>
                             <th className="px-6 py-4">Customer</th>
@@ -204,7 +204,7 @@ export default function InvoicesList() {
                                 <td className="px-6 py-4 text-sm text-slate-600">
                                     {new Date(inv.createdAt || inv.saleDate).toLocaleDateString('en-GB')}
                                 </td>
-                                <td className="px-6 py-4 text-sm font-bold text-primary">
+                                <td className="px-6 py-4 text-sm font-medium text-primary">
                                     {inv.invoiceNumber}
                                 </td>
                                 <td className="px-6 py-4 text-sm text-slate-700">
@@ -212,7 +212,7 @@ export default function InvoicesList() {
                                     <div className="text-xs text-slate-400">{inv.customer?.phone}</div>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter border ${
+                                    <span className={`px-2 py-1 rounded-full text-[10px] font-medium uppercase tracking-tighter border ${
                                         inv.status === 'cancelled'
                                         ? 'bg-red-50 text-red-600 border-red-100'
                                         : 'bg-emerald-50 text-emerald-600 border-emerald-100'
@@ -220,7 +220,7 @@ export default function InvoicesList() {
                                         {inv.status}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 text-sm text-right font-bold text-slate-800">
+                                <td className="px-6 py-4 text-sm text-right font-medium text-slate-800">
                                     {(inv.currencyCode === 'USD' ? '$' : inv.currencyCode === 'AED' ? 'د.إ' : '₹')}
                                     {(Number(inv.totalAmount) * Number(inv.exchangeRate || 1)).toFixed(2)}
                                 </td>
@@ -288,13 +288,13 @@ export default function InvoicesList() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden flex flex-col h-[90vh]">
                         <div className="flex justify-between items-center p-4 border-b bg-white relative z-10">
                             <div>
-                                <h2 className="text-lg font-bold text-slate-800">Invoice Preview</h2>
+                                <h2 className="text-lg font-semibold text-slate-800">Invoice Preview</h2>
                                 <p className="text-xs text-slate-500">{printData?.invoiceNumber}</p>
                             </div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => handleModalPrint()}
-                                    className="bg-primary text-white flex items-center gap-2 px-6 py-2 rounded-lg font-bold hover:bg-primary-dark transition-all"
+                                    className="bg-primary text-white flex items-center gap-2 px-6 py-2 rounded-lg font-medium hover:bg-primary-dark transition-all"
                                 >
                                     <FiPrinter /> Print Invoice
                                 </button>
@@ -325,7 +325,7 @@ export default function InvoicesList() {
                         <div className="p-6 border-b flex justify-between items-center bg-red-50 text-red-800">
                             <div className="flex items-center gap-2">
                                 <FiAlertTriangle className="text-xl" />
-                                <h2 className="font-black uppercase tracking-widest text-xs">Cancel Invoice</h2>
+                                <h2 className="font-bold uppercase tracking-widest text-xs">Cancel Invoice</h2>
                             </div>
                             <button onClick={() => setShowDeleteModal(false)} className="text-red-400 hover:text-red-600 transition-colors">
                                 <FiX size={20} />
@@ -333,11 +333,11 @@ export default function InvoicesList() {
                         </div>
                         <div className="p-6 space-y-4">
                             <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 italic text-sm text-slate-500">
-                                Are you sure you want to cancel Invoice <span className="font-bold text-slate-800">{selectedForDelete?.invoiceNumber}</span>?
+                                Are you sure you want to cancel Invoice <span className="font-medium text-slate-800">{selectedForDelete?.invoiceNumber}</span>?
                                 <p className="mt-1 text-[10px] non-italic text-slate-400">Stock will be restored and accounting reversed.</p>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest ml-1">Reason for Cancellation</label>
+                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest ml-1">Reason for Cancellation</label>
                                 <textarea
                                     className="input min-h-[100px] bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm"
                                     value={deleteReason}
@@ -350,14 +350,14 @@ export default function InvoicesList() {
                         <div className="p-6 pt-0 flex gap-3">
                             <button
                                 onClick={() => setShowDeleteModal(false)}
-                                className="flex-1 py-3 px-4 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all text-sm"
+                                className="flex-1 py-3 px-4 rounded-xl font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all text-sm"
                             >
                                 Nevermind
                             </button>
                             <button
                                 onClick={confirmDelete}
                                 disabled={isDeleting || !deleteReason.trim()}
-                                className="flex-1 py-3 px-4 rounded-xl font-bold bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                                className="flex-1 py-3 px-4 rounded-xl font-medium bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {isDeleting ? <span className="animate-pulse">Processing...</span> : 'Yes, Cancel Invoice'}
                             </button>

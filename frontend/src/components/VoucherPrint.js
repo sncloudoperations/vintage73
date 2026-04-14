@@ -60,7 +60,7 @@ export default function VoucherPrint({ voucher, onClose }) {
                 {/* Close button for screen view */}
                 <button 
                     onClick={onClose}
-                    className="absolute top-4 right-4 bg-slate-100 p-2 rounded-full hover:bg-slate-200 print:hidden text-xs font-bold"
+                    className="absolute top-4 right-4 bg-slate-100 p-2 rounded-full hover:bg-slate-200 print:hidden text-xs font-medium"
                 >
                     Close & Return
                 </button>
@@ -72,7 +72,7 @@ export default function VoucherPrint({ voucher, onClose }) {
                             <img src={`${process.env.NEXT_PUBLIC_API_URL}${company.logoUrl}`} alt="Logo" className="h-20 object-contain" />
                         )}
                         <div>
-                            <h1 className="text-lg font-black uppercase leading-tight tracking-tight">{company?.companyName || 'PILLOW SPOT'}</h1>
+                            <h1 className="text-lg font-bold uppercase leading-tight tracking-tight">{company?.companyName || 'PILLOW SPOT'}</h1>
                             <p className="text-[10px] text-slate-600 leading-tight max-w-sm">
                                 {company?.address}, {company?.city}, {company?.state} - {company?.pincode}
                             </p>
@@ -80,12 +80,12 @@ export default function VoucherPrint({ voucher, onClose }) {
                         </div>
                     </div>
                     <div className="text-right">
-                        <div className="inline-block px-4 py-1 border border-slate-900 font-black text-sm mb-2 bg-slate-50 tracking-widest">
+                        <div className="inline-block px-4 py-1 border border-slate-900 font-medium text-sm mb-2 bg-slate-50 tracking-widest">
                             {voucherTitle}
                         </div>
                         <div className="space-y-0.5 mt-1">
-                            <p className="text-[11px] font-bold">Voucher No: <span className="text-xs font-black">{voucher.voucherNumber}</span></p>
-                            <p className="text-[11px] font-bold">Date: <span className="text-xs font-black">{new Date(voucher.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span></p>
+                            <p className="text-[11px] font-medium">Voucher No: <span className="text-xs font-medium">{voucher.voucherNumber}</span></p>
+                            <p className="text-[11px] font-medium">Date: <span className="text-xs font-medium">{new Date(voucher.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span></p>
                         </div>
                     </div>
                 </div>
@@ -93,10 +93,10 @@ export default function VoucherPrint({ voucher, onClose }) {
                 {/* Details Section */}
                 <div className="flex-grow space-y-3">
                     <div className="grid grid-cols-12 gap-x-2 items-center">
-                        <div className="col-span-2 text-[10px] font-black uppercase text-slate-400">
+                        <div className="col-span-2 text-[10px] font-medium uppercase text-slate-400">
                             {isPayment ? 'Paid To' : isReceipt ? 'Received From' : 'Account (Dr)'}:
                         </div>
-                        <div className="col-span-10 text-xs font-black border-b border-slate-200 pb-0.5">
+                        <div className="col-span-10 text-xs font-medium border-b border-slate-200 pb-0.5">
                             {isPayment ? (debitEntries[0]?.debitLedger?.name) : 
                              isReceipt ? (creditEntries[0]?.creditLedger?.name) : 
                              isContra ? (debitEntries[0]?.debitLedger?.name) :
@@ -105,10 +105,10 @@ export default function VoucherPrint({ voucher, onClose }) {
                     </div>
 
                     <div className="grid grid-cols-12 gap-x-2 items-center">
-                        <div className="col-span-2 text-[10px] font-black uppercase text-slate-400">
+                        <div className="col-span-2 text-[10px] font-medium uppercase text-slate-400">
                             {isPayment ? 'By Account' : isReceipt ? 'By Account' : 'Account (Cr)'}:
                         </div>
-                        <div className="col-span-10 text-xs font-bold text-slate-700 border-b border-slate-200 pb-0.5">
+                        <div className="col-span-10 text-xs font-medium text-slate-700 border-b border-slate-200 pb-0.5">
                             {isPayment ? (creditEntries[0]?.creditLedger?.name) : 
                              isReceipt ? (debitEntries[0]?.debitLedger?.name) : 
                              isContra ? (creditEntries[0]?.creditLedger?.name) :
@@ -117,7 +117,7 @@ export default function VoucherPrint({ voucher, onClose }) {
                     </div>
 
                     <div className="grid grid-cols-12 gap-x-2 items-start">
-                        <div className="col-span-2 text-[10px] font-black uppercase text-slate-400 mt-1">
+                        <div className="col-span-2 text-[10px] font-medium uppercase text-slate-400 mt-1">
                             Narration:
                         </div>
                         <div className="col-span-10 text-[11px] italic text-slate-600 leading-relaxed min-h-[40px] border-b border-slate-200">
@@ -127,10 +127,10 @@ export default function VoucherPrint({ voucher, onClose }) {
 
                     {voucher.reference && (
                         <div className="grid grid-cols-12 gap-x-2 items-center">
-                            <div className="col-span-2 text-[10px] font-black uppercase text-slate-400">
+                            <div className="col-span-2 text-[10px] font-medium uppercase text-slate-400">
                                 Reference:
                             </div>
-                            <div className="col-span-10 text-[11px] font-bold">
+                            <div className="col-span-10 text-[11px] font-medium">
                                 {voucher.reference}
                             </div>
                         </div>
@@ -139,12 +139,12 @@ export default function VoucherPrint({ voucher, onClose }) {
                     {/* Amount Box */}
                     <div className="mt-6 flex border border-slate-900 overflow-hidden">
                         <div className="flex-grow p-3 bg-slate-50 flex flex-col justify-center">
-                            <span className="text-[8px] font-black uppercase text-slate-400 block mb-1">Amount in words (INR)</span>
-                            <p className="text-[11px] font-bold italic leading-tight uppercase">Rupees {numberToWords(Math.round(voucher.totalAmount))}</p>
+                            <span className="text-[8px] font-medium uppercase text-slate-400 block mb-1">Amount in words (INR)</span>
+                            <p className="text-[11px] font-medium italic leading-tight uppercase">Rupees {numberToWords(Math.round(voucher.totalAmount))}</p>
                         </div>
                         <div className="w-1/4 p-3 border-l border-slate-900 flex flex-col justify-center items-end bg-white">
-                            <span className="text-[8px] font-black uppercase text-slate-400 block mb-1">Total Amount</span>
-                            <p className="text-xl font-black tabular-nums tracking-tight">₹{parseFloat(voucher.totalAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</p>
+                            <span className="text-[8px] font-extrabold uppercase text-slate-400 block mb-1">Total Amount</span>
+                            <p className="text-xl font-extrabold tabular-nums tracking-tight">₹{parseFloat(voucher.totalAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</p>
                         </div>
                     </div>
                 </div>
@@ -153,15 +153,15 @@ export default function VoucherPrint({ voucher, onClose }) {
                 <div className="mt-12 grid grid-cols-3 gap-8 text-center px-4">
                     <div>
                         <div className="h-10"></div>
-                        <div className="border-t border-slate-900 pt-1.5 text-[9px] font-black uppercase tracking-wider">Receiver's Signature</div>
+                        <div className="border-t border-slate-900 pt-1.5 text-[9px] font-medium uppercase tracking-wider">Receiver's Signature</div>
                     </div>
                     <div>
                         <div className="h-10"></div>
-                        <div className="border-t border-slate-900 pt-1.5 text-[9px] font-black uppercase tracking-wider">Prepared By</div>
+                        <div className="border-t border-slate-900 pt-1.5 text-[9px] font-medium uppercase tracking-wider">Prepared By</div>
                     </div>
                     <div>
-                        <div className="h-10 text-[9px] font-bold text-slate-400 flex items-end justify-center pb-1">For {company?.companyName}</div>
-                        <div className="border-t border-slate-900 pt-1.5 text-[9px] font-black uppercase tracking-wider">Authorised Signatory</div>
+                        <div className="h-10 text-[9px] font-medium text-slate-400 flex items-end justify-center pb-1">For {company?.companyName}</div>
+                        <div className="border-t border-slate-900 pt-1.5 text-[9px] font-medium uppercase tracking-wider">Authorised Signatory</div>
                     </div>
                 </div>
 

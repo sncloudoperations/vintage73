@@ -93,7 +93,7 @@ export default function StockReceipt() {
     <div className="p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Stock Receipt</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">Stock Receipt</h1>
           <p className="text-slate-500 text-sm">Verify and accept incoming stock</p>
         </div>
       </div>
@@ -115,23 +115,23 @@ export default function StockReceipt() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-4 flex flex-wrap gap-4 items-end">
         <div className="flex-1 min-w-[200px]">
-          <label className="block text-xs font-bold text-slate-400 uppercase mb-2">From Branch</label>
+          <label className="block text-xs font-medium text-slate-400 uppercase mb-2">From Branch</label>
           <select className="input w-full" value={filterBranchId} onChange={e => setFilterBranchId(e.target.value)}>
             <option value="">All Branches</option>
             {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-bold text-slate-400 uppercase mb-2">From Date</label>
+          <label className="block text-xs font-medium text-slate-400 uppercase mb-2">From Date</label>
           <input type="date" className="input" value={startDate} onChange={e => setStartDate(e.target.value)} />
         </div>
         <div>
-          <label className="block text-xs font-bold text-slate-400 uppercase mb-2">To Date</label>
+          <label className="block text-xs font-medium text-slate-400 uppercase mb-2">To Date</label>
           <input type="date" className="input" value={endDate} onChange={e => setEndDate(e.target.value)} />
         </div>
         <button
           onClick={() => { setFilterBranchId(''); setStartDate(''); setEndDate(''); }}
-          className="text-slate-400 hover:text-red-500 font-bold text-xs flex items-center gap-1 pb-3 px-2 transition-colors uppercase"
+          className="text-slate-400 hover:text-red-500 font-medium text-xs flex items-center gap-1 pb-3 px-2 transition-colors uppercase"
         >
           Reset
         </button>
@@ -139,7 +139,7 @@ export default function StockReceipt() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-sm text-left">
-          <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-widest border-b border-slate-100">
+          <thead className="bg-slate-50 text-slate-500 font-medium uppercase text-[10px] tracking-widest border-b border-slate-100">
             <tr>
               <th className="p-4 pl-6">Date</th>
               <th className="p-4">From Branch</th>
@@ -154,12 +154,12 @@ export default function StockReceipt() {
               <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="p-4 pl-6 font-medium text-slate-600">{new Date(t.createdAt).toLocaleDateString('en-GB')}</td>
                 <td className="p-4">
-                  <span className="font-bold text-slate-800">{t.fromBranch?.name}</span>
+                  <span className="font-medium text-slate-800">{t.fromBranch?.name}</span>
                 </td>
                 <td className="p-4">
                   <div className="flex flex-wrap gap-1">
                     {t.items.map(i => (
-                      <span key={i.id} className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] items-center gap-1 font-bold">
+                      <span key={i.id} className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] items-center gap-1 font-medium">
                         {i.product.name} <span className="text-indigo-500">x{i.quantity}</span>
                       </span>
                     ))}
@@ -171,7 +171,7 @@ export default function StockReceipt() {
                 <td className="p-4">
                   {t.status === 'RECEIVED' ? (
                     <div className="flex flex-col text-xs">
-                      <span className="font-bold text-slate-700">{t.receivedBy?.name || 'Staff'}</span>
+                      <span className="font-medium text-slate-700">{t.receivedBy?.name || 'Staff'}</span>
                       <span className="text-slate-400">{t.receivedAt ? new Date(t.receivedAt).toLocaleDateString('en-GB') + ' ' + new Date(t.receivedAt).toLocaleTimeString() : '-' }</span>
                     </div>
                   ) : (
@@ -183,13 +183,13 @@ export default function StockReceipt() {
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => triggerPrint(t)}
-                        className="text-primary hover:bg-primary-light/10 px-3 py-2 rounded-xl text-[10px] font-bold uppercase transition-colors flex items-center gap-1 border border-primary-light/20"
+                        className="text-primary hover:bg-primary-light/10 px-3 py-2 rounded-xl text-[10px] font-medium uppercase transition-colors flex items-center gap-1 border border-primary-light/20"
                       >
                         <FiPrinter /> Print
                       </button>
                       <button
                         onClick={() => handleReceive(t.id)}
-                        className="bg-primary text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all active:scale-95"
+                        className="bg-primary text-white font-medium px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all active:scale-95"
                       >
                         <FiPackage /> Receive
                       </button>
@@ -198,11 +198,11 @@ export default function StockReceipt() {
                     <div className="flex justify-end gap-2 items-center">
                       <button
                         onClick={() => triggerPrint(t)}
-                        className="text-primary hover:bg-primary-light/10 px-3 py-2 rounded-xl text-[10px] font-bold uppercase transition-colors flex items-center gap-1 border border-primary-light/20"
+                        className="text-primary hover:bg-primary-light/10 px-3 py-2 rounded-xl text-[10px] font-medium uppercase transition-colors flex items-center gap-1 border border-primary-light/20"
                       >
                         <FiPrinter /> Print
                       </button>
-                      <div className="text-primary font-bold text-xs flex items-center gap-1">
+                      <div className="text-primary font-medium text-xs flex items-center gap-1">
                         <FiCheckCircle /> Received
                       </div>
                     </div>
@@ -233,47 +233,47 @@ export default function StockReceipt() {
             {company?.logoUrl && (
               <img src={company.logoUrl} alt="Logo" className="h-16 mx-auto mb-2 object-contain" />
             )}
-            <h1 className="text-xl font-black uppercase tracking-tighter">Stock Transfer Challan</h1>
-            <h2 className="text-base font-bold mt-0.5 text-slate-700">{company?.companyName || 'BILLING SOFTWARE'}</h2>
+            <h1 className="text-xl font-bold uppercase tracking-tighter">Stock Transfer Challan</h1>
+            <h2 className="text-base font-semibold mt-0.5 text-slate-700">{company?.companyName || 'BILLING SOFTWARE'}</h2>
             <p className="text-[9px] text-slate-500 uppercase tracking-widest">{company?.address || 'Inventory Management System'}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-6 mb-6 text-[10px]">
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <p className="font-black text-slate-400 uppercase text-[8px] mb-1 tracking-widest">Sending Branch</p>
-              <p className="font-bold text-base text-slate-800">{selectedForPrint?.fromBranch?.name}</p>
+              <p className="font-medium text-slate-400 uppercase text-[8px] mb-1 tracking-widest">Sending Branch</p>
+              <p className="font-medium text-base text-slate-800">{selectedForPrint?.fromBranch?.name}</p>
               <p className="text-slate-500 mt-0.5">{selectedForPrint?.fromBranch?.address || 'Branch Address Not Set'}</p>
             </div>
             <div className="bg-primary-light/10 p-3 rounded-xl border border-primary-light/20">
-              <p className="font-black text-primary uppercase text-[8px] mb-1 tracking-widest">Receiving Branch</p>
-              <p className="font-bold text-base text-slate-800">{selectedForPrint?.toBranch?.name}</p>
+              <p className="font-medium text-primary uppercase text-[8px] mb-1 tracking-widest">Receiving Branch</p>
+              <p className="font-medium text-base text-slate-800">{selectedForPrint?.toBranch?.name}</p>
               <p className="text-slate-500 mt-0.5">{selectedForPrint?.toBranch?.address || 'Branch Address Not Set'}</p>
             </div>
           </div>
 
           <div className="flex justify-between items-end mb-4 pb-2 border-b border-slate-100">
             <div>
-              <p className="text-[9px] font-bold text-slate-400 uppercase">Transfer ID</p>
-              <p className="text-sm font-mono font-bold text-slate-800">#ST-{selectedForPrint?.id?.toString().padStart(6, '0')}</p>
+              <p className="text-[9px] font-medium text-slate-400 uppercase">Transfer ID</p>
+              <p className="text-sm font-mono font-medium text-slate-800">#ST-{selectedForPrint?.id?.toString().padStart(6, '0')}</p>
             </div>
             <div className="text-right">
-              <p className="text-[9px] font-bold text-slate-400 uppercase">Transfer Date</p>
-              <p className="text-[11px] font-bold text-slate-800">{selectedForPrint?.createdAt ? new Date(selectedForPrint.createdAt).toLocaleDateString('en-GB') + ' ' + new Date(selectedForPrint.createdAt).toLocaleTimeString() : '-'}</p>
+              <p className="text-[9px] font-medium text-slate-400 uppercase">Transfer Date</p>
+              <p className="text-[11px] font-medium text-slate-800">{selectedForPrint?.createdAt ? new Date(selectedForPrint.createdAt).toLocaleDateString('en-GB') + ' ' + new Date(selectedForPrint.createdAt).toLocaleTimeString() : '-'}</p>
             </div>
           </div>
 
           <table className="w-full text-[11px] mb-6">
             <thead>
               <tr className="bg-slate-900 text-white">
-                <th className="p-2 text-left rounded-l-md font-bold uppercase tracking-wider">Item Name</th>
-                <th className="p-2 text-center w-24 rounded-r-md font-bold uppercase tracking-wider">Quantity</th>
+                <th className="p-2 text-left rounded-l-md font-medium uppercase tracking-wider">Item Name</th>
+                <th className="p-2 text-center w-24 rounded-r-md font-medium uppercase tracking-wider">Quantity</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {selectedForPrint?.items?.map((item, idx) => (
                 <tr key={idx} className="hover:bg-slate-50/50">
                   <td className="p-2 font-medium text-slate-700">{item.product?.name}</td>
-                  <td className="p-2 text-center font-bold text-slate-900">{item.quantity} units</td>
+                  <td className="p-2 text-center font-medium text-slate-900">{item.quantity} units</td>
                 </tr>
               ))}
             </tbody>
@@ -281,7 +281,7 @@ export default function StockReceipt() {
 
           {selectedForPrint?.remarks && (
             <div className="mb-6 p-3 bg-slate-50 rounded-lg border border-slate-100">
-              <p className="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Remarks</p>
+              <p className="text-[9px] font-medium text-slate-400 uppercase mb-0.5">Remarks</p>
               <p className="text-[10px] text-slate-600 italic">"{selectedForPrint.remarks}"</p>
             </div>
           )}
@@ -289,12 +289,12 @@ export default function StockReceipt() {
           {selectedForPrint?.status === 'RECEIVED' && (
             <div className="mt-auto grid grid-cols-2 gap-6 pt-6 border-t font-sans">
               <div>
-                <p className="text-[8px] font-black text-slate-400 uppercase mb-3 tracking-widest text-center">Issued By (Sender)</p>
+                <p className="text-[8px] font-medium text-slate-400 uppercase mb-3 tracking-widest text-center">Issued By (Sender)</p>
                 <div className="h-12 border-b border-slate-200"></div>
               </div>
               <div className="text-right">
-                <p className="text-[8px] font-black text-primary uppercase mb-1 tracking-widest">Received & Verified By</p>
-                <p className="font-bold text-sm text-slate-800">{selectedForPrint.receivedBy?.name || 'Staff'}</p>
+                <p className="text-[8px] font-medium text-primary uppercase mb-1 tracking-widest">Received & Verified By</p>
+                <p className="font-medium text-sm text-slate-800">{selectedForPrint.receivedBy?.name || 'Staff'}</p>
                 <p className="text-[9px] text-slate-400 uppercase">
                   {selectedForPrint.receivedAt ? new Date(selectedForPrint.receivedAt).toLocaleDateString('en-GB') + ' ' + new Date(selectedForPrint.receivedAt).toLocaleTimeString() : '-'}
                 </p>
@@ -303,7 +303,7 @@ export default function StockReceipt() {
           )}
 
           <div className="mt-8 text-center border-t pt-4">
-            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Electronic Stock Transfer Document - No Signature Required</p>
+            <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest">Electronic Stock Transfer Document - No Signature Required</p>
           </div>
         </div>
       </div>

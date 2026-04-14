@@ -209,7 +209,7 @@ export default function CreateQuotation() {
         <>
             <div className="p-6 max-w-5xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold">New Quotation</h1>
+                    <h1 className="text-2xl font-semibold">New Quotation</h1>
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
@@ -347,7 +347,7 @@ export default function CreateQuotation() {
                                             {item.taxRate}%
                                             <div className="text-[10px] text-gray-400">₹{item.taxAmount?.toFixed(2)}</div>
                                         </td>
-                                        <td className="py-3 font-bold">₹{item.total.toFixed(2)}</td>
+                                        <td className="py-3 font-medium">₹{item.total.toFixed(2)}</td>
                                         <td className="py-3 text-right">
                                             <button onClick={() => removeItem(index)} className="text-red-500 hover:text-red-700">
                                                 <FiTrash2 />
@@ -370,8 +370,8 @@ export default function CreateQuotation() {
                                     </td>
                                 </tr>
                                 <tr className="border-t-2 border-gray-100">
-                                    <td colSpan="5" className="text-right py-4 font-bold text-gray-600">Grand Total:</td>
-                                    <td colSpan="2" className="py-4 text-xl font-bold text-blue-600 text-right">
+                                    <td colSpan="5" className="text-right py-4 font-medium text-gray-600">Grand Total:</td>
+                                    <td colSpan="2" className="py-4 text-xl font-semibold text-blue-600 text-right">
                                         ₹{calculateGrandTotal().toFixed(2)}
                                     </td>
                                 </tr>

@@ -125,7 +125,7 @@ export default function SalesPerformance() {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Sales Performance</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Sales Performance</h1>
                     <p className="text-slate-500 text-sm mt-1">Real-time revenue metrics tracking</p>
                 </div>
                 <div className="flex gap-3">
@@ -150,23 +150,23 @@ export default function SalesPerformance() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-4">
                 <div className="flex flex-wrap gap-4 items-end">
                     <div className="flex-1 min-w-[150px]">
-                        <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">From Date</label>
-                        <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 transition-all font-bold text-slate-700 outline-none" value={startDate} onChange={e => setStartDate(e.target.value)} />
+                        <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">From Date</label>
+                        <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 transition-all font-medium text-slate-700 outline-none" value={startDate} onChange={e => setStartDate(e.target.value)} />
                     </div>
                     <div className="flex-1 min-w-[150px]">
-                        <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">To Date</label>
-                        <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 transition-all font-bold text-slate-700 outline-none" value={endDate} onChange={e => setEndDate(e.target.value)} />
+                        <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">To Date</label>
+                        <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 transition-all font-medium text-slate-700 outline-none" value={endDate} onChange={e => setEndDate(e.target.value)} />
                     </div>
                     {user?.role === 'admin' && (
                         <div className="flex-1 min-w-[150px]">
-                            <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Branch</label>
-                            <select className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 font-bold text-slate-700 outline-none" value={selectedBranch} onChange={e => setSelectedBranch(e.target.value)}>
+                            <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">Branch</label>
+                            <select className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 font-medium text-slate-700 outline-none" value={selectedBranch} onChange={e => setSelectedBranch(e.target.value)}>
                                 <option value="all">All Branches</option>
                                 {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                             </select>
                         </div>
                     )}
-                    <button className="px-4 py-2.5 text-xs font-black text-rose-500 hover:bg-rose-50 rounded-xl transition-all" onClick={() => { setStartDate(''); setEndDate(''); }}>Reset Filters</button>
+                    <button className="px-4 py-2.5 text-xs font-medium text-rose-500 hover:bg-rose-50 rounded-xl transition-all" onClick={() => { setStartDate(''); setEndDate(''); }}>Reset Filters</button>
                 </div>
             </div>
 
@@ -178,9 +178,9 @@ export default function SalesPerformance() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <div className="group bg-slate-900 rounded-2xl p-5 relative overflow-hidden transition-all hover:translate-y-[-2px] hover:shadow-lg hover:shadow-indigo-500/10">
                             <div className="relative z-10">
-                                <p className="text-indigo-300/80 text-[9px] font-black uppercase tracking-widest mb-1">Gross Revenue</p>
-                                <h3 className="text-2xl font-black text-white tabular-nums">₹{grossSales.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
-                                <p className="mt-2 text-[10px] text-indigo-400 font-bold flex items-center gap-1">
+                                <p className="text-indigo-300/80 text-[9px] font-medium uppercase tracking-widest mb-1">Gross Revenue</p>
+                                <h3 className="text-2xl font-bold text-white tabular-nums">₹{grossSales.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
+                                <p className="mt-2 text-[10px] text-indigo-400 font-medium flex items-center gap-1">
                                     <FiTrendingUp size={10} /> Insights Active
                                 </p>
                             </div>
@@ -188,34 +188,34 @@ export default function SalesPerformance() {
                         </div>
 
                         <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all hover:translate-y-[-2px]">
-                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest mb-1">Net Revenue</p>
-                            <h3 className="text-2xl font-black text-slate-900 tabular-nums">₹{netRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
-                            <div className="mt-2 text-[10px] font-bold text-slate-500 uppercase">After Returns & Cancellations</div>
+                            <p className="text-slate-400 text-[9px] font-medium uppercase tracking-widest mb-1">Net Revenue</p>
+                            <h3 className="text-2xl font-bold text-slate-900 tabular-nums">₹{netRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
+                            <div className="mt-2 text-[10px] font-medium text-slate-500 uppercase">After Returns & Cancellations</div>
                         </div>
 
                         <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all hover:translate-y-[-2px] group">
                             <div className="flex justify-between items-start mb-1">
-                                <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest">Total Tax</p>
+                                <p className="text-slate-400 text-[9px] font-extrabold uppercase tracking-widest">Total Tax</p>
                                 <FiActivity size={12} className="text-indigo-400" />
                             </div>
-                            <h3 className="text-2xl font-black text-slate-900 tabular-nums">₹{totalTax.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
+                            <h3 className="text-2xl font-extrabold text-slate-900 tabular-nums">₹{totalTax.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
                             <p className="mt-2 text-[9px] text-slate-400 font-medium uppercase tracking-wider">GST Liability Tracked</p>
                         </div>
 
                         <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all hover:translate-y-[-2px]">
                             <div className="flex justify-between items-start mb-1">
-                                <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest">Discounts Given</p>
+                                <p className="text-slate-400 text-[9px] font-medium uppercase tracking-widest">Discounts Given</p>
                                 <FiPercent size={12} className="text-rose-400" />
                             </div>
-                            <h3 className="text-2xl font-black text-slate-900 tabular-nums">₹{totalDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
-                            <p className="mt-2 text-[9px] text-rose-500 font-black uppercase tracking-widest">Promotion Impact</p>
+                            <h3 className="text-2xl font-extrabold text-slate-900 tabular-nums">₹{totalDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
+                            <p className="mt-2 text-[9px] text-rose-500 font-medium uppercase tracking-widest">Promotion Impact</p>
                         </div>
                     </div>
 
                     {/* Charts Row */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-                            <h3 className="text-sm font-black text-slate-800 tracking-tight mb-6 uppercase">Revenue Trajectory</h3>
+                            <h3 className="text-sm font-medium text-slate-800 tracking-tight mb-6 uppercase">Revenue Trajectory</h3>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={chartData}>
@@ -236,7 +236,7 @@ export default function SalesPerformance() {
                         </div>
 
                         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col">
-                            <h3 className="text-sm font-black text-slate-800 tracking-tight mb-6 uppercase">Settlement Channels</h3>
+                            <h3 className="text-sm font-medium text-slate-800 tracking-tight mb-6 uppercase">Settlement Channels</h3>
                             <div className="flex-1 h-[250px]">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
@@ -254,8 +254,8 @@ export default function SalesPerformance() {
                     {/* Sales Man Performance Chart */}
                     <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm mb-6">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-sm font-black text-slate-800 tracking-tight uppercase">Sales Representative Performance</h3>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-50 px-2 py-1 rounded-lg">Comparative View</span>
+                            <h3 className="text-sm font-medium text-slate-800 tracking-tight uppercase">Sales Representative Performance</h3>
+                            <span className="text-[10px] font-medium text-slate-400 uppercase bg-slate-50 px-2 py-1 rounded-lg">Comparative View</span>
                         </div>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
@@ -295,19 +295,19 @@ export default function SalesPerformance() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-                            <h3 className="text-sm font-black text-slate-800 mb-6 uppercase">Elite Performing SKUs</h3>
+                            <h3 className="text-sm font-medium text-slate-800 mb-6 uppercase">Elite Performing SKUs</h3>
                             <div className="space-y-4">
                                 {sortedProducts.map((p, idx) => (
                                     <div key={idx} className="flex items-center gap-4 group">
-                                        <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-bold text-sm">
+                                        <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-medium text-sm">
                                             {idx + 1}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-xs font-black text-slate-800 mb-0.5">{p.name}</p>
-                                            <p className="text-[9px] text-slate-400 font-bold uppercase">{p.quantity} Units Sold</p>
+                                            <p className="text-xs font-medium text-slate-800 mb-0.5">{p.name}</p>
+                                            <p className="text-[9px] text-slate-400 font-medium uppercase">{p.quantity} Units Sold</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-sm font-black text-slate-900 tabular-nums">₹{p.total.toLocaleString()}</p>
+                                            <p className="text-sm font-extrabold text-slate-900 tabular-nums">₹{p.total.toLocaleString()}</p>
                                             <div className="w-24 h-1.5 bg-slate-100 rounded-full mt-1.5 overflow-hidden">
                                                 <div className="h-full bg-primary" style={{ backgroundColor: theme.primaryColor, width: `${sortedProducts[0].total > 0 ? (p.total / sortedProducts[0].total) * 100 : 0}%` }}></div>
                                             </div>
@@ -319,20 +319,20 @@ export default function SalesPerformance() {
                         </div>
 
                         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-                            <h3 className="text-sm font-black text-slate-800 mb-6 flex items-center gap-2 uppercase">
+                            <h3 className="text-sm font-medium text-slate-800 mb-6 flex items-center gap-2 uppercase">
                                 <FiDollarSign className="text-amber-500" /> Cashflow Liquidity
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {paymentSummary.map(ps => (
                                     <div key={ps.method} className="bg-slate-50 p-4 rounded-xl border border-transparent hover:border-indigo-100 transition-all">
                                         <div className="flex justify-between items-start mb-2">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase">{ps.method}</p>
+                                            <p className="text-[10px] font-medium text-slate-400 uppercase">{ps.method}</p>
                                             <FiPieChart size={12} className="text-slate-200" />
                                         </div>
-                                        <p className="text-lg font-black text-slate-900 tabular-nums">₹{ps.net.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
+                                        <p className="text-lg font-medium text-slate-900 tabular-nums">₹{ps.net.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
                                         <div className="flex justify-between items-center pt-2 mt-2 border-t border-slate-200/50">
-                                            <span className="text-[9px] font-black text-emerald-500 uppercase">+{ps.receipts.toLocaleString()}</span>
-                                            <span className="text-[9px] font-black text-rose-400 uppercase">-{ps.payments.toLocaleString()}</span>
+                                            <span className="text-[9px] font-medium text-emerald-500 uppercase">+{ps.receipts.toLocaleString()}</span>
+                                            <span className="text-[9px] font-medium text-rose-400 uppercase">-{ps.payments.toLocaleString()}</span>
                                         </div>
                                     </div>
                                 ))}

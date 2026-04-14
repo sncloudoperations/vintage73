@@ -104,7 +104,7 @@ export default function CRMTasks() {
         <div className="p-8 max-w-5xl mx-auto">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-800 tracking-tight">Tasks</h1>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Tasks</h1>
                     <p className="text-slate-500 mt-1 font-medium">Manage your activities</p>
                 </div>
                 <button
@@ -113,7 +113,7 @@ export default function CRMTasks() {
                         setForm({ title: '', dueDate: '', priority: 'MEDIUM', description: '', leadId: '', dealId: '', assignedTo: '', status: 'PENDING' });
                         setShowModal(true);
                     }}
-                    className="flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-900/20"
+                    className="flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl font-medium hover:bg-slate-800 transition shadow-lg shadow-slate-900/20"
                 >
                     <FiPlus /> Add Task
                 </button>
@@ -134,8 +134,8 @@ export default function CRMTasks() {
 
                         <div className="flex-1 cursor-pointer" onClick={() => handleEdit(task)}>
                             <div className="flex justify-between items-start">
-                                <h3 className={`font-bold text-slate-800 ${task.status === 'COMPLETED' ? 'line-through text-slate-400' : ''}`}>{task.title}</h3>
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${priorityColors[task.priority]}`}>
+                                <h3 className={`font-semibold text-slate-800 ${task.status === 'COMPLETED' ? 'line-through text-slate-400' : ''}`}>{task.title}</h3>
+                                <span className={`text-[10px] font-medium px-2 py-0.5 rounded border uppercase tracking-wider ${priorityColors[task.priority]}`}>
                                     {task.priority}
                                 </span>
                             </div>
@@ -175,22 +175,22 @@ export default function CRMTasks() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                            <h2 className="text-xl font-black text-slate-800">{editingId ? 'Edit Task' : 'New Task'}</h2>
-                            <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 font-bold">Close</button>
+                            <h2 className="text-xl font-bold text-slate-800">{editingId ? 'Edit Task' : 'New Task'}</h2>
+                            <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 font-medium">Close</button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Task Title</label>
+                                <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Task Title</label>
                                 <input required className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Call Client" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Due Date</label>
+                                    <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Due Date</label>
                                     <input type="date" className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.dueDate} onChange={e => setForm({ ...form, dueDate: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Priority</label>
+                                    <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Priority</label>
                                     <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}>
                                         <option value="LOW">Low</option>
                                         <option value="MEDIUM">Medium</option>
@@ -200,7 +200,7 @@ export default function CRMTasks() {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Related To</label>
+                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Related To</label>
                                 <div className="grid grid-cols-2 gap-4">
                                     <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.leadId} onChange={e => setForm({ ...form, leadId: e.target.value, dealId: '' })}>
                                         <option value="">Select Lead</option>
@@ -219,7 +219,7 @@ export default function CRMTasks() {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Assigned To</label>
+                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Assigned To</label>
                                 <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.assignedTo} onChange={e => setForm({ ...form, assignedTo: e.target.value })}>
                                     <option value="">Unassigned</option>
                                     {users.map(u => (
@@ -229,11 +229,11 @@ export default function CRMTasks() {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Description</label>
+                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Description</label>
                                 <textarea className="input w-full bg-slate-50 border-transparent focus:bg-white h-20" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}></textarea>
                             </div>
 
-                            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-dark transition">
+                            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-primary-dark transition">
                                 {editingId ? 'Update Task' : 'Create Task'}
                             </button>
                         </form>

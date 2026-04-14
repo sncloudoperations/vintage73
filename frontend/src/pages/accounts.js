@@ -104,7 +104,7 @@ export default function Accounts() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Accounts & Ledger</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">Accounts & Ledger</h1>
           <p className="text-slate-500 text-sm mt-1">Manage finances, expenses, and transaction logs</p>
         </div>
         <div className="flex items-center gap-4">
@@ -149,13 +149,13 @@ export default function Accounts() {
               {/* Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <div className="bg-primary-light/10 p-6 rounded-2xl border border-primary/20">
-                  <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1">Total Receivables</p>
-                  <p className="text-3xl font-black text-primary-dark">₹{outstandingData.customers.reduce((s, c) => s + c.totalBalance, 0).toFixed(2)}</p>
+                  <p className="text-xs font-medium text-primary uppercase tracking-widest mb-1">Total Receivables</p>
+                  <p className="text-3xl font-extrabold text-primary-dark">₹{outstandingData.customers.reduce((s, c) => s + c.totalBalance, 0).toFixed(2)}</p>
                   <p className="text-[10px] text-primary/80 mt-2 font-medium">From {outstandingData.customers.length} Customers</p>
                 </div>
                 <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
-                  <p className="text-xs font-bold text-red-600 uppercase tracking-widest mb-1">Total Payables</p>
-                  <p className="text-3xl font-black text-red-700">₹{outstandingData.suppliers.reduce((s, p) => s + p.totalBalance, 0).toFixed(2)}</p>
+                  <p className="text-xs font-medium text-red-600 uppercase tracking-widest mb-1">Total Payables</p>
+                  <p className="text-3xl font-extrabold text-red-700">₹{outstandingData.suppliers.reduce((s, p) => s + p.totalBalance, 0).toFixed(2)}</p>
                   <p className="text-[10px] text-red-500 mt-2 font-medium">To {outstandingData.suppliers.length} Suppliers</p>
                 </div>
               </div>
@@ -163,17 +163,17 @@ export default function Accounts() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Customer Dues */}
                 <div>
-                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <h3 className="text-sm font-medium text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                     <span className="w-2 h-2 bg-primary rounded-full"></span> Customer Receivables
                   </h3>
                   <div className="space-y-3">
                     {outstandingData.customers.map(c => (
                       <div key={c.id} className="p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <div className="flex justify-between items-start mb-2">
-                          <span className="font-bold text-slate-800">{c.name}</span>
-                          <span className="text-primary font-black text-lg">₹{c.totalBalance.toFixed(2)}</span>
+                          <span className="font-medium text-slate-800">{c.name}</span>
+                          <span className="text-primary font-extrabold text-lg">₹{c.totalBalance.toFixed(2)}</span>
                         </div>
-                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                        <div className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">
                           {c.items.length} Invoices Pending
                         </div>
                       </div>
@@ -189,17 +189,17 @@ export default function Accounts() {
 
                 {/* Supplier Payables */}
                 <div>
-                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <h3 className="text-sm font-medium text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                     <span className="w-2 h-2 bg-red-500 rounded-full"></span> Supplier Payables
                   </h3>
                   <div className="space-y-3">
                     {outstandingData.suppliers.map(s => (
                       <div key={s.id} className="p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <div className="flex justify-between items-start mb-2">
-                          <span className="font-bold text-slate-800">{s.name}</span>
-                          <span className="text-red-600 font-black text-lg">{companyProfile?.currencySymbol || '₹'}{s.totalBalance.toFixed(2)}</span>
+                          <span className="font-medium text-slate-800">{s.name}</span>
+                          <span className="text-red-600 font-extrabold text-lg">{companyProfile?.currencySymbol || '₹'}{s.totalBalance.toFixed(2)}</span>
                         </div>
-                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                        <div className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">
                           {s.items.length} Purchases Unpaid
                         </div>
                       </div>
@@ -231,14 +231,14 @@ export default function Accounts() {
                     <td className="text-slate-600 font-medium">{new Date(t.date || t.createdAt).toLocaleDateString()}</td>
                     <td className="text-slate-800">
                       <div>{t.description || t.notes || '-'}</div>
-                      {t.reference && <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{t.reference}</div>}
+                      {t.reference && <div className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">{t.reference}</div>}
                     </td>
                     <td>
                       <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs">
                         {t.category || t.method || 'General'}
                       </span>
                     </td>
-                    <td className={`text-right font-bold ${activeTab === 'receipts' ? 'text-primary' : 'text-red-500'}`}>
+                    <td className={`text-right font-medium ${activeTab === 'receipts' ? 'text-primary' : 'text-red-500'}`}>
                       {activeTab === 'receipts' ? '+' : '-'} ₹ {parseFloat(t.amount).toFixed(2)}
                     </td>
                     <td className="text-right">
@@ -260,7 +260,7 @@ export default function Accounts() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-slate-800 capitalize">Add {activeTab === 'receipts' ? 'Receipt' : activeTab.slice(0, -1)}</h2>
+              <h2 className="text-xl font-semibold text-slate-800 capitalize">Add {activeTab === 'receipts' ? 'Receipt' : activeTab.slice(0, -1)}</h2>
               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">&times;</button>
             </div>
 

@@ -97,7 +97,7 @@ export default function CurrentStockBalance() {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Current Stock Balance</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800">Current Stock Balance</h1>
                     <p className="text-slate-500 text-sm mt-1">{filteredStocks.length} products listed</p>
                 </div>
                 <div className="flex gap-3">
@@ -162,7 +162,7 @@ export default function CurrentStockBalance() {
             ) : (
                 <div className="card shadow-md border border-slate-200 overflow-hidden" ref={componentRef}>
                     <div className="p-8 hidden print:block border-b-2 border-slate-200">
-                        <h2 className="text-2xl font-bold text-slate-800">Current Stock Balance</h2>
+                        <h2 className="text-2xl font-semibold text-slate-800">Current Stock Balance</h2>
                         <p className="text-slate-500">As of {new Date().toLocaleDateString()}</p>
                         <p className="text-sm mt-2 font-semibold">
                             Branch: {selectedBranch === 'all' ? 'All Branches' : branches.find(b => b.id.toString() === selectedBranch)?.name || 'N/A'}
@@ -200,7 +200,7 @@ export default function CurrentStockBalance() {
                                                     <div className="text-[10px] text-slate-400">ID: {item.productId}</div>
                                                 </td>
                                                 <td>
-                                                    <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase">
+                                                    <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-medium uppercase">
                                                         {item.category}
                                                     </span>
                                                 </td>
@@ -212,16 +212,16 @@ export default function CurrentStockBalance() {
                                                 </td>
                                                 <td className="text-center">
                                                     {isLow ? (
-                                                        <span className="inline-flex items-center gap-1 text-red-600 font-bold text-[10px] uppercase bg-red-50 px-2 py-0.5 rounded border border-red-100">
+                                                        <span className="inline-flex items-center gap-1 text-red-600 font-medium text-[10px] uppercase bg-red-50 px-2 py-0.5 rounded border border-red-100">
                                                             <FiAlertTriangle size={10} /> Low
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-flex items-center gap-1 text-emerald-600 font-bold text-[10px] uppercase bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                                                        <span className="inline-flex items-center gap-1 text-emerald-600 font-medium text-[10px] uppercase bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
                                                             <FiCheckCircle size={10} /> Healthy
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td className="text-right font-bold text-slate-900 pr-4">
+                                                <td className="text-right font-medium text-slate-900 pr-4">
                                                     <span className={isLow ? 'text-red-600 focus:ring-red-100' : ''}>
                                                         {item.quantity.toLocaleString()}
                                                     </span>
@@ -242,13 +242,13 @@ export default function CurrentStockBalance() {
                         <div className="flex gap-8 text-sm">
                             <div className="flex items-center gap-2">
                                 <span className="text-slate-500">Low Stock Items:</span>
-                                <span className="font-bold text-red-600">
+                                <span className="font-medium text-red-600">
                                     {filteredStocks.filter(s => s.quantity <= s.minStock).length}
                                 </span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <span className="text-slate-500 font-medium">Total Inventory Count:</span>
-                                <span className="font-bold text-slate-800 text-lg" style={{ color: theme.primaryColor }}>
+                                <span className="font-medium text-slate-800 text-lg" style={{ color: theme.primaryColor }}>
                                     {filteredStocks.reduce((sum, s) => sum + s.quantity, 0).toLocaleString()}
                                 </span>
                             </div>

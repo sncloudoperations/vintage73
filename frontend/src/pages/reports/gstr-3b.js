@@ -59,7 +59,7 @@ export default function GSTR3BReport() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">GSTR-3B Report</h1>
+                        <h1 className="text-2xl font-semibold text-slate-800">GSTR-3B Report</h1>
                         <p className="text-slate-500 text-sm">Monthly Return Summary</p>
                     </div>
 
@@ -123,7 +123,7 @@ export default function GSTR3BReport() {
                 {/* 3.1 Details of Outward Supplies */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
                     <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
-                        <h3 className="font-bold text-slate-700">3.1 Details of Outward Supplies and inward supplies liable to reverse charge</h3>
+                        <h3 className="font-medium text-slate-700">3.1 Details of Outward Supplies and inward supplies liable to reverse charge</h3>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="table-modern">
@@ -178,7 +178,7 @@ export default function GSTR3BReport() {
                                     <td>-</td>
                                     <td>-</td>
                                 </tr>
-                                <tr className="bg-slate-50 font-bold">
+                                <tr className="bg-slate-50 font-medium">
                                     <td>Total</td>
                                     <td>{formatCurrency(outwardSupplies?.taxableValue)}</td>
                                     <td>{formatCurrency(outwardSupplies?.igst)}</td>
