@@ -202,7 +202,7 @@ export default function InvoicesList() {
                         ) : filteredInvoices.map((inv) => (
                             <tr key={inv.id} className="hover:bg-slate-50 transition-colors">
                                 <td className="px-6 py-4 text-sm text-slate-600">
-                                    {new Date(inv.saleDate).toLocaleDateString('en-GB')}
+                                    {new Date(inv.createdAt || inv.saleDate).toLocaleDateString('en-GB')}
                                 </td>
                                 <td className="px-6 py-4 text-sm font-bold text-primary">
                                     {inv.invoiceNumber}
