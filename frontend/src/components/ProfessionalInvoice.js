@@ -46,8 +46,9 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     const companyBank = companyProfile?.bank || null;
     const companyBankHolder = companyProfile?.companyName || '';
 
-    // Use saleDate; fallback to createdAt if missing
-    const invoiceDate = saleDate || createdAt || null;
+    // Use createdAt (server timestamp, always accurate) as primary;
+    // fallback to saleDate if createdAt is missing
+    const invoiceDate = createdAt || saleDate || null;
 
     const currentSymbol = currencySymbol || '₹';
     const settings = printData.settings || {};
@@ -326,7 +327,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
 
             {/* BANK DETAILS (Separate Section) */}
             {settings.showBankDetails !== false && companyBank && (companyBank.name || companyBank.accountNumber) && (
-                <div className={`mb-6 p-4 bg-[#f8fafc] border border-slate-200 rounded-lg max-w-sm ${isBold || isModern ? 'border-t-[3px]' : ''}`} style={isBold || isModern ? { borderTopColor: accent } : {}}>
+                <div className={`mb-6 p-4 bg-[#f8fafc] border border-slate-200 rounded-lg max-w-sm ${isBold || isModern ? 'border-t-[3px]' : ''}`} style={{ ...(isBold || isModern ? { borderTopColor: accent } : {}), pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                     <p className={`${s_SecHead} mb-3 font-semibold tracking-wide`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>BANK DETAILS</p>
                     <div className="space-y-2 text-[11px]">
                         {companyBank.name && (
