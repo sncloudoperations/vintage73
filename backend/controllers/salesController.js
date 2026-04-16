@@ -6,7 +6,7 @@ const { generateNextNumber } = require('../services/numberingService');
 // Create new sale
 exports.createSale = asyncHandler(async (req, res) => {
   const { 
-    customerId, items, paymentMethod, paidAmount, discount = 0, saleDate, salesmanId, 
+    customerId, items, paymentMethod, paidAmount, discount = 0, advanceRedeemed = 0, saleDate, salesmanId, 
     terminalId, isReturn = false, returnReason = '', originalInvoice = '',
     currencyCode = 'INR', exchangeRate = 1.0 
   } = req.body;
@@ -148,10 +148,55 @@ exports.createSale = asyncHandler(async (req, res) => {
     const finalDiscount = Math.max(parseFloat(discount || 0), totalItemsDiscount);
     const finalRoundOffAmount = parseFloat(req.body.roundOffAmount || 0);
 
-    // Explicit Calculation Logic: Total = Subtotal + Tax + RoundOff
-    // Note: finalSubTotal is already Net (derived from UnitPrice - DiscountAmount)
+    const reqAdvanceUsed = parseFloat(advanceRedeemed || 0);
+
+    // Explicit Calculation Logic: Total = Subtotal + Tax + RoundOff (Gross)
     const grandTotal = finalSubTotal + finalTaxAmount + finalRoundOffAmount;
     const finalGrandTotal = Number(grandTotal.toFixed(2));
+
+    if (finalGrandTotal < 0) {
+      throw new Error('Total Amount cannot be negative. Check advance or discounts.');
+    }
+
+    // Invoice Numbering
+    const { number: genInvNo, nextSeq, financialYearId } = await generateNextNumber(tx, 'invoice', validBranchId, saleDate);
+    if (financialYearId) {
+      await tx.financialYear.update({ where: { id: financialYearId }, data: { invoiceSequence: nextSeq } });
+    }
+
+    if (reqAdvanceUsed > 0 && customer?.id) {
+       // Validate against customer advance
+       const advance = await tx.advance.findUnique({
+          where: { customerId: customer.id }
+       });
+       
+       const totalAvailable = Number(advance?.balance || 0);
+       if (totalAvailable < reqAdvanceUsed) {
+          throw new Error(`Insufficient advance balance. Available: ${totalAvailable}`);
+       }
+       
+       // Update the single advance row
+       const updatedAdvance = await tx.advance.update({
+          where: { id: advance.id },
+          data: {
+            usedAmount: { increment: reqAdvanceUsed },
+            balance: { decrement: reqAdvanceUsed }
+          }
+       });
+
+       // Create History record
+       await tx.advanceHistory.create({
+          data: {
+             customerId: customer.id,
+             advanceId: advance.id,
+             action: 'REDEEM',
+             amount: reqAdvanceUsed,
+             balanceAfter: Number(updatedAdvance.balance),
+             reference: `Redeemed in Invoice #${genInvNo}`
+          }
+       });
+    }
+
     const finalPaidAmount = parseFloat(paidAmount || 0);
 
     // Incentive
@@ -161,12 +206,6 @@ exports.createSale = asyncHandler(async (req, res) => {
       if (salesman?.incentivePercentage > 0) {
         incentiveAmount = (finalGrandTotal * parseFloat(salesman.incentivePercentage)) / 100;
       }
-    }
-
-    // Invoice Numbering
-    const { number: genInvNo, nextSeq, financialYearId } = await generateNextNumber(tx, 'invoice', validBranchId, saleDate);
-    if (financialYearId) {
-      await tx.financialYear.update({ where: { id: financialYearId }, data: { invoiceSequence: nextSeq } });
     }
 
     const sale = await tx.sale.create({
@@ -179,14 +218,15 @@ exports.createSale = asyncHandler(async (req, res) => {
         taxAmount: finalTaxAmount,
         totalAmount: finalGrandTotal,
         roundOffAmount: finalRoundOffAmount,
+        advanceUsed: reqAdvanceUsed,
         paidAmount: finalPaidAmount,
-        balanceAmount: finalGrandTotal - finalPaidAmount,
+        balanceAmount: finalGrandTotal - finalPaidAmount - reqAdvanceUsed,
         saleDate: saleDate ? new Date(saleDate) : new Date(),
         branchId: validBranchId,
         salesmanId: salesmanId ? parseInt(salesmanId) : null,
         terminalId: terminalId ? parseInt(terminalId) : null,
         incentiveAmount,
-        status: (finalGrandTotal - finalPaidAmount) > 0.5 ? 'partial' : 'completed',
+        status: (finalGrandTotal - finalPaidAmount - reqAdvanceUsed) > 0.5 ? 'partial' : 'completed',
         financialYearId,
         isInvoice: !isReturn,
         isReturn,

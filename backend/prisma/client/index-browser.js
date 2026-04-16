@@ -194,6 +194,28 @@ exports.Prisma.CustomerScalarFieldEnum = {
   branchId: 'branchId'
 };
 
+exports.Prisma.AdvanceScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  totalAmount: 'totalAmount',
+  usedAmount: 'usedAmount',
+  balance: 'balance',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  notes: 'notes'
+};
+
+exports.Prisma.AdvanceHistoryScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  advanceId: 'advanceId',
+  action: 'action',
+  amount: 'amount',
+  balanceAfter: 'balanceAfter',
+  reference: 'reference',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SupplierScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -282,6 +304,7 @@ exports.Prisma.SaleScalarFieldEnum = {
   totalAmount: 'totalAmount',
   roundOffAmount: 'roundOffAmount',
   discount: 'discount',
+  advanceUsed: 'advanceUsed',
   paymentMethod: 'paymentMethod',
   status: 'status',
   isReturn: 'isReturn',
@@ -971,6 +994,8 @@ exports.Prisma.ModelName = {
   CompanyProfile: 'CompanyProfile',
   State: 'State',
   Customer: 'Customer',
+  Advance: 'Advance',
+  AdvanceHistory: 'AdvanceHistory',
   Supplier: 'Supplier',
   Category: 'Category',
   Product: 'Product',

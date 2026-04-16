@@ -39,7 +39,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     const {
         invoiceNumber, saleDate, createdAt, items, subTotal, taxAmount, totalAmount, roundOffAmount,
         customer, customerName, previousBalance, currentBalance, placeOfSupply,
-        currencyCode, currencySymbol, exchangeRate, discount
+        currencyCode, currencySymbol, exchangeRate, discount, advanceUsed
     } = printData;
 
     // Bank details come from Company Profile → default selected bank
@@ -319,11 +319,26 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                                 <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(taxAmount)}</span>
                             </div>
                         )}
+                        {advanceUsed > 0 && (
+                            <div className="flex justify-between text-emerald-500 text-[11px] font-medium tracking-tight">
+                                <span>Advance Redeemed</span>
+                                <span className="font-semibold">- {currentSymbol}{formatAmt(advanceUsed)}</span>
+                            </div>
+                        )}
                     </div>
                     <div className={`pt-2.5 border-t border-slate-200/50 flex justify-between items-center mt-1`}>
-                        <span className="font-medium uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>GRAND TOTAL</span>
-                        <span className="font-medium text-[16px] tracking-tighter" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>{currentSymbol}{formatAmt(totalAmount)}</span>
+                        <span className="font-medium uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>
+                            {advanceUsed > 0 ? 'PAYABLE AMOUNT' : 'GRAND TOTAL'}
+                        </span>
+                        <span className="font-bold text-[18px] tracking-tighter" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>
+                            {currentSymbol}{formatAmt(Number(totalAmount) - Number(advanceUsed || 0))}
+                        </span>
                     </div>
+                    {advanceUsed > 0 && (
+                        <div className="mt-1 text-right italic text-[9px] text-slate-400">
+                            (Bill Total: {currentSymbol}{formatAmt(totalAmount)})
+                        </div>
+                    )}
                 </div>
             </div>
 

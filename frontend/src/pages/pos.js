@@ -1,6 +1,6 @@
 
 import { useRouter } from 'next/router';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '@/lib/api';
 import { FiSearch, FiUser, FiX, FiPlus, FiTrash2, FiCreditCard, FiMonitor, FiShoppingCart, FiClock, FiCalendar, FiEdit2, FiAlertCircle } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
@@ -98,6 +98,9 @@ const CURRENCY_SYMBOLS = {
     const [returnSettings, setReturnSettings] = useState(null);
     const [companyProfile, setCompanyProfile] = useState(null);
     const [customerBalance, setCustomerBalance] = useState(0);
+    const [availableAdvance, setAvailableAdvance] = useState(0);
+    const [advanceRedeemed, setAdvanceRedeemed] = useState('');
+    const [useFullAdvance, setUseFullAdvance] = useState(false);
     const [cashier, setCashier] = useState(null);
     const [sessionTime, setSessionTime] = useState('');
 
@@ -146,11 +149,80 @@ const CURRENCY_SYMBOLS = {
                 taxEnabled,
                 currencyCode,
                 currencySymbol,
-                exchangeRate
+                exchangeRate,
+                advanceRedeemed
             };
             localStorage.setItem(`pos_state_${user.id}`, JSON.stringify(stateToStore));
         }
-    }, [cart, customerId, customerName, salesmanId, saleDate, roundOff, user?.id]);
+    }, [cart, customerId, customerName, salesmanId, saleDate, roundOff, advanceRedeemed, user?.id]);
+
+    // Calculations
+    const calcResults = useMemo(() => {
+        return cart.reduce((acc, item) => {
+            // Base Unit Price in INR
+            const basePrice = parseFloat(item.price || 0);
+            // Converted Unit Price
+            const price = basePrice * (exchangeRate || 1);
+            
+            const qty = parseFloat(item.quantity || 0);
+            
+            // Base Discount in INR converted to current currency
+            const disc = parseFloat(item.discountAmount || 0) * (exchangeRate || 1);
+            
+            const rate = taxEnabled ? parseFloat(item.taxRate || 0) : 0; 
+            const isInc = item.isTaxInclusive === true;
+
+            // Net Price = Converted Price - Converted Discount
+            const netPricePerUnit = price - disc;
+
+            let lineTax = 0;
+            let lineSubTotal = 0; // Exclusive of tax
+
+            // Total for line before splitting tax
+            const lineTotalPayable = qty * netPricePerUnit;
+
+            if (isInc && rate > 0) {
+                const baseAmount = lineTotalPayable / (1 + (rate / 100)); 
+                lineTax = lineTotalPayable - baseAmount;
+                lineSubTotal = baseAmount;
+            } else if (rate > 0) {
+                lineSubTotal = lineTotalPayable;
+                lineTax = (lineTotalPayable * rate) / 100;
+            } else {
+                lineSubTotal = lineTotalPayable;
+                lineTax = 0;
+            }
+
+            return {
+                subTotal: acc.subTotal + lineSubTotal,
+                tax: acc.tax + lineTax
+            };
+        }, { subTotal: 0, tax: 0 });
+    }, [cart, taxEnabled, exchangeRate]);
+
+    useEffect(() => {
+        if (customerId) {
+            api.get(`/advances/customer/${customerId}`)
+                .then(res => setAvailableAdvance(res.data.availableAdvance || 0))
+                .catch(console.error);
+        } else {
+            setAvailableAdvance(0);
+            setAdvanceRedeemed('');
+            setUseFullAdvance(false);
+        }
+    }, [customerId]);
+
+    // Auto-fill advance if toggle is ON
+    useEffect(() => {
+        if (useFullAdvance && availableAdvance > 0) {
+            const payableBeforeAdvance = (calcResults.subTotal + calcResults.tax + parseFloat(roundOff || 0));
+            const toRedeem = Math.min(availableAdvance, payableBeforeAdvance);
+            setAdvanceRedeemed(toRedeem.toFixed(2));
+        } else if (useFullAdvance && availableAdvance === 0) {
+            setAdvanceRedeemed('');
+            setUseFullAdvance(false);
+        }
+    }, [useFullAdvance, availableAdvance, calcResults.subTotal, calcResults.tax, roundOff]);
 
     const fetchData = async () => {
         try {
@@ -480,51 +552,15 @@ const CURRENCY_SYMBOLS = {
     };
 
     // Calculations
-    // Calculations
-    const calcResults = cart.reduce((acc, item) => {
-        // Base Unit Price in INR
-        const basePrice = parseFloat(item.price || 0);
-        // Converted Unit Price
-        const price = basePrice * exchangeRate;
-        
-        const qty = parseFloat(item.quantity || 0);
-        
-        // Base Discount in INR converted to current currency
-        const disc = parseFloat(item.discountAmount || 0) * exchangeRate;
-        
-        const rate = taxEnabled ? parseFloat(item.taxRate || 0) : 0; 
-        const isInc = item.isTaxInclusive === true;
 
-        // Net Price = Converted Price - Converted Discount
-        const netPricePerUnit = price - disc;
-
-        let lineTax = 0;
-        let lineSubTotal = 0; // Exclusive of tax
-
-        // Total for line before splitting tax
-        const lineTotalPayable = qty * netPricePerUnit;
-
-        if (isInc && rate > 0) {
-            const baseAmount = lineTotalPayable / (1 + (rate / 100)); 
-            lineTax = lineTotalPayable - baseAmount;
-            lineSubTotal = baseAmount;
-        } else if (rate > 0) {
-            lineSubTotal = lineTotalPayable;
-            lineTax = (lineTotalPayable * rate) / 100;
-        } else {
-            lineSubTotal = lineTotalPayable;
-            lineTax = 0;
-        }
-
-        return {
-            subTotal: acc.subTotal + lineSubTotal,
-            tax: acc.tax + lineTax
-        };
-    }, { subTotal: 0, tax: 0 });
 
     const { subTotal, tax } = calcResults;
     const totalBeforeRound = subTotal + tax;
+    const redeemedAmount = parseFloat(advanceRedeemed || 0);
+    // 'total' is now the Gross Bill Amount (Sub + Tax + RoundOff)
     const total = totalBeforeRound + parseFloat(roundOff || 0);
+    // 'finalPayable' is what the customer actually pays now
+    const finalPayable = Math.max(0, total - redeemedAmount);
     // Use the state currencySymbol instead of redeclaring
 
     // Auto Round Function
@@ -596,7 +632,7 @@ const CURRENCY_SYMBOLS = {
     const initiateCheckout = () => {
         if (cart.length === 0) { toast.error("Cart is empty"); return; }
         // Validation removed to allow Walk-in customers
-        setPaymentData({ ...paymentData, paidAmount: total.toFixed(2), method: 'Cash' });
+        setPaymentData({ ...paymentData, paidAmount: finalPayable.toFixed(2), method: 'Cash' });
         setAddedPayments([]); // Reset split payments
         // Auto-select logged in user as salesman if not already selected?
         if (!salesmanId && cashier) setSalesmanId(cashier.id);
@@ -613,7 +649,7 @@ const CURRENCY_SYMBOLS = {
 
         // Calc remaining
         const totalPaidSoFar = updatedList.reduce((sum, p) => sum + p.amount, 0);
-        const remaining = total - totalPaidSoFar;
+        const remaining = finalPayable - totalPaidSoFar;
         setPaymentData({
             ...paymentData,
             paidAmount: remaining > 0 ? remaining.toFixed(2) : '0',
@@ -629,7 +665,7 @@ const CURRENCY_SYMBOLS = {
         const totalPaidSoFar = updatedList.reduce((sum, p) => sum + p.amount, 0);
         setPaymentData({
             ...paymentData,
-            paidAmount: (total - totalPaidSoFar).toFixed(2)
+            paidAmount: (finalPayable - totalPaidSoFar).toFixed(2)
         });
     };
 
@@ -666,8 +702,8 @@ const CURRENCY_SYMBOLS = {
 
             // Basic Total Validation (Optional: warn if underpaid? Logic handled in backend status)
             // Check Overpayment
-            if (finalPaidAmount > total + 1) {
-                toast.error(`Paid amount (₹${finalPaidAmount}) cannot exceed Total (₹${total.toFixed(2)})`);
+            if (finalPaidAmount > finalPayable + 1) {
+                toast.error(`Paid amount (₹${finalPaidAmount}) cannot exceed Final Payable (₹${finalPayable.toFixed(2)})`);
                 return;
             }
 
@@ -703,6 +739,7 @@ const CURRENCY_SYMBOLS = {
                 paidAmount: finalPaidAmount,
                 terminalId: terminal?.id,
                 roundOffAmount: roundOff,
+                advanceRedeemed: parseFloat(advanceRedeemed || 0),
                 payments: finalPayments,
                 salesmanId: salesmanId ? parseInt(salesmanId) : null,
                 currencyCode,
@@ -969,12 +1006,43 @@ const CURRENCY_SYMBOLS = {
                         </div>
                     </div>
 
-                    {/* Options Panel (Currency & Tax) */}
-                    <div className="grid grid-cols-2 gap-3 py-3 border-t border-slate-100">
-                        <div>
-                            <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1">Currency</label>
-                            <select 
-                                className="w-full h-9 bg-slate-50 border border-slate-200 rounded px-2 text-xs font-medium text-slate-700 outline-none focus:border-primary transition-all"
+                    {/* Advance Redemption (Compact Version) */}
+                    {customerId && availableAdvance > 0 && (
+                        <div className="bg-emerald-50 border border-emerald-100 rounded px-2 py-1.5 mt-1">
+                            <div className="flex justify-between items-center h-5">
+                                <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Advance: {currencySymbol}{availableAdvance.toFixed(2)}</span>
+                                <div className="flex items-center gap-1.5 scale-90 origin-right">
+                                    <span className="text-[9px] font-bold text-slate-500 uppercase">Use Full</span>
+                                    <input 
+                                        type="checkbox" 
+                                        className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
+                                        checked={useFullAdvance}
+                                        onChange={(e) => setUseFullAdvance(e.target.checked)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center mt-1 pt-1 border-t border-emerald-100/50">
+                                <span className="text-[9px] font-bold text-slate-500 uppercase italic">Redeem Amount</span>
+                                <input
+                                    type="number"
+                                    className={`w-20 text-right bg-white border border-emerald-200 rounded outline-none focus:border-emerald-500 text-xs font-bold px-1 py-0 ${useFullAdvance ? 'opacity-50 pointer-events-none' : ''}`}
+                                    placeholder="0.00"
+                                    value={advanceRedeemed}
+                                    onChange={(e) => {
+                                        let val = parseFloat(e.target.value) || 0;
+                                        if (val > availableAdvance) val = availableAdvance;
+                                        setAdvanceRedeemed(e.target.value === '' ? '' : val);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Options Panel (More Compact) */}
+                    <div className="grid grid-cols-2 gap-2 h-7 mt-0.5">
+                        <div className="flex items-center gap-2">
+                             <select 
+                                className="w-full h-8 bg-slate-50 border border-slate-200 rounded px-1.5 text-[10px] font-bold text-slate-700 outline-none focus:border-primary transition-all"
                                 value={currencyCode}
                                 onChange={(e) => {
                                     const code = e.target.value;
@@ -989,17 +1057,16 @@ const CURRENCY_SYMBOLS = {
                                 <option value="EUR">EUR (€)</option>
                             </select>
                         </div>
-                        <div>
-                            <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1">Tax Calculation</label>
+                        <div className="flex items-center gap-2">
                             <button 
                                 onClick={() => setTaxEnabled(!taxEnabled)}
-                                className={`w-full h-9 rounded font-medium text-xs transition-all flex items-center justify-center gap-2 border ${
+                                className={`w-full h-8 rounded font-bold text-[9px] uppercase transition-all flex items-center justify-center gap-1.5 border ${
                                     taxEnabled 
-                                    ? 'bg-primary/10 text-primary border-primary/20' 
+                                    ? 'bg-primary/5 text-primary border-primary/20' 
                                     : 'bg-slate-50 text-slate-400 border-slate-200'
                                 }`}
                             >
-                                <div className={`w-2 h-2 rounded-full ${taxEnabled ? 'bg-primary animate-pulse' : 'bg-slate-300'}`}></div>
+                                <div className={`w-1.5 h-1.5 rounded-full ${taxEnabled ? 'bg-primary' : 'bg-slate-300'}`}></div>
                                 TAX {taxEnabled ? 'ON' : 'OFF'}
                             </button>
                         </div>
@@ -1102,48 +1169,50 @@ const CURRENCY_SYMBOLS = {
                     )}
                 </div>
 
-                {/* Totals & Actions - Pinned Bottom */}
-                <div className="bg-slate-50 border-t border-slate-200 p-4 space-y-3">
-                    <div className="space-y-1 text-sm">
+                {/* Totals & Actions - Compacted */}
+                <div className="bg-slate-50 border-t border-slate-200 p-3 space-y-1.5">
+                    <div className="space-y-0.5 text-xs">
                         <div className="flex justify-between text-slate-500">
-                            <span>Subtotal</span>
-                            <span className="font-medium">
+                            <span className="font-medium text-[10px] uppercase">Subtotal</span>
+                            <span className="font-semibold text-slate-700">
                                 {currencyCode === 'AED' ? `${subTotal.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${subTotal.toFixed(2)}`}
                             </span>
                         </div>
                         {taxEnabled && (
-                        <div className="flex justify-between text-slate-500">
-                            <span>Tax</span>
-                            <span className="font-medium text-emerald-600">
-                                +{currencyCode === 'AED' ? `${tax.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${tax.toFixed(2)}`}
-                            </span>
-                        </div>
+                            <div className="flex justify-between text-slate-500">
+                                <span className="font-medium text-[10px] uppercase">Tax</span>
+                                <span className="font-semibold text-emerald-600">
+                                    +{currencyCode === 'AED' ? `${tax.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${tax.toFixed(2)}`}
+                                </span>
+                            </div>
                         )}
-
-                        {/* Round Off Control */}
-                        <div className="flex justify-between items-center text-slate-500">
-                            <span className="flex items-center gap-2">
-                                Round Off
-                                <button onClick={handleAutoRound} className="text-[10px] bg-slate-200 px-1.5 py-0.5 rounded hover:bg-slate-300 font-medium text-slate-600">AUTO</button>
+                        {parseFloat(advanceRedeemed || 0) > 0 && (
+                            <div className="flex justify-between items-center text-orange-600">
+                                <span className="font-bold text-[10px] uppercase">Advance</span>
+                                <span className="font-black">
+                                    -{currencySymbol}{parseFloat(advanceRedeemed).toFixed(2)}
+                                </span>
+                            </div>
+                        )}
+                        <div className="flex justify-between items-center text-slate-400 h-6">
+                            <span className="flex items-center gap-1.5 text-[9px] uppercase font-bold">
+                                Round Off <button onClick={handleAutoRound} className="text-[8px] bg-slate-200 px-1 py-0 rounded hover:bg-slate-300 font-black text-slate-600">AUTO</button>
                             </span>
                             <input
-                                className="w-20 text-right bg-transparent border-b border-dashed border-slate-300 outline-none focus:border-primary font-mono"
+                                className="w-16 text-right bg-transparent border-b border-dashed border-slate-300 outline-none focus:border-primary font-mono text-xs"
                                 value={roundOff}
                                 onChange={e => setRoundOff(e.target.value)}
                                 placeholder="0.00"
                             />
                         </div>
-
                     </div>
 
-                    <div className="flex justify-between items-end pt-2 border-t border-slate-200">
-                        <span className="text-slate-800 font-bold text-lg">Total</span>
-                        <div className="relative">
-                            <span className={`absolute top-1/2 -translate-y-1/2 font-bold text-slate-800 pointer-events-none ${currencyCode === 'AED' ? 'text-sm right-0' : 'text-3xl left-0'}`}>
-                                {currencySymbol}
-                            </span>
+                    <div className="flex justify-between items-center pt-1 border-t border-slate-200">
+                        <span className="text-slate-500 font-bold text-xs uppercase tracking-tight">Bill Total</span>
+                        <div className="relative flex items-center gap-1">
+                            <span className="text-xl font-black text-slate-800">{currencySymbol}</span>
                             <input
-                                className={`w-40 text-right text-3xl font-bold text-slate-800 bg-transparent border-b-2 border-transparent hover:border-slate-200 focus:border-primary outline-none transition-all ${currencyCode === 'AED' ? 'pr-14' : 'pl-6'}`}
+                                className="w-32 text-right text-xl font-black text-slate-800 bg-transparent outline-none"
                                 value={total.toFixed(2)}
                                 onChange={e => handleTotalChange(e.target.value)}
                                 onFocus={e => e.target.select()}
@@ -1151,12 +1220,24 @@ const CURRENCY_SYMBOLS = {
                         </div>
                     </div>
 
+                    {redeemedAmount > 0 && (
+                        <div className="flex justify-between items-center py-2 px-3 bg-emerald-600 rounded-lg text-white shadow-md">
+                            <div>
+                                <span className="block text-[8px] font-black uppercase tracking-widest opacity-80 leading-none mb-0.5">Final Payable</span>
+                                <span className="text-lg font-black leading-none tracking-tight">
+                                    {currencyCode === 'AED' ? `${finalPayable.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${finalPayable.toFixed(2)}`}
+                                </span>
+                            </div>
+                            <FiCreditCard className="opacity-40" />
+                        </div>
+                    )}
+
                     <button
                         onClick={initiateCheckout}
                         disabled={cart.length === 0}
-                        className="w-full py-4 bg-primary hover:bg-primary-dark disabled:bg-slate-300 text-white rounded-xl shadow-lg shadow-primary/20 disabled:shadow-none font-medium text-lg transition-all flex items-center justify-center gap-2"
+                        className="w-full py-2.5 bg-primary hover:bg-primary-dark disabled:bg-slate-300 text-white rounded-lg shadow-sm font-bold text-sm transition-all flex items-center justify-center gap-2"
                     >
-                        <FiMonitor /> Pay Now
+                        <FiMonitor /> {redeemedAmount > 0 ? 'Checkout' : 'Pay Now'}
                     </button>
                 </div>
             </div>
@@ -1324,6 +1405,10 @@ const CURRENCY_SYMBOLS = {
                                         <tr>
                                             <th className="p-3">Date</th>
                                             <th className="p-3">Customer</th>
+                                            <th className="p-3">Sale By</th>
+                                            <th className="p-3 text-right">Discount</th>
+                                            <th className="p-3 text-right">Tax</th>
+                                            <th className="p-3 text-right">Advance Used</th>
                                             <th className="p-3 text-right">Total</th>
                                             <th className="p-3"></th>
                                         </tr>
@@ -1336,6 +1421,10 @@ const CURRENCY_SYMBOLS = {
                                                     <p className="text-xs text-slate-400 font-mono">#{sale.invoiceNumber}</p>
                                                 </td>
                                                 <td className="p-3 text-slate-600 truncate max-w-[100px]">{sale.customer?.name || 'Walk-in'}</td>
+                                                <td className="p-3 text-slate-500">{sale.salesman?.name || '-'}</td>
+                                                <td className="p-3 text-right text-slate-500">{sale.discount > 0 ? sale.discount : '-'}</td>
+                                                <td className="p-3 text-right text-slate-500">{sale.taxAmount > 0 ? sale.taxAmount : '-'}</td>
+                                                <td className="p-3 text-right text-orange-500">{sale.advanceUsed > 0 ? sale.advanceUsed : '-'}</td>
                                                 <td className="p-3 text-right font-medium text-slate-800">
                                                     {(() => {
                                                         const sym = CURRENCY_SYMBOLS[sale.currencyCode] || '₹';
