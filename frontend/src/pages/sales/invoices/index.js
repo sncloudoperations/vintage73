@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import { FiPrinter, FiEye, FiCheckCircle, FiFileText, FiDollarSign, FiX, FiSearch, FiTrash2, FiAlertTriangle, FiEdit2 } from 'react-icons/fi';
+import { FiPrinter, FiEye, FiCheckCircle, FiFileText, FiDollarSign, FiX, FiSearch, FiTrash2, FiAlertTriangle, FiEdit2, FiClock, FiUser, FiCalendar, FiTag, FiShoppingBag, FiCreditCard } from 'react-icons/fi';
 
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
@@ -33,6 +33,10 @@ export default function InvoicesList() {
     const [selectedForDelete, setSelectedForDelete] = useState(null);
     const [deleteReason, setDeleteReason] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
+    
+    // History Modal State
+    const [showHistoryModal, setShowHistoryModal] = useState(false);
+    const [historyInvoice, setHistoryInvoice] = useState(null);
 
     useEffect(() => {
         fetchInvoices();
@@ -266,6 +270,13 @@ export default function InvoicesList() {
                                         >
                                             <FiTrash2 size={16} />
                                         </button>
+                                        <button
+                                            onClick={() => { setHistoryInvoice(inv); setShowHistoryModal(true); }}
+                                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                            title="View Invoice Details"
+                                        >
+                                            <FiClock size={16} />
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -366,7 +377,93 @@ export default function InvoicesList() {
                 </div>
             )}
 
-            {/* Off-screen container for direct/quick print — uses directPrintRef */}
+            {showHistoryModal && historyInvoice && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col">
+                        <div className="p-5 border-b flex justify-between items-center bg-slate-50/50">
+                            <div>
+                                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                    <FiClock className="text-primary" /> Invoice History
+                                </h2>
+                                <p className="text-xs text-slate-400 mt-0.5">#{historyInvoice.invoiceNumber}</p>
+                            </div>
+                            <button onClick={() => setShowHistoryModal(false)} className="w-8 h-8 rounded-full bg-white border flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors shadow-sm">&times;</button>
+                        </div>
+
+                        <div className="p-6 space-y-5 flex-1 overflow-y-auto">
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                        <FiUser size={12} /> Sale By
+                                    </label>
+                                    <p className="text-sm font-semibold text-slate-700">{historyInvoice.user?.name || historyInvoice.user?.username || 'System'}</p>
+                                </div>
+                                <div className="space-y-1 text-right">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 justify-end">
+                                        <FiCalendar size={12} /> Created At
+                                    </label>
+                                    <p className="text-sm font-semibold text-slate-700">
+                                        {new Date(historyInvoice.createdAt || historyInvoice.saleDate).toLocaleString('en-GB')}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-slate-50 rounded-xl space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-slate-500 flex items-center gap-1.5"><FiTag size={12} /> Customer</span>
+                                    <span className="text-sm font-bold text-slate-700">{historyInvoice.customer?.name || 'Walk-in'}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-slate-500 flex items-center gap-1.5"><FiShoppingBag size={12} /> Items Count</span>
+                                    <span className="text-sm font-medium text-slate-700">{historyInvoice.itemsCount || historyInvoice.items?.length || 0} Products</span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 border-t pt-4">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-slate-500">Subtotal</span>
+                                    <span className="font-semibold text-slate-700">₹{Number(historyInvoice.subTotal).toFixed(2)}</span>
+                                </div>
+                                {Number(historyInvoice.taxAmount) > 0 && (
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-slate-500">Tax Total</span>
+                                        <span className="font-semibold text-slate-700">₹{Number(historyInvoice.taxAmount).toFixed(2)}</span>
+                                    </div>
+                                )}
+                                {Number(historyInvoice.discount) > 0 && (
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-slate-500">Discount Applied</span>
+                                        <span className="font-bold text-red-500">-₹{Number(historyInvoice.discount).toFixed(2)}</span>
+                                    </div>
+                                )}
+                                {Number(historyInvoice.advanceUsed) > 0 && (
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-emerald-500 font-medium flex items-center gap-1.5"><FiCreditCard size={12} /> Advance Used</span>
+                                        <span className="font-bold text-emerald-600">-₹{Number(historyInvoice.advanceUsed).toFixed(2)}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between items-center pt-3 border-t-2 border-dashed">
+                                    <span className="font-bold text-slate-800 uppercase tracking-tight">Grand Total</span>
+                                    <span className="text-xl font-black text-primary">
+                                        {(historyInvoice.currencyCode === 'USD' ? '$' : historyInvoice.currencyCode === 'AED' ? 'د.إ' : '₹')}
+                                        {(Number(historyInvoice.totalAmount) * Number(historyInvoice.exchangeRate || 1)).toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-slate-50 border-t flex justify-end">
+                            <button 
+                                onClick={() => setShowHistoryModal(false)}
+                                className="btn btn-primary px-8 rounded-lg shadow-lg shadow-primary/20"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', pointerEvents: 'none' }}>
                 <div ref={directPrintRef}>
                     {printData && (

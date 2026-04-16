@@ -39,6 +39,16 @@ export type State = $Result.DefaultSelection<Prisma.$StatePayload>
  */
 export type Customer = $Result.DefaultSelection<Prisma.$CustomerPayload>
 /**
+ * Model Advance
+ * 
+ */
+export type Advance = $Result.DefaultSelection<Prisma.$AdvancePayload>
+/**
+ * Model AdvanceHistory
+ * 
+ */
+export type AdvanceHistory = $Result.DefaultSelection<Prisma.$AdvanceHistoryPayload>
+/**
  * Model Supplier
  * 
  */
@@ -470,6 +480,26 @@ export class PrismaClient<
     * ```
     */
   get customer(): Prisma.CustomerDelegate<ExtArgs>;
+
+  /**
+   * `prisma.advance`: Exposes CRUD operations for the **Advance** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Advances
+    * const advances = await prisma.advance.findMany()
+    * ```
+    */
+  get advance(): Prisma.AdvanceDelegate<ExtArgs>;
+
+  /**
+   * `prisma.advanceHistory`: Exposes CRUD operations for the **AdvanceHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AdvanceHistories
+    * const advanceHistories = await prisma.advanceHistory.findMany()
+    * ```
+    */
+  get advanceHistory(): Prisma.AdvanceHistoryDelegate<ExtArgs>;
 
   /**
    * `prisma.supplier`: Exposes CRUD operations for the **Supplier** model.
@@ -1465,6 +1495,8 @@ export namespace Prisma {
     CompanyProfile: 'CompanyProfile',
     State: 'State',
     Customer: 'Customer',
+    Advance: 'Advance',
+    AdvanceHistory: 'AdvanceHistory',
     Supplier: 'Supplier',
     Category: 'Category',
     Product: 'Product',
@@ -1533,7 +1565,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     meta: {
-      modelProps: 'user' | 'branch' | 'companyProfile' | 'state' | 'customer' | 'supplier' | 'category' | 'product' | 'productStock' | 'purchase' | 'purchaseItem' | 'sale' | 'saleItem' | 'expense' | 'payment' | 'quotation' | 'quotationItem' | 'stockTransfer' | 'stockTransferItem' | 'barcodeSetting' | 'employeeProfile' | 'designation' | 'department' | 'attendance' | 'leaveRequest' | 'leaveType' | 'payroll' | 'lead' | 'followUp' | 'leadActivity' | 'deal' | 'cRMTask' | 'missPunchRequest' | 'salaryAdvance' | 'accountGroup' | 'ledger' | 'transactionPosting' | 'voucher' | 'journalEntry' | 'financialYear' | 'gSTSettings' | 'deliveryChallan' | 'deliveryChallanItem' | 'bank' | 'whatsAppSetting' | 'whatsAppLog' | 'terminal' | 'systemSetting' | 'chatMessage' | 'notification' | 'workLog' | 'ticket' | 'ticketCategory' | 'ticketHistory' | 'ticketMessage' | 'ticketClosureRequest' | 'invoiceSetting'
+      modelProps: 'user' | 'branch' | 'companyProfile' | 'state' | 'customer' | 'advance' | 'advanceHistory' | 'supplier' | 'category' | 'product' | 'productStock' | 'purchase' | 'purchaseItem' | 'sale' | 'saleItem' | 'expense' | 'payment' | 'quotation' | 'quotationItem' | 'stockTransfer' | 'stockTransferItem' | 'barcodeSetting' | 'employeeProfile' | 'designation' | 'department' | 'attendance' | 'leaveRequest' | 'leaveType' | 'payroll' | 'lead' | 'followUp' | 'leadActivity' | 'deal' | 'cRMTask' | 'missPunchRequest' | 'salaryAdvance' | 'accountGroup' | 'ledger' | 'transactionPosting' | 'voucher' | 'journalEntry' | 'financialYear' | 'gSTSettings' | 'deliveryChallan' | 'deliveryChallanItem' | 'bank' | 'whatsAppSetting' | 'whatsAppLog' | 'terminal' | 'systemSetting' | 'chatMessage' | 'notification' | 'workLog' | 'ticket' | 'ticketCategory' | 'ticketHistory' | 'ticketMessage' | 'ticketClosureRequest' | 'invoiceSetting'
       txIsolationLevel: Prisma.TransactionIsolationLevel
     },
     model: {
@@ -1864,6 +1896,138 @@ export namespace Prisma {
           count: {
             args: Prisma.CustomerCountArgs<ExtArgs>,
             result: $Utils.Optional<CustomerCountAggregateOutputType> | number
+          }
+        }
+      }
+      Advance: {
+        payload: Prisma.$AdvancePayload<ExtArgs>
+        fields: Prisma.AdvanceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AdvanceFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AdvanceFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload>
+          }
+          findFirst: {
+            args: Prisma.AdvanceFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AdvanceFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload>
+          }
+          findMany: {
+            args: Prisma.AdvanceFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload>[]
+          }
+          create: {
+            args: Prisma.AdvanceCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload>
+          }
+          createMany: {
+            args: Prisma.AdvanceCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.AdvanceDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload>
+          }
+          update: {
+            args: Prisma.AdvanceUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload>
+          }
+          deleteMany: {
+            args: Prisma.AdvanceDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AdvanceUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.AdvanceUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvancePayload>
+          }
+          aggregate: {
+            args: Prisma.AdvanceAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateAdvance>
+          }
+          groupBy: {
+            args: Prisma.AdvanceGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<AdvanceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AdvanceCountArgs<ExtArgs>,
+            result: $Utils.Optional<AdvanceCountAggregateOutputType> | number
+          }
+        }
+      }
+      AdvanceHistory: {
+        payload: Prisma.$AdvanceHistoryPayload<ExtArgs>
+        fields: Prisma.AdvanceHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AdvanceHistoryFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AdvanceHistoryFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.AdvanceHistoryFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AdvanceHistoryFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.AdvanceHistoryFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.AdvanceHistoryCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.AdvanceHistoryCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.AdvanceHistoryDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload>
+          }
+          update: {
+            args: Prisma.AdvanceHistoryUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.AdvanceHistoryDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AdvanceHistoryUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.AdvanceHistoryUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$AdvanceHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.AdvanceHistoryAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateAdvanceHistory>
+          }
+          groupBy: {
+            args: Prisma.AdvanceHistoryGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<AdvanceHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AdvanceHistoryCountArgs<ExtArgs>,
+            result: $Utils.Optional<AdvanceHistoryCountAggregateOutputType> | number
           }
         }
       }
@@ -6011,6 +6175,8 @@ export namespace Prisma {
     challans: number
     quotations: number
     tickets: number
+    advances: number
+    advanceHistory: number
   }
 
   export type CustomerCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6019,6 +6185,8 @@ export namespace Prisma {
     challans?: boolean | CustomerCountOutputTypeCountChallansArgs
     quotations?: boolean | CustomerCountOutputTypeCountQuotationsArgs
     tickets?: boolean | CustomerCountOutputTypeCountTicketsArgs
+    advances?: boolean | CustomerCountOutputTypeCountAdvancesArgs
+    advanceHistory?: boolean | CustomerCountOutputTypeCountAdvanceHistoryArgs
   }
 
   // Custom InputTypes
@@ -6071,6 +6239,22 @@ export namespace Prisma {
    */
   export type CustomerCountOutputTypeCountTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TicketWhereInput
+  }
+
+
+  /**
+   * CustomerCountOutputType without action
+   */
+  export type CustomerCountOutputTypeCountAdvancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdvanceWhereInput
+  }
+
+
+  /**
+   * CustomerCountOutputType without action
+   */
+  export type CustomerCountOutputTypeCountAdvanceHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdvanceHistoryWhereInput
   }
 
 
@@ -12897,6 +13081,8 @@ export namespace Prisma {
     challans?: boolean | Customer$challansArgs<ExtArgs>
     quotations?: boolean | Customer$quotationsArgs<ExtArgs>
     tickets?: boolean | Customer$ticketsArgs<ExtArgs>
+    advances?: boolean | Customer$advancesArgs<ExtArgs>
+    advanceHistory?: boolean | Customer$advanceHistoryArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
@@ -12928,6 +13114,8 @@ export namespace Prisma {
     challans?: boolean | Customer$challansArgs<ExtArgs>
     quotations?: boolean | Customer$quotationsArgs<ExtArgs>
     tickets?: boolean | Customer$ticketsArgs<ExtArgs>
+    advances?: boolean | Customer$advancesArgs<ExtArgs>
+    advanceHistory?: boolean | Customer$advanceHistoryArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -12941,6 +13129,8 @@ export namespace Prisma {
       challans: Prisma.$DeliveryChallanPayload<ExtArgs>[]
       quotations: Prisma.$QuotationPayload<ExtArgs>[]
       tickets: Prisma.$TicketPayload<ExtArgs>[]
+      advances: Prisma.$AdvancePayload<ExtArgs>[]
+      advanceHistory: Prisma.$AdvanceHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -13337,6 +13527,10 @@ export namespace Prisma {
     quotations<T extends Customer$quotationsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$quotationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuotationPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     tickets<T extends Customer$ticketsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$ticketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    advances<T extends Customer$advancesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$advancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    advanceHistory<T extends Customer$advanceHistoryArgs<ExtArgs> = {}>(args?: Subset<T, Customer$advanceHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -13817,6 +14011,48 @@ export namespace Prisma {
 
 
   /**
+   * Customer.advances
+   */
+  export type Customer$advancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    where?: AdvanceWhereInput
+    orderBy?: AdvanceOrderByWithRelationInput | AdvanceOrderByWithRelationInput[]
+    cursor?: AdvanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AdvanceScalarFieldEnum | AdvanceScalarFieldEnum[]
+  }
+
+
+  /**
+   * Customer.advanceHistory
+   */
+  export type Customer$advanceHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    where?: AdvanceHistoryWhereInput
+    orderBy?: AdvanceHistoryOrderByWithRelationInput | AdvanceHistoryOrderByWithRelationInput[]
+    cursor?: AdvanceHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AdvanceHistoryScalarFieldEnum | AdvanceHistoryScalarFieldEnum[]
+  }
+
+
+  /**
    * Customer without action
    */
   export type CustomerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13828,6 +14064,1996 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well.
      */
     include?: CustomerInclude<ExtArgs> | null
+  }
+
+
+
+  /**
+   * Model Advance
+   */
+
+  export type AggregateAdvance = {
+    _count: AdvanceCountAggregateOutputType | null
+    _avg: AdvanceAvgAggregateOutputType | null
+    _sum: AdvanceSumAggregateOutputType | null
+    _min: AdvanceMinAggregateOutputType | null
+    _max: AdvanceMaxAggregateOutputType | null
+  }
+
+  export type AdvanceAvgAggregateOutputType = {
+    customerId: number | null
+    totalAmount: Decimal | null
+    usedAmount: Decimal | null
+    balance: Decimal | null
+  }
+
+  export type AdvanceSumAggregateOutputType = {
+    customerId: number | null
+    totalAmount: Decimal | null
+    usedAmount: Decimal | null
+    balance: Decimal | null
+  }
+
+  export type AdvanceMinAggregateOutputType = {
+    id: string | null
+    customerId: number | null
+    totalAmount: Decimal | null
+    usedAmount: Decimal | null
+    balance: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    notes: string | null
+  }
+
+  export type AdvanceMaxAggregateOutputType = {
+    id: string | null
+    customerId: number | null
+    totalAmount: Decimal | null
+    usedAmount: Decimal | null
+    balance: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    notes: string | null
+  }
+
+  export type AdvanceCountAggregateOutputType = {
+    id: number
+    customerId: number
+    totalAmount: number
+    usedAmount: number
+    balance: number
+    createdAt: number
+    updatedAt: number
+    notes: number
+    _all: number
+  }
+
+
+  export type AdvanceAvgAggregateInputType = {
+    customerId?: true
+    totalAmount?: true
+    usedAmount?: true
+    balance?: true
+  }
+
+  export type AdvanceSumAggregateInputType = {
+    customerId?: true
+    totalAmount?: true
+    usedAmount?: true
+    balance?: true
+  }
+
+  export type AdvanceMinAggregateInputType = {
+    id?: true
+    customerId?: true
+    totalAmount?: true
+    usedAmount?: true
+    balance?: true
+    createdAt?: true
+    updatedAt?: true
+    notes?: true
+  }
+
+  export type AdvanceMaxAggregateInputType = {
+    id?: true
+    customerId?: true
+    totalAmount?: true
+    usedAmount?: true
+    balance?: true
+    createdAt?: true
+    updatedAt?: true
+    notes?: true
+  }
+
+  export type AdvanceCountAggregateInputType = {
+    id?: true
+    customerId?: true
+    totalAmount?: true
+    usedAmount?: true
+    balance?: true
+    createdAt?: true
+    updatedAt?: true
+    notes?: true
+    _all?: true
+  }
+
+  export type AdvanceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Advance to aggregate.
+     */
+    where?: AdvanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Advances to fetch.
+     */
+    orderBy?: AdvanceOrderByWithRelationInput | AdvanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AdvanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Advances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Advances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Advances
+    **/
+    _count?: true | AdvanceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AdvanceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AdvanceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdvanceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdvanceMaxAggregateInputType
+  }
+
+  export type GetAdvanceAggregateType<T extends AdvanceAggregateArgs> = {
+        [P in keyof T & keyof AggregateAdvance]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAdvance[P]>
+      : GetScalarType<T[P], AggregateAdvance[P]>
+  }
+
+
+
+
+  export type AdvanceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdvanceWhereInput
+    orderBy?: AdvanceOrderByWithAggregationInput | AdvanceOrderByWithAggregationInput[]
+    by: AdvanceScalarFieldEnum[] | AdvanceScalarFieldEnum
+    having?: AdvanceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AdvanceCountAggregateInputType | true
+    _avg?: AdvanceAvgAggregateInputType
+    _sum?: AdvanceSumAggregateInputType
+    _min?: AdvanceMinAggregateInputType
+    _max?: AdvanceMaxAggregateInputType
+  }
+
+  export type AdvanceGroupByOutputType = {
+    id: string
+    customerId: number
+    totalAmount: Decimal
+    usedAmount: Decimal
+    balance: Decimal
+    createdAt: Date
+    updatedAt: Date
+    notes: string | null
+    _count: AdvanceCountAggregateOutputType | null
+    _avg: AdvanceAvgAggregateOutputType | null
+    _sum: AdvanceSumAggregateOutputType | null
+    _min: AdvanceMinAggregateOutputType | null
+    _max: AdvanceMaxAggregateOutputType | null
+  }
+
+  type GetAdvanceGroupByPayload<T extends AdvanceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AdvanceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AdvanceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AdvanceGroupByOutputType[P]>
+            : GetScalarType<T[P], AdvanceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AdvanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    totalAmount?: boolean
+    usedAmount?: boolean
+    balance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    notes?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["advance"]>
+
+  export type AdvanceSelectScalar = {
+    id?: boolean
+    customerId?: boolean
+    totalAmount?: boolean
+    usedAmount?: boolean
+    balance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    notes?: boolean
+  }
+
+  export type AdvanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }
+
+
+  export type $AdvancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Advance"
+    objects: {
+      customer: Prisma.$CustomerPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      customerId: number
+      totalAmount: Prisma.Decimal
+      usedAmount: Prisma.Decimal
+      balance: Prisma.Decimal
+      createdAt: Date
+      updatedAt: Date
+      notes: string | null
+    }, ExtArgs["result"]["advance"]>
+    composites: {}
+  }
+
+
+  type AdvanceGetPayload<S extends boolean | null | undefined | AdvanceDefaultArgs> = $Result.GetResult<Prisma.$AdvancePayload, S>
+
+  type AdvanceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AdvanceFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AdvanceCountAggregateInputType | true
+    }
+
+  export interface AdvanceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Advance'], meta: { name: 'Advance' } }
+    /**
+     * Find zero or one Advance that matches the filter.
+     * @param {AdvanceFindUniqueArgs} args - Arguments to find a Advance
+     * @example
+     * // Get one Advance
+     * const advance = await prisma.advance.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends AdvanceFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceFindUniqueArgs<ExtArgs>>
+    ): Prisma__AdvanceClient<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+
+    /**
+     * Find one Advance that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {AdvanceFindUniqueOrThrowArgs} args - Arguments to find a Advance
+     * @example
+     * // Get one Advance
+     * const advance = await prisma.advance.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends AdvanceFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__AdvanceClient<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find the first Advance that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceFindFirstArgs} args - Arguments to find a Advance
+     * @example
+     * // Get one Advance
+     * const advance = await prisma.advance.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends AdvanceFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceFindFirstArgs<ExtArgs>>
+    ): Prisma__AdvanceClient<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+
+    /**
+     * Find the first Advance that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceFindFirstOrThrowArgs} args - Arguments to find a Advance
+     * @example
+     * // Get one Advance
+     * const advance = await prisma.advance.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends AdvanceFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__AdvanceClient<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find zero or more Advances that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Advances
+     * const advances = await prisma.advance.findMany()
+     * 
+     * // Get first 10 Advances
+     * const advances = await prisma.advance.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const advanceWithIdOnly = await prisma.advance.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends AdvanceFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'findMany'>>
+
+    /**
+     * Create a Advance.
+     * @param {AdvanceCreateArgs} args - Arguments to create a Advance.
+     * @example
+     * // Create one Advance
+     * const Advance = await prisma.advance.create({
+     *   data: {
+     *     // ... data to create a Advance
+     *   }
+     * })
+     * 
+    **/
+    create<T extends AdvanceCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceCreateArgs<ExtArgs>>
+    ): Prisma__AdvanceClient<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+
+    /**
+     * Create many Advances.
+     *     @param {AdvanceCreateManyArgs} args - Arguments to create many Advances.
+     *     @example
+     *     // Create many Advances
+     *     const advance = await prisma.advance.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends AdvanceCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Advance.
+     * @param {AdvanceDeleteArgs} args - Arguments to delete one Advance.
+     * @example
+     * // Delete one Advance
+     * const Advance = await prisma.advance.delete({
+     *   where: {
+     *     // ... filter to delete one Advance
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends AdvanceDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceDeleteArgs<ExtArgs>>
+    ): Prisma__AdvanceClient<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+
+    /**
+     * Update one Advance.
+     * @param {AdvanceUpdateArgs} args - Arguments to update one Advance.
+     * @example
+     * // Update one Advance
+     * const advance = await prisma.advance.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends AdvanceUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceUpdateArgs<ExtArgs>>
+    ): Prisma__AdvanceClient<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+
+    /**
+     * Delete zero or more Advances.
+     * @param {AdvanceDeleteManyArgs} args - Arguments to filter Advances to delete.
+     * @example
+     * // Delete a few Advances
+     * const { count } = await prisma.advance.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends AdvanceDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Advances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Advances
+     * const advance = await prisma.advance.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends AdvanceUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Advance.
+     * @param {AdvanceUpsertArgs} args - Arguments to update or create a Advance.
+     * @example
+     * // Update or create a Advance
+     * const advance = await prisma.advance.upsert({
+     *   create: {
+     *     // ... data to create a Advance
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Advance we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends AdvanceUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceUpsertArgs<ExtArgs>>
+    ): Prisma__AdvanceClient<$Result.GetResult<Prisma.$AdvancePayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+
+    /**
+     * Count the number of Advances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceCountArgs} args - Arguments to filter Advances to count.
+     * @example
+     * // Count the number of Advances
+     * const count = await prisma.advance.count({
+     *   where: {
+     *     // ... the filter for the Advances we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdvanceCountArgs>(
+      args?: Subset<T, AdvanceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AdvanceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Advance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdvanceAggregateArgs>(args: Subset<T, AdvanceAggregateArgs>): Prisma.PrismaPromise<GetAdvanceAggregateType<T>>
+
+    /**
+     * Group by Advance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AdvanceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AdvanceGroupByArgs['orderBy'] }
+        : { orderBy?: AdvanceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AdvanceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdvanceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Advance model
+   */
+  readonly fields: AdvanceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Advance.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AdvanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+
+
+  /**
+   * Fields of the Advance model
+   */ 
+  interface AdvanceFieldRefs {
+    readonly id: FieldRef<"Advance", 'String'>
+    readonly customerId: FieldRef<"Advance", 'Int'>
+    readonly totalAmount: FieldRef<"Advance", 'Decimal'>
+    readonly usedAmount: FieldRef<"Advance", 'Decimal'>
+    readonly balance: FieldRef<"Advance", 'Decimal'>
+    readonly createdAt: FieldRef<"Advance", 'DateTime'>
+    readonly updatedAt: FieldRef<"Advance", 'DateTime'>
+    readonly notes: FieldRef<"Advance", 'String'>
+  }
+    
+
+  // Custom InputTypes
+
+  /**
+   * Advance findUnique
+   */
+  export type AdvanceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * Filter, which Advance to fetch.
+     */
+    where: AdvanceWhereUniqueInput
+  }
+
+
+  /**
+   * Advance findUniqueOrThrow
+   */
+  export type AdvanceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * Filter, which Advance to fetch.
+     */
+    where: AdvanceWhereUniqueInput
+  }
+
+
+  /**
+   * Advance findFirst
+   */
+  export type AdvanceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * Filter, which Advance to fetch.
+     */
+    where?: AdvanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Advances to fetch.
+     */
+    orderBy?: AdvanceOrderByWithRelationInput | AdvanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Advances.
+     */
+    cursor?: AdvanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Advances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Advances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Advances.
+     */
+    distinct?: AdvanceScalarFieldEnum | AdvanceScalarFieldEnum[]
+  }
+
+
+  /**
+   * Advance findFirstOrThrow
+   */
+  export type AdvanceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * Filter, which Advance to fetch.
+     */
+    where?: AdvanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Advances to fetch.
+     */
+    orderBy?: AdvanceOrderByWithRelationInput | AdvanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Advances.
+     */
+    cursor?: AdvanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Advances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Advances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Advances.
+     */
+    distinct?: AdvanceScalarFieldEnum | AdvanceScalarFieldEnum[]
+  }
+
+
+  /**
+   * Advance findMany
+   */
+  export type AdvanceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * Filter, which Advances to fetch.
+     */
+    where?: AdvanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Advances to fetch.
+     */
+    orderBy?: AdvanceOrderByWithRelationInput | AdvanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Advances.
+     */
+    cursor?: AdvanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Advances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Advances.
+     */
+    skip?: number
+    distinct?: AdvanceScalarFieldEnum | AdvanceScalarFieldEnum[]
+  }
+
+
+  /**
+   * Advance create
+   */
+  export type AdvanceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Advance.
+     */
+    data: XOR<AdvanceCreateInput, AdvanceUncheckedCreateInput>
+  }
+
+
+  /**
+   * Advance createMany
+   */
+  export type AdvanceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Advances.
+     */
+    data: AdvanceCreateManyInput | AdvanceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Advance update
+   */
+  export type AdvanceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Advance.
+     */
+    data: XOR<AdvanceUpdateInput, AdvanceUncheckedUpdateInput>
+    /**
+     * Choose, which Advance to update.
+     */
+    where: AdvanceWhereUniqueInput
+  }
+
+
+  /**
+   * Advance updateMany
+   */
+  export type AdvanceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Advances.
+     */
+    data: XOR<AdvanceUpdateManyMutationInput, AdvanceUncheckedUpdateManyInput>
+    /**
+     * Filter which Advances to update
+     */
+    where?: AdvanceWhereInput
+  }
+
+
+  /**
+   * Advance upsert
+   */
+  export type AdvanceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Advance to update in case it exists.
+     */
+    where: AdvanceWhereUniqueInput
+    /**
+     * In case the Advance found by the `where` argument doesn't exist, create a new Advance with this data.
+     */
+    create: XOR<AdvanceCreateInput, AdvanceUncheckedCreateInput>
+    /**
+     * In case the Advance was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AdvanceUpdateInput, AdvanceUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Advance delete
+   */
+  export type AdvanceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+    /**
+     * Filter which Advance to delete.
+     */
+    where: AdvanceWhereUniqueInput
+  }
+
+
+  /**
+   * Advance deleteMany
+   */
+  export type AdvanceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Advances to delete
+     */
+    where?: AdvanceWhereInput
+  }
+
+
+  /**
+   * Advance without action
+   */
+  export type AdvanceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Advance
+     */
+    select?: AdvanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceInclude<ExtArgs> | null
+  }
+
+
+
+  /**
+   * Model AdvanceHistory
+   */
+
+  export type AggregateAdvanceHistory = {
+    _count: AdvanceHistoryCountAggregateOutputType | null
+    _avg: AdvanceHistoryAvgAggregateOutputType | null
+    _sum: AdvanceHistorySumAggregateOutputType | null
+    _min: AdvanceHistoryMinAggregateOutputType | null
+    _max: AdvanceHistoryMaxAggregateOutputType | null
+  }
+
+  export type AdvanceHistoryAvgAggregateOutputType = {
+    customerId: number | null
+    amount: Decimal | null
+    balanceAfter: Decimal | null
+  }
+
+  export type AdvanceHistorySumAggregateOutputType = {
+    customerId: number | null
+    amount: Decimal | null
+    balanceAfter: Decimal | null
+  }
+
+  export type AdvanceHistoryMinAggregateOutputType = {
+    id: string | null
+    customerId: number | null
+    advanceId: string | null
+    action: string | null
+    amount: Decimal | null
+    balanceAfter: Decimal | null
+    reference: string | null
+    createdAt: Date | null
+  }
+
+  export type AdvanceHistoryMaxAggregateOutputType = {
+    id: string | null
+    customerId: number | null
+    advanceId: string | null
+    action: string | null
+    amount: Decimal | null
+    balanceAfter: Decimal | null
+    reference: string | null
+    createdAt: Date | null
+  }
+
+  export type AdvanceHistoryCountAggregateOutputType = {
+    id: number
+    customerId: number
+    advanceId: number
+    action: number
+    amount: number
+    balanceAfter: number
+    reference: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AdvanceHistoryAvgAggregateInputType = {
+    customerId?: true
+    amount?: true
+    balanceAfter?: true
+  }
+
+  export type AdvanceHistorySumAggregateInputType = {
+    customerId?: true
+    amount?: true
+    balanceAfter?: true
+  }
+
+  export type AdvanceHistoryMinAggregateInputType = {
+    id?: true
+    customerId?: true
+    advanceId?: true
+    action?: true
+    amount?: true
+    balanceAfter?: true
+    reference?: true
+    createdAt?: true
+  }
+
+  export type AdvanceHistoryMaxAggregateInputType = {
+    id?: true
+    customerId?: true
+    advanceId?: true
+    action?: true
+    amount?: true
+    balanceAfter?: true
+    reference?: true
+    createdAt?: true
+  }
+
+  export type AdvanceHistoryCountAggregateInputType = {
+    id?: true
+    customerId?: true
+    advanceId?: true
+    action?: true
+    amount?: true
+    balanceAfter?: true
+    reference?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AdvanceHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdvanceHistory to aggregate.
+     */
+    where?: AdvanceHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdvanceHistories to fetch.
+     */
+    orderBy?: AdvanceHistoryOrderByWithRelationInput | AdvanceHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AdvanceHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdvanceHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdvanceHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AdvanceHistories
+    **/
+    _count?: true | AdvanceHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AdvanceHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AdvanceHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdvanceHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdvanceHistoryMaxAggregateInputType
+  }
+
+  export type GetAdvanceHistoryAggregateType<T extends AdvanceHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateAdvanceHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAdvanceHistory[P]>
+      : GetScalarType<T[P], AggregateAdvanceHistory[P]>
+  }
+
+
+
+
+  export type AdvanceHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdvanceHistoryWhereInput
+    orderBy?: AdvanceHistoryOrderByWithAggregationInput | AdvanceHistoryOrderByWithAggregationInput[]
+    by: AdvanceHistoryScalarFieldEnum[] | AdvanceHistoryScalarFieldEnum
+    having?: AdvanceHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AdvanceHistoryCountAggregateInputType | true
+    _avg?: AdvanceHistoryAvgAggregateInputType
+    _sum?: AdvanceHistorySumAggregateInputType
+    _min?: AdvanceHistoryMinAggregateInputType
+    _max?: AdvanceHistoryMaxAggregateInputType
+  }
+
+  export type AdvanceHistoryGroupByOutputType = {
+    id: string
+    customerId: number
+    advanceId: string
+    action: string
+    amount: Decimal
+    balanceAfter: Decimal
+    reference: string | null
+    createdAt: Date
+    _count: AdvanceHistoryCountAggregateOutputType | null
+    _avg: AdvanceHistoryAvgAggregateOutputType | null
+    _sum: AdvanceHistorySumAggregateOutputType | null
+    _min: AdvanceHistoryMinAggregateOutputType | null
+    _max: AdvanceHistoryMaxAggregateOutputType | null
+  }
+
+  type GetAdvanceHistoryGroupByPayload<T extends AdvanceHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AdvanceHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AdvanceHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AdvanceHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], AdvanceHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AdvanceHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    advanceId?: boolean
+    action?: boolean
+    amount?: boolean
+    balanceAfter?: boolean
+    reference?: boolean
+    createdAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["advanceHistory"]>
+
+  export type AdvanceHistorySelectScalar = {
+    id?: boolean
+    customerId?: boolean
+    advanceId?: boolean
+    action?: boolean
+    amount?: boolean
+    balanceAfter?: boolean
+    reference?: boolean
+    createdAt?: boolean
+  }
+
+  export type AdvanceHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }
+
+
+  export type $AdvanceHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AdvanceHistory"
+    objects: {
+      customer: Prisma.$CustomerPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      customerId: number
+      advanceId: string
+      action: string
+      amount: Prisma.Decimal
+      balanceAfter: Prisma.Decimal
+      reference: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["advanceHistory"]>
+    composites: {}
+  }
+
+
+  type AdvanceHistoryGetPayload<S extends boolean | null | undefined | AdvanceHistoryDefaultArgs> = $Result.GetResult<Prisma.$AdvanceHistoryPayload, S>
+
+  type AdvanceHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AdvanceHistoryFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AdvanceHistoryCountAggregateInputType | true
+    }
+
+  export interface AdvanceHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AdvanceHistory'], meta: { name: 'AdvanceHistory' } }
+    /**
+     * Find zero or one AdvanceHistory that matches the filter.
+     * @param {AdvanceHistoryFindUniqueArgs} args - Arguments to find a AdvanceHistory
+     * @example
+     * // Get one AdvanceHistory
+     * const advanceHistory = await prisma.advanceHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends AdvanceHistoryFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceHistoryFindUniqueArgs<ExtArgs>>
+    ): Prisma__AdvanceHistoryClient<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+
+    /**
+     * Find one AdvanceHistory that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {AdvanceHistoryFindUniqueOrThrowArgs} args - Arguments to find a AdvanceHistory
+     * @example
+     * // Get one AdvanceHistory
+     * const advanceHistory = await prisma.advanceHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends AdvanceHistoryFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceHistoryFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__AdvanceHistoryClient<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find the first AdvanceHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceHistoryFindFirstArgs} args - Arguments to find a AdvanceHistory
+     * @example
+     * // Get one AdvanceHistory
+     * const advanceHistory = await prisma.advanceHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends AdvanceHistoryFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceHistoryFindFirstArgs<ExtArgs>>
+    ): Prisma__AdvanceHistoryClient<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+
+    /**
+     * Find the first AdvanceHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceHistoryFindFirstOrThrowArgs} args - Arguments to find a AdvanceHistory
+     * @example
+     * // Get one AdvanceHistory
+     * const advanceHistory = await prisma.advanceHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends AdvanceHistoryFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceHistoryFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__AdvanceHistoryClient<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find zero or more AdvanceHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceHistoryFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AdvanceHistories
+     * const advanceHistories = await prisma.advanceHistory.findMany()
+     * 
+     * // Get first 10 AdvanceHistories
+     * const advanceHistories = await prisma.advanceHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const advanceHistoryWithIdOnly = await prisma.advanceHistory.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends AdvanceHistoryFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceHistoryFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'findMany'>>
+
+    /**
+     * Create a AdvanceHistory.
+     * @param {AdvanceHistoryCreateArgs} args - Arguments to create a AdvanceHistory.
+     * @example
+     * // Create one AdvanceHistory
+     * const AdvanceHistory = await prisma.advanceHistory.create({
+     *   data: {
+     *     // ... data to create a AdvanceHistory
+     *   }
+     * })
+     * 
+    **/
+    create<T extends AdvanceHistoryCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceHistoryCreateArgs<ExtArgs>>
+    ): Prisma__AdvanceHistoryClient<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+
+    /**
+     * Create many AdvanceHistories.
+     *     @param {AdvanceHistoryCreateManyArgs} args - Arguments to create many AdvanceHistories.
+     *     @example
+     *     // Create many AdvanceHistories
+     *     const advanceHistory = await prisma.advanceHistory.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends AdvanceHistoryCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceHistoryCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a AdvanceHistory.
+     * @param {AdvanceHistoryDeleteArgs} args - Arguments to delete one AdvanceHistory.
+     * @example
+     * // Delete one AdvanceHistory
+     * const AdvanceHistory = await prisma.advanceHistory.delete({
+     *   where: {
+     *     // ... filter to delete one AdvanceHistory
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends AdvanceHistoryDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceHistoryDeleteArgs<ExtArgs>>
+    ): Prisma__AdvanceHistoryClient<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+
+    /**
+     * Update one AdvanceHistory.
+     * @param {AdvanceHistoryUpdateArgs} args - Arguments to update one AdvanceHistory.
+     * @example
+     * // Update one AdvanceHistory
+     * const advanceHistory = await prisma.advanceHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends AdvanceHistoryUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceHistoryUpdateArgs<ExtArgs>>
+    ): Prisma__AdvanceHistoryClient<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+
+    /**
+     * Delete zero or more AdvanceHistories.
+     * @param {AdvanceHistoryDeleteManyArgs} args - Arguments to filter AdvanceHistories to delete.
+     * @example
+     * // Delete a few AdvanceHistories
+     * const { count } = await prisma.advanceHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends AdvanceHistoryDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, AdvanceHistoryDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdvanceHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AdvanceHistories
+     * const advanceHistory = await prisma.advanceHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends AdvanceHistoryUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceHistoryUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AdvanceHistory.
+     * @param {AdvanceHistoryUpsertArgs} args - Arguments to update or create a AdvanceHistory.
+     * @example
+     * // Update or create a AdvanceHistory
+     * const advanceHistory = await prisma.advanceHistory.upsert({
+     *   create: {
+     *     // ... data to create a AdvanceHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AdvanceHistory we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends AdvanceHistoryUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, AdvanceHistoryUpsertArgs<ExtArgs>>
+    ): Prisma__AdvanceHistoryClient<$Result.GetResult<Prisma.$AdvanceHistoryPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+
+    /**
+     * Count the number of AdvanceHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceHistoryCountArgs} args - Arguments to filter AdvanceHistories to count.
+     * @example
+     * // Count the number of AdvanceHistories
+     * const count = await prisma.advanceHistory.count({
+     *   where: {
+     *     // ... the filter for the AdvanceHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdvanceHistoryCountArgs>(
+      args?: Subset<T, AdvanceHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AdvanceHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AdvanceHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdvanceHistoryAggregateArgs>(args: Subset<T, AdvanceHistoryAggregateArgs>): Prisma.PrismaPromise<GetAdvanceHistoryAggregateType<T>>
+
+    /**
+     * Group by AdvanceHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdvanceHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AdvanceHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AdvanceHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: AdvanceHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AdvanceHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdvanceHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AdvanceHistory model
+   */
+  readonly fields: AdvanceHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AdvanceHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AdvanceHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+
+
+  /**
+   * Fields of the AdvanceHistory model
+   */ 
+  interface AdvanceHistoryFieldRefs {
+    readonly id: FieldRef<"AdvanceHistory", 'String'>
+    readonly customerId: FieldRef<"AdvanceHistory", 'Int'>
+    readonly advanceId: FieldRef<"AdvanceHistory", 'String'>
+    readonly action: FieldRef<"AdvanceHistory", 'String'>
+    readonly amount: FieldRef<"AdvanceHistory", 'Decimal'>
+    readonly balanceAfter: FieldRef<"AdvanceHistory", 'Decimal'>
+    readonly reference: FieldRef<"AdvanceHistory", 'String'>
+    readonly createdAt: FieldRef<"AdvanceHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+
+  /**
+   * AdvanceHistory findUnique
+   */
+  export type AdvanceHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which AdvanceHistory to fetch.
+     */
+    where: AdvanceHistoryWhereUniqueInput
+  }
+
+
+  /**
+   * AdvanceHistory findUniqueOrThrow
+   */
+  export type AdvanceHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which AdvanceHistory to fetch.
+     */
+    where: AdvanceHistoryWhereUniqueInput
+  }
+
+
+  /**
+   * AdvanceHistory findFirst
+   */
+  export type AdvanceHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which AdvanceHistory to fetch.
+     */
+    where?: AdvanceHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdvanceHistories to fetch.
+     */
+    orderBy?: AdvanceHistoryOrderByWithRelationInput | AdvanceHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdvanceHistories.
+     */
+    cursor?: AdvanceHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdvanceHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdvanceHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdvanceHistories.
+     */
+    distinct?: AdvanceHistoryScalarFieldEnum | AdvanceHistoryScalarFieldEnum[]
+  }
+
+
+  /**
+   * AdvanceHistory findFirstOrThrow
+   */
+  export type AdvanceHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which AdvanceHistory to fetch.
+     */
+    where?: AdvanceHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdvanceHistories to fetch.
+     */
+    orderBy?: AdvanceHistoryOrderByWithRelationInput | AdvanceHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdvanceHistories.
+     */
+    cursor?: AdvanceHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdvanceHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdvanceHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdvanceHistories.
+     */
+    distinct?: AdvanceHistoryScalarFieldEnum | AdvanceHistoryScalarFieldEnum[]
+  }
+
+
+  /**
+   * AdvanceHistory findMany
+   */
+  export type AdvanceHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which AdvanceHistories to fetch.
+     */
+    where?: AdvanceHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdvanceHistories to fetch.
+     */
+    orderBy?: AdvanceHistoryOrderByWithRelationInput | AdvanceHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AdvanceHistories.
+     */
+    cursor?: AdvanceHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdvanceHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdvanceHistories.
+     */
+    skip?: number
+    distinct?: AdvanceHistoryScalarFieldEnum | AdvanceHistoryScalarFieldEnum[]
+  }
+
+
+  /**
+   * AdvanceHistory create
+   */
+  export type AdvanceHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AdvanceHistory.
+     */
+    data: XOR<AdvanceHistoryCreateInput, AdvanceHistoryUncheckedCreateInput>
+  }
+
+
+  /**
+   * AdvanceHistory createMany
+   */
+  export type AdvanceHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AdvanceHistories.
+     */
+    data: AdvanceHistoryCreateManyInput | AdvanceHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * AdvanceHistory update
+   */
+  export type AdvanceHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AdvanceHistory.
+     */
+    data: XOR<AdvanceHistoryUpdateInput, AdvanceHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which AdvanceHistory to update.
+     */
+    where: AdvanceHistoryWhereUniqueInput
+  }
+
+
+  /**
+   * AdvanceHistory updateMany
+   */
+  export type AdvanceHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AdvanceHistories.
+     */
+    data: XOR<AdvanceHistoryUpdateManyMutationInput, AdvanceHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which AdvanceHistories to update
+     */
+    where?: AdvanceHistoryWhereInput
+  }
+
+
+  /**
+   * AdvanceHistory upsert
+   */
+  export type AdvanceHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AdvanceHistory to update in case it exists.
+     */
+    where: AdvanceHistoryWhereUniqueInput
+    /**
+     * In case the AdvanceHistory found by the `where` argument doesn't exist, create a new AdvanceHistory with this data.
+     */
+    create: XOR<AdvanceHistoryCreateInput, AdvanceHistoryUncheckedCreateInput>
+    /**
+     * In case the AdvanceHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AdvanceHistoryUpdateInput, AdvanceHistoryUncheckedUpdateInput>
+  }
+
+
+  /**
+   * AdvanceHistory delete
+   */
+  export type AdvanceHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
+    /**
+     * Filter which AdvanceHistory to delete.
+     */
+    where: AdvanceHistoryWhereUniqueInput
+  }
+
+
+  /**
+   * AdvanceHistory deleteMany
+   */
+  export type AdvanceHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdvanceHistories to delete
+     */
+    where?: AdvanceHistoryWhereInput
+  }
+
+
+  /**
+   * AdvanceHistory without action
+   */
+  export type AdvanceHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdvanceHistory
+     */
+    select?: AdvanceHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AdvanceHistoryInclude<ExtArgs> | null
   }
 
 
@@ -20346,6 +22572,7 @@ export namespace Prisma {
     totalAmount: Decimal | null
     roundOffAmount: Decimal | null
     discount: number | null
+    advanceUsed: Decimal | null
     exchangeRate: Decimal | null
     balanceAmount: Decimal | null
     paidAmount: Decimal | null
@@ -20365,6 +22592,7 @@ export namespace Prisma {
     totalAmount: Decimal | null
     roundOffAmount: Decimal | null
     discount: number | null
+    advanceUsed: Decimal | null
     exchangeRate: Decimal | null
     balanceAmount: Decimal | null
     paidAmount: Decimal | null
@@ -20386,6 +22614,7 @@ export namespace Prisma {
     totalAmount: Decimal | null
     roundOffAmount: Decimal | null
     discount: number | null
+    advanceUsed: Decimal | null
     paymentMethod: string | null
     status: string | null
     isReturn: boolean | null
@@ -20428,6 +22657,7 @@ export namespace Prisma {
     totalAmount: Decimal | null
     roundOffAmount: Decimal | null
     discount: number | null
+    advanceUsed: Decimal | null
     paymentMethod: string | null
     status: string | null
     isReturn: boolean | null
@@ -20470,6 +22700,7 @@ export namespace Prisma {
     totalAmount: number
     roundOffAmount: number
     discount: number
+    advanceUsed: number
     paymentMethod: number
     status: number
     isReturn: number
@@ -20512,6 +22743,7 @@ export namespace Prisma {
     totalAmount?: true
     roundOffAmount?: true
     discount?: true
+    advanceUsed?: true
     exchangeRate?: true
     balanceAmount?: true
     paidAmount?: true
@@ -20531,6 +22763,7 @@ export namespace Prisma {
     totalAmount?: true
     roundOffAmount?: true
     discount?: true
+    advanceUsed?: true
     exchangeRate?: true
     balanceAmount?: true
     paidAmount?: true
@@ -20552,6 +22785,7 @@ export namespace Prisma {
     totalAmount?: true
     roundOffAmount?: true
     discount?: true
+    advanceUsed?: true
     paymentMethod?: true
     status?: true
     isReturn?: true
@@ -20594,6 +22828,7 @@ export namespace Prisma {
     totalAmount?: true
     roundOffAmount?: true
     discount?: true
+    advanceUsed?: true
     paymentMethod?: true
     status?: true
     isReturn?: true
@@ -20636,6 +22871,7 @@ export namespace Prisma {
     totalAmount?: true
     roundOffAmount?: true
     discount?: true
+    advanceUsed?: true
     paymentMethod?: true
     status?: true
     isReturn?: true
@@ -20765,6 +23001,7 @@ export namespace Prisma {
     totalAmount: Decimal
     roundOffAmount: Decimal
     discount: number
+    advanceUsed: Decimal
     paymentMethod: string | null
     status: string
     isReturn: boolean
@@ -20826,6 +23063,7 @@ export namespace Prisma {
     totalAmount?: boolean
     roundOffAmount?: boolean
     discount?: boolean
+    advanceUsed?: boolean
     paymentMethod?: boolean
     status?: boolean
     isReturn?: boolean
@@ -20878,6 +23116,7 @@ export namespace Prisma {
     totalAmount?: boolean
     roundOffAmount?: boolean
     discount?: boolean
+    advanceUsed?: boolean
     paymentMethod?: boolean
     status?: boolean
     isReturn?: boolean
@@ -20947,6 +23186,7 @@ export namespace Prisma {
       totalAmount: Prisma.Decimal
       roundOffAmount: Prisma.Decimal
       discount: number
+      advanceUsed: Prisma.Decimal
       paymentMethod: string | null
       status: string
       isReturn: boolean
@@ -21397,6 +23637,7 @@ export namespace Prisma {
     readonly totalAmount: FieldRef<"Sale", 'Decimal'>
     readonly roundOffAmount: FieldRef<"Sale", 'Decimal'>
     readonly discount: FieldRef<"Sale", 'Float'>
+    readonly advanceUsed: FieldRef<"Sale", 'Decimal'>
     readonly paymentMethod: FieldRef<"Sale", 'String'>
     readonly status: FieldRef<"Sale", 'String'>
     readonly isReturn: FieldRef<"Sale", 'Boolean'>
@@ -69881,6 +72122,34 @@ export namespace Prisma {
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
+  export const AdvanceScalarFieldEnum: {
+    id: 'id',
+    customerId: 'customerId',
+    totalAmount: 'totalAmount',
+    usedAmount: 'usedAmount',
+    balance: 'balance',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    notes: 'notes'
+  };
+
+  export type AdvanceScalarFieldEnum = (typeof AdvanceScalarFieldEnum)[keyof typeof AdvanceScalarFieldEnum]
+
+
+  export const AdvanceHistoryScalarFieldEnum: {
+    id: 'id',
+    customerId: 'customerId',
+    advanceId: 'advanceId',
+    action: 'action',
+    amount: 'amount',
+    balanceAfter: 'balanceAfter',
+    reference: 'reference',
+    createdAt: 'createdAt'
+  };
+
+  export type AdvanceHistoryScalarFieldEnum = (typeof AdvanceHistoryScalarFieldEnum)[keyof typeof AdvanceHistoryScalarFieldEnum]
+
+
   export const SupplierScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -69987,6 +72256,7 @@ export namespace Prisma {
     totalAmount: 'totalAmount',
     roundOffAmount: 'roundOffAmount',
     discount: 'discount',
+    advanceUsed: 'advanceUsed',
     paymentMethod: 'paymentMethod',
     status: 'status',
     isReturn: 'isReturn',
@@ -71496,6 +73766,8 @@ export namespace Prisma {
     challans?: DeliveryChallanListRelationFilter
     quotations?: QuotationListRelationFilter
     tickets?: TicketListRelationFilter
+    advances?: AdvanceListRelationFilter
+    advanceHistory?: AdvanceHistoryListRelationFilter
   }
 
   export type CustomerOrderByWithRelationInput = {
@@ -71523,6 +73795,8 @@ export namespace Prisma {
     challans?: DeliveryChallanOrderByRelationAggregateInput
     quotations?: QuotationOrderByRelationAggregateInput
     tickets?: TicketOrderByRelationAggregateInput
+    advances?: AdvanceOrderByRelationAggregateInput
+    advanceHistory?: AdvanceHistoryOrderByRelationAggregateInput
   }
 
   export type CustomerWhereUniqueInput = Prisma.AtLeast<{
@@ -71553,6 +73827,8 @@ export namespace Prisma {
     challans?: DeliveryChallanListRelationFilter
     quotations?: QuotationListRelationFilter
     tickets?: TicketListRelationFilter
+    advances?: AdvanceListRelationFilter
+    advanceHistory?: AdvanceHistoryListRelationFilter
   }, "id" | "phone" | "username">
 
   export type CustomerOrderByWithAggregationInput = {
@@ -71603,6 +73879,150 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     branchId?: IntNullableWithAggregatesFilter<"Customer"> | number | null
+  }
+
+  export type AdvanceWhereInput = {
+    AND?: AdvanceWhereInput | AdvanceWhereInput[]
+    OR?: AdvanceWhereInput[]
+    NOT?: AdvanceWhereInput | AdvanceWhereInput[]
+    id?: StringFilter<"Advance"> | string
+    customerId?: IntFilter<"Advance"> | number
+    totalAmount?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"Advance"> | Date | string
+    updatedAt?: DateTimeFilter<"Advance"> | Date | string
+    notes?: StringNullableFilter<"Advance"> | string | null
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+  }
+
+  export type AdvanceOrderByWithRelationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    totalAmount?: SortOrder
+    usedAmount?: SortOrder
+    balance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    customer?: CustomerOrderByWithRelationInput
+  }
+
+  export type AdvanceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    customerId?: number
+    AND?: AdvanceWhereInput | AdvanceWhereInput[]
+    OR?: AdvanceWhereInput[]
+    NOT?: AdvanceWhereInput | AdvanceWhereInput[]
+    totalAmount?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"Advance"> | Date | string
+    updatedAt?: DateTimeFilter<"Advance"> | Date | string
+    notes?: StringNullableFilter<"Advance"> | string | null
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+  }, "id" | "customerId">
+
+  export type AdvanceOrderByWithAggregationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    totalAmount?: SortOrder
+    usedAmount?: SortOrder
+    balance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    _count?: AdvanceCountOrderByAggregateInput
+    _avg?: AdvanceAvgOrderByAggregateInput
+    _max?: AdvanceMaxOrderByAggregateInput
+    _min?: AdvanceMinOrderByAggregateInput
+    _sum?: AdvanceSumOrderByAggregateInput
+  }
+
+  export type AdvanceScalarWhereWithAggregatesInput = {
+    AND?: AdvanceScalarWhereWithAggregatesInput | AdvanceScalarWhereWithAggregatesInput[]
+    OR?: AdvanceScalarWhereWithAggregatesInput[]
+    NOT?: AdvanceScalarWhereWithAggregatesInput | AdvanceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Advance"> | string
+    customerId?: IntWithAggregatesFilter<"Advance"> | number
+    totalAmount?: DecimalWithAggregatesFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalWithAggregatesFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    balance?: DecimalWithAggregatesFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeWithAggregatesFilter<"Advance"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Advance"> | Date | string
+    notes?: StringNullableWithAggregatesFilter<"Advance"> | string | null
+  }
+
+  export type AdvanceHistoryWhereInput = {
+    AND?: AdvanceHistoryWhereInput | AdvanceHistoryWhereInput[]
+    OR?: AdvanceHistoryWhereInput[]
+    NOT?: AdvanceHistoryWhereInput | AdvanceHistoryWhereInput[]
+    id?: StringFilter<"AdvanceHistory"> | string
+    customerId?: IntFilter<"AdvanceHistory"> | number
+    advanceId?: StringFilter<"AdvanceHistory"> | string
+    action?: StringFilter<"AdvanceHistory"> | string
+    amount?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
+    reference?: StringNullableFilter<"AdvanceHistory"> | string | null
+    createdAt?: DateTimeFilter<"AdvanceHistory"> | Date | string
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+  }
+
+  export type AdvanceHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    advanceId?: SortOrder
+    action?: SortOrder
+    amount?: SortOrder
+    balanceAfter?: SortOrder
+    reference?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    customer?: CustomerOrderByWithRelationInput
+  }
+
+  export type AdvanceHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AdvanceHistoryWhereInput | AdvanceHistoryWhereInput[]
+    OR?: AdvanceHistoryWhereInput[]
+    NOT?: AdvanceHistoryWhereInput | AdvanceHistoryWhereInput[]
+    customerId?: IntFilter<"AdvanceHistory"> | number
+    advanceId?: StringFilter<"AdvanceHistory"> | string
+    action?: StringFilter<"AdvanceHistory"> | string
+    amount?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
+    reference?: StringNullableFilter<"AdvanceHistory"> | string | null
+    createdAt?: DateTimeFilter<"AdvanceHistory"> | Date | string
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+  }, "id">
+
+  export type AdvanceHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    advanceId?: SortOrder
+    action?: SortOrder
+    amount?: SortOrder
+    balanceAfter?: SortOrder
+    reference?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AdvanceHistoryCountOrderByAggregateInput
+    _avg?: AdvanceHistoryAvgOrderByAggregateInput
+    _max?: AdvanceHistoryMaxOrderByAggregateInput
+    _min?: AdvanceHistoryMinOrderByAggregateInput
+    _sum?: AdvanceHistorySumOrderByAggregateInput
+  }
+
+  export type AdvanceHistoryScalarWhereWithAggregatesInput = {
+    AND?: AdvanceHistoryScalarWhereWithAggregatesInput | AdvanceHistoryScalarWhereWithAggregatesInput[]
+    OR?: AdvanceHistoryScalarWhereWithAggregatesInput[]
+    NOT?: AdvanceHistoryScalarWhereWithAggregatesInput | AdvanceHistoryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AdvanceHistory"> | string
+    customerId?: IntWithAggregatesFilter<"AdvanceHistory"> | number
+    advanceId?: StringWithAggregatesFilter<"AdvanceHistory"> | string
+    action?: StringWithAggregatesFilter<"AdvanceHistory"> | string
+    amount?: DecimalWithAggregatesFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalWithAggregatesFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
+    reference?: StringNullableWithAggregatesFilter<"AdvanceHistory"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AdvanceHistory"> | Date | string
   }
 
   export type SupplierWhereInput = {
@@ -72151,6 +74571,7 @@ export namespace Prisma {
     totalAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     discount?: FloatFilter<"Sale"> | number
+    advanceUsed?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     paymentMethod?: StringNullableFilter<"Sale"> | string | null
     status?: StringFilter<"Sale"> | string
     isReturn?: BoolFilter<"Sale"> | boolean
@@ -72202,6 +74623,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
     discount?: SortOrder
+    advanceUsed?: SortOrder
     paymentMethod?: SortOrderInput | SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -72258,6 +74680,7 @@ export namespace Prisma {
     totalAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     discount?: FloatFilter<"Sale"> | number
+    advanceUsed?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     paymentMethod?: StringNullableFilter<"Sale"> | string | null
     status?: StringFilter<"Sale"> | string
     isReturn?: BoolFilter<"Sale"> | boolean
@@ -72308,6 +74731,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
     discount?: SortOrder
+    advanceUsed?: SortOrder
     paymentMethod?: SortOrderInput | SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -72358,6 +74782,7 @@ export namespace Prisma {
     totalAmount?: DecimalWithAggregatesFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalWithAggregatesFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     discount?: FloatWithAggregatesFilter<"Sale"> | number
+    advanceUsed?: DecimalWithAggregatesFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     paymentMethod?: StringNullableWithAggregatesFilter<"Sale"> | string | null
     status?: StringWithAggregatesFilter<"Sale"> | string
     isReturn?: BoolWithAggregatesFilter<"Sale"> | boolean
@@ -77159,6 +79584,8 @@ export namespace Prisma {
     challans?: DeliveryChallanCreateNestedManyWithoutCustomerInput
     quotations?: QuotationCreateNestedManyWithoutCustomerInput
     tickets?: TicketCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateInput = {
@@ -77185,6 +79612,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUncheckedCreateNestedManyWithoutCustomerInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutCustomerInput
     tickets?: TicketUncheckedCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceUncheckedCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUpdateInput = {
@@ -77210,6 +79639,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateInput = {
@@ -77236,6 +79667,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUncheckedUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUncheckedUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerCreateManyInput = {
@@ -77297,6 +79730,158 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branchId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type AdvanceCreateInput = {
+    id?: string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    usedAmount?: Decimal | DecimalJsLike | number | string
+    balance: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notes?: string | null
+    customer: CustomerCreateNestedOneWithoutAdvancesInput
+  }
+
+  export type AdvanceUncheckedCreateInput = {
+    id?: string
+    customerId: number
+    totalAmount: Decimal | DecimalJsLike | number | string
+    usedAmount?: Decimal | DecimalJsLike | number | string
+    balance: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type AdvanceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUpdateOneRequiredWithoutAdvancesNestedInput
+  }
+
+  export type AdvanceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AdvanceCreateManyInput = {
+    id?: string
+    customerId: number
+    totalAmount: Decimal | DecimalJsLike | number | string
+    usedAmount?: Decimal | DecimalJsLike | number | string
+    balance: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type AdvanceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AdvanceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AdvanceHistoryCreateInput = {
+    id?: string
+    advanceId: string
+    action: string
+    amount: Decimal | DecimalJsLike | number | string
+    balanceAfter: Decimal | DecimalJsLike | number | string
+    reference?: string | null
+    createdAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutAdvanceHistoryInput
+  }
+
+  export type AdvanceHistoryUncheckedCreateInput = {
+    id?: string
+    customerId: number
+    advanceId: string
+    action: string
+    amount: Decimal | DecimalJsLike | number | string
+    balanceAfter: Decimal | DecimalJsLike | number | string
+    reference?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AdvanceHistoryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    advanceId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutAdvanceHistoryNestedInput
+  }
+
+  export type AdvanceHistoryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    advanceId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdvanceHistoryCreateManyInput = {
+    id?: string
+    customerId: number
+    advanceId: string
+    action: string
+    amount: Decimal | DecimalJsLike | number | string
+    balanceAfter: Decimal | DecimalJsLike | number | string
+    reference?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AdvanceHistoryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    advanceId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdvanceHistoryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    advanceId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SupplierCreateInput = {
@@ -77871,6 +80456,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -77917,6 +80503,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -77960,6 +80547,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -78006,6 +80594,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -78051,6 +80640,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -78091,6 +80681,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -78128,6 +80719,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -83205,6 +85797,26 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type AdvanceListRelationFilter = {
+    every?: AdvanceWhereInput
+    some?: AdvanceWhereInput
+    none?: AdvanceWhereInput
+  }
+
+  export type AdvanceHistoryListRelationFilter = {
+    every?: AdvanceHistoryWhereInput
+    some?: AdvanceHistoryWhereInput
+    none?: AdvanceHistoryWhereInput
+  }
+
+  export type AdvanceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AdvanceHistoryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type CustomerCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -83274,6 +85886,103 @@ export namespace Prisma {
   export type CustomerSumOrderByAggregateInput = {
     id?: SortOrder
     branchId?: SortOrder
+  }
+
+  export type CustomerRelationFilter = {
+    is?: CustomerWhereInput
+    isNot?: CustomerWhereInput
+  }
+
+  export type AdvanceCountOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    totalAmount?: SortOrder
+    usedAmount?: SortOrder
+    balance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    notes?: SortOrder
+  }
+
+  export type AdvanceAvgOrderByAggregateInput = {
+    customerId?: SortOrder
+    totalAmount?: SortOrder
+    usedAmount?: SortOrder
+    balance?: SortOrder
+  }
+
+  export type AdvanceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    totalAmount?: SortOrder
+    usedAmount?: SortOrder
+    balance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    notes?: SortOrder
+  }
+
+  export type AdvanceMinOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    totalAmount?: SortOrder
+    usedAmount?: SortOrder
+    balance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    notes?: SortOrder
+  }
+
+  export type AdvanceSumOrderByAggregateInput = {
+    customerId?: SortOrder
+    totalAmount?: SortOrder
+    usedAmount?: SortOrder
+    balance?: SortOrder
+  }
+
+  export type AdvanceHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    advanceId?: SortOrder
+    action?: SortOrder
+    amount?: SortOrder
+    balanceAfter?: SortOrder
+    reference?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdvanceHistoryAvgOrderByAggregateInput = {
+    customerId?: SortOrder
+    amount?: SortOrder
+    balanceAfter?: SortOrder
+  }
+
+  export type AdvanceHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    advanceId?: SortOrder
+    action?: SortOrder
+    amount?: SortOrder
+    balanceAfter?: SortOrder
+    reference?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdvanceHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    advanceId?: SortOrder
+    action?: SortOrder
+    amount?: SortOrder
+    balanceAfter?: SortOrder
+    reference?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdvanceHistorySumOrderByAggregateInput = {
+    customerId?: SortOrder
+    amount?: SortOrder
+    balanceAfter?: SortOrder
   }
 
   export type SupplierCountOrderByAggregateInput = {
@@ -83794,6 +86503,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
     discount?: SortOrder
+    advanceUsed?: SortOrder
     paymentMethod?: SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -83834,6 +86544,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
     discount?: SortOrder
+    advanceUsed?: SortOrder
     exchangeRate?: SortOrder
     balanceAmount?: SortOrder
     paidAmount?: SortOrder
@@ -83855,6 +86566,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
     discount?: SortOrder
+    advanceUsed?: SortOrder
     paymentMethod?: SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -83897,6 +86609,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
     discount?: SortOrder
+    advanceUsed?: SortOrder
     paymentMethod?: SortOrder
     status?: SortOrder
     isReturn?: SortOrder
@@ -83937,6 +86650,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     roundOffAmount?: SortOrder
     discount?: SortOrder
+    advanceUsed?: SortOrder
     exchangeRate?: SortOrder
     balanceAmount?: SortOrder
     paidAmount?: SortOrder
@@ -89005,6 +91719,20 @@ export namespace Prisma {
     connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
   }
 
+  export type AdvanceCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<AdvanceCreateWithoutCustomerInput, AdvanceUncheckedCreateWithoutCustomerInput> | AdvanceCreateWithoutCustomerInput[] | AdvanceUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: AdvanceCreateOrConnectWithoutCustomerInput | AdvanceCreateOrConnectWithoutCustomerInput[]
+    createMany?: AdvanceCreateManyCustomerInputEnvelope
+    connect?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+  }
+
+  export type AdvanceHistoryCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<AdvanceHistoryCreateWithoutCustomerInput, AdvanceHistoryUncheckedCreateWithoutCustomerInput> | AdvanceHistoryCreateWithoutCustomerInput[] | AdvanceHistoryUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: AdvanceHistoryCreateOrConnectWithoutCustomerInput | AdvanceHistoryCreateOrConnectWithoutCustomerInput[]
+    createMany?: AdvanceHistoryCreateManyCustomerInputEnvelope
+    connect?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+  }
+
   export type PaymentUncheckedCreateNestedManyWithoutCustomerInput = {
     create?: XOR<PaymentCreateWithoutCustomerInput, PaymentUncheckedCreateWithoutCustomerInput> | PaymentCreateWithoutCustomerInput[] | PaymentUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: PaymentCreateOrConnectWithoutCustomerInput | PaymentCreateOrConnectWithoutCustomerInput[]
@@ -89038,6 +91766,20 @@ export namespace Prisma {
     connectOrCreate?: TicketCreateOrConnectWithoutCustomerInput | TicketCreateOrConnectWithoutCustomerInput[]
     createMany?: TicketCreateManyCustomerInputEnvelope
     connect?: TicketWhereUniqueInput | TicketWhereUniqueInput[]
+  }
+
+  export type AdvanceUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<AdvanceCreateWithoutCustomerInput, AdvanceUncheckedCreateWithoutCustomerInput> | AdvanceCreateWithoutCustomerInput[] | AdvanceUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: AdvanceCreateOrConnectWithoutCustomerInput | AdvanceCreateOrConnectWithoutCustomerInput[]
+    createMany?: AdvanceCreateManyCustomerInputEnvelope
+    connect?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+  }
+
+  export type AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<AdvanceHistoryCreateWithoutCustomerInput, AdvanceHistoryUncheckedCreateWithoutCustomerInput> | AdvanceHistoryCreateWithoutCustomerInput[] | AdvanceHistoryUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: AdvanceHistoryCreateOrConnectWithoutCustomerInput | AdvanceHistoryCreateOrConnectWithoutCustomerInput[]
+    createMany?: AdvanceHistoryCreateManyCustomerInputEnvelope
+    connect?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
   }
 
   export type BranchUpdateOneWithoutCustomersNestedInput = {
@@ -89120,6 +91862,34 @@ export namespace Prisma {
     deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
   }
 
+  export type AdvanceUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<AdvanceCreateWithoutCustomerInput, AdvanceUncheckedCreateWithoutCustomerInput> | AdvanceCreateWithoutCustomerInput[] | AdvanceUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: AdvanceCreateOrConnectWithoutCustomerInput | AdvanceCreateOrConnectWithoutCustomerInput[]
+    upsert?: AdvanceUpsertWithWhereUniqueWithoutCustomerInput | AdvanceUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: AdvanceCreateManyCustomerInputEnvelope
+    set?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+    disconnect?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+    delete?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+    connect?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+    update?: AdvanceUpdateWithWhereUniqueWithoutCustomerInput | AdvanceUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: AdvanceUpdateManyWithWhereWithoutCustomerInput | AdvanceUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: AdvanceScalarWhereInput | AdvanceScalarWhereInput[]
+  }
+
+  export type AdvanceHistoryUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<AdvanceHistoryCreateWithoutCustomerInput, AdvanceHistoryUncheckedCreateWithoutCustomerInput> | AdvanceHistoryCreateWithoutCustomerInput[] | AdvanceHistoryUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: AdvanceHistoryCreateOrConnectWithoutCustomerInput | AdvanceHistoryCreateOrConnectWithoutCustomerInput[]
+    upsert?: AdvanceHistoryUpsertWithWhereUniqueWithoutCustomerInput | AdvanceHistoryUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: AdvanceHistoryCreateManyCustomerInputEnvelope
+    set?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+    disconnect?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+    delete?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+    connect?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+    update?: AdvanceHistoryUpdateWithWhereUniqueWithoutCustomerInput | AdvanceHistoryUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: AdvanceHistoryUpdateManyWithWhereWithoutCustomerInput | AdvanceHistoryUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: AdvanceHistoryScalarWhereInput | AdvanceHistoryScalarWhereInput[]
+  }
+
   export type PaymentUncheckedUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<PaymentCreateWithoutCustomerInput, PaymentUncheckedCreateWithoutCustomerInput> | PaymentCreateWithoutCustomerInput[] | PaymentUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: PaymentCreateOrConnectWithoutCustomerInput | PaymentCreateOrConnectWithoutCustomerInput[]
@@ -89188,6 +91958,62 @@ export namespace Prisma {
     update?: TicketUpdateWithWhereUniqueWithoutCustomerInput | TicketUpdateWithWhereUniqueWithoutCustomerInput[]
     updateMany?: TicketUpdateManyWithWhereWithoutCustomerInput | TicketUpdateManyWithWhereWithoutCustomerInput[]
     deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
+  }
+
+  export type AdvanceUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<AdvanceCreateWithoutCustomerInput, AdvanceUncheckedCreateWithoutCustomerInput> | AdvanceCreateWithoutCustomerInput[] | AdvanceUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: AdvanceCreateOrConnectWithoutCustomerInput | AdvanceCreateOrConnectWithoutCustomerInput[]
+    upsert?: AdvanceUpsertWithWhereUniqueWithoutCustomerInput | AdvanceUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: AdvanceCreateManyCustomerInputEnvelope
+    set?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+    disconnect?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+    delete?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+    connect?: AdvanceWhereUniqueInput | AdvanceWhereUniqueInput[]
+    update?: AdvanceUpdateWithWhereUniqueWithoutCustomerInput | AdvanceUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: AdvanceUpdateManyWithWhereWithoutCustomerInput | AdvanceUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: AdvanceScalarWhereInput | AdvanceScalarWhereInput[]
+  }
+
+  export type AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<AdvanceHistoryCreateWithoutCustomerInput, AdvanceHistoryUncheckedCreateWithoutCustomerInput> | AdvanceHistoryCreateWithoutCustomerInput[] | AdvanceHistoryUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: AdvanceHistoryCreateOrConnectWithoutCustomerInput | AdvanceHistoryCreateOrConnectWithoutCustomerInput[]
+    upsert?: AdvanceHistoryUpsertWithWhereUniqueWithoutCustomerInput | AdvanceHistoryUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: AdvanceHistoryCreateManyCustomerInputEnvelope
+    set?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+    disconnect?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+    delete?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+    connect?: AdvanceHistoryWhereUniqueInput | AdvanceHistoryWhereUniqueInput[]
+    update?: AdvanceHistoryUpdateWithWhereUniqueWithoutCustomerInput | AdvanceHistoryUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: AdvanceHistoryUpdateManyWithWhereWithoutCustomerInput | AdvanceHistoryUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: AdvanceHistoryScalarWhereInput | AdvanceHistoryScalarWhereInput[]
+  }
+
+  export type CustomerCreateNestedOneWithoutAdvancesInput = {
+    create?: XOR<CustomerCreateWithoutAdvancesInput, CustomerUncheckedCreateWithoutAdvancesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutAdvancesInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type CustomerUpdateOneRequiredWithoutAdvancesNestedInput = {
+    create?: XOR<CustomerCreateWithoutAdvancesInput, CustomerUncheckedCreateWithoutAdvancesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutAdvancesInput
+    upsert?: CustomerUpsertWithoutAdvancesInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutAdvancesInput, CustomerUpdateWithoutAdvancesInput>, CustomerUncheckedUpdateWithoutAdvancesInput>
+  }
+
+  export type CustomerCreateNestedOneWithoutAdvanceHistoryInput = {
+    create?: XOR<CustomerCreateWithoutAdvanceHistoryInput, CustomerUncheckedCreateWithoutAdvanceHistoryInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutAdvanceHistoryInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type CustomerUpdateOneRequiredWithoutAdvanceHistoryNestedInput = {
+    create?: XOR<CustomerCreateWithoutAdvanceHistoryInput, CustomerUncheckedCreateWithoutAdvanceHistoryInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutAdvanceHistoryInput
+    upsert?: CustomerUpsertWithoutAdvanceHistoryInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutAdvanceHistoryInput, CustomerUpdateWithoutAdvanceHistoryInput>, CustomerUncheckedUpdateWithoutAdvanceHistoryInput>
   }
 
   export type PaymentCreateNestedManyWithoutSupplierInput = {
@@ -93118,6 +95944,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -93163,6 +95990,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -94668,6 +97496,7 @@ export namespace Prisma {
     totalAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     discount?: FloatFilter<"Sale"> | number
+    advanceUsed?: DecimalFilter<"Sale"> | Decimal | DecimalJsLike | number | string
     paymentMethod?: StringNullableFilter<"Sale"> | string | null
     status?: StringFilter<"Sale"> | string
     isReturn?: BoolFilter<"Sale"> | boolean
@@ -95621,6 +98450,8 @@ export namespace Prisma {
     challans?: DeliveryChallanCreateNestedManyWithoutCustomerInput
     quotations?: QuotationCreateNestedManyWithoutCustomerInput
     tickets?: TicketCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutBranchInput = {
@@ -95646,6 +98477,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUncheckedCreateNestedManyWithoutCustomerInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutCustomerInput
     tickets?: TicketUncheckedCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceUncheckedCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutBranchInput = {
@@ -95804,6 +98637,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -95849,6 +98683,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -97409,6 +100244,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -97453,6 +100289,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -97668,6 +100505,66 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AdvanceCreateWithoutCustomerInput = {
+    id?: string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    usedAmount?: Decimal | DecimalJsLike | number | string
+    balance: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type AdvanceUncheckedCreateWithoutCustomerInput = {
+    id?: string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    usedAmount?: Decimal | DecimalJsLike | number | string
+    balance: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type AdvanceCreateOrConnectWithoutCustomerInput = {
+    where: AdvanceWhereUniqueInput
+    create: XOR<AdvanceCreateWithoutCustomerInput, AdvanceUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type AdvanceCreateManyCustomerInputEnvelope = {
+    data: AdvanceCreateManyCustomerInput | AdvanceCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AdvanceHistoryCreateWithoutCustomerInput = {
+    id?: string
+    advanceId: string
+    action: string
+    amount: Decimal | DecimalJsLike | number | string
+    balanceAfter: Decimal | DecimalJsLike | number | string
+    reference?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AdvanceHistoryUncheckedCreateWithoutCustomerInput = {
+    id?: string
+    advanceId: string
+    action: string
+    amount: Decimal | DecimalJsLike | number | string
+    balanceAfter: Decimal | DecimalJsLike | number | string
+    reference?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AdvanceHistoryCreateOrConnectWithoutCustomerInput = {
+    where: AdvanceHistoryWhereUniqueInput
+    create: XOR<AdvanceHistoryCreateWithoutCustomerInput, AdvanceHistoryUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type AdvanceHistoryCreateManyCustomerInputEnvelope = {
+    data: AdvanceHistoryCreateManyCustomerInput | AdvanceHistoryCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BranchUpsertWithoutCustomersInput = {
     update: XOR<BranchUpdateWithoutCustomersInput, BranchUncheckedUpdateWithoutCustomersInput>
     create: XOR<BranchCreateWithoutCustomersInput, BranchUncheckedCreateWithoutCustomersInput>
@@ -97824,6 +100721,310 @@ export namespace Prisma {
   export type TicketUpdateManyWithWhereWithoutCustomerInput = {
     where: TicketScalarWhereInput
     data: XOR<TicketUpdateManyMutationInput, TicketUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type AdvanceUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: AdvanceWhereUniqueInput
+    update: XOR<AdvanceUpdateWithoutCustomerInput, AdvanceUncheckedUpdateWithoutCustomerInput>
+    create: XOR<AdvanceCreateWithoutCustomerInput, AdvanceUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type AdvanceUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: AdvanceWhereUniqueInput
+    data: XOR<AdvanceUpdateWithoutCustomerInput, AdvanceUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type AdvanceUpdateManyWithWhereWithoutCustomerInput = {
+    where: AdvanceScalarWhereInput
+    data: XOR<AdvanceUpdateManyMutationInput, AdvanceUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type AdvanceScalarWhereInput = {
+    AND?: AdvanceScalarWhereInput | AdvanceScalarWhereInput[]
+    OR?: AdvanceScalarWhereInput[]
+    NOT?: AdvanceScalarWhereInput | AdvanceScalarWhereInput[]
+    id?: StringFilter<"Advance"> | string
+    customerId?: IntFilter<"Advance"> | number
+    totalAmount?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFilter<"Advance"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"Advance"> | Date | string
+    updatedAt?: DateTimeFilter<"Advance"> | Date | string
+    notes?: StringNullableFilter<"Advance"> | string | null
+  }
+
+  export type AdvanceHistoryUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: AdvanceHistoryWhereUniqueInput
+    update: XOR<AdvanceHistoryUpdateWithoutCustomerInput, AdvanceHistoryUncheckedUpdateWithoutCustomerInput>
+    create: XOR<AdvanceHistoryCreateWithoutCustomerInput, AdvanceHistoryUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type AdvanceHistoryUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: AdvanceHistoryWhereUniqueInput
+    data: XOR<AdvanceHistoryUpdateWithoutCustomerInput, AdvanceHistoryUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type AdvanceHistoryUpdateManyWithWhereWithoutCustomerInput = {
+    where: AdvanceHistoryScalarWhereInput
+    data: XOR<AdvanceHistoryUpdateManyMutationInput, AdvanceHistoryUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type AdvanceHistoryScalarWhereInput = {
+    AND?: AdvanceHistoryScalarWhereInput | AdvanceHistoryScalarWhereInput[]
+    OR?: AdvanceHistoryScalarWhereInput[]
+    NOT?: AdvanceHistoryScalarWhereInput | AdvanceHistoryScalarWhereInput[]
+    id?: StringFilter<"AdvanceHistory"> | string
+    customerId?: IntFilter<"AdvanceHistory"> | number
+    advanceId?: StringFilter<"AdvanceHistory"> | string
+    action?: StringFilter<"AdvanceHistory"> | string
+    amount?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
+    reference?: StringNullableFilter<"AdvanceHistory"> | string | null
+    createdAt?: DateTimeFilter<"AdvanceHistory"> | Date | string
+  }
+
+  export type CustomerCreateWithoutAdvancesInput = {
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    pincode?: string | null
+    gstin?: string | null
+    partyType?: string
+    area?: string | null
+    username?: string | null
+    password?: string | null
+    role?: string
+    accessPermissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branch?: BranchCreateNestedOneWithoutCustomersInput
+    payments?: PaymentCreateNestedManyWithoutCustomerInput
+    sales?: SaleCreateNestedManyWithoutCustomerInput
+    challans?: DeliveryChallanCreateNestedManyWithoutCustomerInput
+    quotations?: QuotationCreateNestedManyWithoutCustomerInput
+    tickets?: TicketCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutAdvancesInput = {
+    id?: number
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    pincode?: string | null
+    gstin?: string | null
+    partyType?: string
+    area?: string | null
+    username?: string | null
+    password?: string | null
+    role?: string
+    accessPermissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branchId?: number | null
+    payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
+    sales?: SaleUncheckedCreateNestedManyWithoutCustomerInput
+    challans?: DeliveryChallanUncheckedCreateNestedManyWithoutCustomerInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutCustomerInput
+    tickets?: TicketUncheckedCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutAdvancesInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutAdvancesInput, CustomerUncheckedCreateWithoutAdvancesInput>
+  }
+
+  export type CustomerUpsertWithoutAdvancesInput = {
+    update: XOR<CustomerUpdateWithoutAdvancesInput, CustomerUncheckedUpdateWithoutAdvancesInput>
+    create: XOR<CustomerCreateWithoutAdvancesInput, CustomerUncheckedCreateWithoutAdvancesInput>
+    where?: CustomerWhereInput
+  }
+
+  export type CustomerUpdateToOneWithWhereWithoutAdvancesInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutAdvancesInput, CustomerUncheckedUpdateWithoutAdvancesInput>
+  }
+
+  export type CustomerUpdateWithoutAdvancesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    pincode?: NullableStringFieldUpdateOperationsInput | string | null
+    gstin?: NullableStringFieldUpdateOperationsInput | string | null
+    partyType?: StringFieldUpdateOperationsInput | string
+    area?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    accessPermissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branch?: BranchUpdateOneWithoutCustomersNestedInput
+    payments?: PaymentUpdateManyWithoutCustomerNestedInput
+    sales?: SaleUpdateManyWithoutCustomerNestedInput
+    challans?: DeliveryChallanUpdateManyWithoutCustomerNestedInput
+    quotations?: QuotationUpdateManyWithoutCustomerNestedInput
+    tickets?: TicketUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutAdvancesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    pincode?: NullableStringFieldUpdateOperationsInput | string | null
+    gstin?: NullableStringFieldUpdateOperationsInput | string | null
+    partyType?: StringFieldUpdateOperationsInput | string
+    area?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    accessPermissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+    sales?: SaleUncheckedUpdateManyWithoutCustomerNestedInput
+    challans?: DeliveryChallanUncheckedUpdateManyWithoutCustomerNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutCustomerNestedInput
+    tickets?: TicketUncheckedUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerCreateWithoutAdvanceHistoryInput = {
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    pincode?: string | null
+    gstin?: string | null
+    partyType?: string
+    area?: string | null
+    username?: string | null
+    password?: string | null
+    role?: string
+    accessPermissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branch?: BranchCreateNestedOneWithoutCustomersInput
+    payments?: PaymentCreateNestedManyWithoutCustomerInput
+    sales?: SaleCreateNestedManyWithoutCustomerInput
+    challans?: DeliveryChallanCreateNestedManyWithoutCustomerInput
+    quotations?: QuotationCreateNestedManyWithoutCustomerInput
+    tickets?: TicketCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutAdvanceHistoryInput = {
+    id?: number
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    pincode?: string | null
+    gstin?: string | null
+    partyType?: string
+    area?: string | null
+    username?: string | null
+    password?: string | null
+    role?: string
+    accessPermissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branchId?: number | null
+    payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
+    sales?: SaleUncheckedCreateNestedManyWithoutCustomerInput
+    challans?: DeliveryChallanUncheckedCreateNestedManyWithoutCustomerInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutCustomerInput
+    tickets?: TicketUncheckedCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutAdvanceHistoryInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutAdvanceHistoryInput, CustomerUncheckedCreateWithoutAdvanceHistoryInput>
+  }
+
+  export type CustomerUpsertWithoutAdvanceHistoryInput = {
+    update: XOR<CustomerUpdateWithoutAdvanceHistoryInput, CustomerUncheckedUpdateWithoutAdvanceHistoryInput>
+    create: XOR<CustomerCreateWithoutAdvanceHistoryInput, CustomerUncheckedCreateWithoutAdvanceHistoryInput>
+    where?: CustomerWhereInput
+  }
+
+  export type CustomerUpdateToOneWithWhereWithoutAdvanceHistoryInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutAdvanceHistoryInput, CustomerUncheckedUpdateWithoutAdvanceHistoryInput>
+  }
+
+  export type CustomerUpdateWithoutAdvanceHistoryInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    pincode?: NullableStringFieldUpdateOperationsInput | string | null
+    gstin?: NullableStringFieldUpdateOperationsInput | string | null
+    partyType?: StringFieldUpdateOperationsInput | string
+    area?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    accessPermissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branch?: BranchUpdateOneWithoutCustomersNestedInput
+    payments?: PaymentUpdateManyWithoutCustomerNestedInput
+    sales?: SaleUpdateManyWithoutCustomerNestedInput
+    challans?: DeliveryChallanUpdateManyWithoutCustomerNestedInput
+    quotations?: QuotationUpdateManyWithoutCustomerNestedInput
+    tickets?: TicketUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutAdvanceHistoryInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    pincode?: NullableStringFieldUpdateOperationsInput | string | null
+    gstin?: NullableStringFieldUpdateOperationsInput | string | null
+    partyType?: StringFieldUpdateOperationsInput | string
+    area?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    accessPermissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+    sales?: SaleUncheckedUpdateManyWithoutCustomerNestedInput
+    challans?: DeliveryChallanUncheckedUpdateManyWithoutCustomerNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutCustomerNestedInput
+    tickets?: TicketUncheckedUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type PaymentCreateWithoutSupplierInput = {
@@ -99568,6 +102769,8 @@ export namespace Prisma {
     challans?: DeliveryChallanCreateNestedManyWithoutCustomerInput
     quotations?: QuotationCreateNestedManyWithoutCustomerInput
     tickets?: TicketCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutSalesInput = {
@@ -99593,6 +102796,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUncheckedCreateNestedManyWithoutCustomerInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutCustomerInput
     tickets?: TicketUncheckedCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceUncheckedCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutSalesInput = {
@@ -100066,6 +103271,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutSalesInput = {
@@ -100091,6 +103298,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUncheckedUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUncheckedUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type UserUpsertWithoutSalesInput = {
@@ -100477,6 +103686,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -100522,6 +103732,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -100652,6 +103863,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -100697,6 +103909,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -100975,6 +104188,8 @@ export namespace Prisma {
     challans?: DeliveryChallanCreateNestedManyWithoutCustomerInput
     quotations?: QuotationCreateNestedManyWithoutCustomerInput
     tickets?: TicketCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutPaymentsInput = {
@@ -101000,6 +104215,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUncheckedCreateNestedManyWithoutCustomerInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutCustomerInput
     tickets?: TicketUncheckedCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceUncheckedCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutPaymentsInput = {
@@ -101015,6 +104232,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -101060,6 +104278,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -101292,6 +104511,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutPaymentsInput = {
@@ -101317,6 +104538,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUncheckedUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUncheckedUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type SaleUpsertWithoutPaymentsInput = {
@@ -101338,6 +104561,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -101383,6 +104607,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -101533,6 +104758,8 @@ export namespace Prisma {
     sales?: SaleCreateNestedManyWithoutCustomerInput
     challans?: DeliveryChallanCreateNestedManyWithoutCustomerInput
     tickets?: TicketCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutQuotationsInput = {
@@ -101558,6 +104785,8 @@ export namespace Prisma {
     sales?: SaleUncheckedCreateNestedManyWithoutCustomerInput
     challans?: DeliveryChallanUncheckedCreateNestedManyWithoutCustomerInput
     tickets?: TicketUncheckedCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceUncheckedCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutQuotationsInput = {
@@ -101719,6 +104948,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -101764,6 +104994,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -101960,6 +105191,8 @@ export namespace Prisma {
     sales?: SaleUpdateManyWithoutCustomerNestedInput
     challans?: DeliveryChallanUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutQuotationsInput = {
@@ -101985,6 +105218,8 @@ export namespace Prisma {
     sales?: SaleUncheckedUpdateManyWithoutCustomerNestedInput
     challans?: DeliveryChallanUncheckedUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUncheckedUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type BranchUpsertWithoutQuotationsInput = {
@@ -102116,6 +105351,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -102161,6 +105397,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -105825,6 +109062,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -105870,6 +109108,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -106467,6 +109706,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -106512,6 +109752,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -110146,6 +113387,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -110191,6 +113433,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -110552,6 +113795,8 @@ export namespace Prisma {
     sales?: SaleCreateNestedManyWithoutCustomerInput
     quotations?: QuotationCreateNestedManyWithoutCustomerInput
     tickets?: TicketCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutChallansInput = {
@@ -110577,6 +113822,8 @@ export namespace Prisma {
     sales?: SaleUncheckedCreateNestedManyWithoutCustomerInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutCustomerInput
     tickets?: TicketUncheckedCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceUncheckedCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutChallansInput = {
@@ -110764,6 +114011,8 @@ export namespace Prisma {
     sales?: SaleUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutChallansInput = {
@@ -110789,6 +114038,8 @@ export namespace Prisma {
     sales?: SaleUncheckedUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUncheckedUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type BranchUpsertWithoutChallansInput = {
@@ -111464,6 +114715,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -111509,6 +114761,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -113007,6 +116260,8 @@ export namespace Prisma {
     sales?: SaleCreateNestedManyWithoutCustomerInput
     challans?: DeliveryChallanCreateNestedManyWithoutCustomerInput
     quotations?: QuotationCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutTicketsInput = {
@@ -113032,6 +116287,8 @@ export namespace Prisma {
     sales?: SaleUncheckedCreateNestedManyWithoutCustomerInput
     challans?: DeliveryChallanUncheckedCreateNestedManyWithoutCustomerInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutCustomerInput
+    advances?: AdvanceUncheckedCreateNestedManyWithoutCustomerInput
+    advanceHistory?: AdvanceHistoryUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutTicketsInput = {
@@ -113642,6 +116899,8 @@ export namespace Prisma {
     sales?: SaleUpdateManyWithoutCustomerNestedInput
     challans?: DeliveryChallanUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutTicketsInput = {
@@ -113667,6 +116926,8 @@ export namespace Prisma {
     sales?: SaleUncheckedUpdateManyWithoutCustomerNestedInput
     challans?: DeliveryChallanUncheckedUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUncheckedUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type UserUpsertWithoutAssignedTicketsInput = {
@@ -115077,6 +118338,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -115556,6 +118818,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -115601,6 +118864,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -115645,6 +118909,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -117094,6 +120359,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -117393,6 +120659,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutBranchInput = {
@@ -117418,6 +120686,8 @@ export namespace Prisma {
     challans?: DeliveryChallanUncheckedUpdateManyWithoutCustomerNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutCustomerNestedInput
     tickets?: TicketUncheckedUpdateManyWithoutCustomerNestedInput
+    advances?: AdvanceUncheckedUpdateManyWithoutCustomerNestedInput
+    advanceHistory?: AdvanceHistoryUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateManyWithoutBranchInput = {
@@ -117596,6 +120866,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -117641,6 +120912,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -117685,6 +120957,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -118567,6 +121840,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -118662,6 +121936,26 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type AdvanceCreateManyCustomerInput = {
+    id?: string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    usedAmount?: Decimal | DecimalJsLike | number | string
+    balance: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type AdvanceHistoryCreateManyCustomerInput = {
+    id?: string
+    advanceId: string
+    action: string
+    amount: Decimal | DecimalJsLike | number | string
+    balanceAfter: Decimal | DecimalJsLike | number | string
+    reference?: string | null
+    createdAt?: Date | string
+  }
+
   export type PaymentUpdateWithoutCustomerInput = {
     type?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -118717,6 +122011,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -118761,6 +122056,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -118805,6 +122101,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -119038,6 +122335,66 @@ export namespace Prisma {
     slaStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdvanceUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AdvanceUncheckedUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AdvanceUncheckedUpdateManyWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AdvanceHistoryUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    advanceId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdvanceHistoryUncheckedUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    advanceId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdvanceHistoryUncheckedUpdateManyWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    advanceId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentCreateManySupplierInput = {
@@ -120835,6 +124192,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -120931,6 +124289,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -120976,6 +124335,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -121020,6 +124380,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -121375,6 +124736,7 @@ export namespace Prisma {
     totalAmount: Decimal | DecimalJsLike | number | string
     roundOffAmount?: Decimal | DecimalJsLike | number | string
     discount?: number
+    advanceUsed?: Decimal | DecimalJsLike | number | string
     paymentMethod?: string | null
     status?: string
     isReturn?: boolean
@@ -121522,6 +124884,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -121567,6 +124930,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -121611,6 +124975,7 @@ export namespace Prisma {
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     roundOffAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: FloatFieldUpdateOperationsInput | number
+    advanceUsed?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isReturn?: BoolFieldUpdateOperationsInput | boolean
@@ -121969,6 +125334,14 @@ export namespace Prisma {
      * @deprecated Use CustomerDefaultArgs instead
      */
     export type CustomerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CustomerDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AdvanceDefaultArgs instead
+     */
+    export type AdvanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AdvanceDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AdvanceHistoryDefaultArgs instead
+     */
+    export type AdvanceHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AdvanceHistoryDefaultArgs<ExtArgs>
     /**
      * @deprecated Use SupplierDefaultArgs instead
      */

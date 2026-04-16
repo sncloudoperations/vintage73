@@ -98,6 +98,7 @@ export const MENU_STRUCTURE = [
       { name: 'Invoices', icon: FiFileText, path: '/sales/invoices' },
       { name: 'New Sale (POS)', icon: FiGrid, path: '/pos' },
       { name: 'Quotations', icon: FiFileText, path: '/sales/quotations' },
+      { name: 'Product Advance', icon: FiDollarSign, path: '/sales/product-advance' },
       { name: 'Sales Return', icon: FiBox, path: '/sales-return' },
     ]
   },
