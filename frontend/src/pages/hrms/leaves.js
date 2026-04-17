@@ -86,7 +86,8 @@ function MyLeaves({ user }) {
             setFormData({ startDate: '', endDate: '', reason: '', leaveTypeId: '', isHalfDay: false });
             fetchLeaves();
         } catch (err) {
-            toast.error(err.response?.data?.error || "Failed to apply");
+            const msg = err.response?.data?.message || err.response?.data?.error || 'Failed to apply for leave';
+            toast.error(msg);
         }
     };
 
@@ -148,7 +149,9 @@ function MyLeaves({ user }) {
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">End Date</label>
                                 <input required type="date" className="p-2 border rounded w-full"
-                                    value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })}
+                                    value={formData.endDate}
+                                    min={formData.startDate || undefined}
+                                    onChange={e => setFormData({ ...formData, endDate: e.target.value })}
                                     disabled={formData.isHalfDay}
                                 />
                             </div>

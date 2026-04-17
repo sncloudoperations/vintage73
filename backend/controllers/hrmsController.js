@@ -181,21 +181,32 @@ exports.deleteLeaveType = asyncHandler(async (req, res) => {
 // Leaves
 exports.applyLeave = asyncHandler(async (req, res) => {
     const { userId, startDate, endDate, reason, leaveTypeId, isHalfDay } = req.body;
+
+    // Validate required fields
+    if (!userId || !startDate || !endDate) {
+        res.status(400);
+        throw new Error('userId, startDate, and endDate are required');
+    }
+
+    const parsedUserId = parseInt(userId);
+    if (isNaN(parsedUserId)) {
+        res.status(400);
+        throw new Error('Invalid userId');
+    }
+
     const start = new Date(startDate);
     const end = new Date(endDate);
+
+    // Validate date range
+    if (end < start) {
+        res.status(400);
+        throw new Error('End date cannot be before start date');
+    }
 
     // 1. Calculate requested duration
     let requestedDays = 0;
     if (isHalfDay) {
         requestedDays = 0.5;
-        // Optional: Ensure start == end for half day? 
-        // For now, if half day is checked, we assume it applies to the single day or the range is just treated as 0.5 overall (usually half day is for 1 day).
-        // Let's enforce start == end for half day to avoid confusion
-        if (startDate.split('T')[0] !== endDate.split('T')[0]) {
-            // return res.status(400).json({ error: "Half day can only be applied for a single date." });
-            // Or just let it be, but count as 0.5? Let's assume user knows. 
-            // Better: If isHalfDay, we ignore duration and take 0.5.
-        }
     } else {
         const diffTime = Math.abs(end - start);
         requestedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
@@ -219,7 +230,7 @@ exports.applyLeave = asyncHandler(async (req, res) => {
 
             const existingLeaves = await prisma.leaveRequest.findMany({
                 where: {
-                    userId,
+                    userId: parsedUserId,
                     leaveTypeId: parseInt(leaveTypeId),
                     status: { in: ['APPROVED', 'PENDING'] },
                     startDate: { gte: monthStart, lte: monthEnd }
@@ -247,8 +258,8 @@ exports.applyLeave = asyncHandler(async (req, res) => {
 
     const leave = await prisma.leaveRequest.create({
         data: {
-            userId,
-            branchId: req.user.branchId, // Set branchId
+            userId: parsedUserId,
+            branchId: req.user.branchId,
             startDate: start,
             endDate: end,
             reason,
