@@ -8,7 +8,7 @@ exports.createSale = asyncHandler(async (req, res) => {
   const { 
     customerId, items, paymentMethod, paidAmount, discount = 0, advanceRedeemed = 0, saleDate, salesmanId, 
     terminalId, isReturn = false, returnReason = '', originalInvoice = '',
-    currencyCode = 'INR', exchangeRate = 1.0 
+    currencyCode = 'INR', exchangeRate = 1.0, description
   } = req.body;
   let { branchId } = req.body;
 
@@ -234,6 +234,7 @@ exports.createSale = asyncHandler(async (req, res) => {
         originalInvoice,
         currencyCode,
         exchangeRate: parseFloat(exchangeRate),
+        description,
         items: { create: saleItemsData }
       },
       include: { 
@@ -304,6 +305,7 @@ exports.getAllSales = asyncHandler(async (req, res) => {
   const normalized = sales.map(s => ({
     ...s,
     discount: Number(s.discount || 0),
+    advanceUsed: Number(s.advanceUsed || 0),
     customerName: s.customer?.name || s.customerName || 'Walk-in Customer'
   }));
 
@@ -337,7 +339,7 @@ exports.updateSale = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { 
     customerId, items, paymentMethod, paidAmount, discount = 0, saleDate, salesmanId, 
-    terminalId, currencyCode = 'INR', exchangeRate = 1.0 
+    terminalId, currencyCode = 'INR', exchangeRate = 1.0, advanceRedeemed = 0, description
   } = req.body;
   let branchId = req.body.branchId || req.user?.branchId;
 
@@ -353,6 +355,30 @@ exports.updateSale = asyncHandler(async (req, res) => {
         create: { branchId: existing.branchId, productId: item.productId, quantity: item.quantity },
         update: { quantity: { increment: item.quantity } }
       });
+    }
+
+    // --- ADVANCE REVERSAL (IF ANY) ---
+    if (existing.advanceUsed > 0 && existing.customerId) {
+        const adv = await tx.advance.findUnique({ where: { customerId: existing.customerId } });
+        if (adv) {
+            await tx.advance.update({
+                where: { id: adv.id },
+                data: {
+                    usedAmount: { decrement: existing.advanceUsed },
+                    balance: { increment: existing.advanceUsed }
+                }
+            });
+            await tx.advanceHistory.create({
+                data: {
+                    customerId: existing.customerId,
+                    advanceId: adv.id,
+                    action: 'ADD',
+                    amount: existing.advanceUsed,
+                    balanceAfter: Number(adv.balance) + Number(existing.advanceUsed),
+                    reference: `Reversal from Updated/Voided Invoice #${existing.invoiceNumber}`
+                }
+            });
+        }
     }
 
     await tx.saleItem.deleteMany({ where: { saleId: validSaleId } });
@@ -441,8 +467,10 @@ exports.updateSale = asyncHandler(async (req, res) => {
         totalAmount: finalGrandTotal,
         roundOffAmount: finalRoundOffAmount,
         paidAmount: finalPaidAmount,
-        balanceAmount: finalGrandTotal - finalPaidAmount,
-        status: (finalGrandTotal - finalPaidAmount) > 0.5 ? 'partial' : 'completed',
+        advanceUsed: parseFloat(advanceRedeemed || 0),
+        balanceAmount: finalGrandTotal - finalPaidAmount - parseFloat(advanceRedeemed || 0),
+        description,
+        status: (finalGrandTotal - finalPaidAmount - parseFloat(advanceRedeemed || 0)) > 0.5 ? 'partial' : 'completed',
         items: { create: saleItemsData }
       },
       include: { 
@@ -451,6 +479,32 @@ exports.updateSale = asyncHandler(async (req, res) => {
         salesman: { select: { name: true } } 
       }
     });
+
+    // --- NEW ADVANCE DEDUCTION (IF ANY) ---
+    const reqAdvanceUsed = parseFloat(advanceRedeemed || 0);
+    if (reqAdvanceUsed > 0 && customerId) {
+        const adv = await tx.advance.findUnique({ where: { customerId: parseInt(customerId) } });
+        const totalAvail = Number(adv?.balance || 0);
+        if (totalAvail < reqAdvanceUsed) throw new Error(`Insufficient advance balance. Available: ${totalAvail}`);
+
+        const updatedAdv = await tx.advance.update({
+            where: { id: adv.id },
+            data: {
+                usedAmount: { increment: reqAdvanceUsed },
+                balance: { decrement: reqAdvanceUsed }
+            }
+        });
+        await tx.advanceHistory.create({
+            data: {
+                customerId: parseInt(customerId),
+                advanceId: adv.id,
+                action: 'REDEEM',
+                amount: reqAdvanceUsed,
+                balanceAfter: Number(updatedAdv.balance),
+                reference: `Redeemed in Invoice #${updated.invoiceNumber} (Update)`
+            }
+        });
+    }
 
     await processSalePosting(tx, updated, req.user?.id || 1);
 

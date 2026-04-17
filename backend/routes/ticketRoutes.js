@@ -19,13 +19,15 @@ const {
   completeTicket,
   getBranchCustomers,
   getBranchAdmins,
-  getBranchAgents
+  getBranchAgents,
+  getTicketDashboardStats
 } = require('../controllers/ticketController');
 const authMiddleware = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
 router.use(authMiddleware);
 
+router.get('/stats', getTicketDashboardStats);
 router.post('/', upload.single('file'), createTicket);
 router.get('/', getTickets);
 router.put('/assign', assignTicket);

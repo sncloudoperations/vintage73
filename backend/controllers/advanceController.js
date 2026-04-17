@@ -38,7 +38,7 @@ exports.getCustomerAdvanceBalance = asyncHandler(async (req, res) => {
 
 // Add a new advance
 exports.addAdvance = asyncHandler(async (req, res) => {
-    const { customerId, totalAmount, notes, paymentMethod = 'Cash' } = req.body;
+    const { customerId, totalAmount, notes, paymentMethod = 'Cash', date } = req.body;
     
     if (!customerId || !totalAmount) {
         return res.status(400).json({ message: 'Customer and Amount are required.' });
@@ -50,6 +50,7 @@ exports.addAdvance = asyncHandler(async (req, res) => {
     }
 
     const cid = Number(customerId);
+    const advanceDate = date ? new Date(date) : new Date();
 
     const result = await prisma.$transaction(async (tx) => {
         // 1. Upsert the single Advance row
@@ -78,6 +79,7 @@ exports.addAdvance = asyncHandler(async (req, res) => {
                 action: 'ADD',
                 amount: amount,
                 balanceAfter: Number(advance.balance),
+                date: advanceDate,
                 reference: notes || 'Advance Added'
             }
         });
@@ -101,7 +103,7 @@ exports.addAdvance = asyncHandler(async (req, res) => {
 
             await postVoucher(tx, {
                 type: 'RECEIPT',
-                date: new Date(),
+                date: advanceDate,
                 amount: amount,
                 narration: `Customer Advance Received: ${customer.name}${notes ? ' - ' + notes : ''}`,
                 reference: 'ADVANCE',

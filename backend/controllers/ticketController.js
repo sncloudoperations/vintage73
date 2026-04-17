@@ -1015,3 +1015,203 @@ exports.handleTicketDecision = asyncHandler(async (req, res) => {
 
   res.json(updatedTicket);
 });
+
+// @desc    Get Ticket Dashboard Statistics
+// @route   GET /api/tickets/stats
+// @access  Private
+exports.getTicketDashboardStats = asyncHandler(async (req, res) => {
+    const { role: userRole, id: userId, branchId: userBranchId } = req.user;
+    const { role, personId, startDate, endDate, page = 1, limit = 10 } = req.query;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const take = parseInt(limit);
+
+    let baseWhere = { AND: [] };
+
+    // --- BASE VISIBILITY (Security) ---
+    if (userRole === 'admin' && userBranchId) {
+        baseWhere.AND.push({ branchId: parseInt(userBranchId) });
+    } else if (userRole === 'staff') {
+        baseWhere.AND.push({
+            OR: [
+                { assignedToId: parseInt(userId) },
+                { createdById: parseInt(userId) },
+                { previousAssigneeId: parseInt(userId) }
+            ]
+        });
+    } else if (userRole === 'customer') {
+        baseWhere.AND.push({ customerId: parseInt(userId) });
+    }
+
+    // --- DASHBOARD FILTERS ---
+    if (role && personId && personId !== 'all') {
+        const pid = parseInt(personId);
+        if (role.toLowerCase() === 'customer') {
+            baseWhere.AND.push({ customerId: pid });
+        } else if (role.toLowerCase() === 'staff') {
+            baseWhere.AND.push({ assignedToId: pid });
+        } else if (role.toLowerCase() === 'admin') {
+            baseWhere.AND.push({ 
+                OR: [
+                    { adminId: pid },
+                    { createdById: pid }
+                ]
+            });
+        }
+    }
+
+    // Clone baseWhere for stats
+    const statsWhere = JSON.parse(JSON.stringify(baseWhere));
+    if (startDate && endDate) {
+        const endDataPlusOne = new Date(endDate);
+        endDataPlusOne.setDate(endDataPlusOne.getDate() + 1);
+
+        statsWhere.AND.push({
+            createdAt: {
+                gte: new Date(startDate),
+                lt: endDataPlusOne
+            }
+        });
+    }
+
+    // 1. Summary Cards
+    const [total, open, inProgress, closed, overdue] = await Promise.all([
+        prisma.ticket.count({ where: statsWhere }),
+        prisma.ticket.count({ 
+            where: { 
+                ...statsWhere, 
+                status: { in: ['Created', 'Assigned', 'InProgress', 'Waiting', 'ClosureRequested', 'CREATED', 'ASSIGNED', 'INPROGRESS', 'WAITING', 'CLOSUREREQUESTED'] } 
+            } 
+        }),
+        prisma.ticket.count({ 
+            where: { 
+                ...statsWhere, 
+                status: { in: ['InProgress', 'INPROGRESS'] } 
+            } 
+        }),
+        prisma.ticket.count({ 
+            where: { 
+                ...statsWhere, 
+                status: { in: ['Closed', 'CLOSED'] } 
+            } 
+        }),
+        prisma.ticket.count({ 
+            where: { 
+                ...statsWhere, 
+                slaStatus: 'Delayed' 
+            } 
+        })
+    ]);
+
+    // 2. Status Distribution (Pie Chart)
+    const statusCounts = await prisma.ticket.groupBy({
+        by: ['status'],
+        where: statsWhere,
+        _count: { id: true }
+    });
+
+    const statusDistribution = statusCounts.reduce((acc, curr) => {
+        const s = curr.status.toUpperCase();
+        acc[s] = (acc[s] || 0) + curr._count.id;
+        return acc;
+    }, {});
+
+    // 3. Graph Data (Last 30 Days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    thirtyDaysAgo.setHours(0,0,0,0);
+    
+    const graphTickets = await prisma.ticket.findMany({
+        where: {
+            ...baseWhere,
+            createdAt: { gte: thirtyDaysAgo }
+        },
+        select: { createdAt: true, status: true, updatedAt: true }
+    });
+
+    const dailyTrends = {};
+    for (let i = 0; i < 31; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        dailyTrends[dateStr] = { created: 0, resolved: 0 };
+    }
+
+    graphTickets.forEach(t => {
+        const createdDate = t.createdAt.toISOString().split('T')[0];
+        if (dailyTrends[createdDate]) dailyTrends[createdDate].created++;
+        
+        if (t.status.toUpperCase() === 'CLOSED') {
+            const resolvedDate = t.updatedAt.toISOString().split('T')[0];
+            if (dailyTrends[resolvedDate]) dailyTrends[resolvedDate].resolved++;
+        }
+    });
+
+    const graphStats = Object.keys(dailyTrends).sort().map(date => ({
+        date,
+        created: dailyTrends[date].created,
+        resolved: dailyTrends[date].resolved
+    }));
+
+    // 4. Paginated Tickets Table
+    const [tickets, totalTicketsCount] = await Promise.all([
+        prisma.ticket.findMany({
+            where: statsWhere,
+            skip,
+            take,
+            orderBy: { createdAt: 'desc' },
+            include: {
+                assignedTo: { select: { id: true, name: true, username: true } },
+                createdBy: { select: { id: true, name: true, username: true, role: true } },
+                customer: { select: { id: true, name: true, phone: true } },
+                category: { select: { id: true, name: true } },
+                history: {
+                    orderBy: { createdAt: 'desc' },
+                    include: { doneBy: { select: { name: true } } }
+                },
+                messages: {
+                    orderBy: { createdAt: 'asc' },
+                    include: { sender: { select: { name: true } } }
+                }
+            }
+        }),
+        prisma.ticket.count({ where: statsWhere })
+    ]);
+
+    const normalizeStatus = (s) => {
+        if (!s) return 'Created';
+        const l = s.toLowerCase();
+        if (l === 'created') return 'Created';
+        if (l === 'assigned') return 'Assigned';
+        if (l === 'inprogress') return 'InProgress';
+        if (l === 'closed') return 'Closed';
+        if (l === 'waiting') return 'Waiting';
+        if (l === 'closurerequested') return 'ClosureRequested';
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    };
+
+    const normalizedTickets = tickets.map(t => ({
+        ...t,
+        status: normalizeStatus(t.status)
+    }));
+
+    res.json({
+        summary: {
+            total,
+            open,
+            inProgress,
+            closed,
+            overdue
+        },
+        statusDistribution,
+        graphData: graphStats,
+        tickets: normalizedTickets,
+        pagination: {
+            total: totalTicketsCount,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            pages: Math.ceil(totalTicketsCount / limit)
+        }
+    });
+});
+
