@@ -8,16 +8,12 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
   BarElement,
   Title,
   Tooltip,
-  Legend,
-  Filler,
-  ArcElement
+  Legend
 } from 'chart.js';
-import { Line, Doughnut } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import moment from 'moment';
 import SearchableSelect from '@/components/SearchableSelect';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,14 +22,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
   BarElement,
   Title,
   Tooltip,
-  Legend,
-  Filler,
-  ArcElement
+  Legend
 );
 
 export default function TicketingDashboard() {
@@ -45,15 +37,23 @@ export default function TicketingDashboard() {
     startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
     endDate: moment().format('YYYY-MM-DD'),
     page: 1,
-    limit: 10
+    limit: 10,
+    status: ''
   });
   const [peopleOptions, setPeopleOptions] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  
+  // Activity Overview States
+  const [viewMode, setViewMode] = useState('overview'); // 'overview' or 'detail'
+  const [summaryUser, setSummaryUser] = useState(null);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [summaryStats, setSummaryStats] = useState(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
 
   useEffect(() => {
     fetchStats();
-  }, [filters.role, filters.personId, filters.startDate, filters.endDate, filters.page]);
+  }, [filters.role, filters.personId, filters.startDate, filters.endDate, filters.page, filters.status]);
 
   useEffect(() => {
     if (filters.role) {
@@ -80,23 +80,18 @@ export default function TicketingDashboard() {
       let endpoint = '';
       if (filters.role === 'customer') {
         endpoint = '/tickets/branch-customers';
-      } else if (filters.role === 'staff' || filters.role === 'admin') {
+      } else if (filters.role === 'employee') {
         endpoint = '/tickets/branch-agents';
       }
 
       if (endpoint) {
         const res = await api.get(endpoint);
-        // Map based on response structure
-        const options = res.data
-          .filter(item => {
-            if (filters.role === 'staff') return item.role?.toLowerCase() === 'staff';
-            if (filters.role === 'admin') return item.role?.toLowerCase() === 'admin' || item.role?.toLowerCase() === 'branch-admin';
-            return true;
-          })
-          .map(item => ({
-            value: item.id,
-            label: `${item.name} (${item.username || item.phone || ''})`
-          }));
+        const options = res.data.map(item => ({
+          value: item.id,
+          label: `${item.name} (${item.username || item.phone || ''})`,
+          role: item.role?.toLowerCase(),
+          original: item
+        }));
         setPeopleOptions(options);
       }
     } catch (err) {
@@ -104,13 +99,42 @@ export default function TicketingDashboard() {
     }
   };
 
+  const fetchUserSummary = async (userId) => {
+    try {
+      setLoadingSummary(true);
+      const res = await api.get('/tickets/stats', { 
+        params: { ...filters, personId: userId, page: 1, limit: 1 } 
+      });
+      setSummaryStats(res.data);
+    } catch (err) {
+      console.error('Failed to fetch user summary', err);
+    } finally {
+      setLoadingSummary(false);
+    }
+  };
+
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value,
-      ...(key !== 'page' ? { page: 1 } : {}),
-      ...(key === 'role' ? { personId: 'all' } : {})
-    }));
+    setFilters(prev => {
+      const newFilters = {
+        ...prev,
+        [key]: value,
+        ...(key !== 'page' ? { page: 1 } : {}),
+        ...(key === 'role' && value === '' ? { personId: 'all' } : {})
+      };
+      return newFilters;
+    });
+  };
+
+  const openSummaryModal = (user) => {
+    setSummaryUser(user);
+    setShowSummaryModal(true);
+    fetchUserSummary(user.id);
+  };
+
+  const navigateToDetail = (userId) => {
+    handleFilterChange('personId', userId);
+    setViewMode('detail');
+    setShowSummaryModal(false);
   };
 
   const openTicketDetails = (ticket) => {
@@ -118,43 +142,45 @@ export default function TicketingDashboard() {
     setShowModal(true);
   };
 
-  // Chart Data
-  const trendData = {
-    labels: stats?.graphData?.map(d => moment(d.date).format('MMM DD')) || [],
+  // Chart 1: Status Summary Bar Chart
+  const statusBarData = {
+    labels: stats ? Object.keys(stats.statusDistribution).map(s => s.toUpperCase()) : [],
     datasets: [
       {
-        label: 'Created',
-        data: stats?.graphData?.map(d => d.created) || [],
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-        fill: true,
-        tension: 0.4
-      },
-      {
-        label: 'Resolved',
-        data: stats?.graphData?.map(d => d.resolved) || [],
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        fill: true,
-        tension: 0.4
-      }
-    ]
-  };
-
-  const statusPieData = {
-    labels: stats ? Object.keys(stats.statusDistribution) : [],
-    datasets: [
-      {
+        label: 'Tickets',
         data: stats ? Object.values(stats.statusDistribution) : [],
         backgroundColor: [
           '#6366f1', // Created
           '#3b82f6', // Assigned
           '#f59e0b', // InProgress
           '#10b981', // Closed
+          '#a855f7', // Reassigned
           '#f43f5e', // Overdue/Other
           '#94a3b8', // Waiting
         ],
-        borderWidth: 0,
+        borderRadius: 6,
+        barThickness: 32,
+      }
+    ]
+  };
+
+  // Chart 2: Distribution (e.g. by Category)
+  const distributionData = {
+    labels: stats?.tickets ? [...new Set(stats.tickets.map(t => t.category?.name || 'General'))] : [],
+    datasets: [
+      {
+        label: 'Volume',
+        data: stats?.tickets ? (function() {
+          const counts = {};
+          stats.tickets.forEach(t => {
+            const cat = t.category?.name || 'General';
+            counts[cat] = (counts[cat] || 0) + 1;
+          });
+          return Object.values(counts);
+        })() : [],
+        backgroundColor: '#cbd5e1',
+        borderRadius: 6,
+        barThickness: 24,
       }
     ]
   };
@@ -163,35 +189,64 @@ export default function TicketingDashboard() {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: '600' } } },
+      legend: { display: false },
       tooltip: { 
         backgroundColor: '#1e293b',
         padding: 12,
-        titleFont: { size: 14 },
-        bodyFont: { size: 13 },
-        usePointStyle: true
+        titleFont: { size: 12, weight: 'bold' },
+        bodyFont: { size: 12 },
+        usePointStyle: true,
+        cornerRadius: 8
       }
     },
     scales: {
-      y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
-      x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      y: { 
+        beginAtZero: true, 
+        ticks: { stepSize: 1, font: { size: 10, weight: '500' }, color: '#94a3b8' }, 
+        grid: { color: '#f1f5f9', drawBorder: false } 
+      },
+      x: { 
+        grid: { display: false, drawBorder: false }, 
+        ticks: { font: { size: 10, weight: '600' }, color: '#64748b' } 
+      }
     }
   };
+
+  const currentTier = !filters.role ? 'main' : (filters.personId === 'all' ? 'role-list' : 'detail');
 
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 lg:p-8 space-y-8 animate-in fade-in duration-500">
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Support Analytics</h1>
-          <p className="text-slate-500 text-sm font-medium flex items-center gap-2">
-            <FiActivity className="text-indigo-500" /> 
-            Real-time performance monitoring and ticket tracking
-          </p>
+        <div className="flex-1 space-y-1">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Ticketing Intelligence</h1>
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
+              {viewMode === 'detail' ? 'Individual Performance Matrix' : 'Real-time System Activity'}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl shadow-sm border border-slate-100">
-           <FiCalendar className="text-slate-400" />
-           <span className="text-xs font-semibold text-slate-700">{moment().format('MMMM Do, YYYY')}</span>
+
+        {currentTier === 'detail' && (
+          <button 
+            onClick={() => handleFilterChange('personId', 'all')}
+            className="h-11 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl px-5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-100 transition-all mr-4 shadow-sm"
+          >
+            <FiChevronLeft size={16} /> Back to Participant List
+          </button>
+        )}
+        {currentTier === 'role-list' && (
+          <button 
+            onClick={() => handleFilterChange('role', '')}
+            className="h-11 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl px-5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-100 transition-all mr-4 shadow-sm"
+          >
+            <FiChevronLeft size={16} /> Back to Global Overview
+          </button>
+        )}
+        <div className="flex items-center gap-3 bg-white px-5 py-2.5 rounded-2xl shadow-sm border border-slate-100">
+           <FiCalendar className="text-indigo-400" />
+           <span className="text-[10px] font-bold text-slate-700 uppercase tracking-widest leading-none">{moment().format('MMMM Do, YYYY')}</span>
         </div>
       </header>
 
@@ -206,10 +261,9 @@ export default function TicketingDashboard() {
               value={filters.role}
               onChange={(e) => handleFilterChange('role', e.target.value)}
             >
-              <option value="">Full Company</option>
-              <option value="customer">Customer Perspective</option>
-              <option value="staff">Staff Performance</option>
-              <option value="admin">Admin Oversight</option>
+              <option value="">Company Overview</option>
+              <option value="customer">Customers</option>
+              <option value="employee">Employees</option>
             </select>
           </div>
         </div>
@@ -254,76 +308,135 @@ export default function TicketingDashboard() {
         </div>
 
         <button 
-          onClick={() => setFilters({ ...filters, role: '', personId: 'all', startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'), endDate: moment().format('YYYY-MM-DD'), page: 1 })}
-          className="h-11 bg-slate-800 text-white rounded-xl px-6 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-900 transition-all shadow-md shadow-slate-200"
+          onClick={() => setFilters({ role: '', personId: 'all', startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'), endDate: moment().format('YYYY-MM-DD'), page: 1, limit: 10, status: '' })}
+          className="h-11 bg-white border border-slate-200 text-slate-600 rounded-xl px-6 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50 transition-all"
         >
-          Reset Filters
+          Reset
         </button>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-        <StatCard title="Total Tickets" value={stats?.summary.total} icon={<FiTag />} color="bg-slate-900" trend="+12% from last month" />
-        <StatCard title="Open" value={stats?.summary.open} icon={<FiClock />} color="bg-indigo-600" />
-        <StatCard title="In Progress" value={stats?.summary.inProgress} icon={<FiActivity />} color="bg-blue-500" />
-        <StatCard title="Closed" value={stats?.summary.closed} icon={<FiCheckCircle />} color="bg-emerald-600" />
-        <StatCard title="Overdue" value={stats?.summary.overdue} icon={<FiAlertCircle />} color="bg-rose-500" />
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
+        <StatCard title="Total Volume" value={stats?.summary.total} icon={<FiTag />} color="text-indigo-600" />
+        <StatCard title="Active Open" value={stats?.summary.open} icon={<FiClock />} color="text-blue-500" />
+        <StatCard title="In Progress" value={stats?.summary.inProgress} icon={<FiActivity />} color="text-amber-500" />
+        <StatCard title="Total Closed" value={stats?.summary.closed} icon={<FiCheckCircle />} color="text-emerald-500" />
+        <StatCard title="Overdue Alert" value={stats?.summary.overdue} icon={<FiAlertCircle />} color="text-rose-500" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Trend Graph */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-[1.5rem] shadow-sm border border-slate-100 flex flex-col">
-          <div className="flex justify-between items-center mb-10">
-            <h3 className="text-lg font-bold text-slate-800 tracking-tight">Ticket Trends</h3>
-            <div className="flex gap-6">
-              <span className="flex items-center gap-2 text-[10px] font-bold text-indigo-500 uppercase tracking-widest"><div className="w-2 h-2 rounded-full bg-indigo-500" /> Created</span>
-              <span className="flex items-center gap-2 text-[10px] font-bold text-emerald-500 uppercase tracking-widest"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Resolved</span>
+      {currentTier !== 'role-list' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white p-6 lg:p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col">
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Role Status Matrix</h3>
+            <div className="h-[300px] w-full">
+                {loading ? <div className="h-full w-full bg-slate-50 animate-pulse rounded-2xl" /> : <Bar data={statusBarData} options={chartOptions} />}
             </div>
           </div>
-          <div className="h-[350px] w-full">
-            {loading ? <div className="h-full w-full bg-slate-50 animate-pulse rounded-2xl" /> : <Line data={trendData} options={chartOptions} />}
+
+          <div className="bg-white p-6 lg:p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col">
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Category Distribution</h3>
+            <div className="h-[300px] w-full">
+                {loading ? <div className="h-full w-full bg-slate-50 animate-pulse rounded-2xl" /> : <Bar data={distributionData} options={chartOptions} />}
+            </div>
           </div>
         </div>
-
-        {/* Status Distribution */}
-        <div className="bg-white p-8 rounded-[1.5rem] shadow-sm border border-slate-100 flex flex-col">
-           <h3 className="text-lg font-bold text-slate-800 tracking-tight mb-10">Status Distribution</h3>
-           <div className="flex-1 flex flex-col items-center justify-center relative">
-              <div className="h-[250px] w-full">
-                 {loading ? <div className="h-full w-full bg-slate-50 animate-pulse rounded-full" /> : <Doughnut data={statusPieData} options={{...chartOptions, cutout: '70%'}} />}
-              </div>
-              {!loading && stats && (
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mt-[-10px] text-center">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total</p>
-                  <p className="text-2xl font-bold text-slate-800">{stats.summary.total}</p>
-                </div>
-              )}
-              <div className="w-full mt-10 grid grid-cols-2 gap-4">
-                 {stats && Object.entries(stats.statusDistribution).map(([label, val], idx) => (
-                   <div key={label} className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: statusPieData.datasets[0].backgroundColor[idx] }} />
-                      <div className="flex-1 flex justify-between items-center">
-                        <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">{label}</span>
-                        <span className="text-xs font-bold text-slate-700">{val}</span>
-                      </div>
-                   </div>
-                 ))}
+      ) : (
+        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+           <div className="flex justify-between items-center mb-10">
+              <div className="space-y-1">
+                 <h3 className="text-xl font-bold text-slate-900 tracking-tight">System Activity Insights</h3>
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Select {filters.role} to view detailed performance</p>
               </div>
            </div>
-        </div>
-      </div>
 
-      {/* Tickets Table */}
-      <div className="bg-white rounded-[1.5rem] shadow-sm border border-slate-100 overflow-hidden">
-        <div className="px-8 py-5 border-b border-slate-50 bg-slate-50/30 flex justify-between items-center">
-          <div className="space-y-0.5">
-            <h3 className="text-lg font-bold text-slate-800 tracking-tight">Recent Activity</h3>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Detail view of filtered tickets</p>
-          </div>
-          <div className="flex items-center gap-4">
-             {loading && <div className="text-[10px] font-bold text-indigo-500 animate-pulse uppercase tracking-widest">Refreshing Feed...</div>}
-          </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {stats?.tickets && (function() {
+                const participantsNodes = stats.tickets.flatMap(t => {
+                   const nodes = [];
+                   if (t.customer) nodes.push({ ...t.customer, role: 'customer', type: 'Customer' });
+                   if (t.assignedTo) nodes.push({ ...t.assignedTo, role: 'employee', type: 'Assigned Agent' });
+                   if (t.createdBy && t.createdBy.role !== 'customer') nodes.push({ ...t.createdBy, role: 'employee', type: 'Creator' });
+                   if (t.reassignedTo) nodes.push({ ...t.reassignedTo, role: 'employee', type: 'Reassigned Agent' });
+                   return nodes;
+                });
+                
+                const uniqueParticipants = participantsNodes.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+                
+                return uniqueParticipants
+                  .filter(user => !filters.role || user.role === filters.role)
+                  .map(user => {
+                    const involvements = [...new Set(participantsNodes.filter(p => p.id === user.id).map(p => p.type))];
+                    return (
+                      <button 
+                        key={user.id} 
+                        onClick={() => openSummaryModal(user)}
+                        className="p-6 bg-white border border-slate-100 rounded-3xl text-left hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-500/5 transition-all group flex items-start gap-5"
+                      >
+                         <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-xl font-bold text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                           {user.name?.charAt(0)}
+                         </div>
+                         <div className="flex-1 min-w-0 space-y-2">
+                            <p className="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{user.name}</p>
+                            <div className="flex flex-wrap gap-1.5">
+                               {involvements.map(inv => (
+                                 <span key={inv} className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[8px] font-bold uppercase tracking-wider rounded-md border border-slate-200/50">
+                                   {inv}
+                                 </span>
+                               ))}
+                            </div>
+                         </div>
+                         <div className="flex flex-col items-center">
+                            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                              <FiActivity size={18} />
+                            </div>
+                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Action</span>
+                         </div>
+                      </button>
+                    );
+                  });
+              })()}
+           </div>
+           
+           {!loading && stats?.tickets.length === 0 && (
+             <div className="py-24 text-center border-2 border-dashed border-slate-100 rounded-3xl">
+                <FiActivity className="mx-auto text-4xl text-slate-200 mb-4" />
+                <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">No active participants detected in this timeframe</p>
+             </div>
+           )}
         </div>
+      )}
+
+      {/* Detail/Main View Table Section */}
+      {(currentTier === 'main' || currentTier === 'detail') && (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+           <div className="lg:col-span-4 bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+             <div className="px-8 py-6 border-b border-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="space-y-0.5">
+                  <h3 className="text-lg font-bold text-slate-800 tracking-tight">
+                    {currentTier === 'detail' ? `Performance History for ${peopleOptions.find(p => p.value === filters.personId)?.label.split(' (')[0]}` : 'Global Ticket Lifecycle'}
+                  </h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Comprehensive entry log and status tracking</p>
+                </div>
+                
+                {currentTier === 'detail' && (
+                  <div className="flex flex-wrap items-center gap-2">
+                     {['', 'created', 'assigned', 'reassigned', 'inprogress', 'closed'].map(s => (
+                       <button
+                         key={s}
+                         onClick={() => handleFilterChange('status', s)}
+                         className={`px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                           filters.status === s 
+                           ? 'bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200' 
+                           : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'
+                         }`}
+                       >
+                         {s || 'All States'}
+                       </button>
+                     ))}
+                  </div>
+                )}
+                {loading && <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />}
+             </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -387,43 +500,27 @@ export default function TicketingDashboard() {
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
             Showing <span className="text-slate-800">{stats?.tickets.length || 0}</span> of <span className="text-indigo-600">{stats?.pagination.total || 0}</span> entries
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button 
               disabled={filters.page === 1}
               onClick={() => handleFilterChange('page', filters.page - 1)}
-              className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:border-indigo-500 hover:text-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              className="h-10 px-5 rounded-2xl bg-white border border-slate-200 flex items-center gap-2 text-[10px] font-bold text-slate-600 hover:border-indigo-500 hover:text-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all uppercase tracking-widest"
             >
-              <FiChevronLeft size={16} />
+              <FiChevronLeft size={16} /> Prev
             </button>
-            <div className="flex items-center gap-1">
-              {[...Array(stats?.pagination.pages || 0)].map((_, i) => {
-                const p = i + 1;
-                if (p === 1 || p === stats?.pagination.pages || (p >= filters.page - 1 && p <= filters.page + 1)) {
-                  return (
-                    <button 
-                      key={p} 
-                      onClick={() => handleFilterChange('page', p)}
-                      className={`w-9 h-9 rounded-xl font-bold text-[11px] transition-all ${filters.page === p ? 'bg-indigo-600 text-white shadow-md' : 'bg-white border border-slate-200 text-slate-500 hover:border-indigo-500'}`}
-                    >
-                      {p}
-                    </button>
-                  );
-                } else if (p === filters.page - 2 || p === filters.page + 2) {
-                  return <FiMoreHorizontal key={p} className="text-slate-300 mx-1" />;
-                }
-                return null;
-              })}
-            </div>
+            
             <button 
               disabled={filters.page === stats?.pagination.pages}
               onClick={() => handleFilterChange('page', filters.page + 1)}
-              className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:border-indigo-500 hover:text-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              className="h-10 px-5 rounded-2xl bg-white border border-slate-200 flex items-center gap-2 text-[10px] font-bold text-slate-600 hover:border-indigo-500 hover:text-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all uppercase tracking-widest"
             >
-              <FiChevronRight size={16} />
+              Next <FiChevronRight size={16} />
             </button>
           </div>
         </div>
       </div>
+    </div>
+  )}
 
       {/* Ticket Details Modal */}
       <AnimatePresence>
@@ -532,29 +629,80 @@ export default function TicketingDashboard() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Quick Stats Modal */}
+      <AnimatePresence>
+        {showSummaryModal && summaryUser && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+               className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-100"
+             >
+                <div className="p-8 text-center space-y-6">
+                   <div className="w-20 h-20 rounded-[2rem] bg-indigo-600 text-white flex items-center justify-center text-3xl font-extrabold mx-auto shadow-xl shadow-indigo-200">
+                      {summaryUser.name?.charAt(0)}
+                   </div>
+                   <div className="space-y-1">
+                      <h3 className="text-xl font-bold text-slate-900">{summaryUser.name}</h3>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{summaryUser.role} Performance Snapshot</p>
+                   </div>
+
+                   <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-1">
+                         <p className="text-xs font-bold text-slate-800">{summaryStats?.summary.total || 0}</p>
+                         <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-1">
+                         <p className="text-xs font-bold text-indigo-600">{summaryStats?.summary.inProgress || 0}</p>
+                         <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">In Progress</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-1">
+                         <p className="text-xs font-bold text-emerald-600">{summaryStats?.summary.closed || 0}</p>
+                         <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Closed</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-1">
+                         <p className="text-xs font-bold text-rose-500">{summaryStats?.summary.overdue || 0}</p>
+                         <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Overdue</p>
+                      </div>
+                   </div>
+
+                   <div className="flex gap-4 pt-4">
+                      <button 
+                        onClick={() => setShowSummaryModal(false)}
+                        className="flex-1 h-12 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all"
+                      >
+                        Dismiss
+                      </button>
+                      <button 
+                        onClick={() => navigateToDetail(summaryUser.id)}
+                        className="flex-[2] h-12 bg-indigo-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-900 transition-all shadow-lg shadow-indigo-100"
+                      >
+                        View Full Details
+                      </button>
+                   </div>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-function StatCard({ title, value, icon, color, trend }) {
+function StatCard({ title, value, icon, color }) {
   return (
-    <div className={`${color} rounded-[1.25rem] p-6 text-white shadow-lg relative overflow-hidden group hover:-translate-y-1 transition-all duration-300`}>
-      <div className="relative z-10 flex flex-col justify-between h-full min-h-[100px]">
-        <div>
-          <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mb-2">{title}</p>
-          <h2 className="text-3xl font-bold tracking-tight">{value || 0}</h2>
+    <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm relative overflow-hidden group hover:border-indigo-200 transition-all duration-300">
+      <div className="relative z-10 flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-xl ${color}`}>
+          {icon}
         </div>
-        {trend && (
-           <div className="mt-4 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/10 border border-white/5 text-[9px] font-bold tracking-widest self-start">
-             <FiTrendingUp className="text-emerald-400" />
-             {trend}
-           </div>
-        )}
+        <div>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">{title}</p>
+          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">{value || 0}</h2>
+        </div>
       </div>
-      <div className="absolute top-4 right-4 w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm group-hover:bg-white/20 transition-all">
-        {icon}
-      </div>
-      <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
     </div>
   );
 }
@@ -593,6 +741,7 @@ function getStatusStyles(status) {
   if (['created', 'new'].includes(s)) return 'bg-emerald-50 text-emerald-600 border-emerald-100';
   if (['assigned', 'linked'].includes(s)) return 'bg-blue-50 text-blue-600 border-blue-100';
   if (['inprogress', 'active', 'in_progress'].includes(s)) return 'bg-indigo-50 text-indigo-600 border-indigo-100';
+  if (['reassigned'].includes(s)) return 'bg-purple-50 text-purple-600 border-purple-100';
   if (['closed', 'completed', 'resolved'].includes(s)) return 'bg-slate-100 text-slate-500 border-slate-200';
   if (s === 'waiting') return 'bg-amber-50 text-amber-600 border-amber-100';
   if (['overdue', 'rejected', 'ignored'].includes(s)) return 'bg-rose-50 text-rose-500 border-rose-100';
