@@ -103,6 +103,7 @@ const CURRENCY_SYMBOLS = {
     const [useFullAdvance, setUseFullAdvance] = useState(false);
     const [cashier, setCashier] = useState(null);
     const [sessionTime, setSessionTime] = useState('');
+    const [saleDescription, setSaleDescription] = useState('');
 
     // Round Off State
     const [roundOff, setRoundOff] = useState(0);
@@ -129,6 +130,7 @@ const CURRENCY_SYMBOLS = {
                     setCurrencyCode(restoredCode);
                     setCurrencySymbol(CURRENCY_SYMBOLS[restoredCode] || '₹');
                     setExchangeRate(EXCHANGE_RATES[restoredCode] || 1);
+                    setSaleDescription(parsed.saleDescription || '');
                 } catch (e) {
                     console.error('Failed to restore POS state:', e);
                 }
@@ -150,7 +152,8 @@ const CURRENCY_SYMBOLS = {
                 currencyCode,
                 currencySymbol,
                 exchangeRate,
-                advanceRedeemed
+                advanceRedeemed,
+                saleDescription
             };
             localStorage.setItem(`pos_state_${user.id}`, JSON.stringify(stateToStore));
         }
@@ -307,6 +310,7 @@ const CURRENCY_SYMBOLS = {
             setCurrencyCode(invoice.currencyCode || 'INR');
             setCurrencySymbol(CURRENCY_SYMBOLS[invoice.currencyCode || 'INR']);
             setExchangeRate(invoice.exchangeRate || 1);
+            setSaleDescription(invoice.description || '');
 
             // Map items to cart
             const restoredCart = invoice.items.map(item => {
@@ -743,7 +747,8 @@ const CURRENCY_SYMBOLS = {
                 payments: finalPayments,
                 salesmanId: salesmanId ? parseInt(salesmanId) : null,
                 currencyCode,
-                exchangeRate
+                exchangeRate,
+                description: saleDescription
             };
 
             let res;
@@ -774,6 +779,7 @@ const CURRENCY_SYMBOLS = {
             setCart([]);
             setSearch('');
             setRoundOff(0);
+            setSaleDescription('');
             setSalesmanId(cashier?.id || ''); // Reset to cashier
             localStorage.removeItem(`pos_state_${user?.id}`);
             
@@ -1232,6 +1238,17 @@ const CURRENCY_SYMBOLS = {
                         </div>
                     )}
 
+                    {/* Description / Notes - Compacted & Moved here */}
+                    <div className="pt-1.5">
+                        <textarea 
+                            className="w-full px-2 py-1.5 text-[10px] bg-white border border-slate-200 rounded outline-none focus:border-primary transition-all resize-none font-medium text-slate-500 placeholder:text-slate-300"
+                            rows="1"
+                            placeholder="Add sale notes..."
+                            value={saleDescription}
+                            onChange={(e) => setSaleDescription(e.target.value)}
+                        />
+                    </div>
+
                     <button
                         onClick={initiateCheckout}
                         disabled={cart.length === 0}
@@ -1261,7 +1278,10 @@ const CURRENCY_SYMBOLS = {
                             {/* Total Amount Display */}
                             <div className="text-center mb-8">
                                 <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-1">Total Payable</p>
-                                <span className="text-2xl font-extrabold text-slate-800">{currencySymbol}{total.toFixed(2)}</span>
+                                <span className="text-2xl font-extrabold text-slate-800">{currencySymbol}{finalPayable.toFixed(2)}</span>
+                                {redeemedAmount > 0 && (
+                                    <p className="text-[10px] text-slate-400 mt-1 italic">(Gross: {currencySymbol}{total.toFixed(2)} - Adv: {currencySymbol}{redeemedAmount.toFixed(2)})</p>
+                                )}
                             </div>
 
                             {/* Payment Method Tabs */}
@@ -1273,13 +1293,13 @@ const CURRENCY_SYMBOLS = {
                                             key={method}
                                             onClick={() => {
                                                 const isCredit = method === 'Credit';
-                                                // If Credit, default to 0. If others, default to remaining total.
+                                                // If Credit, default to 0. If others, default to remaining amount of finalPayable.
                                                 const alreadyPaid = addedPayments.reduce((s, x) => s + x.amount, 0);
-                                                const remaining = total - alreadyPaid;
+                                                const remaining = finalPayable - alreadyPaid;
                                                 setPaymentData({
                                                     ...paymentData,
                                                     method,
-                                                    paidAmount: isCredit ? '0' : remaining.toFixed(2)
+                                                    paidAmount: isCredit ? '0' : Math.max(0, remaining).toFixed(2)
                                                 });
                                             }}
                                             className={`py-2 px-1 rounded-lg text-[10px] font-medium transition-all border whitespace-nowrap ${paymentData.method === method
@@ -1297,14 +1317,14 @@ const CURRENCY_SYMBOLS = {
                             <div className="mb-6">
                                 <div className="flex justify-between items-center mb-2">
                                     <label className="text-xs font-medium text-slate-500 uppercase">Received Amount</label>
-                                    <span className={`text-xs font-medium ${(parseFloat(paymentData.paidAmount || 0) - (total - addedPayments.reduce((s, x) => s + x.amount, 0))) >= 0
+                                    <span className={`text-xs font-medium ${(parseFloat(paymentData.paidAmount || 0) - (finalPayable - addedPayments.reduce((s, x) => s + x.amount, 0))) >= 0
                                         ? 'text-primary'
                                         : 'text-orange-500'
                                         }`}>
                                         {(() => {
                                             const paid = parseFloat(paymentData.paidAmount || 0);
                                             const alreadyPaid = addedPayments.reduce((s, x) => s + x.amount, 0);
-                                            const balance = total - alreadyPaid - paid;
+                                            const balance = finalPayable - alreadyPaid - paid;
                                             if (balance < -0.01) return `Change: ${currencySymbol}${Math.abs(balance).toFixed(2)}`;
                                             if (balance > 0.01) return `Balance: ${currencySymbol}${balance.toFixed(2)}`;
                                             return 'Settled';

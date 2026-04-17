@@ -213,6 +213,7 @@ exports.Prisma.AdvanceHistoryScalarFieldEnum = {
   amount: 'amount',
   balanceAfter: 'balanceAfter',
   reference: 'reference',
+  date: 'date',
   createdAt: 'createdAt'
 };
 
@@ -334,7 +335,8 @@ exports.Prisma.SaleScalarFieldEnum = {
   terminalId: 'terminalId',
   quotationId: 'quotationId',
   isInvoice: 'isInvoice',
-  financialYearId: 'financialYearId'
+  financialYearId: 'financialYearId',
+  description: 'description'
 };
 
 exports.Prisma.SaleItemScalarFieldEnum = {

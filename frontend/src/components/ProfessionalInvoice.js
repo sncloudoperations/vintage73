@@ -39,7 +39,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     const {
         invoiceNumber, saleDate, createdAt, items, subTotal, taxAmount, totalAmount, roundOffAmount,
         customer, customerName, previousBalance, currentBalance, placeOfSupply,
-        currencyCode, currencySymbol, exchangeRate, discount, advanceUsed
+        currencyCode, currencySymbol, exchangeRate, discount, advanceUsed, description
     } = printData;
 
     // Bank details come from Company Profile → default selected bank
@@ -272,8 +272,26 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             </tr>
                         ))}
                     </tbody>
+                    <tfoot>
+                        <tr className="border-t-2 border-slate-200">
+                            <td colSpan={settings.showColTotal !== false ? 5 : 4} className="py-3 px-2.5 text-right font-bold text-slate-500 uppercase text-[10px]">Table Total (Incl. Tax)</td>
+                            {settings.showColTotal !== false && (
+                                <td className="py-3 px-2.5 text-right font-bold text-slate-900 text-[14px]">
+                                    {currentSymbol}{formatAmt(totalAmount)}
+                                </td>
+                            )}
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
+
+            {/* DESCRIPTION / NOTES */}
+            {description && (
+                <div className="mb-4 p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Description / Notes:</p>
+                    <p className="text-[12px] text-slate-600 leading-relaxed italic">{description}</p>
+                </div>
+            )}
 
             {/* TAX & TOTALS */}
             <div className="flex justify-between items-start mb-8">
@@ -327,16 +345,19 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                         )}
                     </div>
                     <div className={`pt-2.5 border-t border-slate-200/50 flex justify-between items-center mt-1`}>
-                        <span className="font-medium uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>
-                            {advanceUsed > 0 ? 'PAYABLE AMOUNT' : 'GRAND TOTAL'}
+                        <span className="font-bold uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>
+                            GRAND TOTAL
                         </span>
                         <span className="font-bold text-[18px] tracking-tighter" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>
-                            {currentSymbol}{formatAmt(Number(totalAmount) - Number(advanceUsed || 0))}
+                            {currentSymbol}{formatAmt(totalAmount)}
                         </span>
                     </div>
                     {advanceUsed > 0 && (
-                        <div className="mt-1 text-right italic text-[9px] text-slate-400">
-                            (Bill Total: {currentSymbol}{formatAmt(totalAmount)})
+                        <div className={`pt-2 mt-1 border-t border-dashed border-slate-200 flex justify-between items-center`}>
+                            <span className="text-[11px] font-bold text-slate-500 uppercase">Payable Amount</span>
+                            <span className="text-[14px] font-bold text-emerald-600">
+                                {currentSymbol}{formatAmt(Number(totalAmount) - Number(advanceUsed || 0))}
+                            </span>
                         </div>
                     )}
                 </div>

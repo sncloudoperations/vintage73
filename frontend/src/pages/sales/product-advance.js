@@ -15,7 +15,8 @@ export default function ProductAdvance() {
         customerId: '',
         totalAmount: '',
         notes: '',
-        paymentMethod: 'Cash'
+        paymentMethod: 'Cash',
+        date: new Date().toISOString().split('T')[0]
     });
 
     const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -75,7 +76,13 @@ export default function ProductAdvance() {
             await api.post('/advances', formData);
             toast.success('Advance recorded successfully');
             setShowModal(false);
-            setFormData({ customerId: '', totalAmount: '', notes: '', paymentMethod: 'Cash' });
+            setFormData({ 
+                customerId: '', 
+                totalAmount: '', 
+                notes: '', 
+                paymentMethod: 'Cash',
+                date: new Date().toISOString().split('T')[0] 
+            });
             fetchAdvances();
         } catch (err) {
             toast.error(err.response?.data?.message || 'Operation failed');
@@ -191,10 +198,20 @@ export default function ProductAdvance() {
                             </div>
 
                             <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Advance Date</label>
+                                <input
+                                    type="date"
+                                    className="input"
+                                    value={formData.date}
+                                    onChange={e => setFormData({ ...formData, date: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Notes (Optional)</label>
                                 <textarea
                                     className="input w-full p-2 border rounded"
-                                    rows="2"
+                                    rows="1"
                                     placeholder="E.g. Advance for custom order..."
                                     value={formData.notes}
                                     onChange={e => setFormData({ ...formData, notes: e.target.value })}

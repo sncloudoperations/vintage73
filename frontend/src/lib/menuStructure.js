@@ -107,6 +107,7 @@ export const MENU_STRUCTURE = [
     icon: FiMessageSquare,
     items: [
       { name: 'Ticketing System', icon: FiClipboard, path: '/ticketing' },
+      { name: 'Ticketing Dashboard', icon: FiPieChart, path: '/ticketing-dashboard' },
     ]
   },
   {

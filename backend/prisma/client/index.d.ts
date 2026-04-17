@@ -15097,6 +15097,7 @@ export namespace Prisma {
     amount: Decimal | null
     balanceAfter: Decimal | null
     reference: string | null
+    date: Date | null
     createdAt: Date | null
   }
 
@@ -15108,6 +15109,7 @@ export namespace Prisma {
     amount: Decimal | null
     balanceAfter: Decimal | null
     reference: string | null
+    date: Date | null
     createdAt: Date | null
   }
 
@@ -15119,6 +15121,7 @@ export namespace Prisma {
     amount: number
     balanceAfter: number
     reference: number
+    date: number
     createdAt: number
     _all: number
   }
@@ -15144,6 +15147,7 @@ export namespace Prisma {
     amount?: true
     balanceAfter?: true
     reference?: true
+    date?: true
     createdAt?: true
   }
 
@@ -15155,6 +15159,7 @@ export namespace Prisma {
     amount?: true
     balanceAfter?: true
     reference?: true
+    date?: true
     createdAt?: true
   }
 
@@ -15166,6 +15171,7 @@ export namespace Prisma {
     amount?: true
     balanceAfter?: true
     reference?: true
+    date?: true
     createdAt?: true
     _all?: true
   }
@@ -15264,6 +15270,7 @@ export namespace Prisma {
     amount: Decimal
     balanceAfter: Decimal
     reference: string | null
+    date: Date
     createdAt: Date
     _count: AdvanceHistoryCountAggregateOutputType | null
     _avg: AdvanceHistoryAvgAggregateOutputType | null
@@ -15294,6 +15301,7 @@ export namespace Prisma {
     amount?: boolean
     balanceAfter?: boolean
     reference?: boolean
+    date?: boolean
     createdAt?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["advanceHistory"]>
@@ -15306,6 +15314,7 @@ export namespace Prisma {
     amount?: boolean
     balanceAfter?: boolean
     reference?: boolean
+    date?: boolean
     createdAt?: boolean
   }
 
@@ -15327,6 +15336,7 @@ export namespace Prisma {
       amount: Prisma.Decimal
       balanceAfter: Prisma.Decimal
       reference: string | null
+      date: Date
       createdAt: Date
     }, ExtArgs["result"]["advanceHistory"]>
     composites: {}
@@ -15730,6 +15740,7 @@ export namespace Prisma {
     readonly amount: FieldRef<"AdvanceHistory", 'Decimal'>
     readonly balanceAfter: FieldRef<"AdvanceHistory", 'Decimal'>
     readonly reference: FieldRef<"AdvanceHistory", 'String'>
+    readonly date: FieldRef<"AdvanceHistory", 'DateTime'>
     readonly createdAt: FieldRef<"AdvanceHistory", 'DateTime'>
   }
     
@@ -22645,6 +22656,7 @@ export namespace Prisma {
     quotationId: number | null
     isInvoice: boolean | null
     financialYearId: number | null
+    description: string | null
   }
 
   export type SaleMaxAggregateOutputType = {
@@ -22688,6 +22700,7 @@ export namespace Prisma {
     quotationId: number | null
     isInvoice: boolean | null
     financialYearId: number | null
+    description: string | null
   }
 
   export type SaleCountAggregateOutputType = {
@@ -22731,6 +22744,7 @@ export namespace Prisma {
     quotationId: number
     isInvoice: number
     financialYearId: number
+    description: number
     _all: number
   }
 
@@ -22816,6 +22830,7 @@ export namespace Prisma {
     quotationId?: true
     isInvoice?: true
     financialYearId?: true
+    description?: true
   }
 
   export type SaleMaxAggregateInputType = {
@@ -22859,6 +22874,7 @@ export namespace Prisma {
     quotationId?: true
     isInvoice?: true
     financialYearId?: true
+    description?: true
   }
 
   export type SaleCountAggregateInputType = {
@@ -22902,6 +22918,7 @@ export namespace Prisma {
     quotationId?: true
     isInvoice?: true
     financialYearId?: true
+    description?: true
     _all?: true
   }
 
@@ -23032,6 +23049,7 @@ export namespace Prisma {
     quotationId: number | null
     isInvoice: boolean
     financialYearId: number | null
+    description: string | null
     _count: SaleCountAggregateOutputType | null
     _avg: SaleAvgAggregateOutputType | null
     _sum: SaleSumAggregateOutputType | null
@@ -23094,6 +23112,7 @@ export namespace Prisma {
     quotationId?: boolean
     isInvoice?: boolean
     financialYearId?: boolean
+    description?: boolean
     terminal?: boolean | Sale$terminalArgs<ExtArgs>
     payments?: boolean | Sale$paymentsArgs<ExtArgs>
     branch?: boolean | BranchDefaultArgs<ExtArgs>
@@ -23147,6 +23166,7 @@ export namespace Prisma {
     quotationId?: boolean
     isInvoice?: boolean
     financialYearId?: boolean
+    description?: boolean
   }
 
   export type SaleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23217,6 +23237,7 @@ export namespace Prisma {
       quotationId: number | null
       isInvoice: boolean
       financialYearId: number | null
+      description: string | null
     }, ExtArgs["result"]["sale"]>
     composites: {}
   }
@@ -23668,6 +23689,7 @@ export namespace Prisma {
     readonly quotationId: FieldRef<"Sale", 'Int'>
     readonly isInvoice: FieldRef<"Sale", 'Boolean'>
     readonly financialYearId: FieldRef<"Sale", 'Int'>
+    readonly description: FieldRef<"Sale", 'String'>
   }
     
 
@@ -72144,6 +72166,7 @@ export namespace Prisma {
     amount: 'amount',
     balanceAfter: 'balanceAfter',
     reference: 'reference',
+    date: 'date',
     createdAt: 'createdAt'
   };
 
@@ -72286,7 +72309,8 @@ export namespace Prisma {
     terminalId: 'terminalId',
     quotationId: 'quotationId',
     isInvoice: 'isInvoice',
-    financialYearId: 'financialYearId'
+    financialYearId: 'financialYearId',
+    description: 'description'
   };
 
   export type SaleScalarFieldEnum = (typeof SaleScalarFieldEnum)[keyof typeof SaleScalarFieldEnum]
@@ -73964,6 +73988,7 @@ export namespace Prisma {
     amount?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
     reference?: StringNullableFilter<"AdvanceHistory"> | string | null
+    date?: DateTimeFilter<"AdvanceHistory"> | Date | string
     createdAt?: DateTimeFilter<"AdvanceHistory"> | Date | string
     customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
   }
@@ -73976,6 +74001,7 @@ export namespace Prisma {
     amount?: SortOrder
     balanceAfter?: SortOrder
     reference?: SortOrderInput | SortOrder
+    date?: SortOrder
     createdAt?: SortOrder
     customer?: CustomerOrderByWithRelationInput
   }
@@ -73991,6 +74017,7 @@ export namespace Prisma {
     amount?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
     reference?: StringNullableFilter<"AdvanceHistory"> | string | null
+    date?: DateTimeFilter<"AdvanceHistory"> | Date | string
     createdAt?: DateTimeFilter<"AdvanceHistory"> | Date | string
     customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
   }, "id">
@@ -74003,6 +74030,7 @@ export namespace Prisma {
     amount?: SortOrder
     balanceAfter?: SortOrder
     reference?: SortOrderInput | SortOrder
+    date?: SortOrder
     createdAt?: SortOrder
     _count?: AdvanceHistoryCountOrderByAggregateInput
     _avg?: AdvanceHistoryAvgOrderByAggregateInput
@@ -74022,6 +74050,7 @@ export namespace Prisma {
     amount?: DecimalWithAggregatesFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalWithAggregatesFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
     reference?: StringNullableWithAggregatesFilter<"AdvanceHistory"> | string | null
+    date?: DateTimeWithAggregatesFilter<"AdvanceHistory"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"AdvanceHistory"> | Date | string
   }
 
@@ -74602,6 +74631,7 @@ export namespace Prisma {
     quotationId?: IntNullableFilter<"Sale"> | number | null
     isInvoice?: BoolFilter<"Sale"> | boolean
     financialYearId?: IntNullableFilter<"Sale"> | number | null
+    description?: StringNullableFilter<"Sale"> | string | null
     terminal?: XOR<TerminalNullableRelationFilter, TerminalWhereInput> | null
     payments?: PaymentListRelationFilter
     branch?: XOR<BranchRelationFilter, BranchWhereInput>
@@ -74654,6 +74684,7 @@ export namespace Prisma {
     quotationId?: SortOrderInput | SortOrder
     isInvoice?: SortOrder
     financialYearId?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
     terminal?: TerminalOrderByWithRelationInput
     payments?: PaymentOrderByRelationAggregateInput
     branch?: BranchOrderByWithRelationInput
@@ -74710,6 +74741,7 @@ export namespace Prisma {
     terminalId?: IntNullableFilter<"Sale"> | number | null
     isInvoice?: BoolFilter<"Sale"> | boolean
     financialYearId?: IntNullableFilter<"Sale"> | number | null
+    description?: StringNullableFilter<"Sale"> | string | null
     terminal?: XOR<TerminalNullableRelationFilter, TerminalWhereInput> | null
     payments?: PaymentListRelationFilter
     branch?: XOR<BranchRelationFilter, BranchWhereInput>
@@ -74762,6 +74794,7 @@ export namespace Prisma {
     quotationId?: SortOrderInput | SortOrder
     isInvoice?: SortOrder
     financialYearId?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
     _count?: SaleCountOrderByAggregateInput
     _avg?: SaleAvgOrderByAggregateInput
     _max?: SaleMaxOrderByAggregateInput
@@ -74813,6 +74846,7 @@ export namespace Prisma {
     quotationId?: IntNullableWithAggregatesFilter<"Sale"> | number | null
     isInvoice?: BoolWithAggregatesFilter<"Sale"> | boolean
     financialYearId?: IntNullableWithAggregatesFilter<"Sale"> | number | null
+    description?: StringNullableWithAggregatesFilter<"Sale"> | string | null
   }
 
   export type SaleItemWhereInput = {
@@ -79815,6 +79849,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     balanceAfter: Decimal | DecimalJsLike | number | string
     reference?: string | null
+    date?: Date | string
     createdAt?: Date | string
     customer: CustomerCreateNestedOneWithoutAdvanceHistoryInput
   }
@@ -79827,6 +79862,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     balanceAfter: Decimal | DecimalJsLike | number | string
     reference?: string | null
+    date?: Date | string
     createdAt?: Date | string
   }
 
@@ -79837,6 +79873,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reference?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneRequiredWithoutAdvanceHistoryNestedInput
   }
@@ -79849,6 +79886,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reference?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -79860,6 +79898,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     balanceAfter: Decimal | DecimalJsLike | number | string
     reference?: string | null
+    date?: Date | string
     createdAt?: Date | string
   }
 
@@ -79870,6 +79909,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reference?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -79881,6 +79921,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reference?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -80482,6 +80523,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     payments?: PaymentCreateNestedManyWithoutSaleInput
     branch: BranchCreateNestedOneWithoutSalesInput
@@ -80534,6 +80576,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
@@ -80573,6 +80616,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
@@ -80625,6 +80669,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
@@ -80671,6 +80716,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
   }
 
   export type SaleUpdateManyMutationInput = {
@@ -80707,6 +80753,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SaleUncheckedUpdateManyInput = {
@@ -80750,6 +80797,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SaleItemCreateInput = {
@@ -85948,6 +85996,7 @@ export namespace Prisma {
     amount?: SortOrder
     balanceAfter?: SortOrder
     reference?: SortOrder
+    date?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -85965,6 +86014,7 @@ export namespace Prisma {
     amount?: SortOrder
     balanceAfter?: SortOrder
     reference?: SortOrder
+    date?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -85976,6 +86026,7 @@ export namespace Prisma {
     amount?: SortOrder
     balanceAfter?: SortOrder
     reference?: SortOrder
+    date?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -86534,6 +86585,7 @@ export namespace Prisma {
     quotationId?: SortOrder
     isInvoice?: SortOrder
     financialYearId?: SortOrder
+    description?: SortOrder
   }
 
   export type SaleAvgOrderByAggregateInput = {
@@ -86597,6 +86649,7 @@ export namespace Prisma {
     quotationId?: SortOrder
     isInvoice?: SortOrder
     financialYearId?: SortOrder
+    description?: SortOrder
   }
 
   export type SaleMinOrderByAggregateInput = {
@@ -86640,6 +86693,7 @@ export namespace Prisma {
     quotationId?: SortOrder
     isInvoice?: SortOrder
     financialYearId?: SortOrder
+    description?: SortOrder
   }
 
   export type SaleSumOrderByAggregateInput = {
@@ -95970,6 +96024,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     payments?: PaymentCreateNestedManyWithoutSaleInput
     branch: BranchCreateNestedOneWithoutSalesInput
@@ -96020,6 +96075,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
@@ -97527,6 +97583,7 @@ export namespace Prisma {
     quotationId?: IntNullableFilter<"Sale"> | number | null
     isInvoice?: BoolFilter<"Sale"> | boolean
     financialYearId?: IntNullableFilter<"Sale"> | number | null
+    description?: StringNullableFilter<"Sale"> | string | null
   }
 
   export type EmployeeProfileUpsertWithoutUserInput = {
@@ -98663,6 +98720,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     payments?: PaymentCreateNestedManyWithoutSaleInput
     customer?: CustomerCreateNestedOneWithoutSalesInput
@@ -98713,6 +98771,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
@@ -100270,6 +100329,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     payments?: PaymentCreateNestedManyWithoutSaleInput
     branch: BranchCreateNestedOneWithoutSalesInput
@@ -100320,6 +100380,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
@@ -100542,6 +100603,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     balanceAfter: Decimal | DecimalJsLike | number | string
     reference?: string | null
+    date?: Date | string
     createdAt?: Date | string
   }
 
@@ -100552,6 +100614,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     balanceAfter: Decimal | DecimalJsLike | number | string
     reference?: string | null
+    date?: Date | string
     createdAt?: Date | string
   }
 
@@ -100780,6 +100843,7 @@ export namespace Prisma {
     amount?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFilter<"AdvanceHistory"> | Decimal | DecimalJsLike | number | string
     reference?: StringNullableFilter<"AdvanceHistory"> | string | null
+    date?: DateTimeFilter<"AdvanceHistory"> | Date | string
     createdAt?: DateTimeFilter<"AdvanceHistory"> | Date | string
   }
 
@@ -103712,6 +103776,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     payments?: PaymentCreateNestedManyWithoutSaleInput
     branch: BranchCreateNestedOneWithoutSalesInput
@@ -103763,6 +103828,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
   }
@@ -103889,6 +103955,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
@@ -103940,6 +104007,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
   }
@@ -104258,6 +104326,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     branch: BranchCreateNestedOneWithoutSalesInput
     customer?: CustomerCreateNestedOneWithoutSalesInput
@@ -104309,6 +104378,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
   }
@@ -104587,6 +104657,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
     customer?: CustomerUpdateOneWithoutSalesNestedInput
@@ -104638,6 +104709,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
   }
@@ -104974,6 +105046,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     payments?: PaymentCreateNestedManyWithoutSaleInput
     branch: BranchCreateNestedOneWithoutSalesInput
@@ -105024,6 +105097,7 @@ export namespace Prisma {
     terminalId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
@@ -105377,6 +105451,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
@@ -105427,6 +105502,7 @@ export namespace Prisma {
     terminalId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
@@ -109088,6 +109164,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     payments?: PaymentCreateNestedManyWithoutSaleInput
     branch: BranchCreateNestedOneWithoutSalesInput
@@ -109139,6 +109216,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
   }
@@ -109732,6 +109810,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
@@ -109783,6 +109862,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
   }
@@ -113413,6 +113493,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     terminal?: TerminalCreateNestedOneWithoutSalesInput
     payments?: PaymentCreateNestedManyWithoutSaleInput
     branch: BranchCreateNestedOneWithoutSalesInput
@@ -113463,6 +113544,7 @@ export namespace Prisma {
     terminalId?: number | null
     quotationId?: number | null
     isInvoice?: boolean
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
@@ -114741,6 +114823,7 @@ export namespace Prisma {
     transporterId?: string | null
     isTaxInclusive?: boolean
     isInvoice?: boolean
+    description?: string | null
     payments?: PaymentCreateNestedManyWithoutSaleInput
     branch: BranchCreateNestedOneWithoutSalesInput
     customer?: CustomerCreateNestedOneWithoutSalesInput
@@ -114791,6 +114874,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutSaleInput
     items?: SaleItemUncheckedCreateNestedManyWithoutSaleInput
     lead?: LeadUncheckedCreateNestedOneWithoutSaleInput
@@ -118368,6 +118452,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
   }
 
   export type AttendanceCreateManyUserInput = {
@@ -118844,6 +118929,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
@@ -118894,6 +118980,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
@@ -118939,6 +119026,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AttendanceUpdateWithoutUserInput = {
@@ -120389,6 +120477,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
   }
 
   export type UserCreateManyBranchInput = {
@@ -120892,6 +120981,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     customer?: CustomerUpdateOneWithoutSalesNestedInput
@@ -120942,6 +121032,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
@@ -120987,6 +121078,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUpdateWithoutBranchInput = {
@@ -121871,6 +121963,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
   }
 
   export type DeliveryChallanCreateManyCustomerInput = {
@@ -121953,6 +122046,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     balanceAfter: Decimal | DecimalJsLike | number | string
     reference?: string | null
+    date?: Date | string
     createdAt?: Date | string
   }
 
@@ -122037,6 +122131,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
@@ -122087,6 +122182,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
@@ -122132,6 +122228,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DeliveryChallanUpdateWithoutCustomerInput = {
@@ -122374,6 +122471,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reference?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -122384,6 +122482,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reference?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -122394,6 +122493,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     balanceAfter?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reference?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -124222,6 +124322,7 @@ export namespace Prisma {
     terminalId?: number | null
     quotationId?: number | null
     isInvoice?: boolean
+    description?: string | null
   }
 
   export type QuotationCreateManyFinancialYearInput = {
@@ -124315,6 +124416,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     terminal?: TerminalUpdateOneWithoutSalesNestedInput
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
@@ -124365,6 +124467,7 @@ export namespace Prisma {
     terminalId?: NullableIntFieldUpdateOperationsInput | number | null
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
@@ -124410,6 +124513,7 @@ export namespace Prisma {
     terminalId?: NullableIntFieldUpdateOperationsInput | number | null
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type QuotationUpdateWithoutFinancialYearInput = {
@@ -124766,6 +124870,7 @@ export namespace Prisma {
     quotationId?: number | null
     isInvoice?: boolean
     financialYearId?: number | null
+    description?: string | null
   }
 
   export type UserUpdateWithoutTerminalsInput = {
@@ -124910,6 +125015,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUpdateManyWithoutSaleNestedInput
     branch?: BranchUpdateOneRequiredWithoutSalesNestedInput
     customer?: CustomerUpdateOneWithoutSalesNestedInput
@@ -124960,6 +125066,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutSaleNestedInput
     items?: SaleItemUncheckedUpdateManyWithoutSaleNestedInput
     lead?: LeadUncheckedUpdateOneWithoutSaleNestedInput
@@ -125005,6 +125112,7 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     isInvoice?: BoolFieldUpdateOperationsInput | boolean
     financialYearId?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TicketHistoryCreateManyTicketInput = {
