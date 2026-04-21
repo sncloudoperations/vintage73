@@ -24204,6 +24204,7 @@ export namespace Prisma {
     discountPercent: Decimal | null
     taxAmount: Decimal | null
     taxRate: Decimal | null
+    isTaxInclusive: boolean | null
   }
 
   export type SaleItemMaxAggregateOutputType = {
@@ -24217,6 +24218,7 @@ export namespace Prisma {
     discountPercent: Decimal | null
     taxAmount: Decimal | null
     taxRate: Decimal | null
+    isTaxInclusive: boolean | null
   }
 
   export type SaleItemCountAggregateOutputType = {
@@ -24230,6 +24232,7 @@ export namespace Prisma {
     discountPercent: number
     taxAmount: number
     taxRate: number
+    isTaxInclusive: number
     _all: number
   }
 
@@ -24271,6 +24274,7 @@ export namespace Prisma {
     discountPercent?: true
     taxAmount?: true
     taxRate?: true
+    isTaxInclusive?: true
   }
 
   export type SaleItemMaxAggregateInputType = {
@@ -24284,6 +24288,7 @@ export namespace Prisma {
     discountPercent?: true
     taxAmount?: true
     taxRate?: true
+    isTaxInclusive?: true
   }
 
   export type SaleItemCountAggregateInputType = {
@@ -24297,6 +24302,7 @@ export namespace Prisma {
     discountPercent?: true
     taxAmount?: true
     taxRate?: true
+    isTaxInclusive?: true
     _all?: true
   }
 
@@ -24397,6 +24403,7 @@ export namespace Prisma {
     discountPercent: Decimal
     taxAmount: Decimal
     taxRate: Decimal
+    isTaxInclusive: boolean
     _count: SaleItemCountAggregateOutputType | null
     _avg: SaleItemAvgAggregateOutputType | null
     _sum: SaleItemSumAggregateOutputType | null
@@ -24429,6 +24436,7 @@ export namespace Prisma {
     discountPercent?: boolean
     taxAmount?: boolean
     taxRate?: boolean
+    isTaxInclusive?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
     sale?: boolean | SaleDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["saleItem"]>
@@ -24444,6 +24452,7 @@ export namespace Prisma {
     discountPercent?: boolean
     taxAmount?: boolean
     taxRate?: boolean
+    isTaxInclusive?: boolean
   }
 
   export type SaleItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24469,6 +24478,7 @@ export namespace Prisma {
       discountPercent: Prisma.Decimal
       taxAmount: Prisma.Decimal
       taxRate: Prisma.Decimal
+      isTaxInclusive: boolean
     }, ExtArgs["result"]["saleItem"]>
     composites: {}
   }
@@ -24876,6 +24886,7 @@ export namespace Prisma {
     readonly discountPercent: FieldRef<"SaleItem", 'Decimal'>
     readonly taxAmount: FieldRef<"SaleItem", 'Decimal'>
     readonly taxRate: FieldRef<"SaleItem", 'Decimal'>
+    readonly isTaxInclusive: FieldRef<"SaleItem", 'Boolean'>
   }
     
 
@@ -72326,7 +72337,8 @@ export namespace Prisma {
     discountAmount: 'discountAmount',
     discountPercent: 'discountPercent',
     taxAmount: 'taxAmount',
-    taxRate: 'taxRate'
+    taxRate: 'taxRate',
+    isTaxInclusive: 'isTaxInclusive'
   };
 
   export type SaleItemScalarFieldEnum = (typeof SaleItemScalarFieldEnum)[keyof typeof SaleItemScalarFieldEnum]
@@ -74863,6 +74875,7 @@ export namespace Prisma {
     discountPercent?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFilter<"SaleItem"> | boolean
     product?: XOR<ProductRelationFilter, ProductWhereInput>
     sale?: XOR<SaleRelationFilter, SaleWhereInput>
   }
@@ -74878,6 +74891,7 @@ export namespace Prisma {
     discountPercent?: SortOrder
     taxAmount?: SortOrder
     taxRate?: SortOrder
+    isTaxInclusive?: SortOrder
     product?: ProductOrderByWithRelationInput
     sale?: SaleOrderByWithRelationInput
   }
@@ -74896,6 +74910,7 @@ export namespace Prisma {
     discountPercent?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFilter<"SaleItem"> | boolean
     product?: XOR<ProductRelationFilter, ProductWhereInput>
     sale?: XOR<SaleRelationFilter, SaleWhereInput>
   }, "id">
@@ -74911,6 +74926,7 @@ export namespace Prisma {
     discountPercent?: SortOrder
     taxAmount?: SortOrder
     taxRate?: SortOrder
+    isTaxInclusive?: SortOrder
     _count?: SaleItemCountOrderByAggregateInput
     _avg?: SaleItemAvgOrderByAggregateInput
     _max?: SaleItemMaxOrderByAggregateInput
@@ -74932,6 +74948,7 @@ export namespace Prisma {
     discountPercent?: DecimalWithAggregatesFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalWithAggregatesFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalWithAggregatesFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolWithAggregatesFilter<"SaleItem"> | boolean
   }
 
   export type ExpenseWhereInput = {
@@ -80808,6 +80825,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
     product: ProductCreateNestedOneWithoutSaleItemsInput
     sale: SaleCreateNestedOneWithoutItemsInput
   }
@@ -80823,6 +80841,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
   }
 
   export type SaleItemUpdateInput = {
@@ -80833,6 +80852,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     product?: ProductUpdateOneRequiredWithoutSaleItemsNestedInput
     sale?: SaleUpdateOneRequiredWithoutItemsNestedInput
   }
@@ -80848,6 +80868,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SaleItemCreateManyInput = {
@@ -80861,6 +80882,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
   }
 
   export type SaleItemUpdateManyMutationInput = {
@@ -80871,6 +80893,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SaleItemUncheckedUpdateManyInput = {
@@ -80884,6 +80907,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ExpenseCreateInput = {
@@ -86762,6 +86786,7 @@ export namespace Prisma {
     discountPercent?: SortOrder
     taxAmount?: SortOrder
     taxRate?: SortOrder
+    isTaxInclusive?: SortOrder
   }
 
   export type SaleItemAvgOrderByAggregateInput = {
@@ -86788,6 +86813,7 @@ export namespace Prisma {
     discountPercent?: SortOrder
     taxAmount?: SortOrder
     taxRate?: SortOrder
+    isTaxInclusive?: SortOrder
   }
 
   export type SaleItemMinOrderByAggregateInput = {
@@ -86801,6 +86827,7 @@ export namespace Prisma {
     discountPercent?: SortOrder
     taxAmount?: SortOrder
     taxRate?: SortOrder
+    isTaxInclusive?: SortOrder
   }
 
   export type SaleItemSumOrderByAggregateInput = {
@@ -101394,6 +101421,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
     sale: SaleCreateNestedOneWithoutItemsInput
   }
 
@@ -101407,6 +101435,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
   }
 
   export type SaleItemCreateOrConnectWithoutProductInput = {
@@ -101681,6 +101710,7 @@ export namespace Prisma {
     discountPercent?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFilter<"SaleItem"> | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFilter<"SaleItem"> | boolean
   }
 
   export type StockTransferItemUpsertWithWhereUniqueWithoutProductInput = {
@@ -102973,6 +103003,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
     product: ProductCreateNestedOneWithoutSaleItemsInput
   }
 
@@ -102986,6 +103017,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
   }
 
   export type SaleItemCreateOrConnectWithoutSaleInput = {
@@ -122762,6 +122794,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
   }
 
   export type StockTransferItemCreateManyProductInput = {
@@ -122873,6 +122906,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     sale?: SaleUpdateOneRequiredWithoutItemsNestedInput
   }
 
@@ -122886,6 +122920,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SaleItemUncheckedUpdateManyWithoutProductInput = {
@@ -122898,6 +122933,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type StockTransferItemUpdateWithoutProductInput = {
@@ -123144,6 +123180,7 @@ export namespace Prisma {
     discountPercent?: Decimal | DecimalJsLike | number | string
     taxAmount?: Decimal | DecimalJsLike | number | string
     taxRate?: Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: boolean
   }
 
   export type PaymentUpdateWithoutSaleInput = {
@@ -123201,6 +123238,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
     product?: ProductUpdateOneRequiredWithoutSaleItemsNestedInput
   }
 
@@ -123214,6 +123252,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SaleItemUncheckedUpdateManyWithoutSaleInput = {
@@ -123226,6 +123265,7 @@ export namespace Prisma {
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    isTaxInclusive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type QuotationItemCreateManyQuotationInput = {

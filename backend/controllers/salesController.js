@@ -113,17 +113,21 @@ exports.createSale = asyncHandler(async (req, res) => {
       const netPrice = unitPrice - discAmt;
       
       const taxRate = item.taxPercent !== undefined ? parseFloat(item.taxPercent) : parseFloat(product.taxRate || 0);
-      // FORCE EXCLUSIVE FOR POS TAX (to ensure Total = Subtotal + Tax as per user req)
-      const isTaxInclusive = false; 
+      const itemIsTaxInclusive = item.isTaxInclusive === true || item.isTaxInclusive === 'true';
+      const lineTotalPayable = item.quantity * netPrice;
       
       let lineTax = 0;
-      let lineTotal = 0; // Exclusive
+      let lineTotal = 0;
 
-      if (taxRate > 0) {
-        lineTotal = item.quantity * netPrice;
-        lineTax = (lineTotal * taxRate) / 100;
+      if (itemIsTaxInclusive && taxRate > 0) {
+        const baseAmount = lineTotalPayable / (1 + (taxRate / 100));
+        lineTax = lineTotalPayable - baseAmount;
+        lineTotal = baseAmount;
+      } else if (taxRate > 0) {
+        lineTotal = lineTotalPayable;
+        lineTax = (lineTotalPayable * taxRate) / 100;
       } else {
-        lineTotal = item.quantity * netPrice;
+        lineTotal = lineTotalPayable;
         lineTax = 0;
       }
 
@@ -138,8 +142,9 @@ exports.createSale = asyncHandler(async (req, res) => {
         discountPercent: parseFloat(item.discountPercent || 0),
         discountAmount: parseFloat(discAmt.toFixed(2)),
         total: parseFloat((lineTotal + lineTax).toFixed(2)),
+        taxRate: parseFloat(taxRate.toFixed(2)),
         taxAmount: parseFloat(lineTax.toFixed(2)),
-        taxRate: parseFloat(taxRate)
+        isTaxInclusive: itemIsTaxInclusive
       });
     }
 
