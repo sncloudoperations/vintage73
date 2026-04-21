@@ -398,7 +398,7 @@ export default function PaymentVoucher() {
                 </div>
             ) : (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-visible">
                         {/* Filter Bar */}
                         <div className="bg-slate-50/50 p-4 border-b border-slate-200 flex flex-wrap items-center gap-4">
                             <div className="flex items-center gap-3">
