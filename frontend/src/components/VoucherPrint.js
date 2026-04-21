@@ -7,7 +7,7 @@ const numberToWords = (num) => {
 
     if ((num = num.toString()).length > 9) return 'overflow';
     let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-    if (!n) return; 
+    if (!n) return;
     let str = '';
     str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
     str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
@@ -19,7 +19,9 @@ const numberToWords = (num) => {
 
 export default function VoucherPrint({ voucher, onClose }) {
     const [company, setCompany] = useState(null);
+    const [readyToPrint, setReadyToPrint] = useState(false);
 
+    // Step 1: Fetch company data — mark ready when done (success or failure)
     useEffect(() => {
         const fetchCompany = async () => {
             try {
@@ -27,17 +29,35 @@ export default function VoucherPrint({ voucher, onClose }) {
                 setCompany(res.data);
             } catch (err) {
                 console.error('Failed to fetch company info', err);
+            } finally {
+                setReadyToPrint(true);
             }
         };
         fetchCompany();
-
-        // Auto print after a short delay
-        const timer = setTimeout(() => {
-            window.print();
-        }, 1000);
-
-        return () => clearTimeout(timer);
     }, []);
+
+    // Step 2: Once data is ready, auto-trigger print and dismiss after dialog closes
+    useEffect(() => {
+        if (!readyToPrint) return;
+
+        // afterprint fires when the user closes the browser print dialog (Print or Cancel)
+        const handleAfterPrint = () => onClose();
+        window.addEventListener('afterprint', handleAfterPrint);
+
+        // rAF inside a short timeout ensures React has painted the DOM with company data
+        let raf;
+        const timer = setTimeout(() => {
+            raf = requestAnimationFrame(() => {
+                window.print();
+            });
+        }, 80);
+
+        return () => {
+            clearTimeout(timer);
+            if (raf) cancelAnimationFrame(raf);
+            window.removeEventListener('afterprint', handleAfterPrint);
+        };
+    }, [readyToPrint]);
 
     if (!voucher) return null;
 
@@ -49,21 +69,16 @@ export default function VoucherPrint({ voucher, onClose }) {
     const isContra = voucher.voucherType === 'CONTRA';
     const isJournal = voucher.voucherType === 'JOURNAL';
 
-    const voucherTitle = isPayment ? 'PAYMENT VOUCHER' : 
-                         isReceipt ? 'RECEIPT VOUCHER' : 
-                         isContra ? 'CONTRA VOUCHER' : 
+    const voucherTitle = isPayment ? 'PAYMENT VOUCHER' :
+                         isReceipt ? 'RECEIPT VOUCHER' :
+                         isContra  ? 'CONTRA VOUCHER'  :
                          isJournal ? 'JOURNAL VOUCHER' : 'ACCOUNT VOUCHER';
 
     return (
-        <div className="fixed inset-0 bg-white z-[9999] overflow-auto p-4 print:p-0">
+        // voucher-print-root is completely hidden on screen via @media screen CSS below.
+        // It only renders (display:block) inside @media print — user never sees an overlay.
+        <div className="voucher-print-root">
             <div className="max-w-[1000px] mx-auto border border-slate-900 p-6 min-h-[400px] flex flex-col font-sans text-slate-900">
-                {/* Close button for screen view */}
-                <button 
-                    onClick={onClose}
-                    className="absolute top-4 right-4 bg-slate-100 p-2 rounded-full hover:bg-slate-200 print:hidden text-xs font-medium"
-                >
-                    Close & Return
-                </button>
 
                 {/* Header Section */}
                 <div className="flex justify-between items-start mb-4 border-b border-slate-300 pb-4">
@@ -97,9 +112,9 @@ export default function VoucherPrint({ voucher, onClose }) {
                             {isPayment ? 'Paid To' : isReceipt ? 'Received From' : 'Account (Dr)'}:
                         </div>
                         <div className="col-span-10 text-xs font-medium border-b border-slate-200 pb-0.5">
-                            {isPayment ? (debitEntries[0]?.debitLedger?.name) : 
-                             isReceipt ? (creditEntries[0]?.creditLedger?.name) : 
-                             isContra ? (debitEntries[0]?.debitLedger?.name) :
+                            {isPayment ? (debitEntries[0]?.debitLedger?.name) :
+                             isReceipt ? (creditEntries[0]?.creditLedger?.name) :
+                             isContra  ? (debitEntries[0]?.debitLedger?.name) :
                              (debitEntries.map(e => e.debitLedger?.name).join(', '))}
                         </div>
                     </div>
@@ -109,9 +124,9 @@ export default function VoucherPrint({ voucher, onClose }) {
                             {isPayment ? 'By Account' : isReceipt ? 'By Account' : 'Account (Cr)'}:
                         </div>
                         <div className="col-span-10 text-xs font-medium text-slate-700 border-b border-slate-200 pb-0.5">
-                            {isPayment ? (creditEntries[0]?.creditLedger?.name) : 
-                             isReceipt ? (debitEntries[0]?.debitLedger?.name) : 
-                             isContra ? (creditEntries[0]?.creditLedger?.name) :
+                            {isPayment ? (creditEntries[0]?.creditLedger?.name) :
+                             isReceipt ? (debitEntries[0]?.debitLedger?.name) :
+                             isContra  ? (creditEntries[0]?.creditLedger?.name) :
                              (creditEntries.map(e => e.creditLedger?.name).join(', '))}
                         </div>
                     </div>
@@ -172,6 +187,13 @@ export default function VoucherPrint({ voucher, onClose }) {
             </div>
 
             <style jsx global>{`
+                /* On screen: completely hidden — no white overlay, no blank page */
+                @media screen {
+                    .voucher-print-root {
+                        display: none !important;
+                    }
+                }
+                /* Print: full-page render of the voucher only */
                 @page {
                     size: A4 landscape;
                     margin: 10mm;
@@ -180,17 +202,19 @@ export default function VoucherPrint({ voucher, onClose }) {
                     body * {
                         visibility: hidden;
                     }
-                    .print\:p-0, .print\:p-0 * {
-                        visibility: visible;
-                    }
-                    .print\:p-0 {
-                        position: absolute;
+                    .voucher-print-root {
+                        display: block !important;
+                        visibility: visible !important;
+                        position: fixed;
                         left: 0;
                         top: 0;
                         width: 100%;
                         padding: 0;
                         margin: 0;
                         background: white;
+                    }
+                    .voucher-print-root * {
+                        visibility: visible !important;
                     }
                     button {
                         display: none !important;
