@@ -77,7 +77,10 @@ export default function PaymentVoucher() {
                     { type: 'CREDIT', ledgerId: parseInt(formData.paymentAccount), amount: parseFloat(formData.amount), description: formData.narration }
                 ];
                 res = await api.put(`/accounting/vouchers/${editId}`, {
-                    ...formData,
+                    date: formData.date,
+                    narration: formData.narration,
+                    reference: formData.reference,
+                    totalAmount: parseFloat(formData.amount),
                     entries: apiEntries,
                     voucherType: 'PAYMENT'
                 });
@@ -138,14 +141,16 @@ export default function PaymentVoucher() {
     };
 
     const confirmDelete = async () => {
+        const idToDelete = deleteId;
+        setIsDeleteModalOpen(false);
+        setDeleteId(null);
         try {
-            await api.delete(`/accounting/vouchers/${deleteId}`);
+            await api.delete(`/accounting/vouchers/${idToDelete}`);
             toast.success('Voucher deleted successfully');
             fetchHistory();
         } catch (err) {
-            toast.error('Failed to delete voucher');
-        } finally {
-            setIsDeleteModalOpen(false);
+            console.error('Delete voucher error:', err);
+            toast.error(err.response?.data?.error || err.response?.data?.message || 'Failed to delete voucher');
         }
     };
 

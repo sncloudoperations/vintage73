@@ -34,7 +34,7 @@ const checkFinancialYear = asyncHandler(async (req, res, next) => {
         }
 
         // If updating date, check the new date too
-        if (req.body.date) {
+        if (req.body && req.body.date) {
             dateToCheck = new Date(req.body.date);
         }
     }
