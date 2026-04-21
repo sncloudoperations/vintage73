@@ -349,7 +349,8 @@ exports.Prisma.SaleItemScalarFieldEnum = {
   discountAmount: 'discountAmount',
   discountPercent: 'discountPercent',
   taxAmount: 'taxAmount',
-  taxRate: 'taxRate'
+  taxRate: 'taxRate',
+  isTaxInclusive: 'isTaxInclusive'
 };
 
 exports.Prisma.ExpenseScalarFieldEnum = {

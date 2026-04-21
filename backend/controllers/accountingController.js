@@ -393,7 +393,7 @@ exports.createContraEntry = asyncHandler(async (req, res) => {
 
 // Get all vouchers
 exports.getVouchers = asyncHandler(async (req, res) => {
-  const { voucherType, startDate, endDate, status } = req.query;
+  const { voucherType, startDate, endDate, ledgerId, status } = req.query;
 
   const where = {};
   if (voucherType) where.voucherType = voucherType;
@@ -402,6 +402,17 @@ exports.getVouchers = asyncHandler(async (req, res) => {
     where.date = {
       gte: new Date(startDate),
       lte: new Date(endDate)
+    };
+  }
+
+  if (ledgerId) {
+    where.entries = {
+      some: {
+        OR: [
+          { debitLedgerId: parseInt(ledgerId) },
+          { creditLedgerId: parseInt(ledgerId) }
+        ]
+      }
     };
   }
 

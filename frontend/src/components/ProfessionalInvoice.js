@@ -39,7 +39,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     const {
         invoiceNumber, saleDate, createdAt, items, subTotal, taxAmount, totalAmount, roundOffAmount,
         customer, customerName, previousBalance, currentBalance, placeOfSupply,
-        currencyCode, currencySymbol, exchangeRate, discount, advanceUsed, description
+        currencyCode, currencySymbol, exchangeRate, discount, advanceUsed, description, paidAmount
     } = printData;
 
     // Bank details come from Company Profile → default selected bank
@@ -272,16 +272,6 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             </tr>
                         ))}
                     </tbody>
-                    <tfoot>
-                        <tr className="border-t-2 border-slate-200">
-                            <td colSpan={settings.showColTotal !== false ? 5 : 4} className="py-3 px-2.5 text-right font-bold text-slate-500 uppercase text-[10px]">Table Total (Incl. Tax)</td>
-                            {settings.showColTotal !== false && (
-                                <td className="py-3 px-2.5 text-right font-bold text-slate-900 text-[14px]">
-                                    {currentSymbol}{formatAmt(totalAmount)}
-                                </td>
-                            )}
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
 
@@ -320,31 +310,48 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                 </div>
 
                 <div className={`w-[260px] p-4 rounded-xl bg-[#f8fafc] border border-slate-100 ${isBold ? 'border-l-[4px]' : isModern ? 'border-t-2' : isClassic ? 'border-2 border-black' : ''}`} style={isBold ? { borderLeftColor: accent } : isModern ? { borderTopColor: accent } : {}}>
-                    <div className="space-y-1 mb-2">
-                        <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
-                            <span>Subtotal</span>
+                    <div className="space-y-1.5 mb-2">
+                        {/* 1. Sub Total (Base amount before discount) */}
+                        <div className="flex justify-between text-slate-500 text-[11px] font-medium tracking-tight">
+                            <span>Sub Total</span>
                             <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(parseFloat(subTotal) + parseFloat(invoiceDiscount))}</span>
                         </div>
+
+                        {/* 2. Discount */}
                         {parseFloat(invoiceDiscount) > 0 && (
-                            <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight mt-1">
+                            <div className="flex justify-between text-slate-500 text-[11px] font-medium tracking-tight">
                                 <span>Discount</span>
                                 <span className="font-semibold text-red-500">- {currentSymbol}{formatAmt(invoiceDiscount)}</span>
                             </div>
                         )}
+
+                        {/* 3. Tax */}
                         {parseFloat(taxAmount || 0) > 0 && (
-                            <div className="flex justify-between text-slate-400 text-[11px] font-medium tracking-tight">
-                                <span>Total Tax</span>
+                            <div className="flex justify-between text-slate-500 text-[11px] font-medium tracking-tight">
+                                <span>Tax</span>
                                 <span className="font-semibold text-slate-700">{currentSymbol}{formatAmt(taxAmount)}</span>
                             </div>
                         )}
-                        {advanceUsed > 0 && (
-                            <div className="flex justify-between text-emerald-500 text-[11px] font-medium tracking-tight">
-                                <span>Advance Redeemed</span>
-                                <span className="font-semibold">- {currentSymbol}{formatAmt(advanceUsed)}</span>
+
+                        {/* 4. Round Off */}
+                        {parseFloat(roundOffAmount || 0) !== 0 && (
+                            <div className="flex justify-between text-slate-500 text-[11px] font-medium tracking-tight">
+                                <span>Round Off</span>
+                                <span className="font-semibold text-slate-700">{parseFloat(roundOffAmount) > 0 ? '+' : ''}{currentSymbol}{formatAmt(roundOffAmount)}</span>
+                            </div>
+                        )}
+
+                        {/* 5. Advance Amount */}
+                        {(parseFloat(advanceUsed) || 0) > 0 && (
+                            <div className="flex justify-between text-slate-500 text-[11px] font-medium tracking-tight">
+                                <span>Advance Amount</span>
+                                <span className="font-semibold text-emerald-600">- {currentSymbol}{formatAmt(advanceUsed)}</span>
                             </div>
                         )}
                     </div>
-                    <div className={`pt-2.5 border-t border-slate-200/50 flex justify-between items-center mt-1`}>
+
+                    {/* 6. Grand Total */}
+                    <div className={`pt-2.5 border-t border-slate-200 flex justify-between items-center mt-1`}>
                         <span className="font-bold uppercase tracking-tight text-[12px]" style={(isBold || isModern) ? { color: accent } : { color: '#10b981' }}>
                             GRAND TOTAL
                         </span>
@@ -352,14 +359,22 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                             {currentSymbol}{formatAmt(totalAmount)}
                         </span>
                     </div>
-                    {advanceUsed > 0 && (
-                        <div className={`pt-2 mt-1 border-t border-dashed border-slate-200 flex justify-between items-center`}>
-                            <span className="text-[11px] font-bold text-slate-500 uppercase">Payable Amount</span>
-                            <span className="text-[14px] font-bold text-emerald-600">
-                                {currentSymbol}{formatAmt(Number(totalAmount) - Number(advanceUsed || 0))}
-                            </span>
-                        </div>
-                    )}
+
+                    {/* 7. Balance Due */}
+                    {(() => {
+                        const balance = parseFloat(totalAmount || 0) - parseFloat(paidAmount || 0) - parseFloat(advanceUsed || 0);
+                        if (balance > 0.5) {
+                            return (
+                                <div className={`pt-2 mt-1 border-t border-dashed border-slate-200 flex justify-between items-center`}>
+                                    <span className="text-[11px] font-bold text-slate-500 uppercase">Balance Due</span>
+                                    <span className="text-[14px] font-bold text-red-600">
+                                        {currentSymbol}{formatAmt(balance)}
+                                    </span>
+                                </div>
+                            );
+                        }
+                        return null;
+                    })()}
                 </div>
             </div>
 

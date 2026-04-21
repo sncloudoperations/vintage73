@@ -162,21 +162,20 @@ const CURRENCY_SYMBOLS = {
     // Calculations
     const calcResults = useMemo(() => {
         return cart.reduce((acc, item) => {
-            // Base Unit Price in INR
-            const basePrice = parseFloat(item.price || 0);
-            // Converted Unit Price
-            const price = basePrice * (exchangeRate || 1);
-            
+            // Dual-Mode Pricing Logic:
+            // If price was NOT manually edited, we treat item.price as the RAW INR price and multiply by exRate.
+            // If price WAS manually edited, we treat it as being already in the TARGET currency.
+            const effectivePrice = item.isPriceOverridden ? parseFloat(item.price || 0) : parseFloat(item.price || 0) * (exchangeRate || 1);
             const qty = parseFloat(item.quantity || 0);
             
-            // Base Discount in INR converted to current currency
-            const disc = parseFloat(item.discountAmount || 0) * (exchangeRate || 1);
+            // item.discountAmount is handled similarly for consistency
+            const effectiveDisc = item.isPriceOverridden ? parseFloat(item.discountAmount || 0) : parseFloat(item.discountAmount || 0) * (exchangeRate || 1);
             
             const rate = taxEnabled ? parseFloat(item.taxRate || 0) : 0; 
             const isInc = item.isTaxInclusive === true;
 
-            // Net Price = Converted Price - Converted Discount
-            const netPricePerUnit = price - disc;
+            // Net Price = Price - Discount
+            const netPricePerUnit = effectivePrice - effectiveDisc;
 
             let lineTax = 0;
             let lineSubTotal = 0; // Exclusive of tax
@@ -201,7 +200,7 @@ const CURRENCY_SYMBOLS = {
                 tax: acc.tax + lineTax
             };
         }, { subTotal: 0, tax: 0 });
-    }, [cart, taxEnabled, exchangeRate]);
+    }, [cart, taxEnabled]);
 
     useEffect(() => {
         if (customerId) {
@@ -306,26 +305,38 @@ const CURRENCY_SYMBOLS = {
             setCustomerName(invoice.customerName || 'Walk-in Customer');
             setSalesmanId(invoice.salesmanId || '');
             setSaleDate(new Date(invoice.saleDate).toISOString().split('T')[0]);
-            setRoundOff(invoice.roundOffAmount || 0);
             setCurrencyCode(invoice.currencyCode || 'INR');
             setCurrencySymbol(CURRENCY_SYMBOLS[invoice.currencyCode || 'INR']);
-            setExchangeRate(invoice.exchangeRate || 1);
+            const currentExRate = invoice.exchangeRate || 1;
+            setExchangeRate(currentExRate);
             setSaleDescription(invoice.description || '');
+            setTaxEnabled(parseFloat(invoice.taxAmount || 0) > 0);
+
+            // Convert other transaction values from INR to target currency
+            setRoundOff((invoice.roundOffAmount * currentExRate).toFixed(2));
+            setAdvanceRedeemed((invoice.advanceUsed * currentExRate).toFixed(2));
+            setAddedPayments((invoice.payments || []).map(p => ({
+                ...p,
+                amount: p.amount * currentExRate
+            })));
 
             // Map items to cart
             const restoredCart = invoice.items.map(item => {
                 const product = (currentProducts || products).find(p => p.id === item.productId);
+                const itemExRate = invoice.exchangeRate || 1;
                 return {
                     ...(product || item.product),
                     id: item.productId,
                     name: item.product?.name || 'Unknown Product',
-                    price: item.unitPrice,
+                    // Convert stored INR price back to invoice's currency and round to 2 decimals
+                    price: parseFloat((item.unitPrice * itemExRate).toFixed(2)),
                     quantity: item.quantity,
                     discountPercent: item.discountPercent || 0,
-                    discountAmount: item.discountAmount || 0,
-                    taxRate: item.taxRate || 0,
-                    taxPercent: item.taxRate || 0,
-                    isTaxInclusive: item.product?.isTaxInclusive || false
+                    discountAmount: parseFloat(((item.discountAmount || 0) * itemExRate).toFixed(2)),
+                    taxRate: parseFloat(item.taxRate || 0),
+                    taxPercent: parseFloat(item.taxRate || 0),
+                    isTaxInclusive: item.isTaxInclusive === true || item.isTaxInclusive === 'true',
+                    isPriceOverridden: true // CRITICAL: Prevent Master Product Sync from resetting this
                 };
             });
 
@@ -362,8 +373,8 @@ const CURRENCY_SYMBOLS = {
                     const freshIsInclusive = freshProd.isTaxInclusive === true || freshProd.isTaxInclusive === 'true';
 
                     const isPriceDiff = !cartItem.isPriceOverridden && Number(cartItem.price) !== freshPrice;
-                    const isTaxDiff = parseFloat(cartItem.taxRate || 0) !== freshTaxRate || parseFloat(cartItem.taxPercent || 0) !== freshTaxPercent;
-                    const isIncDiff = cartItem.isTaxInclusive !== freshIsInclusive;
+                    const isTaxDiff = !cartItem.isPriceOverridden && (parseFloat(cartItem.taxRate || 0) !== freshTaxRate || parseFloat(cartItem.taxPercent || 0) !== freshTaxPercent);
+                    const isIncDiff = !cartItem.isPriceOverridden && (cartItem.isTaxInclusive !== freshIsInclusive);
 
                     if (isPriceDiff || isTaxDiff || isIncDiff) {
                         hasChanges = true;
@@ -469,7 +480,10 @@ const CURRENCY_SYMBOLS = {
             return;
         }
 
-        // Always use FRESH data from the passed 'product' object
+        // Initial behavior as per requirement: 
+        // 1. Price field shows original master price (INR)
+        // 2. Total calculation (handled in calcResults) uses exchangeRate
+        // 3. isPriceOverridden starts as FALSE
         const freshPrice = Number(product.price);
         const freshTaxRate = parseFloat(product.taxRate || 0);
         const freshIsInclusive = product.isTaxInclusive === true || product.isTaxInclusive === 'true';
@@ -478,18 +492,19 @@ const CURRENCY_SYMBOLS = {
             setCart(cart.map(item => item.id === product.id ? {
                 ...item,
                 quantity: item.quantity + 1,
-                // FORCE UPDATE details
-                price: freshPrice,
+                // Do NOT reset price to master if it was already overridden by user
+                price: item.isPriceOverridden ? item.price : freshPrice,
                 taxRate: freshTaxRate,
-                isTaxInclusive: freshIsInclusive
+                isTaxInclusive: freshIsInclusive,
+                isPriceOverridden: item.isPriceOverridden || false
             } : item));
         } else {
             setCart([...cart, {
                 ...product,
-                // Ensure we spread product but also explicitly set the fields we depend on for calc
                 id: product.id,
                 name: product.name,
                 price: freshPrice,
+                isPriceOverridden: false,
                 quantity: 1,
                 discountPercent: 0,
                 discountAmount: 0,
@@ -612,14 +627,19 @@ const CURRENCY_SYMBOLS = {
         // DiscountAmount = Price - NewNetPrice
 
         const newCart = cart.map(item => {
-            const currentNet = item.price - (item.discountAmount || 0); // Current net per unit
+            const effPrice = item.isPriceOverridden ? item.price : item.price * (exchangeRate || 1);
+            const effDisc = item.isPriceOverridden ? (item.discountAmount || 0) : (item.discountAmount || 0) * (exchangeRate || 1);
+            
+            const currentNet = effPrice - effDisc;
             const newNet = currentNet * ratio;
-            const newDiscountAmt = item.price - newNet;
+            const newDiscountAmt = effPrice - newNet;
 
             return {
                 ...item,
+                price: parseFloat(effPrice.toFixed(2)),
                 discountAmount: parseFloat(newDiscountAmt.toFixed(2)),
-                discountPercent: 0 // Clear percent to avoid conflict, relying on amount
+                discountPercent: 0,
+                isPriceOverridden: true // Force to target currency mode
             };
         });
 
@@ -731,20 +751,33 @@ const CURRENCY_SYMBOLS = {
                 customerName: customerName || 'Walk-in Customer',
                 branchId: selectedBranch ? parseInt(selectedBranch) : (user?.branchId || null),
                 saleDate,
-                items: cart.map(item => ({
-                    productId: item.id,
-                    quantity: item.quantity,
-                    unitPrice: item.price,
-                    taxPercent: taxEnabled ? item.taxPercent : 0,
-                    discountPercent: item.discountPercent,
-                    discountAmount: item.discountAmount
-                })),
+                items: cart.map(item => {
+                    // Normalize back to INR for DB storage
+                    // If not overridden, item.price is ALREADY INR.
+                    // If overridden, item.price is in target currency, so divide by exchangeRate.
+                    const unitPriceINR = item.isPriceOverridden ? (item.price / (exchangeRate || 1)) : item.price;
+                    const discountAmountINR = item.isPriceOverridden ? ((item.discountAmount || 0) / (exchangeRate || 1)) : (item.discountAmount || 0);
+
+                    return {
+                        productId: item.id,
+                        quantity: item.quantity,
+                        unitPrice: unitPriceINR,
+                        taxPercent: taxEnabled ? item.taxPercent : 0,
+                        discountPercent: item.discountPercent,
+                        discountAmount: discountAmountINR,
+                        isTaxInclusive: item.isTaxInclusive
+                    };
+                }),
                 paymentMethod: finalPayments.length === 1 ? finalPayments[0].method : 'Split',
-                paidAmount: finalPaidAmount,
+                // Normalize total/paid/roundoff values to INR for DB storage
+                paidAmount: finalPaidAmount / exchangeRate,
                 terminalId: terminal?.id,
-                roundOffAmount: roundOff,
-                advanceRedeemed: parseFloat(advanceRedeemed || 0),
-                payments: finalPayments,
+                roundOffAmount: roundOff / exchangeRate,
+                advanceRedeemed: parseFloat(advanceRedeemed || 0) / exchangeRate,
+                payments: finalPayments.map(p => ({
+                    ...p,
+                    amount: p.amount / exchangeRate
+                })),
                 salesmanId: salesmanId ? parseInt(salesmanId) : null,
                 currencyCode,
                 exchangeRate,
@@ -1052,9 +1085,18 @@ const CURRENCY_SYMBOLS = {
                                 value={currencyCode}
                                 onChange={(e) => {
                                     const code = e.target.value;
+                                    const newExRate = EXCHANGE_RATES[code];
+                                    
+                                    // Convert existing items in cart to new currency
+                                    setCart(prev => prev.map(item => ({
+                                        ...item,
+                                        price: (item.price / exchangeRate) * newExRate,
+                                        discountAmount: (item.discountAmount / exchangeRate) * newExRate
+                                    })));
+
                                     setCurrencyCode(code);
                                     setCurrencySymbol(CURRENCY_SYMBOLS[code]);
-                                    setExchangeRate(EXCHANGE_RATES[code]);
+                                    setExchangeRate(newExRate);
                                 }}
                             >
                                 <option value="INR">INR (₹)</option>
@@ -1099,78 +1141,88 @@ const CURRENCY_SYMBOLS = {
                         </div>
                     ) : (
                         <div className="divide-y divide-slate-50">
-                            {cart.map(item => (
-                                <div key={item.id} className="px-4 py-3 hover:bg-slate-50 group transition-colors">
-                                    <div className="flex items-center text-sm">
-                                        {/* Item & Disc */}
-                                        <div className="flex-[3] pr-2">
-                                            <h4 className="font-medium text-slate-700 leading-tight mb-1">{item.name}</h4>
-                                            <div className="flex items-center gap-1 mt-1">
-                                                <div className="flex items-center gap-0.5">
+                            {cart.map(item => {
+                                const effPrice = item.isPriceOverridden ? parseFloat(item.price || 0) : parseFloat(item.price || 0) * (exchangeRate || 1);
+                                const effDisc = item.isPriceOverridden ? parseFloat(item.discountAmount || 0) : parseFloat(item.discountAmount || 0) * (exchangeRate || 1);
+                                const lineTotal = (effPrice - effDisc) * (parseFloat(item.quantity) || 0);
+
+                                return (
+                                    <div key={item.id} className="px-4 py-3 hover:bg-slate-50 group transition-colors">
+                                        <div className="flex items-center text-sm">
+                                            {/* Item & Disc */}
+                                            <div className="flex-[3] pr-2">
+                                                <h4 className="font-medium text-slate-700 leading-tight mb-1">{item.name}</h4>
+                                                <div className="flex items-center gap-1 mt-1">
+                                                    <div className="flex items-center border border-slate-200 rounded overflow-hidden h-6 bg-slate-50">
+                                                        <input 
+                                                            className="w-10 text-center text-[10px] bg-transparent outline-none focus:bg-white transition-colors"
+                                                            placeholder="%"
+                                                            value={item.discountPercent || ''}
+                                                            onChange={e => updateDiscount(item.id, 'percent', e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-[10px] text-slate-400">
+                                                            {item.isPriceOverridden ? currencySymbol : '₹'}
+                                                        </span>
+                                                        <input
+                                                            className="w-10 p-0.5 text-[10px] text-center bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
+                                                            placeholder="Amt"
+                                                            value={item.discountAmount || ''}
+                                                            onChange={e => updateDiscount(item.id, 'amount', e.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Qty */}
+                                            <div className="flex-[2] flex justify-center">
+                                                <div className="flex items-center border border-slate-200 rounded bg-white">
+                                                    <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
                                                     <input
-                                                        className="w-8 p-0.5 text-[10px] text-center bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
-                                                        placeholder="%"
-                                                        value={item.discountPercent || ''}
-                                                        onChange={e => updateDiscount(item.id, 'percent', e.target.value)}
+                                                        className="w-8 text-center text-xs font-medium text-slate-700 outline-none"
+                                                        value={item.quantity}
+                                                        onChange={e => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                                                    />
+                                                    <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                                                </div>
+                                            </div>
+
+                                            {/* Price */}
+                                            <div className="flex-[2] text-right">
+                                                <div className="flex items-center justify-end gap-1">
+                                                    <span className="text-[10px] text-slate-400">
+                                                        {item.isPriceOverridden ? currencySymbol : '₹'}
+                                                    </span>
+                                                    <input
+                                                        className="w-16 p-0.5 font-medium text-right text-slate-700 bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
+                                                        value={item.price}
+                                                        onChange={e => updatePrice(item.id, e.target.value)}
+                                                        onClick={e => e.target.select()}
                                                     />
                                                 </div>
-                                                <div className="flex items-center gap-0.5">
-                                                    <span className="text-[10px] text-slate-400">{currencySymbol}</span>
-                                                    <input
-                                                        className="w-10 p-0.5 text-[10px] text-center bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
-                                                        placeholder="Amt"
-                                                        value={item.discountAmount || ''}
-                                                        onChange={e => updateDiscount(item.id, 'amount', e.target.value)}
-                                                    />
-                                                </div>
+                                                {effDisc > 0 && (
+                                                    <div className="text-[10px] text-orange-500 line-through">
+                                                        {currencyCode === 'AED' ? `${(effPrice * (parseFloat(item.quantity) || 0)).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(effPrice * (parseFloat(item.quantity) || 0)).toFixed(2)}`}
+                                                    </div>
+                                                )}
                                             </div>
-                                        </div>
 
-                                        {/* Qty */}
-                                        <div className="flex-[2] flex justify-center">
-                                            <div className="flex items-center border border-slate-200 rounded bg-white">
-                                                <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-                                                <input
-                                                    className="w-8 text-center text-xs font-medium text-slate-700 outline-none"
-                                                    value={item.quantity}
-                                                    onChange={e => updateQuantity(item.id, parseInt(e.target.value) || 1)}
-                                                />
-                                                <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                                            {/* Total */}
+                                            <div className="flex-[2] text-right font-medium text-slate-800">
+                                                {currencyCode === 'AED' ? `${lineTotal.toFixed(2)} ${currencySymbol}` : `${currencySymbol}${lineTotal.toFixed(2)}`}
                                             </div>
-                                        </div>
 
-                                        {/* Price */}
-                                        <div className="flex-[2] text-right">
-                                            <div className="flex items-center justify-end gap-1">
-                                                <span className="text-[10px] text-slate-400">{currencySymbol}</span>
-                                                <input
-                                                    className="w-16 p-0.5 font-medium text-right text-slate-700 bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
-                                                    value={item.price}
-                                                    onChange={e => updatePrice(item.id, e.target.value)}
-                                                    onClick={e => e.target.select()}
-                                                />
+                                            {/* Remove */}
+                                            <div className="w-6 text-right pl-2">
+                                                <button onClick={() => removeFromCart(item.id)} className="text-slate-300 hover:text-red-500 transition-colors">
+                                                    <FiTrash2 size={14} />
+                                                </button>
                                             </div>
-                                            {item.discountAmount > 0 && (
-                                                <div className="text-[10px] text-orange-500 line-through">
-                                                    {currencyCode === 'AED' ? `${(item.price * exchangeRate * item.quantity).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(item.price * exchangeRate * item.quantity).toFixed(2)}`}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Total */}
-                                        <div className="flex-[2] text-right font-medium text-slate-800">
-                                            {currencyCode === 'AED' ? `${(((item.price * exchangeRate) - ((item.discountAmount || 0) * exchangeRate)) * item.quantity).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(((item.price * exchangeRate) - ((item.discountAmount || 0) * exchangeRate)) * item.quantity).toFixed(2)}`}
-                                        </div>
-
-                                        {/* Remove */}
-                                        <div className="w-6 text-right pl-2">
-                                            <button onClick={() => removeFromCart(item.id)} className="text-slate-300 hover:text-red-500 transition-colors">
-                                                <FiTrash2 size={14} />
-                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
