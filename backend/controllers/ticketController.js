@@ -1021,7 +1021,7 @@ exports.handleTicketDecision = asyncHandler(async (req, res) => {
 // @access  Private
 exports.getTicketDashboardStats = asyncHandler(async (req, res) => {
     const { role: userRole, id: userId, branchId: userBranchId } = req.user;
-    const { role, personId, startDate, endDate, page = 1, limit = 10 } = req.query;
+    const { role, personId, startDate, endDate, page = 1, limit = 10, priority, status } = req.query;
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const take = parseInt(limit);
@@ -1050,6 +1050,8 @@ exports.getTicketDashboardStats = asyncHandler(async (req, res) => {
             baseWhere.AND.push({ customerId: pid });
         } else if (role.toLowerCase() === 'staff') {
             baseWhere.AND.push({ assignedToId: pid });
+        } else if (role.toLowerCase() === 'employee') { // Match frontend role 'employee'
+            baseWhere.AND.push({ assignedToId: pid });
         } else if (role.toLowerCase() === 'admin') {
             baseWhere.AND.push({ 
                 OR: [
@@ -1058,6 +1060,14 @@ exports.getTicketDashboardStats = asyncHandler(async (req, res) => {
                 ]
             });
         }
+    }
+
+    if (priority) {
+        baseWhere.AND.push({ priority: priority });
+    }
+
+    if (status) {
+        baseWhere.AND.push({ status: status });
     }
 
     // Clone baseWhere for stats
@@ -1075,7 +1085,10 @@ exports.getTicketDashboardStats = asyncHandler(async (req, res) => {
     }
 
     // 1. Summary Cards
-    const [total, open, inProgress, closed, overdue] = await Promise.all([
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [total, open, inProgress, closed, overdue, highPriority, urgent, reassigned, closedTicketsForAvg, todayCreated, todayResolved] = await Promise.all([
         prisma.ticket.count({ where: statsWhere }),
         prisma.ticket.count({ 
             where: { 
@@ -1100,10 +1113,61 @@ exports.getTicketDashboardStats = asyncHandler(async (req, res) => {
                 ...statsWhere, 
                 slaStatus: 'Delayed' 
             } 
+        }),
+        prisma.ticket.count({
+            where: {
+                ...statsWhere,
+                priority: { in: ['High', 'HIGH'] }
+            }
+        }),
+        prisma.ticket.count({
+            where: {
+                ...statsWhere,
+                priority: { in: ['Urgent', 'URGENT'] }
+            }
+        }),
+        prisma.ticket.count({
+            where: {
+                ...statsWhere,
+                OR: [
+                    { reassignReason: { not: null } },
+                    { previousAssigneeId: { not: null } }
+                ]
+            }
+        }),
+        prisma.ticket.findMany({
+            where: {
+                ...statsWhere,
+                status: { in: ['Closed', 'CLOSED'] }
+            },
+            select: { createdAt: true, updatedAt: true }
+        }),
+        prisma.ticket.count({
+            where: {
+                ...statsWhere,
+                createdAt: { gte: today }
+            }
+        }),
+        prisma.ticket.count({
+            where: {
+                ...statsWhere,
+                status: { in: ['Closed', 'CLOSED'] },
+                updatedAt: { gte: today }
+            }
         })
     ]);
 
-    // 2. Status Distribution (Pie Chart)
+    // Calculate Avg Resolution Time in Hours
+    let avgResolutionTime = 0;
+    if (closedTicketsForAvg.length > 0) {
+        const totalDuration = closedTicketsForAvg.reduce((acc, t) => {
+            const duration = new Date(t.updatedAt) - new Date(t.createdAt);
+            return acc + duration;
+        }, 0);
+        avgResolutionTime = (totalDuration / closedTicketsForAvg.length) / (1000 * 60 * 60); // Convert to hours
+    }
+
+    // 2. Status Distribution
     const statusCounts = await prisma.ticket.groupBy({
         by: ['status'],
         where: statsWhere,
@@ -1116,7 +1180,105 @@ exports.getTicketDashboardStats = asyncHandler(async (req, res) => {
         return acc;
     }, {});
 
-    // 3. Graph Data (Last 30 Days)
+    // 2.1 Priority Distribution
+    const priorityCounts = await prisma.ticket.groupBy({
+        by: ['priority'],
+        where: statsWhere,
+        _count: { id: true }
+    });
+    const priorityDistribution = priorityCounts.reduce((acc, curr) => {
+        const p = curr.priority.toUpperCase();
+        acc[p] = (acc[p] || 0) + curr._count.id;
+        return acc;
+    }, {});
+
+    // 3. Leaderboards & Participants
+    let participants = [];
+    let topCustomers = [];
+    let topEmployees = [];
+
+    if (!personId || personId === 'all') {
+        const allTicketsForAgg = await prisma.ticket.findMany({
+            where: statsWhere,
+            include: {
+                customer: { select: { id: true, name: true, phone: true } },
+                assignedTo: { select: { id: true, name: true, username: true } }
+            }
+        });
+
+        const customerAgg = {};
+        const employeeAgg = {};
+
+        allTicketsForAgg.forEach(t => {
+            const s = t.status.toUpperCase();
+            const p = t.priority.toUpperCase();
+            const isReassigned = t.reassignReason || t.previousAssigneeId;
+
+            if (t.customer) {
+                if (!customerAgg[t.customer.id]) {
+                    customerAgg[t.customer.id] = { 
+                        id: t.customer.id, 
+                        name: t.customer.name, 
+                        phone: t.customer.phone,
+                        total: 0, created: 0, assigned: 0, inProgress: 0, resolved: 0, closed: 0, waiting: 0, reassigned: 0, overdue: 0, highPriority: 0, mediumPriority: 0, lowPriority: 0, urgent: 0, lastActivity: t.updatedAt 
+                    };
+                }
+                const c = customerAgg[t.customer.id];
+                c.total++;
+                if (s === 'CREATED') c.created++;
+                else if (s === 'ASSIGNED') c.assigned++;
+                else if (s === 'INPROGRESS') c.inProgress++;
+                else if (s === 'RESOLVED') c.resolved++;
+                else if (s === 'CLOSED') c.closed++;
+                else if (s === 'WAITING') c.waiting++;
+                
+                if (isReassigned) c.reassigned++;
+                if (t.slaStatus === 'Delayed') c.overdue++;
+                
+                if (p === 'HIGH') c.highPriority++;
+                else if (p === 'MEDIUM') c.mediumPriority++;
+                else if (p === 'LOW') c.lowPriority++;
+                else if (p === 'URGENT') c.urgent++;
+
+                if (new Date(t.updatedAt) > new Date(c.lastActivity)) c.lastActivity = t.updatedAt;
+            }
+
+            if (t.assignedTo) {
+                if (!employeeAgg[t.assignedTo.id]) {
+                    employeeAgg[t.assignedTo.id] = { 
+                        id: t.assignedTo.id, 
+                        name: t.assignedTo.name, 
+                        username: t.assignedTo.username,
+                        total: 0, created: 0, assigned: 0, inProgress: 0, resolved: 0, closed: 0, waiting: 0, reassigned: 0, overdue: 0, highPriority: 0, mediumPriority: 0, lowPriority: 0, urgent: 0
+                    };
+                }
+                const e = employeeAgg[t.assignedTo.id];
+                e.total++;
+                if (s === 'CREATED') e.created++;
+                else if (s === 'ASSIGNED') e.assigned++;
+                else if (s === 'INPROGRESS') e.inProgress++;
+                else if (s === 'RESOLVED') e.resolved++;
+                else if (s === 'CLOSED') e.closed++;
+                else if (s === 'WAITING') e.waiting++;
+
+                if (isReassigned) e.reassigned++;
+                if (t.slaStatus === 'Delayed') e.overdue++;
+                
+                if (p === 'HIGH') e.highPriority++;
+                else if (p === 'MEDIUM') e.mediumPriority++;
+                else if (p === 'LOW') e.lowPriority++;
+                else if (p === 'URGENT') e.urgent++;
+            }
+        });
+
+        topCustomers = Object.values(customerAgg).sort((a, b) => b.total - a.total).slice(0, 5);
+        topEmployees = Object.values(employeeAgg).sort((a, b) => b.total - a.total).slice(0, 5);
+
+        if (role?.toLowerCase() === 'customer') participants = Object.values(customerAgg);
+        else if (role?.toLowerCase() === 'employee' || role?.toLowerCase() === 'staff') participants = Object.values(employeeAgg);
+    }
+
+    // 4. Graph Data (Last 30 Days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     thirtyDaysAgo.setHours(0,0,0,0);
@@ -1201,11 +1363,21 @@ exports.getTicketDashboardStats = asyncHandler(async (req, res) => {
             open,
             inProgress,
             closed,
-            overdue
+            overdue,
+            highPriority,
+            urgent,
+            reassigned,
+            avgResolutionTime,
+            todayCreated,
+            todayResolved
         },
         statusDistribution,
+        priorityDistribution,
         graphData: graphStats,
         tickets: normalizedTickets,
+        participants,
+        topCustomers,
+        topEmployees,
         pagination: {
             total: totalTicketsCount,
             page: parseInt(page),
