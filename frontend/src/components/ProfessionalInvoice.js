@@ -362,7 +362,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
 
                     {/* 7. Balance Due */}
                     {(() => {
-                        const balance = parseFloat(totalAmount || 0) - parseFloat(paidAmount || 0) - parseFloat(advanceUsed || 0);
+                        const balance = parseFloat(totalAmount || 0) - parseFloat(advanceUsed || 0);
                         if (balance > 0.5) {
                             return (
                                 <div className={`pt-2 mt-1 border-t border-dashed border-slate-200 flex justify-between items-center`}>

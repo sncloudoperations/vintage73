@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
-import { FiDollarSign, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiCalendar, FiPrinter, FiMessageSquare } from 'react-icons/fi';
+import { FiDollarSign, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiCalendar, FiPrinter, FiMessageSquare, FiSearch } from 'react-icons/fi';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import ProfessionalModal from '@/components/ProfessionalModal';
 import VoucherPrint from '@/components/VoucherPrint';
@@ -31,6 +31,11 @@ export default function ReceiptVoucher() {
     // Print State
     const [printVoucher, setPrintVoucher] = useState(null);
 
+    // Filter State
+    const [filterStartDate, setFilterStartDate] = useState('');
+    const [filterEndDate, setFilterEndDate] = useState('');
+    const [filterLedgerId, setFilterLedgerId] = useState('');
+
     useEffect(() => {
         fetchLedgers();
         fetchHistory();
@@ -49,7 +54,37 @@ export default function ReceiptVoucher() {
     const fetchHistory = async () => {
         setHistoryLoading(true);
         try {
-            const res = await api.get('/accounting/vouchers?voucherType=RECEIPT');
+            let url = `/accounting/vouchers?voucherType=RECEIPT`;
+            if (filterStartDate) url += `&startDate=${filterStartDate}`;
+            if (filterEndDate) url += `&endDate=${filterEndDate}`;
+            if (filterLedgerId) url += `&ledgerId=${filterLedgerId}`;
+
+            const res = await api.get(url);
+            setVouchers(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to load voucher history');
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
+
+    const clearFilters = () => {
+        setFilterStartDate('');
+        setFilterEndDate('');
+        setFilterLedgerId('');
+        fetchHistoryWithParams('', '', '');
+    };
+
+    const fetchHistoryWithParams = async (start, end, ledger) => {
+        setHistoryLoading(true);
+        try {
+            let url = `/accounting/vouchers?voucherType=RECEIPT`;
+            if (start) url += `&startDate=${start}`;
+            if (end) url += `&endDate=${end}`;
+            if (ledger) url += `&ledgerId=${ledger}`;
+
+            const res = await api.get(url);
             setVouchers(res.data);
         } catch (err) {
             console.error(err);
@@ -378,7 +413,59 @@ export default function ReceiptVoucher() {
                 </div>
             ) : (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-visible">
+                        {/* Filter Bar */}
+                        <div className="bg-slate-50/50 p-4 border-b border-slate-200 flex flex-wrap items-center gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Date From</label>
+                                    <div className="relative">
+                                        <input 
+                                            type="date" 
+                                            className="text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-md p-1.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all" 
+                                            value={filterStartDate}
+                                            onChange={e => setFilterStartDate(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Date To</label>
+                                    <div className="relative">
+                                        <input 
+                                            type="date" 
+                                            className="text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-md p-1.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all" 
+                                            value={filterEndDate}
+                                            onChange={e => setFilterEndDate(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex-1 min-w-[200px] flex flex-col gap-1">
+                                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Account/Ledger</label>
+                                <SearchableSelect
+                                    options={ledgers.map(l => ({ value: l.id, label: `${l.name} (${l.group?.name})` }))}
+                                    value={filterLedgerId}
+                                    onChange={val => setFilterLedgerId(val)}
+                                    placeholder="All Accounts..."
+                                />
+                            </div>
+
+                            <div className="flex items-end gap-2 pt-4">
+                                <button 
+                                    onClick={fetchHistory}
+                                    className="px-6 py-2 bg-slate-900 text-white text-[10px] font-bold rounded-lg uppercase tracking-widest hover:bg-slate-800 shadow-sm hover:shadow transition-all active:scale-95 flex items-center gap-2"
+                                >
+                                    <FiSearch size={12} /> Search
+                                </button>
+                                <button 
+                                    onClick={clearFilters}
+                                    className="px-6 py-2 border border-slate-200 text-slate-500 text-[10px] font-bold rounded-lg uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
+                                >
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
