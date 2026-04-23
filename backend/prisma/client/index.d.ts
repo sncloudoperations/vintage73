@@ -76341,13 +76341,13 @@ export namespace Prisma {
 
   export type LeadWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    phone?: string
     quotationId?: number
     saleId?: number
     AND?: LeadWhereInput | LeadWhereInput[]
     OR?: LeadWhereInput[]
     NOT?: LeadWhereInput | LeadWhereInput[]
     name?: StringFilter<"Lead"> | string
+    phone?: StringNullableFilter<"Lead"> | string | null
     email?: StringNullableFilter<"Lead"> | string | null
     address?: StringNullableFilter<"Lead"> | string | null
     source?: StringNullableFilter<"Lead"> | string | null
@@ -76382,7 +76382,7 @@ export namespace Prisma {
     sale?: XOR<SaleNullableRelationFilter, SaleWhereInput> | null
     deals?: DealListRelationFilter
     tasks?: CRMTaskListRelationFilter
-  }, "id" | "phone" | "quotationId" | "saleId">
+  }, "id" | "quotationId" | "saleId">
 
   export type LeadOrderByWithAggregationInput = {
     id?: SortOrder

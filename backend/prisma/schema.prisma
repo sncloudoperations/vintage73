@@ -602,7 +602,7 @@ model Payroll {
 model Lead {
   id                Int       @id @default(autoincrement())
   name              String    // Customer Name
-  phone             String?   @unique // duplicate detection
+  phone             String?   // duplicate detection removed to allow multiple leads
   email             String?
   address           String?
   source            String?   // Walk-in, Website, Call, WhatsApp

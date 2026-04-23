@@ -689,3 +689,227 @@ exports.bulkPostTransactions = asyncHandler(async (req, res) => {
 
   res.json(results);
 });
+
+// ==================== DASHBOARD ====================
+
+exports.getDashboardStats = asyncHandler(async (req, res) => {
+  const { startDate, endDate } = req.query;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let dateFilter = undefined;
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    dateFilter = { gte: start, lte: end };
+  } else if (startDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    dateFilter = { gte: start };
+  } else if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    dateFilter = { lte: end };
+  }
+
+  // 1. Total Accounts
+  const totalAccounts = await prisma.ledger.count({
+    where: { isActive: true }
+  });
+
+  // 2. Today Transactions
+  const todayTransactions = await prisma.voucher.count({
+    where: {
+      date: dateFilter || { gte: today },
+      status: 'POSTED'
+    }
+  });
+
+  // 3. Pending Vouchers
+  const pendingVouchers = await prisma.voucher.count({
+    where: { 
+      status: 'DRAFT',
+      ...(dateFilter ? { date: dateFilter } : {})
+    }
+  });
+
+  // Fetch all ledgers to calculate Bank Balance, Cash in Hand, Income, Expense
+  const ledgers = await prisma.ledger.findMany({
+    include: { group: true }
+  });
+
+  const [debitSums, creditSums] = await Promise.all([
+    prisma.journalEntry.groupBy({
+      by: ['debitLedgerId'],
+      _sum: { amount: true },
+      where: { 
+        voucher: { 
+          status: 'POSTED',
+          ...(dateFilter ? { date: dateFilter } : {})
+        } 
+      }
+    }),
+    prisma.journalEntry.groupBy({
+      by: ['creditLedgerId'],
+      _sum: { amount: true },
+      where: { 
+        voucher: { 
+          status: 'POSTED',
+          ...(dateFilter ? { date: dateFilter } : {})
+        } 
+      }
+    })
+  ]);
+
+  const debitMap = new Map((debitSums || []).map(s => [s.debitLedgerId, Number(s._sum.amount || 0)]));
+  const creditMap = new Map((creditSums || []).map(s => [s.creditLedgerId, Number(s._sum.amount || 0)]));
+
+  let bankBalance = 0;
+  let cashInHand = 0;
+  let totalIncome = 0;
+  let totalExpense = 0;
+  
+  const accountTypeBreakdown = {};
+
+  ledgers.forEach(ledger => {
+    const totalDebit = debitMap.get(ledger.id) || 0;
+    const totalCredit = creditMap.get(ledger.id) || 0;
+    
+    let balance = Number(ledger.openingBalance);
+    if (ledger.balanceType === 'DEBIT') {
+      balance = balance + totalDebit - totalCredit;
+    } else {
+      balance = balance + totalCredit - totalDebit;
+    }
+
+    const groupName = ledger.group.name.toLowerCase();
+    const groupType = ledger.group.groupType;
+
+    if (groupName.includes('bank')) {
+      bankBalance += balance;
+    } else if (groupName.includes('cash')) {
+      cashInHand += balance;
+    }
+
+    if (groupType === 'INCOME') {
+      totalIncome += balance;
+    } else if (groupType === 'EXPENSES') {
+      totalExpense += balance;
+    }
+
+    accountTypeBreakdown[groupType] = (accountTypeBreakdown[groupType] || 0) + 1;
+  });
+
+  const netProfit = totalIncome - totalExpense;
+
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+  sixMonthsAgo.setHours(0, 0, 0, 0);
+  sixMonthsAgo.setDate(1);
+
+  const monthlyStatsRaw = await prisma.journalEntry.findMany({
+    where: {
+      voucher: { status: 'POSTED', date: { gte: sixMonthsAgo } },
+      OR: [
+        { debitLedger: { group: { groupType: 'EXPENSES' } } },
+        { creditLedger: { group: { groupType: 'INCOME' } } }
+      ]
+    },
+    include: {
+      voucher: true,
+      debitLedger: { include: { group: true } },
+      creditLedger: { include: { group: true } }
+    }
+  });
+
+  const monthlyData = {};
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const monthName = d.toLocaleString('default', { month: 'short' });
+    monthlyData[monthName] = { income: 0, expense: 0 };
+  }
+
+  monthlyStatsRaw.forEach(entry => {
+    const monthName = new Date(entry.voucher.date).toLocaleString('default', { month: 'short' });
+    if (monthlyData[monthName]) {
+      if (entry.creditLedger?.group?.groupType === 'INCOME') {
+        monthlyData[monthName].income += Number(entry.amount);
+      }
+      if (entry.debitLedger?.group?.groupType === 'EXPENSES') {
+        monthlyData[monthName].expense += Number(entry.amount);
+      }
+    }
+  });
+
+  const months = Object.keys(monthlyData).reverse();
+  const incomeTrend = months.map(m => monthlyData[m].income);
+  const expenseTrend = months.map(m => monthlyData[m].expense);
+  const cashFlowTrend = months.map(m => monthlyData[m].income - monthlyData[m].expense);
+
+  const voucherCounts = await prisma.voucher.groupBy({
+    by: ['status'],
+    _count: { id: true },
+    ...(dateFilter ? { where: { date: dateFilter } } : {})
+  });
+  
+  const voucherStatusBreakdown = {
+    POSTED: 0,
+    DRAFT: 0,
+    CANCELLED: 0
+  };
+  voucherCounts.forEach(v => {
+    if (voucherStatusBreakdown[v.status] !== undefined) {
+      voucherStatusBreakdown[v.status] = v._count.id;
+    }
+  });
+
+  const recentActivity = await prisma.voucher.findMany({
+    take: 5,
+    where: dateFilter ? { date: dateFilter } : undefined,
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      voucherNumber: true,
+      voucherType: true,
+      totalAmount: true,
+      date: true,
+      status: true
+    }
+  });
+
+  res.json({
+    summary: {
+      totalAccounts,
+      todayTransactions,
+      pendingVouchers,
+      bankBalance,
+      cashInHand,
+      monthlyExpense: monthlyData[today.toLocaleString('default', { month: 'short' })]?.expense || 0,
+      monthlyIncome: monthlyData[today.toLocaleString('default', { month: 'short' })]?.income || 0,
+      netProfit
+    },
+    charts: {
+      incomeVsExpense: {
+        labels: months,
+        income: incomeTrend,
+        expense: expenseTrend
+      },
+      cashFlow: {
+        labels: months,
+        data: cashFlowTrend
+      },
+      voucherStatus: [
+        voucherStatusBreakdown.POSTED,
+        voucherStatusBreakdown.DRAFT,
+        voucherStatusBreakdown.CANCELLED
+      ],
+      accountTypes: {
+        labels: Object.keys(accountTypeBreakdown),
+        data: Object.values(accountTypeBreakdown)
+      }
+    },
+    recentActivity
+  });
+});

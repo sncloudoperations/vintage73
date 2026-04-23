@@ -12,14 +12,7 @@ exports.createLead = asyncHandler(async (req, res) => {
     const normalizedPhone = phone && phone.trim() !== '' ? phone.trim() : null;
     const normalizedEmail = email && email.trim() !== '' ? email.trim() : null;
 
-    // Duplicate check based on normalized phone
-    if (normalizedPhone) {
-        const existing = await prisma.lead.findUnique({ where: { phone: normalizedPhone } });
-        if (existing) {
-            res.status(400);
-            throw new Error(`A lead with phone number ${normalizedPhone} already exists.`);
-        }
-    }
+    // Duplicate phone check removed to allow multiple leads per customer
 
 
     const parsedProductId = productId ? parseInt(productId) : null;
