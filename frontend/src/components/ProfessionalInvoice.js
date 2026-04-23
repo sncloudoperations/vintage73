@@ -50,7 +50,16 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     // fallback to saleDate if createdAt is missing
     const invoiceDate = createdAt || saleDate || null;
 
-    const currentSymbol = currencySymbol || '₹';
+    const getCurrencySymbol = (code) => {
+        if (!code) return null;
+        const symbols = {
+            'INR': '₹', 'USD': '$', 'AED': 'د.إ', 'EUR': '€', 'GBP': '£',
+            'OMR': 'ر.ع.', 'KWD': 'د.ك', 'BHD': 'د.ب', 'QAR': 'ر.ق'
+        };
+        return symbols[code.toUpperCase()] || null;
+    };
+
+    const currentSymbol = currencySymbol || getCurrencySymbol(currencyCode) || companyProfile?.currencySymbol || '₹';
     const settings = printData.settings || {};
     const tpl = settings.template || 'modern';
     const pageSize = settings.pageSize || 'A5';
