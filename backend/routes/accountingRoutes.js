@@ -8,6 +8,9 @@ const checkFinancialYear = require('../middleware/checkFinancialYear');
 
 router.use(authMiddleware);
 
+// ==================== DASHBOARD ====================
+router.get('/dashboard', accountingController.getDashboardStats);
+
 // ==================== POSTING SETUP ====================
 console.log('Registering Posting Setup Routes...');
 router.get('/posting-setup/metadata', postingSetupController.getSchemaMetadata);

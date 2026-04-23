@@ -22,79 +22,62 @@ import moment from 'moment';
 import SearchableSelect from '@/components/SearchableSelect';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Register ChartJS
-// Custom Plugin for 3D Volumetric Pie/Donut Charts
-const volumetricPiePlugin = {
-  id: 'volumetricPiePlugin',
-  beforeDatasetsDraw: (chart) => {
-    const { ctx } = chart;
-    const depth = 20; // 3D Thickness
+// Helper to shade colors for 3D effect
+function shadeColor(color, percent) {
+  if (!color || !color.startsWith('#')) return color;
+  let R = parseInt(color.substring(1, 3), 16);
+  let G = parseInt(color.substring(3, 5), 16);
+  let B = parseInt(color.substring(5, 7), 16);
+  R = Math.min(255, Math.max(0, Math.round((R * (100 + percent)) / 100)));
+  G = Math.min(255, Math.max(0, Math.round((G * (100 + percent)) / 100)));
+  B = Math.min(255, Math.max(0, Math.round((B * (100 + percent)) / 100)));
+  return '#' + [R, G, B].map(v => v.toString(16).padStart(2, '0')).join('');
+}
 
+// 3D Pie/Donut depth extrusion plugin
+// Key: outer loop = depth levels, inner loop = slices
+// This ensures all slices at depth j are drawn before moving to j-1,
+// preventing slices from covering each other's depth layers.
+const threeDPiePlugin = {
+  id: 'threeDPiePlugin',
+  beforeDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const depth = 10;
     chart.data.datasets.forEach((dataset, i) => {
       const meta = chart.getDatasetMeta(i);
       if (meta.type !== 'pie' && meta.type !== 'doughnut') return;
-
-      meta.data.forEach((element, index) => {
-        const { startAngle, endAngle, outerRadius, innerRadius, x, y } = element;
-        const color = dataset.backgroundColor[index];
-        
-        // Draw the "Thickness" (Slices Depth)
-        ctx.save();
-        ctx.fillStyle = shadeColor(color, -20); // Darker shade for side face
-        for (let j = 1; j <= depth; j++) {
+      // Draw from bottom layer (j=depth) up to top layer (j=1)
+      for (let j = depth; j >= 1; j--) {
+        const shadePct = -40 + ((depth - j) / depth) * 20; // gets slightly lighter as we go up
+        meta.data.forEach((element, index) => {
+          const { startAngle, endAngle, outerRadius, innerRadius, x, y } = element;
+          const color = Array.isArray(dataset.backgroundColor)
+            ? dataset.backgroundColor[index]
+            : dataset.backgroundColor;
+          if (!color || !color.startsWith('#')) return;
+          ctx.save();
+          ctx.fillStyle = shadeColor(color, shadePct);
           ctx.beginPath();
           ctx.arc(x, y + j, outerRadius, startAngle, endAngle);
           if (innerRadius > 0) {
             ctx.arc(x, y + j, innerRadius, endAngle, startAngle, true);
+          } else {
+            ctx.lineTo(x, y + j);
           }
           ctx.closePath();
           ctx.fill();
-        }
-        ctx.restore();
-      });
+          ctx.restore();
+        });
+      }
     });
   },
-  afterDatasetsDraw: (chart) => {
-    const { ctx } = chart;
-    chart.data.datasets.forEach((dataset, i) => {
-      const meta = chart.getDatasetMeta(i);
-      if (meta.type !== 'pie' && meta.type !== 'doughnut') return;
-
-      meta.data.forEach((element, index) => {
-        const { x, y, outerRadius, innerRadius, startAngle, endAngle } = element;
-        
-        // Add Floating Percentages directly on slices for Donut
-        if (meta.type === 'doughnut') {
-          const midAngle = (startAngle + endAngle) / 2;
-          const radius = innerRadius + (outerRadius - innerRadius) / 2;
-          const labelX = x + Math.cos(midAngle) * radius;
-          const labelY = y + Math.sin(midAngle) * radius;
-          
-          const total = dataset.data.reduce((a, b) => a + b, 0);
-          const val = dataset.data[index];
-          const pct = Math.round((val / (total || 1)) * 100);
-          
-          if (pct > 5) {
-            ctx.save();
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 12px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(0,0,0,0.3)';
-            ctx.shadowBlur = 4;
-            ctx.fillText(`${pct}%`, labelX, labelY);
-            ctx.restore();
-          }
-        }
-      });
-    });
-  }
 };
 
-// Custom Plugin for 3D Bar Charts
-const volumetricBarPlugin = {
-  id: 'volumetricBarPlugin',
-  beforeDatasetsDraw: (chart) => {
+// 3D Bar plugin - draws top and right faces AFTER the bar front face
+// using afterDatasetsDraw so the 3D faces sit on top of the bar.
+const threeDBarPlugin = {
+  id: 'threeDBarPlugin',
+  afterDatasetsDraw(chart) {
     const { ctx } = chart;
     const depth = 8;
     chart.data.datasets.forEach((dataset, i) => {
@@ -102,17 +85,13 @@ const volumetricBarPlugin = {
       if (meta.type !== 'bar') return;
       meta.data.forEach((bar, index) => {
         const { x, y, base, width } = bar;
-        const color = dataset.backgroundColor[index] || dataset.backgroundColor;
+        const color = Array.isArray(dataset.backgroundColor)
+          ? dataset.backgroundColor[index]
+          : dataset.backgroundColor;
+        if (!color || !color.startsWith('#')) return;
         ctx.save();
-        ctx.fillStyle = shadeColor(color, -15);
-        ctx.beginPath();
-        ctx.moveTo(x - width / 2, y);
-        ctx.lineTo(x - width / 2 + depth, y - depth);
-        ctx.lineTo(x + width / 2 + depth, y - depth);
-        ctx.lineTo(x + width / 2, y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.fillStyle = shadeColor(color, 15);
+        // Right face (dark side shadow)
+        ctx.fillStyle = shadeColor(color, -30);
         ctx.beginPath();
         ctx.moveTo(x + width / 2, y);
         ctx.lineTo(x + width / 2 + depth, y - depth);
@@ -120,62 +99,24 @@ const volumetricBarPlugin = {
         ctx.lineTo(x + width / 2, base);
         ctx.closePath();
         ctx.fill();
+        // Top face (light highlight)
+        ctx.fillStyle = shadeColor(color, 30);
+        ctx.beginPath();
+        ctx.moveTo(x - width / 2, y);
+        ctx.lineTo(x - width / 2 + depth, y - depth);
+        ctx.lineTo(x + width / 2 + depth, y - depth);
+        ctx.lineTo(x + width / 2, y);
+        ctx.closePath();
+        ctx.fill();
         ctx.restore();
       });
     });
   },
-  afterDatasetsDraw: (chart) => {
-    const { ctx } = chart;
-    chart.data.datasets.forEach((dataset, i) => {
-      const meta = chart.getDatasetMeta(i);
-      if (meta.type !== 'bar') return;
-      meta.data.forEach((bar, index) => {
-        const value = dataset.data[index];
-        if (value !== 0) {
-          ctx.save();
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'bottom';
-          ctx.font = 'black 11px Inter, sans-serif';
-          ctx.fillStyle = '#1e293b';
-          ctx.fillText(value, bar.x, bar.y - 12);
-          ctx.restore();
-        }
-      });
-    });
-  }
 };
 
-// Helper to shade colors for 3D effect
-function shadeColor(color, percent) {
-  let R = parseInt(color.substring(1, 3), 16);
-  let G = parseInt(color.substring(3, 5), 16);
-  let B = parseInt(color.substring(5, 7), 16);
-  R = parseInt((R * (100 + percent)) / 100);
-  G = parseInt((G * (100 + percent)) / 100);
-  B = parseInt((B * (100 + percent)) / 100);
-  R = R < 255 ? R : 255;
-  G = G < 255 ? G : 255;
-  B = B < 255 ? B : 255;
-  const RR = R.toString(16).length === 1 ? '0' + R.toString(16) : R.toString(16);
-  const GG = G.toString(16).length === 1 ? '0' + G.toString(16) : G.toString(16);
-  const BB = B.toString(16).length === 1 ? '0' + B.toString(16) : B.toString(16);
-  return '#' + RR + GG + BB;
-}
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-  volumetricPiePlugin,
-  volumetricBarPlugin
-);
+// Register ChartJS with clean 3D plugins
+const pluginsToRegister = [CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Title, Tooltip, Legend, Filler, threeDPiePlugin, threeDBarPlugin];
+ChartJS.register(...pluginsToRegister);
 
 export default function TicketingDashboard() {
   const [loading, setLoading] = useState(true);
@@ -518,7 +459,7 @@ export default function TicketingDashboard() {
         label: 'Volume',
         data: stats?.statusDistribution ? Object.values(stats.statusDistribution) : [],
         backgroundColor: '#6366f1',
-        borderRadius: 12,
+        borderRadius: 6,
         barThickness: 28,
       }
     ]
@@ -644,7 +585,7 @@ export default function TicketingDashboard() {
 
       {currentTier === 'main' && (
         <div className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                {/* 1. Priority Analytics */}
                <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col min-h-[480px]">
                   <div className="mb-8">
@@ -737,26 +678,26 @@ export default function TicketingDashboard() {
       )}
 
       {currentTier === 'detail' && (
-        <div className="space-y-10 animate-in slide-in-from-bottom-8 duration-700">
+        <div className="space-y-6 animate-in slide-in-from-bottom-8 duration-700">
            {/* Individual Performance Header & Action Strip */}
-           <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-md flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-8 text-center md:text-left w-full md:w-auto">
-                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center text-3xl font-semibold shadow-indigo-500/10 rotate-3">
+           <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col xl:flex-row justify-between items-center gap-4">
+               <div className="flex items-center gap-4 text-center md:text-left w-full xl:w-auto">
+                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center text-xl font-bold shadow-sm flex-shrink-0">
                     {(() => {
                        const selected = peopleOptions.find(p => p.value == filters.personId) || 
                                         stats?.participants?.find(p => p.id == filters.personId);
                        return (selected?.name || selected?.label || '?').charAt(0);
                     })()}
                  </div>
-                  <div className="space-y-1 flex-1">
-                    <h2 className="text-3xl font-semibold text-slate-900 tracking-tight">
+                   <div className="space-y-1 flex-1 min-w-0">
+                     <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
                        {(() => {
                           const selected = peopleOptions.find(p => p.value == filters.personId) || 
                                            stats?.participants?.find(p => p.id == filters.personId);
                           return selected?.name || selected?.label?.split(' (')[0] || 'Unknown Participant';
                        })()}
                     </h2>
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
                        <span className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-[10px] font-semibold uppercase tracking-wider border border-indigo-100">
                           {filters.role.toUpperCase()}
                        </span>
@@ -768,7 +709,7 @@ export default function TicketingDashboard() {
                  </div>
               </div>
 
-               <div className="flex flex-wrap justify-center gap-4 w-full md:w-auto">
+                <div className="flex flex-wrap justify-center gap-2 w-full xl:w-auto">
                   {stats?.summary.highPriority > 0 && (
                     <div className="flex gap-2">
                        <button 
@@ -778,15 +719,10 @@ export default function TicketingDashboard() {
                                            { id: filters.personId, name: peopleOptions.find(p => p.value === filters.personId)?.label?.split(' (')[0] || 'Participant' };
                               openQuickHighPriority(user);
                            }}
-                          className={`${filters.role === 'employee' ? 'h-16 px-6' : 'h-16 px-8'} bg-rose-600 hover:bg-rose-700 text-white rounded-2xl flex items-center gap-4 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-rose-500/10`}
+                           className={`${filters.role === 'employee' ? 'h-9 px-4' : 'h-9 px-4'} bg-rose-600 hover:bg-rose-700 text-white rounded-xl flex items-center gap-2 transition-all shadow-sm`}
                        >
-                          <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-                             <FiAlertCircle size={20} />
-                          </div>
-                          <div className="text-left">
-                             <p className="text-[10px] font-semibold text-rose-100 uppercase tracking-wider leading-none mb-1">Attention Required</p>
-                             <p className="text-sm font-semibold uppercase tracking-tight">View {stats?.summary.highPriority} High Tickets</p>
-                          </div>
+                           <FiAlertCircle size={14} />
+                           <span className="text-[10px] font-semibold uppercase tracking-wider">View {stats?.summary.highPriority} High</span>
                        </button>
 
                        {filters.role === 'employee' && (
@@ -796,14 +732,11 @@ export default function TicketingDashboard() {
                                  const user = { id: filters.personId };
                                  openQuickHighPriority(user);
                                }}
-                               className="h-16 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl flex items-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-emerald-500/10"
-                               title="Quick Solve Priority Cases"
-                             >
-                                <FiCheckCircle size={22} />
-                                <div className="text-left hidden sm:block">
-                                   <p className="text-[9px] font-semibold text-emerald-100 uppercase tracking-wider leading-none mb-1">Service Task</p>
-                                   <p className="text-xs font-semibold uppercase tracking-tight">Solve Ticket</p>
-                                </div>
+                                className="h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center gap-2 transition-all shadow-sm"
+                                title="Quick Solve Priority Cases"
+                              >
+                                 <FiCheckCircle size={14} />
+                                 <span className="text-[10px] font-semibold uppercase tracking-wider hidden sm:inline">Solve</span>
                              </button>
 
                              <button 
@@ -811,45 +744,42 @@ export default function TicketingDashboard() {
                                  const user = { id: filters.personId };
                                  openQuickHighPriority(user);
                                }}
-                               className="h-16 px-6 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl flex items-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-500/10"
-                               title="Delegate Critical Tasks"
-                             >
-                                <FiMoreHorizontal size={22} />
-                                <div className="text-left hidden sm:block">
-                                   <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider leading-none mb-1">Workload</p>
-                                   <p className="text-xs font-semibold uppercase tracking-tight">Reassign</p>
-                                </div>
+                                className="h-9 px-4 bg-slate-800 hover:bg-slate-900 text-white rounded-xl flex items-center gap-2 transition-all shadow-sm"
+                                title="Delegate Critical Tasks"
+                              >
+                                 <FiMoreHorizontal size={14} />
+                                 <span className="text-[10px] font-semibold uppercase tracking-wider hidden sm:inline">Reassign</span>
                              </button>
                           </>
                        )}
                     </div>
                   )}
-                 <div className="h-16 px-8 bg-slate-900 text-white rounded-2xl flex items-center gap-6 shadow-slate-900/5">
-                    <div className="text-center">
-                       <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider leading-none mb-1">Total</p>
-                       <p className="text-xl font-semibold leading-none">{stats?.summary.total}</p>
-                    </div>
-                    <div className="w-px h-8 bg-slate-700" />
-                    <div className="text-center">
-                       <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider leading-none mb-1">SLA Health</p>
-                       <p className="text-xl font-semibold leading-none text-emerald-400">{stats?.summary.total > 0 ? Math.round(((stats?.summary.total - stats?.summary.overdue) / stats?.summary.total) * 100) : 100}%</p>
-                    </div>
-                 </div>
-              </div>
+                  <div className="h-9 px-5 bg-slate-900 text-white rounded-xl flex items-center gap-4 shadow-sm">
+                     <div className="text-center">
+                        <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wider leading-none">Total</p>
+                        <p className="text-sm font-bold leading-tight">{stats?.summary.total}</p>
+                     </div>
+                     <div className="w-px h-5 bg-slate-700" />
+                     <div className="text-center">
+                        <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wider leading-none">SLA</p>
+                        <p className="text-sm font-bold leading-tight text-emerald-400">{stats?.summary.total > 0 ? Math.round(((stats?.summary.total - stats?.summary.overdue) / stats?.summary.total) * 100) : 100}%</p>
+                     </div>
+                  </div>
+                </div>
            </div>
 
            {/* Core Analytics Suite */}
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* STATUS PERFORMANCE BAR CHART */}
-              <div className="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm flex flex-col min-h-[500px] hover:shadow-xl transition-all">
-                 <div className="flex justify-between items-center mb-10">
+              <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col">
+                 <div className="flex justify-between items-center mb-4">
                     <div className="space-y-1">
                        <p className="text-[10px] font-semibold text-indigo-500 uppercase tracking-wider leading-none">Lifecycle Matrix</p>
-                       <h3 className="text-2xl font-semibold text-slate-900 tracking-tight">Status Performance Distribution</h3>
+                       <h3 className="text-sm font-semibold text-slate-800 tracking-tight">Status Performance</h3>
                     </div>
-                    <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600"><FiTrendingUp size={24} /></div>
+                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600"><FiTrendingUp size={14} /></div>
                  </div>
-                  <div className="flex-1 w-full max-w-4xl mx-auto py-4">
+                  <div className="w-full relative" style={{height:'260px'}}>
                     {loading ? (
                        <div className="h-full w-full bg-slate-50 animate-pulse rounded-2xl" />
                     ) : (
@@ -869,8 +799,8 @@ export default function TicketingDashboard() {
                                 ],
                                 backgroundColor: ['#6366f1', '#8b5cf6', '#f59e0b', '#10b981', '#3b82f6', '#a855f7', '#f43f5e'],
                                 borderRadius: 12,
-                                barThickness: 40,
-                                maxBarThickness: 50
+                                barThickness: 20,
+                                maxBarThickness: 26
                              }]
                           }} 
                           options={{
@@ -896,7 +826,7 @@ export default function TicketingDashboard() {
                                 x: { 
                                    ...chartOptions.scales?.x, 
                                    grid: { display: false },
-                                   ticks: { padding: 10 }
+                                   ticks: { padding: 5, font: { size: 9 }, maxRotation: 30, minRotation: 30 }
                                 }
                              }
                           }} 
@@ -905,139 +835,118 @@ export default function TicketingDashboard() {
                  </div>
               </div>
 
-              {/* PRIORITY & PERSPECTIVE SPLIT */}
-              <div className="grid grid-cols-1 gap-10">
-                 {/* PIE CHART (Priority) */}
-                 <div className="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm flex flex-col gap-12 hover:shadow-xl transition-all">
-                    <div className="space-y-1">
-                       <p className="text-[10px] font-semibold text-rose-500 uppercase tracking-wider leading-none">Intensity Index</p>
-                       <h3 className="text-2xl font-semibold text-slate-900 tracking-tight">Priority Breakdown (3D)</h3>
+              {/* PIE CHART (Priority) */}
+              <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
+                 <div className="space-y-1">
+                    <p className="text-[10px] font-semibold text-rose-500 uppercase tracking-wider leading-none">Intensity Index</p>
+                    <h3 className="text-sm font-semibold text-slate-800 tracking-tight">Priority Breakdown</h3>
+                 </div>
+                 <div className="flex flex-col gap-4 flex-1 justify-between">
+                    <div className="w-full h-[200px] relative">
+                       <Pie 
+                          data={{
+                             labels: ['Urgent', 'High', 'Medium', 'Low'],
+                             datasets: [{
+                                data: [
+                                   stats?.participants[0]?.urgent || 0,
+                                   stats?.summary.highPriority,
+                                   stats?.participants[0]?.mediumPriority || 0,
+                                   stats?.participants[0]?.lowPriority || 0
+                                ],
+                                backgroundColor: glossyPalette,
+                                hoverOffset: 10,
+                                borderWidth: 3,
+                                borderColor: '#ffffff'
+                             }]
+                          }} 
+                          options={{ ...pieOptions, plugins: { ...pieOptions.plugins, legend: { display: false } } }} 
+                       />
                     </div>
-                    <div className="flex flex-col md:flex-row gap-12 items-center">
-                       <div className="flex-1 w-full max-h-[300px] relative">
-                          <Pie 
-                             data={{
-                                labels: ['Urgent', 'High', 'Medium', 'Low'],
-                                datasets: [{
-                                   data: [
-                                      stats?.participants[0]?.urgent || 0,
-                                      stats?.summary.highPriority,
-                                      stats?.participants[0]?.mediumPriority || 0,
-                                      stats?.participants[0]?.lowPriority || 0
-                                   ],
-                                   backgroundColor: glossyPalette,
-                                   hoverOffset: 30,
-                                   borderWidth: 0
-                                }]
-                             }} 
-                             options={{ ...pieOptions, plugins: { ...pieOptions.plugins, legend: { display: false } } }} 
-                          />
-                       </div>
-                       <div className="flex-1 grid grid-cols-2 gap-4">
-                          {['Urgent', 'High', 'Medium', 'Low'].map((label, i) => {
-                             const counts = [
-                                stats?.participants[0]?.urgent || 0,
-                                stats?.summary.highPriority,
-                                stats?.participants[0]?.mediumPriority || 0,
-                                stats?.participants[0]?.lowPriority || 0
-                             ];
-                             const val = counts[i];
-                             const total = counts.reduce((a, b) => a + b, 0);
-                             const pct = Math.round((val / (total || 1)) * 100);
-                             return (
-                                <div key={label} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center space-y-1 group hover:border-indigo-400 transition-all">
-                                   <p className="text-2xl font-semibold tracking-tight" style={{ color: glossyPalette[i] }}>{pct}%</p>
-                                   <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider leading-none truncate">{label}</p>
-                                   <p className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">{val} Tickets</p>
-                                </div>
-                             );
-                          })}
-                       </div>
+                    <div className="w-full grid grid-cols-2 gap-3">
+                       {['Urgent', 'High', 'Medium', 'Low'].map((label, i) => {
+                          const counts = [
+                             stats?.participants[0]?.urgent || 0,
+                             stats?.summary.highPriority,
+                             stats?.participants[0]?.mediumPriority || 0,
+                             stats?.participants[0]?.lowPriority || 0
+                          ];
+                          const val = counts[i];
+                          const total = counts.reduce((a, b) => a + b, 0);
+                          const pct = Math.round((val / (total || 1)) * 100);
+                          return (
+                             <div key={label} className="p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-center space-y-0.5 hover:border-indigo-200 transition-all">
+                                <p className="text-sm font-bold tracking-tight" style={{ color: glossyPalette[i] }}>{pct}%</p>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none truncate">{label}</p>
+                                <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">{val} Tickets</p>
+                             </div>
+                          );
+                       })}
                     </div>
                  </div>
+              </div>
 
-                 {/* DONUT CHART (Efficiency) */}
-                 <div className="bg-white p-10 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-12 items-center hover:shadow-xl transition-all overflow-hidden relative">
-                    <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-50 rounded-full blur-3xl opacity-50" />
-                    <div className="flex-1 space-y-6 z-10">
-                       <div className="space-y-1">
-                          <p className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider leading-none">Outcome Ratio</p>
-                          <h3 className="text-2xl font-semibold text-slate-900 tracking-tight">Performance Insight</h3>
-                       </div>
-                       <div className="space-y-4">
-                          <div className="flex items-center gap-4 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
-                             <div className="p-3 bg-white rounded-xl text-emerald-600 shadow-sm"><FiCheckCircle size={20} /></div>
-                             <div>
-                                <p className="text-sm font-semibold text-emerald-700 leading-none">Resolved</p>
-                                <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mt-1">{stats?.participants[0]?.resolved || 0} Successful Fixes</p>
-                             </div>
-                          </div>
-                          <div className="flex items-center gap-4 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
-                             <div className="p-3 bg-white rounded-xl text-amber-600 shadow-sm"><FiClock size={20} /></div>
-                             <div>
-                                <p className="text-sm font-semibold text-amber-700 leading-none">Pending</p>
-                                <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider mt-1">
-                                   {Math.round(((stats?.summary.total - stats?.participants[0]?.resolved) / (stats?.summary.total || 1)) * 100)}% Load Exposure
-                                </p>
-                             </div>
-                          </div>
-                       </div>
+              {/* DONUT CHART (Efficiency) */}
+              <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4 overflow-hidden relative">
+                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-50 rounded-full blur-3xl opacity-50" />
+                 <div className="space-y-1 relative z-10">
+                    <p className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider leading-none">Outcome Ratio</p>
+                    <h3 className="text-sm font-semibold text-slate-800 tracking-tight">Performance Insight</h3>
+                 </div>
+                 <div className="flex flex-col gap-4 flex-1 justify-between">
+                    <div className="w-full h-[200px] relative mx-auto">
+                       <Doughnut 
+                          data={{
+                             labels: ['Resolved', 'Pending'],
+                             datasets: [{
+                                data: [
+                                   stats?.participants[0]?.resolved || 0,
+                                   stats?.summary.total - (stats?.participants[0]?.resolved || 0)
+                                ],
+                                backgroundColor: ['#10b981', '#cbd5e1'],
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                cutout: '75%'
+                             }]
+                          }} 
+                          options={{ ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } } }} 
+                       />
                     </div>
-                    <div className="flex flex-col gap-10">
-                       <div className="w-full md:w-[220px] h-[220px] relative z-10 mx-auto">
-                          <Doughnut 
-                             data={{
-                                labels: ['Resolved', 'Pending'],
-                                datasets: [{
-                                   data: [
-                                      stats?.participants[0]?.resolved || 0,
-                                      stats?.summary.total - (stats?.participants[0]?.resolved || 0)
-                                   ],
-                                   backgroundColor: ['#10b981', '#f1f5f9'],
-                                   borderWidth: 0,
-                                   cutout: '70%'
-                                }]
-                             }} 
-                             options={chartOptions} 
-                          />
-                       </div>
-                       <div className="grid grid-cols-2 gap-4">
-                          {['Resolved', 'Pending'].map((label, i) => {
-                             const counts = [
-                                stats?.participants[0]?.resolved || 0,
-                                stats?.summary.total - (stats?.participants[0]?.resolved || 0)
-                             ];
-                             const val = counts[i];
-                             const total = counts.reduce((a, b) => a + b, 0);
-                             const pct = Math.round((val / (total || 1)) * 100);
-                             return (
-                                <div key={label} className="text-center space-y-1">
-                                   <p className="text-2xl font-semibold tracking-tight" style={{ color: i === 0 ? '#10b981' : '#94a3b8' }}>{pct}%</p>
-                                   <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider leading-none truncate">{label}</p>
-                                   <p className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">{val} Tickets</p>
-                                </div>
-                             );
-                          })}
-                       </div>
+                    <div className="grid grid-cols-2 gap-3">
+                       {['Resolved', 'Pending'].map((label, i) => {
+                          const counts = [
+                             stats?.participants[0]?.resolved || 0,
+                             stats?.summary.total - (stats?.participants[0]?.resolved || 0)
+                          ];
+                          const val = counts[i];
+                          const total = counts.reduce((a, b) => a + b, 0);
+                          const pct = Math.round((val / (total || 1)) * 100);
+                          return (
+                             <div key={label} className="text-center space-y-0.5 p-2.5 bg-slate-50 border border-slate-100 rounded-xl hover:border-emerald-200 transition-all">
+                                <p className="text-sm font-bold tracking-tight" style={{ color: i === 0 ? '#10b981' : '#94a3b8' }}>{pct}%</p>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none truncate">{label}</p>
+                                <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">{val} Tickets</p>
+                             </div>
+                          );
+                       })}
                     </div>
                  </div>
               </div>
            </div>
 
            {/* Participant Specific Insight Badges */}
-           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                  { label: 'Work Intensity', value: stats?.summary.total > 20 ? 'Extreme' : 'Optimal', icon: <FiTrendingUp />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
                  { label: 'Avg Resolution', value: stats?.summary.avgResolutionTime ? `${stats.summary.avgResolutionTime.toFixed(1)}h` : 'N/A', icon: <FiClock />, color: 'text-amber-600', bg: 'bg-amber-50' },
                  { label: 'Closure Velocity', value: (stats?.participants[0]?.resolved / stats?.summary.total) > 0.8 ? 'Excellent' : 'Normal', icon: <FiCheckCircle />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
                  { label: 'Critical Risk', value: stats?.summary.overdue > 0 ? 'Elevated' : 'Safe', icon: <FiInfo />, color: 'text-slate-600', bg: 'bg-slate-50' }
               ].map(badge => (
-                 <div key={badge.label} className={`${badge.bg} p-6 rounded-3xl border border-white shadow-sm flex items-center justify-between group hover:scale-105 transition-all`}>
+                 <div key={badge.label} className={`${badge.bg} p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between`}>
                     <div className="space-y-1">
-                       <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider leading-none">{badge.label}</p>
-                       <p className={`text-xl font-semibold ${badge.color} leading-none tracking-tight`}>{badge.value}</p>
+                       <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wider">{badge.label}</p>
+                       <p className={`text-sm font-semibold ${badge.color} tracking-tight`}>{badge.value}</p>
                     </div>
-                    <div className={`${badge.color} opacity-20 group-hover:opacity-100 transition-opacity`}>{badge.icon}</div>
+                    <div className={`${badge.color} opacity-30 ml-3 flex-shrink-0`}>{badge.icon}</div>
                  </div>
               ))}
            </div>
@@ -1045,169 +954,176 @@ export default function TicketingDashboard() {
       )}
 
       {currentTier === 'role-list' && (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-           {/* Summary Stats (Composition Matrix) */}
-           <div className="lg:col-span-3 space-y-8">
-              <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
-                 <div className="flex justify-between items-center mb-8">
-                    <div className="space-y-1">
-                       <h3 className="text-xl font-semibold text-slate-900 tracking-tight">Priority Intelligence Matrix</h3>
-                       <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">3D Volumetric Analytics Distribution</p>
+        <div className="space-y-6">
+           {/* All 3 Charts in one line */}
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Priority Pie */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-5">
+                 <div className="flex justify-between items-center">
+                    <div>
+                       <p className="text-[10px] font-medium text-indigo-500 uppercase tracking-wider">Priority Matrix</p>
+                       <h3 className="text-base font-semibold text-slate-800 tracking-tight mt-0.5">Priority Distribution</h3>
                     </div>
-                    <div className="bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100 flex items-center gap-2">
-                       <span className="text-[9px] font-semibold text-indigo-600 uppercase tracking-wider leading-none">Total Volume:</span>
-                       <span className="text-[11px] font-semibold text-indigo-700 leading-none">{stats?.summary.total}</span>
+                    <div className="bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 flex items-center gap-1.5">
+                       <span className="text-[9px] font-semibold text-indigo-600 uppercase tracking-wider">Total:</span>
+                       <span className="text-xs font-bold text-indigo-700">{stats?.summary.total}</span>
                     </div>
                  </div>
-                  <div className="flex flex-col gap-10">
-                    <div className="h-[320px] relative">
-                       <Pie data={priorityPieData} options={pieOptions} />
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                       {priorityPieData.labels.map((label, i) => {
-                          const val = priorityPieData.datasets[0].data[i];
-                          const total = priorityPieData.datasets[0].data.reduce((a, b) => a + b, 0);
-                          const pct = Math.round((val / (total || 1)) * 100);
-                          return (
-                             <div key={label} className="text-center space-y-2">
-                                <p className="text-2xl font-semibold tracking-tight" style={{ color: priorityPieData.datasets[0].backgroundColor[i] }}>{pct}%</p>
-                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider leading-none truncate">{label}</p>
-                                <p className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">{val} Tickets</p>
+                 <div className="h-[200px] w-full relative">
+                    <Pie data={priorityPieData} options={pieOptions} />
+                 </div>
+                 <div className="grid grid-cols-2 gap-2">
+                    {priorityPieData.labels.map((label, i) => {
+                       const val = priorityPieData.datasets[0].data[i];
+                       const total = priorityPieData.datasets[0].data.reduce((a, b) => a + b, 0);
+                       const pct = Math.round((val / (total || 1)) * 100);
+                       return (
+                          <div key={label} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
+                             <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: priorityPieData.datasets[0].backgroundColor[i] }} />
+                             <div className="min-w-0">
+                                <p className="text-[10px] font-medium text-slate-500 uppercase truncate">{label}</p>
+                                <p className="text-xs font-bold" style={{ color: priorityPieData.datasets[0].backgroundColor[i] }}>{pct}% <span className="text-[9px] font-medium text-slate-400">({val})</span></p>
                              </div>
-                          );
-                       })}
-                    </div>
-                  </div>
+                          </div>
+                       );
+                    })}
+                 </div>
               </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col min-h-[460px]">
-                     <h3 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-8">Status Composition (3D)</h3>
-                     <div className="flex flex-col gap-10">
-                        <div className="h-[200px] w-full relative">
-                           <Doughnut data={statusPieData} options={chartOptions} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                           {statusPieData.labels.slice(0, 4).map((label, i) => {
-                              const val = statusPieData.datasets[0].data[i];
-                              const total = statusPieData.datasets[0].data.reduce((a, b) => a + b, 0);
-                              const pct = Math.round((val / (total || 1)) * 100);
-                              return (
-                                 <div key={label} className="text-center space-y-1">
-                                    <p className="text-xl font-semibold tracking-tight" style={{ color: statusPieData.datasets[0].backgroundColor[i] }}>{pct}%</p>
-                                    <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider truncate">{label} ({val})</p>
-                                 </div>
-                              );
-                           })}
-                        </div>
-                     </div>
-                  </div>
-                  <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col min-h-[460px]">
-                     <h3 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-8">Team Load Share (3D)</h3>
-                     <div className="flex flex-col gap-10">
-                        <div className="h-[200px] w-full relative">
-                           <Pie data={teamLoadData} options={pieOptions} />
-                        </div>
-                        <div className="grid grid-cols-3 gap-3">
-                           {teamLoadData.labels.slice(0, 3).map((label, i) => {
-                              const val = teamLoadData.datasets[0].data[i];
-                              const total = teamLoadData.datasets[0].data.reduce((a, b) => a + b, 0);
-                              const pct = Math.round((val / (total || 1)) * 100);
-                              return (
-                                 <div key={label} className="text-center space-y-1">
-                                    <p className="text-lg font-semibold tracking-tight" style={{ color: teamLoadData.datasets[0].backgroundColor[i] }}>{pct}%</p>
-                                    <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-wider truncate leading-none">{label.split(' ')[0]}</p>
-                                    <p className="text-[8px] font-semibold text-slate-300 uppercase tracking-wider leading-none mt-1">({val})</p>
-                                 </div>
-                              );
-                           })}
-                        </div>
-                     </div>
-                  </div>
-               </div>
+              {/* Status Doughnut */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-5">
+                 <div>
+                    <p className="text-[10px] font-medium text-purple-500 uppercase tracking-wider">Lifecycle State</p>
+                    <h3 className="text-base font-semibold text-slate-800 tracking-tight mt-0.5">Status Composition</h3>
+                 </div>
+                 <div className="h-[200px] w-full relative">
+                    <Doughnut data={statusPieData} options={{ ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } } }} />
+                 </div>
+                 <div className="grid grid-cols-2 gap-2">
+                    {statusPieData.labels.slice(0, 4).map((label, i) => {
+                       const val = statusPieData.datasets[0].data[i];
+                       const total = statusPieData.datasets[0].data.reduce((a, b) => a + b, 0);
+                       const pct = Math.round((val / (total || 1)) * 100);
+                       return (
+                          <div key={label} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
+                             <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: statusPieData.datasets[0].backgroundColor[i] }} />
+                             <div className="min-w-0">
+                                <p className="text-[10px] font-medium text-slate-500 uppercase truncate">{label}</p>
+                                <p className="text-xs font-bold" style={{ color: statusPieData.datasets[0].backgroundColor[i] }}>{pct}% <span className="text-[9px] font-medium text-slate-400">({val})</span></p>
+                             </div>
+                          </div>
+                       );
+                    })}
+                 </div>
+              </div>
+
+              {/* Team Load Pie */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-5">
+                 <div>
+                    <p className="text-[10px] font-medium text-emerald-500 uppercase tracking-wider">Agent Workload</p>
+                    <h3 className="text-base font-semibold text-slate-800 tracking-tight mt-0.5">Team Load Share</h3>
+                 </div>
+                 <div className="h-[200px] w-full relative">
+                    <Pie data={teamLoadData} options={pieOptions} />
+                 </div>
+                 <div className="grid grid-cols-1 gap-2">
+                    {teamLoadData.labels.slice(0, 3).map((label, i) => {
+                       const val = teamLoadData.datasets[0].data[i];
+                       const total = teamLoadData.datasets[0].data.reduce((a, b) => a + b, 0);
+                       const pct = Math.round((val / (total || 1)) * 100);
+                       return (
+                          <div key={label} className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
+                             <div className="flex items-center gap-2 min-w-0">
+                                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: teamLoadData.datasets[0].backgroundColor[i] }} />
+                                <p className="text-[10px] font-medium text-slate-600 truncate">{label}</p>
+                             </div>
+                             <p className="text-xs font-bold flex-shrink-0 ml-2" style={{ color: teamLoadData.datasets[0].backgroundColor[i] }}>{pct}% <span className="text-[9px] font-medium text-slate-400">({val})</span></p>
+                          </div>
+                       );
+                    })}
+                 </div>
+              </div>
            </div>
 
-           {/* Sidebar Participant List */}
-           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[calc(100vh-250px)] lg:h-auto lg:min-h-[850px]">
-              <div className="p-6 border-b border-slate-50">
-                 <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-tight">Active {filters.role} Participants</h3>
-                 <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mt-1">{stats?.participants.length || 0} Records Identified</p>
+           {/* Participant List - full-width compact card grid */}
+           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                 <div>
+                    <h3 className="text-sm font-semibold text-slate-800 capitalize">{filters.role} Participants</h3>
+                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mt-0.5">{stats?.participants.length || 0} records found</p>
+                 </div>
+                 <span className="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-semibold uppercase tracking-wider rounded-lg border border-indigo-100">{filters.role}</span>
               </div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                  {stats?.participants.map(user => {
-                    const needsAttention = filters.role === 'customer' 
+                    const needsAttention = filters.role === 'customer'
                        ? (user.highPriority > 0 || user.open > 5)
                        : (user.overdue > 0 || user.pending > 5);
-
+                    const closedPct = Math.round((user.closed / (user.total || 1)) * 100);
+                    const urgencyPct = Math.round((user.highPriority / (user.total || 1)) * 100);
                     return (
-                        <div 
-                          key={user.id} 
-                          className="w-full p-6 bg-white border border-slate-100 rounded-2xl text-left hover:border-indigo-400 hover:shadow-2xl hover:-translate-y-1 transition-all group relative overflow-hidden flex flex-col gap-6 shadow-sm"
-                        >
-                           {needsAttention && (
-                              <div className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full border border-rose-100 animate-bounce">
-                                 <span className="flex h-2 w-2 relative">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                                 </span>
-                                 <span className="text-[8px] font-semibold text-rose-600 uppercase tracking-wider leading-none">High Attention</span>
-                              </div>
-                           )}
-                           
-                           <div className="flex items-center gap-5 cursor-pointer" onClick={() => openSummaryModal(user)}>
-                              <div className="w-16 h-16 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl font-semibold text-slate-400 group-hover:bg-indigo-600 group-hover:text-white group-hover:rotate-6 transition-all shadow-sm">
-                                 {user.name?.charAt(0)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                 <p className="text-base font-semibold text-slate-800 truncate group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{user.name}</p>
-                                 <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1 opacity-60">ID: {String(user.id).slice(-8).toUpperCase()}</p>
-                              </div>
-                           </div>
-
-                           {/* Mini Perspective Charts */}
-                           <div className="grid grid-cols-2 gap-4">
-                              <div className="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl flex flex-col gap-3">
-                                 <div className="flex justify-between items-center">
-                                    <span className="text-[8px] font-semibold text-slate-400 uppercase">Response Health</span>
-                                    <span className="text-[10px] font-semibold text-indigo-600">{Math.round((user.closed / (user.total || 1)) * 100)}%</span>
-                                 </div>
-                                 <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                                    <div className="h-full bg-indigo-500 rounded-full transition-all duration-1000" style={{ width: `${(user.closed / (user.total || 1)) * 100}%` }}></div>
-                                 </div>
-                              </div>
-                              <div className="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl flex flex-col gap-3">
-                                 <div className="flex justify-between items-center">
-                                    <span className="text-[8px] font-semibold text-slate-400 uppercase text-rose-500">Urgency</span>
-                                    <span className="text-[10px] font-semibold text-rose-600">{user.highPriority}</span>
-                                 </div>
-                                 <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                                    <div className="h-full bg-rose-500 rounded-full transition-all duration-1000" style={{ width: `${(user.highPriority / (user.total || 1)) * 100}%` }}></div>
-                                 </div>
-                              </div>
-                           </div>
-
-                           <div className="grid grid-cols-2 gap-3 pt-2">
-                              <button 
-                                onClick={() => openSummaryModal(user)}
-                                className="h-11 bg-slate-900 text-white rounded-xl text-[10px] font-semibold uppercase tracking-wider hover:bg-slate-700 transition-all shadow-lg shadow-slate-100"
-                              >
+                       <div key={user.id} className="relative p-4 bg-slate-50 border border-slate-100 rounded-xl hover:border-indigo-300 hover:bg-white hover:shadow-md transition-all group">
+                          {needsAttention && (
+                             <span className="absolute top-3 right-3 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                             </span>
+                          )}
+                          <div className="flex items-center gap-3 mb-3 cursor-pointer" onClick={() => openSummaryModal(user)}>
+                             <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-base font-bold text-slate-500 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all flex-shrink-0">
+                                {user.name?.charAt(0)}
+                             </div>
+                             <div className="min-w-0">
+                                <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">{user.name}</p>
+                                <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wider truncate">ID: {String(user.id).slice(-6).toUpperCase()}</p>
+                             </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1.5 mb-3">
+                             <div className="text-center p-1.5 bg-white rounded-lg border border-slate-100">
+                                <p className="text-sm font-bold text-slate-800">{user.total}</p>
+                                <p className="text-[8px] font-medium text-slate-400 uppercase">Total</p>
+                             </div>
+                             <div className="text-center p-1.5 bg-white rounded-lg border border-slate-100">
+                                <p className="text-sm font-bold text-emerald-600">{user.closed}</p>
+                                <p className="text-[8px] font-medium text-slate-400 uppercase">Closed</p>
+                             </div>
+                             <div className="text-center p-1.5 bg-white rounded-lg border border-slate-100">
+                                <p className="text-sm font-bold text-rose-500">{user.highPriority}</p>
+                                <p className="text-[8px] font-medium text-slate-400 uppercase">High</p>
+                             </div>
+                          </div>
+                          <div className="space-y-1.5 mb-3">
+                             <div className="flex items-center gap-2">
+                                <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
+                                   <div className="h-full bg-indigo-400 rounded-full" style={{ width: `${closedPct}%` }} />
+                                </div>
+                                <span className="text-[9px] font-medium text-indigo-600 w-6 text-right">{closedPct}%</span>
+                             </div>
+                             {user.highPriority > 0 && (
+                                <div className="flex items-center gap-2">
+                                   <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
+                                      <div className="h-full bg-rose-400 rounded-full" style={{ width: `${urgencyPct}%` }} />
+                                   </div>
+                                   <span className="text-[9px] font-medium text-rose-500 w-6 text-right">{urgencyPct}%</span>
+                                </div>
+                             )}
+                          </div>
+                          <div className="flex gap-2">
+                             <button onClick={() => openSummaryModal(user)} className="flex-1 h-8 bg-slate-800 text-white rounded-lg text-[9px] font-semibold uppercase tracking-wider hover:bg-indigo-600 transition-all">
                                 Analytics
-                              </button>
+                             </button>
                               {user.highPriority > 0 && (
-                                <button 
-                                  onClick={() => openQuickHighPriority(user)}
-                                  className="h-11 bg-rose-600 text-white rounded-xl text-[10px] font-semibold uppercase tracking-wider hover:bg-rose-700 transition-all shadow-md shadow-rose-100"
-                                >
-                                  View ({user.highPriority})
-                                </button>
+                                 <button onClick={() => openQuickHighPriority(user)} className="flex-1 h-8 bg-rose-500 text-white rounded-lg text-[9px] font-semibold uppercase tracking-wider hover:bg-rose-600 transition-all">
+                                    {user.highPriority} High
+                                 </button>
                               )}
                            </div>
                         </div>
                      );
                   })}
-              </div>
-           </div>
-        </div>
+               </div>
+            </div>
+         </div>
       )}
 
        {/* Detail/Main View Table Section */}
@@ -1268,7 +1184,7 @@ export default function TicketingDashboard() {
                       {t.priority}
                     </span>
                   </td>
-                  <td className="px-8 py-5 text-right font-semibold text-slate-400 text-xs text-nowrap">
+                  <td className="px-8 py-5 text-right font-semibold text-slate-400 text-xs whitespace-nowrap">
                     {moment(t.createdAt).format('DD MMM, LT')}
                     <div className="text-[9px] font-semibold uppercase text-slate-300 mt-1">{moment(t.createdAt).fromNow()}</div>
                   </td>
@@ -1322,7 +1238,7 @@ export default function TicketingDashboard() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden border border-slate-100"
+              className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col lg:flex-row overflow-hidden border border-slate-100"
             >
               {/* Left Side: Detail & Timeline */}
               <div className="flex-1 flex flex-col min-h-0 bg-white">
@@ -1386,7 +1302,7 @@ export default function TicketingDashboard() {
               </div>
 
               {/* Right Side: Meta Info */}
-              <div className="w-full md:w-[320px] bg-slate-50 border-l border-slate-100 flex flex-col shrink-0 p-8 space-y-8 overflow-y-auto custom-scrollbar">
+              <div className="w-full lg:w-[320px] bg-slate-50 border-t lg:border-t-0 lg:border-l border-slate-100 flex flex-col shrink-0 p-8 space-y-8 overflow-y-auto custom-scrollbar">
                 <div className="space-y-6">
                    <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-200 pb-2">Technical Overview</h4>
                    

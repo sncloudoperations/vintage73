@@ -30,6 +30,7 @@ export default function CreateLead() {
     const [users, setUsers] = useState([]);
     const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [existingLeadWarning, setExistingLeadWarning] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -85,6 +86,20 @@ export default function CreateLead() {
             }
             return newForm;
         });
+    };
+
+    const checkExistingPhone = async (phone) => {
+        if (!phone || phone.length < 5) {
+            setExistingLeadWarning(false);
+            return;
+        }
+        try {
+            const res = await api.get(`/crm/leads?search=${phone}`);
+            const exists = res.data.some(l => l.phone === phone);
+            setExistingLeadWarning(exists);
+        } catch (err) {
+            console.error('Failed to check existing phone');
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -173,7 +188,12 @@ export default function CreateLead() {
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Phone Number <span className="text-red-500">*</span></label>
-                                            <input required name="phone" className="input bg-white border-slate-200 focus:ring-4 focus:ring-primary/5 transition-all font-semibold uppercase" value={form.phone} onChange={handleChange} placeholder="+91..." />
+                                            <input required name="phone" className="input bg-white border-slate-200 focus:ring-4 focus:ring-primary/5 transition-all font-semibold uppercase" value={form.phone} onChange={handleChange} onBlur={(e) => checkExistingPhone(e.target.value)} placeholder="+91..." />
+                                            {existingLeadWarning && (
+                                                <p className="text-[10px] text-amber-500 font-medium ml-1 flex items-center gap-1">
+                                                    <FiInfo /> This customer already has previous leads.
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
@@ -248,7 +268,7 @@ export default function CreateLead() {
                                         </div>
                                     </div>
 
-                                    {form.source === 'Referral' && (
+                                    {form.source && /referral|refferal/i.test(form.source) && (
                                         <div className="p-6 bg-purple-50 rounded-2xl border border-purple-100 animate-in slide-in-from-top duration-300">
                                             <div className="flex items-center gap-2 mb-4">
                                                 <div className="p-1.5 bg-purple-100 text-purple-600 rounded-lg text-[10px] font-medium"><FiTrendingUp /></div>

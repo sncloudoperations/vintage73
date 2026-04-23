@@ -259,16 +259,16 @@ export default function LeadDetail() {
                         </p>
                     </div>
                 </div>
-                <div className="flex flex-wrap gap-2 w-full md:w-auto">
+                <div className="flex flex-nowrap items-center justify-start lg:justify-end gap-2.5 w-full lg:w-auto mt-4 md:mt-0 overflow-x-auto scrollbar-hide py-1">
                     {lead.status !== 'WON' && lead.status !== 'LOST' && (
                         <>
-                            <button onClick={() => setShowConvertModal('QUOTATION')} className="btn btn-secondary py-2 text-xs font-medium uppercase border-purple-200 text-purple-600 hover:bg-purple-50">Convert to Quotation</button>
-                            <button onClick={() => setShowConvertModal('ORDER')} className="btn btn-secondary py-2 text-xs font-medium uppercase border-emerald-200 text-emerald-600 hover:bg-emerald-50">Convert to Order</button>
-                            <button onClick={() => { setEditForm(lead); setShowEditModal(true); }} className="btn btn-secondary py-2 text-xs font-medium uppercase border-blue-200 text-blue-600 hover:bg-blue-50">Edit Lead</button>
-                            <button onClick={() => setShowStatusModal(true)} className="btn btn-secondary py-2 text-xs font-medium uppercase">Update Status</button>
+                            <button onClick={() => setShowConvertModal('QUOTATION')} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-purple-200 text-purple-600 hover:bg-purple-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Convert to Quotation</button>
+                            <button onClick={() => setShowConvertModal('ORDER')} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-emerald-200 text-emerald-600 hover:bg-emerald-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Convert to Order</button>
+                            <button onClick={() => { setEditForm(lead); setShowEditModal(true); }} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-blue-200 text-blue-600 hover:bg-blue-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Edit Lead</button>
+                            <button onClick={() => setShowStatusModal(true)} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Update Status</button>
                         </>
                     )}
-                    <button onClick={() => setShowFollowUpModal(true)} className="btn btn-primary py-2 text-xs font-medium uppercase">Schedule Follow-up</button>
+                    <button onClick={() => setShowFollowUpModal(true)} className="btn btn-primary py-1.5 px-4 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest shadow-md shadow-primary/20 rounded-lg whitespace-nowrap flex-shrink-0">Schedule Follow-up</button>
                 </div>
             </header>
 
@@ -704,7 +704,7 @@ export default function LeadDetail() {
                                     <input type="number" name="negotiationAmount" className="input border-blue-100 bg-blue-50/20 font-medium text-blue-600" value={editForm.negotiationAmount} onChange={handleEditChange} />
                                 </div>
 
-                                {editForm.source === 'Referral' && (
+                                {editForm.source && /referral|refferal/i.test(editForm.source) && (
                                     <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100 space-y-4">
                                         <div>
                                             <label className="block text-[10px] font-medium text-purple-400 uppercase mb-1 tracking-widest">Referred By</label>

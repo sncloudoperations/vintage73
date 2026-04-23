@@ -13,6 +13,7 @@ export const MENU_STRUCTURE = [
     title: 'ACCOUNTING',
     icon: FiFileText,
     items: [
+      { name: 'Dashboard', icon: FiGrid, path: '/dashboard/accounting' },
       { name: 'Balance Sheet', icon: FiClipboard, path: '/accounting/reports/balance-sheet' },
       { name: 'Bank Reconciliation', icon: FiCheckCircle, path: '/accounting/bank-reconciliation' },
       { name: 'Bulk Posting Utility', icon: FiRefreshCw, path: '/accounting/bulk-posting' },
