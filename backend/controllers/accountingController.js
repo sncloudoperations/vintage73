@@ -827,12 +827,12 @@ exports.getDashboardStats = asyncHandler(async (req, res) => {
   const monthlyData = {};
   for (let i = 0; i < 6; i++) {
     const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    const monthName = d.toLocaleString('default', { month: 'short' });
+    const monthName = d.toLocaleString('en-US', { month: 'short' });
     monthlyData[monthName] = { income: 0, expense: 0 };
   }
 
   monthlyStatsRaw.forEach(entry => {
-    const monthName = new Date(entry.voucher.date).toLocaleString('default', { month: 'short' });
+    const monthName = new Date(entry.voucher.date).toLocaleString('en-US', { month: 'short' });
     if (monthlyData[monthName]) {
       if (entry.creditLedger?.group?.groupType === 'INCOME') {
         monthlyData[monthName].income += Number(entry.amount);
@@ -886,8 +886,8 @@ exports.getDashboardStats = asyncHandler(async (req, res) => {
       pendingVouchers,
       bankBalance,
       cashInHand,
-      monthlyExpense: monthlyData[today.toLocaleString('default', { month: 'short' })]?.expense || 0,
-      monthlyIncome: monthlyData[today.toLocaleString('default', { month: 'short' })]?.income || 0,
+      monthlyExpense: monthlyData[today.toLocaleString('en-US', { month: 'short' })]?.expense || 0,
+      monthlyIncome: monthlyData[today.toLocaleString('en-US', { month: 'short' })]?.income || 0,
       netProfit
     },
     charts: {

@@ -6,7 +6,7 @@ import {
   FiSettings, FiLock, FiList, FiArrowUpRight, FiPieChart, 
   FiArrowDownLeft, FiActivity, FiDollarSign, FiBriefcase,
   FiTrendingUp, FiCreditCard, FiTarget, FiPlus, FiFilter,
-  FiCalendar, FiX
+  FiCalendar, FiX, FiAlertTriangle
 } from 'react-icons/fi';
 import { Bar, Line, Doughnut, Pie } from 'react-chartjs-2';
 import {
@@ -76,6 +76,22 @@ export default function AccountingDashboard() {
   };
 
   if (loading) return <div className="p-8 text-center text-slate-400">Loading Dashboard...</div>;
+
+  if (!stats) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center h-[60vh]">
+        <FiAlertTriangle className="text-5xl text-amber-500 mb-4 opacity-50" />
+        <h2 className="text-xl font-bold text-slate-700 tracking-tight">Dashboard Unavailable</h2>
+        <p className="text-slate-500 mt-2 max-w-xs mx-auto text-sm">We couldn't retrieve the financial summary. This might be due to a server error or missing permissions.</p>
+        <button 
+          onClick={() => { setLoading(true); fetchDashboardStats(); }} 
+          className="mt-8 px-8 py-2.5 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+        >
+          Retry Loading
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-slate-50 border-t border-slate-200">
