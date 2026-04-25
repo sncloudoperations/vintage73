@@ -323,7 +323,7 @@ export default function CreateLead() {
                                                     <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest ml-1">Referred By</label>
                                                     <select name="referredById" className="input bg-white border-purple-100 font-medium" value={form.referredById} onChange={handleChange}>
                                                         <option value="">Select Referrer</option>
-                                                        {users.filter(u => !form.branchId || u.branchId.toString() === form.branchId).map(u => (
+                                                        {users.filter(u => !form.branchId || u.branchId?.toString() === form.branchId).map(u => (
                                                             <option key={u.id} value={u.id}>{u.name || u.username}</option>
                                                         ))}
                                                     </select>
