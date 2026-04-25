@@ -285,7 +285,7 @@ export default function CreateLead() {
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="block text-[10px] font-medium text-emerald-500 uppercase tracking-widest ml-1">Initial Budget (₹)</label>
-                                            <input readOnly tabIndex="-1" type="number" name="budget" className="input bg-emerald-50/30 border-emerald-100 font-medium text-emerald-600 outline-none cursor-default" value={form.budget} onChange={handleChange} />
+                                            <input type="number" name="budget" className="input bg-emerald-50/30 border-emerald-100 font-medium text-emerald-600 outline-none" value={form.budget} onChange={handleChange} />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="block text-[10px] font-medium text-blue-500 uppercase tracking-widest ml-1">Negotiation Amt (₹)</label>

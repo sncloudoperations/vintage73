@@ -69,13 +69,13 @@ export default function LeadFollowups() {
         <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
             <header className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Follow-up Dashboard</h1>
+                    <h1 className="text-3xl font-semibold text-slate-800 tracking-tight">Follow-up Dashboard</h1>
                     <p className="text-slate-500 font-medium">Manage your active leads and scheduled tasks</p>
                 </div>
                 <div className="flex gap-4">
                     <div className="text-right">
-                        <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none">Total Pending</p>
-                        <p className="text-2xl font-bold text-primary">
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest leading-none">Total Pending</p>
+                        <p className="text-2xl font-semibold text-primary">
                             {sections.overdue.length + sections.today.length + sections.upcoming.length}
                         </p>
                     </div>
@@ -123,7 +123,7 @@ export default function LeadFollowups() {
                     <form onSubmit={handleSubmitOutcome} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
                         <header className="flex justify-between items-start">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-800 tracking-tight">Record Outcome</h3>
+                                <h3 className="text-xl font-semibold text-slate-800 tracking-tight">Record Outcome</h3>
                                 <p className="text-xs text-slate-400 font-medium mt-1">Updating follow-up for {selectedFollowUp.lead.name}</p>
                             </div>
                             <button type="button" onClick={() => setShowOutcomeModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiX /></button>
@@ -196,7 +196,7 @@ function Section({ title, icon, color, items, onAction, onCall, onWhatsApp }) {
         <div className="flex flex-col space-y-4">
             <div className={`p-3 rounded-2xl border flex items-center gap-3 ${colors[color]}`}>
                 <div className="text-xl">{icon}</div>
-                <h2 className="text-xs font-bold uppercase tracking-widest">{title} <span className="ml-2 bg-white/50 px-2 py-0.5 rounded-full">{items.length}</span></h2>
+                <h2 className="text-xs font-semibold uppercase tracking-widest">{title} <span className="ml-2 bg-white/50 px-2 py-0.5 rounded-full">{items.length}</span></h2>
             </div>
             
             <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-250px)] pr-2 scrollbar-thin">
