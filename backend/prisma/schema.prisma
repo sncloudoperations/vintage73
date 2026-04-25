@@ -9,8 +9,8 @@ datasource db {
 }
 
 model User {
-  id                      Int                    @id @default(autoincrement())
-  username                String                 @unique
+  id                      Int                    @id(map: "User_pkey") @default(autoincrement())
+  username                String                 @unique(map: "User_username_key")
   password                String
   role                    String                 @default("user")
   createdAt               DateTime               @default(now())
@@ -29,8 +29,6 @@ model User {
   sentMessages            ChatMessage[]          @relation("SentMessages")
   deals                   Deal[]
   employeeProfile         EmployeeProfile?
-  leads                   Lead[]
-  referredLeads           Lead[]                 @relation("ReferredBy")
   approvedLeaves          LeaveRequest[]         @relation("LeaveApprover")
   leaveRequests           LeaveRequest[]
   reviewedMissPunches     MissPunchRequest[]     @relation("ReviewedMissPunch")
@@ -48,15 +46,15 @@ model User {
   closureRequests         TicketClosureRequest[] @relation("ClosureRequestedBy")
   ticketHistoryActions    TicketHistory[]        @relation("TicketHistoryDoneBy")
   ticketMessages          TicketMessage[]        @relation("TicketMessageSender")
-  admin                   User?                  @relation("StaffAdmin", fields: [adminId], references: [id])
-  managedStaff            User[]                 @relation("StaffAdmin")
-  branch                  Branch?                @relation(fields: [branchId], references: [id])
   vouchers                Voucher[]
   managedWorkLogs         WorkLog[]              @relation("AdminWorkLogs")
   workLogs                WorkLog[]
+  leads                   Lead[]
+  referredLeads           Lead[]                 @relation("ReferredBy")
+  admin                   User?                  @relation("StaffAdmin", fields: [adminId], references: [id], map: "User_adminId_fkey")
+  managedStaff            User[]                 @relation("StaffAdmin")
+  branch                  Branch?                @relation(fields: [branchId], references: [id], map: "User_branchId_fkey")
   terminals               Terminal[]             @relation("TerminalToUser")
-
-  @@map("user")
 }
 
 model Branch {
@@ -76,7 +74,6 @@ model Branch {
   challans          DeliveryChallan[]
   expenses          Expense[]
   financialYears    FinancialYear[]
-  leads             Lead[]
   leaveRequests     LeaveRequest[]
   missPunchRequests MissPunchRequest[]
   payments          Payment[]
@@ -90,8 +87,9 @@ model Branch {
   incomingTransfers StockTransfer[]    @relation("ToBranch")
   terminals         Terminal[]
   tickets           Ticket[]
-  users             User[]
   workLogs          WorkLog[]
+  leads             Lead[]
+  users             User[]
 }
 
 model CompanyProfile {
@@ -231,13 +229,13 @@ model Product {
   imageUrl       String?
   isActive       Boolean               @default(true)
   challanItems   DeliveryChallanItem[]
-  leads          Lead[]
   category       Category?             @relation(fields: [categoryId], references: [id])
   stocks         ProductStock[]
   purchaseItems  PurchaseItem[]
   quotationItems QuotationItem[]
   saleItems      SaleItem[]
   transferItems  StockTransferItem[]
+  leads          Lead[]
 }
 
 model ProductStock {
@@ -328,7 +326,6 @@ model Sale {
   discount        Float          @default(0)
   advanceUsed     Decimal        @default(0) @db.Decimal(10, 2)
   description     String?
-  lead            Lead?          @relation("LeadToSale")
   payments        Payment[]
   branch          Branch         @relation(fields: [branchId], references: [id])
   customer        Customer?      @relation(fields: [customerId], references: [id])
@@ -337,6 +334,7 @@ model Sale {
   salesman        User?          @relation("Salesman", fields: [salesmanId], references: [id])
   terminal        Terminal?      @relation(fields: [terminalId], references: [id])
   items           SaleItem[]
+  lead            Lead?          @relation("LeadToSale")
 
   @@unique([branchId, invoiceNumber, financialYearId])
 }
@@ -410,13 +408,13 @@ model Quotation {
   isTaxInclusive  Boolean         @default(false)
   taxType         String?
   financialYearId Int?
-  lead            Lead?           @relation("LeadToQuotation")
   payments        Payment[]
   branch          Branch          @relation(fields: [branchId], references: [id])
   customer        Customer?       @relation(fields: [customerId], references: [id])
   financialYear   FinancialYear?  @relation(fields: [financialYearId], references: [id])
   items           QuotationItem[]
   invoice         Sale?           @relation("QuotationToInvoice")
+  lead            Lead?           @relation("LeadToQuotation")
 
   @@unique([branchId, quotationNumber, financialYearId])
 }
@@ -596,7 +594,7 @@ model Payroll {
 }
 
 model Lead {
-  id                   Int               @id @default(autoincrement())
+  id                   Int               @id(map: "Lead_pkey") @default(autoincrement())
   name                 String
   company              String?
   email                String?
@@ -613,8 +611,8 @@ model Lead {
   priority             String            @default("MEDIUM")
   productId            Int?
   quantity             Int?
-  quotationId          Int?              @unique
-  saleId               Int?              @unique
+  quotationId          Int?              @unique(map: "Lead_quotationId_key")
+  saleId               Int?              @unique(map: "Lead_saleId_key")
   lastFollowUpDate     DateTime?
   nextFollowUpDate     DateTime?
   outcome              String?
@@ -628,20 +626,18 @@ model Lead {
   tasks                CRMTask[]
   deals                Deal[]
   followUps            FollowUp[]
-  assignedUser         User?             @relation(fields: [assignedTo], references: [id])
-  branch               Branch?           @relation(fields: [branchId], references: [id])
-  product              Product?          @relation(fields: [productId], references: [id])
-  quotation            Quotation?        @relation("LeadToQuotation", fields: [quotationId], references: [id])
-  referredBy           User?             @relation("ReferredBy", fields: [referredById], references: [id])
-  sale                 Sale?             @relation("LeadToSale", fields: [saleId], references: [id])
   activities           LeadActivity[]
+  assignedUser         User?             @relation(fields: [assignedTo], references: [id], map: "Lead_assignedTo_fkey")
+  branch               Branch?           @relation(fields: [branchId], references: [id], map: "Lead_branchId_fkey")
+  product              Product?          @relation(fields: [productId], references: [id], map: "Lead_productId_fkey")
+  quotation            Quotation?        @relation("LeadToQuotation", fields: [quotationId], references: [id], map: "Lead_quotationId_fkey")
+  referredBy           User?             @relation("ReferredBy", fields: [referredById], references: [id], map: "Lead_referredById_fkey")
+  sale                 Sale?             @relation("LeadToSale", fields: [saleId], references: [id], map: "Lead_saleId_fkey")
   referralPayments     ReferralPayment[]
-
-  @@map("lead")
 }
 
 model ReferralPayment {
-  id                Int      @id @default(autoincrement())
+  id                Int      @id(map: "ReferralPayment_pkey") @default(autoincrement())
   leadId            Int
   paymentDate       DateTime
   amountPaid        Decimal  @db.Decimal(15, 2)
@@ -651,9 +647,7 @@ model ReferralPayment {
   notes             String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-
-  @@map("referral_payment")
+  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade, map: "ReferralPayment_leadId_fkey")
 }
 
 model FollowUp {
