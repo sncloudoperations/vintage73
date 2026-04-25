@@ -483,10 +483,6 @@ exports.generatePayroll = asyncHandler(async (req, res) => {
             month,
             year,
             basicSalary: basic,
-            fullBasicSalary: Number(profile.basicSalary),
-            totalDays: calc.totalDays,
-            presentDays: calc.presentDays || calc.payableDays, // Use payableDays if presentDays not explicitly tracked
-            absentDays: calc.absentCount,
             allowances: allow,
             deductions: deduc,
             netSalary: net,
@@ -608,7 +604,22 @@ exports.getPayrollHistory = asyncHandler(async (req, res) => {
 
     const payrolls = await prisma.payroll.findMany({
         where,
-        include: {
+        select: {
+            id: true,
+            userId: true,
+            branchId: true,
+            month: true,
+            year: true,
+            basicSalary: true,
+            allowances: true,
+            deductions: true,
+            netSalary: true,
+            status: true,
+            fromDate: true,
+            toDate: true,
+            createdAt: true,
+            updatedAt: true,
+            voucherId: true,
             salaryAdvances: true,
             user: {
                 select: {
@@ -630,12 +641,20 @@ exports.getPayrollHistory = asyncHandler(async (req, res) => {
     const mappedPayrolls = payrolls.map(p => {
         const advanceDeduction = p.salaryAdvances ? p.salaryAdvances.reduce((sum, adv) => sum + Number(adv.amount), 0) : 0;
         
-        // Use stored fullBasicSalary if available, otherwise fallback to current profile or pro-rated basic
-        const fullBasic = Number(p.fullBasicSalary) > 0 ? Number(p.fullBasicSalary) : Number(p.user?.employeeProfile?.basicSalary || p.basicSalary);
+        // Use current profile basic salary as fallback for fullBasicSalary
+        const fullBasic = Number(p.user?.employeeProfile?.basicSalary || p.basicSalary);
         const lopAmount = fullBasic - Number(p.basicSalary);
         
         const grossSalary = fullBasic + Number(p.allowances);
         const incentives = Number(p.allowances);
+
+        // Calculate days from dates if possible
+        let totalDays = 30;
+        if (p.fromDate && p.toDate) {
+            const start = new Date(p.fromDate);
+            const end = new Date(p.toDate);
+            totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        }
         
         return {
             ...p,
@@ -645,9 +664,8 @@ exports.getPayrollHistory = asyncHandler(async (req, res) => {
             grossSalary,
             incentives,
             deductions: Number(p.deductions) + (lopAmount > 0 ? lopAmount : 0),
-            // Fallbacks for missing attendance data in old records
-            totalDays: p.totalDays || 30,
-            presentDays: p.presentDays || 30
+            totalDays: totalDays,
+            presentDays: totalDays - (lopAmount > 0 ? Math.round(lopAmount / (fullBasic / totalDays)) : 0)
         };
     });
 
