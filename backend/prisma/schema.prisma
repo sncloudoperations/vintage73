@@ -3,189 +3,183 @@ generator client {
   output   = "./client"
 }
 
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  username       String   @unique
-  password       String
-  role           String   @default("user")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  allowedModules Json?
-  name           String?
-  branchId       Int?
-  branch         Branch?  @relation(fields: [branchId], references: [id])
-  receivedTransfers StockTransfer[] @relation("ReceivedTransfers")
-  incentivePercentage Decimal @default(0) @db.Decimal(5, 2)
-  sales           Sale[]   @relation("Salesman")
-  employeeProfile EmployeeProfile?
-  attendance      Attendance[]
-  leaveRequests   LeaveRequest[]
-  approvedLeaves  LeaveRequest[] @relation("LeaveApprover")
-  payrolls        Payroll[]
-  leads           Lead[]
-  deals           Deal[]
-  terminals       Terminal[]
-  crmTasks        CRMTask[]
-  missPunchRequests      MissPunchRequest[]
-  reviewedMissPunches    MissPunchRequest[] @relation("ReviewedMissPunch")
-  salaryAdvances         SalaryAdvance[]
-  approvedAdvances       SalaryAdvance[] @relation("ApprovedAdvances")
-  vouchers               Voucher[]
-  sentMessages           ChatMessage[] @relation("SentMessages")
-  receivedMessages       ChatMessage[] @relation("ReceivedMessages")
-  notifications          Notification[]
-  imageUrl               String?
-  weeklyOff              String?  @default("Sunday")
-  isActive               Boolean  @default(true)
-  referredLeads          Lead[]   @relation("ReferredBy")
-  // Admin assignment: links staff to their assigned admin
-  adminId        Int?
-  admin          User?    @relation("StaffAdmin", fields: [adminId], references: [id])
-  managedStaff   User[]   @relation("StaffAdmin")
-  workLogs       WorkLog[]
-  managedWorkLogs WorkLog[] @relation("AdminWorkLogs")
-  // Advanced Ticketing System
-  assignedTickets       Ticket[]        @relation("AssignedTo")
-  closureRequests       TicketClosureRequest[] @relation("ClosureRequestedBy")
-  ticketHistoryActions  TicketHistory[] @relation("TicketHistoryDoneBy")
-  ticketMessages        TicketMessage[] @relation("TicketMessageSender")
-  ownedTickets          Ticket[]        @relation("TicketAdmin")
-  createdTickets        Ticket[]        @relation("CreatedTickets")
-  previousAssignedTickets Ticket[]      @relation("PreviousAssignee")
+  id                      Int                    @id @default(autoincrement())
+  username                String                 @unique
+  password                String
+  role                    String                 @default("user")
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+  allowedModules          Json?
+  name                    String?
+  branchId                Int?
+  incentivePercentage     Decimal                @default(0) @db.Decimal(5, 2)
+  imageUrl                String?
+  weeklyOff               String?                @default("Sunday")
+  isActive                Boolean                @default(true)
+  adminId                 Int?
+  attendance              Attendance[]
+  crmTasks                CRMTask[]
+  receivedMessages        ChatMessage[]          @relation("ReceivedMessages")
+  sentMessages            ChatMessage[]          @relation("SentMessages")
+  deals                   Deal[]
+  employeeProfile         EmployeeProfile?
+  leads                   Lead[]
+  referredLeads           Lead[]                 @relation("ReferredBy")
+  approvedLeaves          LeaveRequest[]         @relation("LeaveApprover")
+  leaveRequests           LeaveRequest[]
+  reviewedMissPunches     MissPunchRequest[]     @relation("ReviewedMissPunch")
+  missPunchRequests       MissPunchRequest[]
+  notifications           Notification[]
+  payrolls                Payroll[]
+  approvedAdvances        SalaryAdvance[]        @relation("ApprovedAdvances")
+  salaryAdvances          SalaryAdvance[]
+  sales                   Sale[]                 @relation("Salesman")
+  receivedTransfers       StockTransfer[]        @relation("ReceivedTransfers")
+  ownedTickets            Ticket[]               @relation("TicketAdmin")
+  assignedTickets         Ticket[]               @relation("AssignedTo")
+  createdTickets          Ticket[]               @relation("CreatedTickets")
+  previousAssignedTickets Ticket[]               @relation("PreviousAssignee")
+  closureRequests         TicketClosureRequest[] @relation("ClosureRequestedBy")
+  ticketHistoryActions    TicketHistory[]        @relation("TicketHistoryDoneBy")
+  ticketMessages          TicketMessage[]        @relation("TicketMessageSender")
+  admin                   User?                  @relation("StaffAdmin", fields: [adminId], references: [id])
+  managedStaff            User[]                 @relation("StaffAdmin")
+  branch                  Branch?                @relation(fields: [branchId], references: [id])
+  vouchers                Voucher[]
+  managedWorkLogs         WorkLog[]              @relation("AdminWorkLogs")
+  workLogs                WorkLog[]
+  terminals               Terminal[]             @relation("TerminalToUser")
 }
 
 model Branch {
-  id            Int            @id @default(autoincrement())
-  name          String
-  address       String?
-  phone         String?
-  email         String?
-  isActive      Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  customers     Customer[]
-  expenses      Expense[]
-  payments      Payment[]
-  productStocks ProductStock[]
-  purchases     Purchase[]
-  sales         Sale[]
-  users         User[]
-  outgoingTransfers StockTransfer[] @relation("FromBranch")
-  incomingTransfers StockTransfer[] @relation("ToBranch")
-  barcodeSetting    BarcodeSetting?
+  id                Int                @id @default(autoincrement())
+  name              String
+  address           String?
+  phone             String?
+  email             String?
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   invoiceSettings   Json?
-  challans          DeliveryChallan[]
-  quotations        Quotation[]
-  terminals         Terminal[]
+  stockIncluded     Boolean            @default(true)
   attendance        Attendance[]
-  leaveRequests     LeaveRequest[]
-  payrolls          Payroll[]
-  missPunchRequests MissPunchRequest[]
-  salaryAdvances    SalaryAdvance[]
-  workLogs          WorkLog[]
+  barcodeSetting    BarcodeSetting?
+  customers         Customer[]
+  challans          DeliveryChallan[]
+  expenses          Expense[]
   financialYears    FinancialYear[]
-  stockIncluded   Boolean    @default(true)
-  tickets         Ticket[]
-  leads           Lead[]
+  leads             Lead[]
+  leaveRequests     LeaveRequest[]
+  missPunchRequests MissPunchRequest[]
+  payments          Payment[]
+  payrolls          Payroll[]
+  productStocks     ProductStock[]
+  purchases         Purchase[]
+  quotations        Quotation[]
+  salaryAdvances    SalaryAdvance[]
+  sales             Sale[]
+  outgoingTransfers StockTransfer[]    @relation("FromBranch")
+  incomingTransfers StockTransfer[]    @relation("ToBranch")
+  terminals         Terminal[]
+  tickets           Ticket[]
+  users             User[]
+  workLogs          WorkLog[]
 }
 
 model CompanyProfile {
-  id                 Int      @id @default(autoincrement())
-  companyName        String
-  address            String?
-  city               String?
-  state              String?
-  pincode            String?
-  phone              String?
-  email              String?
-  website            String?
-  registrationNumber String?
-  logoUrl            String?
-  dashboardImageUrl  String?
-  showOnlyLogoOnDashboard Boolean @default(true)
-  currencyCode       String   @default("INR")
-  currencySymbol     String   @default("₹")
-  country            String   @default("India")
-  taxSystem          String   @default("GST")
-  primaryColor       String   @default("#10b981")
-  secondaryColor     String   @default("#059669")
-  gradientType       String   @default("linear") // linear, none
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  invoiceSettings    Json?
-  bankId             Int?
-  bank               Bank?    @relation(fields: [bankId], references: [id])
+  id                      Int      @id @default(autoincrement())
+  companyName             String
+  address                 String?
+  city                    String?
+  state                   String?
+  pincode                 String?
+  phone                   String?
+  email                   String?
+  website                 String?
+  registrationNumber      String?
+  logoUrl                 String?
+  currencyCode            String   @default("INR")
+  currencySymbol          String   @default("₹")
+  country                 String   @default("India")
+  taxSystem               String   @default("GST")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  invoiceSettings         Json?
+  bankId                  Int?
+  dashboardImageUrl       String?
+  gradientType            String   @default("linear")
+  primaryColor            String   @default("#10b981")
+  secondaryColor          String   @default("#059669")
+  showOnlyLogoOnDashboard Boolean  @default(true)
+  bank                    Bank?    @relation(fields: [bankId], references: [id])
 }
 
 model State {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  code      String?  // GST State Code
+  code      String?
   country   String   @default("India")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Customer {
-  id        Int       @id @default(autoincrement())
-  name      String
-  phone     String?   @unique
-  email     String?
-  address   String?
-  city      String?
-  state     String?
-  pincode   String?
-  gstin     String?
-  partyType String    @default("B2C") // B2B, B2C, Unregistered
-  area      String?
-  // Authentication & Access Control
-  username  String?   @unique
-  password  String?
-  role      String    @default("customer")
+  id                Int               @id @default(autoincrement())
+  name              String
+  phone             String?           @unique
+  email             String?
+  address           String?
+  state             String?
+  area              String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  branchId          Int?
+  city              String?
+  gstin             String?
+  partyType         String            @default("B2C")
+  pincode           String?
   accessPermissions Json?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  branchId  Int?
-  branch    Branch?   @relation(fields: [branchId], references: [id])
-  payments  Payment[]
-  sales     Sale[]
-  challans  DeliveryChallan[]
-  quotations Quotation[]
-  tickets    Ticket[]
-  advances   Advance[]
-  advanceHistory AdvanceHistory[]
+  password          String?
+  role              String            @default("customer")
+  username          String?           @unique
+  advances          Advance?
+  advanceHistory    AdvanceHistory[]
+  branch            Branch?           @relation(fields: [branchId], references: [id])
+  challans          DeliveryChallan[]
+  payments          Payment[]
+  quotations        Quotation[]
+  sales             Sale[]
+  tickets           Ticket[]
 }
 
 model Advance {
-  id           String   @id @default(cuid())
-  customerId   Int      @unique
-  totalAmount  Decimal  @db.Decimal(10, 2)
-  usedAmount   Decimal  @default(0) @db.Decimal(10, 2)
-  balance      Decimal  @db.Decimal(10, 2)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now()) @updatedAt
-  notes        String?
-
-  customer     Customer @relation(fields: [customerId], references: [id])
+  id          String   @id @default(cuid())
+  customerId  Int      @unique
+  totalAmount Decimal  @db.Decimal(10, 2)
+  usedAmount  Decimal  @default(0) @db.Decimal(10, 2)
+  balance     Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  notes       String?
+  updatedAt   DateTime @default(now()) @updatedAt
+  customer    Customer @relation(fields: [customerId], references: [id])
 }
 
 model AdvanceHistory {
   id           String   @id @default(cuid())
   customerId   Int
   advanceId    String
-  action       String   // ADD, REDEEM
+  action       String
   amount       Decimal  @db.Decimal(10, 2)
   balanceAfter Decimal  @db.Decimal(10, 2)
-  reference    String?  // Invoice number or note
-  date         DateTime @default(now())
+  reference    String?
   createdAt    DateTime @default(now())
-
+  date         DateTime @default(now())
   customer     Customer @relation(fields: [customerId], references: [id])
 }
 
@@ -212,36 +206,36 @@ model Category {
 }
 
 model Product {
-  id            Int            @id @default(autoincrement())
-  name          String
-  categoryId    Int?
-  categoryName  String?
-  price         Decimal        @db.Decimal(10, 2)
-  costPrice     Decimal?       @db.Decimal(10, 2)
-  taxRate       Decimal        @default(0) @db.Decimal(5, 2)
-  taxPercent    Decimal?       @db.Decimal(5, 2)
-  taxType       String?
-  isTaxInclusive Boolean       @default(false)
-  hsnCode       String?
-  warranty      Int?
-  description   String?
-  barcode       String?        @unique
-  hasBarcode    Boolean        @default(false)
-  minStockLevel Int            @default(5)
-  isActive      Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  maxDiscount   Decimal?       @db.Decimal(5, 2)
-  minDiscount   Decimal?       @db.Decimal(5, 2)
-  imageUrl      String?
-  category      Category?      @relation(fields: [categoryId], references: [id])
-  stocks        ProductStock[]
-  purchaseItems PurchaseItem[]
-  saleItems     SaleItem[]
-  transferItems StockTransferItem[]
-  challanItems  DeliveryChallanItem[]
+  id             Int                   @id @default(autoincrement())
+  name           String
+  categoryId     Int?
+  categoryName   String?
+  price          Decimal               @db.Decimal(10, 2)
+  costPrice      Decimal?              @db.Decimal(10, 2)
+  taxRate        Decimal               @default(0) @db.Decimal(5, 2)
+  taxPercent     Decimal?              @db.Decimal(5, 2)
+  taxType        String?
+  isTaxInclusive Boolean               @default(false)
+  hsnCode        String?
+  warranty       Int?
+  description    String?
+  barcode        String?               @unique
+  hasBarcode     Boolean               @default(false)
+  minStockLevel  Int                   @default(5)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  maxDiscount    Decimal?              @db.Decimal(5, 2)
+  minDiscount    Decimal?              @db.Decimal(5, 2)
+  imageUrl       String?
+  isActive       Boolean               @default(true)
+  challanItems   DeliveryChallanItem[]
+  leads          Lead[]
+  category       Category?             @relation(fields: [categoryId], references: [id])
+  stocks         ProductStock[]
+  purchaseItems  PurchaseItem[]
   quotationItems QuotationItem[]
-  leads         Lead[]
+  saleItems      SaleItem[]
+  transferItems  StockTransferItem[]
 }
 
 model ProductStock {
@@ -256,25 +250,25 @@ model ProductStock {
 }
 
 model Purchase {
-  id            Int            @id @default(autoincrement())
-  invoiceNumber String?
-  supplierId    Int?
-  purchaseDate  DateTime       @default(now())
-  subTotal      Decimal        @default(0) @db.Decimal(10, 2)
-  taxAmount     Decimal        @default(0) @db.Decimal(10, 2)
-  totalAmount   Decimal        @db.Decimal(10, 2)
-  status        String         @default("completed")
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  paymentMethod String?
-  balanceAmount Decimal        @default(0) @db.Decimal(10, 2)
-  paidAmount    Decimal        @default(0) @db.Decimal(10, 2)
+  id              Int            @id @default(autoincrement())
+  invoiceNumber   String?
+  supplierId      Int?
+  purchaseDate    DateTime       @default(now())
+  totalAmount     Decimal        @db.Decimal(10, 2)
+  status          String         @default("completed")
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  paymentMethod   String?
+  balanceAmount   Decimal        @default(0) @db.Decimal(10, 2)
+  paidAmount      Decimal        @default(0) @db.Decimal(10, 2)
   branchId        Int
-  branch          Branch         @relation(fields: [branchId], references: [id])
-  supplier      Supplier?      @relation(fields: [supplierId], references: [id])
-  items         PurchaseItem[]
+  subTotal        Decimal        @default(0) @db.Decimal(10, 2)
+  taxAmount       Decimal        @default(0) @db.Decimal(10, 2)
   financialYearId Int?
+  branch          Branch         @relation(fields: [branchId], references: [id])
   financialYear   FinancialYear? @relation(fields: [financialYearId], references: [id])
+  supplier        Supplier?      @relation(fields: [supplierId], references: [id])
+  items           PurchaseItem[]
 
   @@unique([branchId, invoiceNumber, financialYearId])
 }
@@ -291,57 +285,56 @@ model PurchaseItem {
 }
 
 model Sale {
-  id              Int        @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   invoiceNumber   String
   customerId      Int?
-  saleDate        DateTime   @default(now())
-  subTotal        Decimal    @db.Decimal(10, 2)
-  taxAmount       Decimal    @db.Decimal(10, 2)
-  totalAmount     Decimal    @db.Decimal(10, 2)
-  roundOffAmount  Decimal    @default(0) @db.Decimal(10, 2)
-  discount        Float      @default(0)
-  advanceUsed     Decimal    @default(0) @db.Decimal(10, 2)
+  saleDate        DateTime       @default(now())
+  subTotal        Decimal        @db.Decimal(10, 2)
+  taxAmount       Decimal        @db.Decimal(10, 2)
+  totalAmount     Decimal        @db.Decimal(10, 2)
+  roundOffAmount  Decimal        @default(0) @db.Decimal(10, 2)
   paymentMethod   String?
-  status          String     @default("completed")
-  isReturn        Boolean    @default(false)
+  status          String         @default("completed")
+  isReturn        Boolean        @default(false)
   returnReason    String?
   originalInvoice String?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  currencyCode    String?    @default("INR")
-  exchangeRate    Decimal?   @default(1.0) @db.Decimal(10, 4)
-  balanceAmount   Decimal    @default(0) @db.Decimal(10, 2)
-  paidAmount      Decimal    @default(0) @db.Decimal(10, 2)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  balanceAmount   Decimal        @default(0) @db.Decimal(10, 2)
+  paidAmount      Decimal        @default(0) @db.Decimal(10, 2)
   cancelledAt     DateTime?
   cancelledBy     String?
   cancelReason    String?
   branchId        Int
   salesmanId      Int?
-  incentiveAmount Decimal    @default(0) @db.Decimal(10, 2)
-  // B2B & E-Way Bill Fields
-  isB2B           Boolean    @default(false)
-  placeOfSupply   String?
-  ewayBillNumber  String?
+  incentiveAmount Decimal        @default(0) @db.Decimal(10, 2)
   ewayBillDate    DateTime?
+  ewayBillNumber  String?
+  isB2B           Boolean        @default(false)
+  placeOfSupply   String?
   transportMode   String?
-  vehicleNumber   String?
-  transporterName String?
   transporterId   String?
-  isTaxInclusive  Boolean    @default(false)
+  transporterName String?
+  vehicleNumber   String?
+  isTaxInclusive  Boolean        @default(false)
   terminalId      Int?
-  terminal        Terminal?  @relation(fields: [terminalId], references: [id])
-  payments        Payment[]
-  branch          Branch     @relation(fields: [branchId], references: [id])
-  customer        Customer?  @relation(fields: [customerId], references: [id])
-  salesman        User?      @relation("Salesman", fields: [salesmanId], references: [id])
-  items           SaleItem[]
-  quotationId     Int?       @unique
-  quotation       Quotation? @relation("QuotationToInvoice", fields: [quotationId], references: [id])
-  isInvoice       Boolean    @default(false)
   financialYearId Int?
-  financialYear   FinancialYear? @relation(fields: [financialYearId], references: [id])
-  lead            Lead?          @relation("LeadToSale")
+  isInvoice       Boolean        @default(false)
+  quotationId     Int?           @unique
+  currencyCode    String?        @default("INR")
+  exchangeRate    Decimal?       @default(1.0) @db.Decimal(10, 4)
+  discount        Float          @default(0)
+  advanceUsed     Decimal        @default(0) @db.Decimal(10, 2)
   description     String?
+  lead            Lead?          @relation("LeadToSale")
+  payments        Payment[]
+  branch          Branch         @relation(fields: [branchId], references: [id])
+  customer        Customer?      @relation(fields: [customerId], references: [id])
+  financialYear   FinancialYear? @relation(fields: [financialYearId], references: [id])
+  quotation       Quotation?     @relation("QuotationToInvoice", fields: [quotationId], references: [id])
+  salesman        User?          @relation("Salesman", fields: [salesmanId], references: [id])
+  terminal        Terminal?      @relation(fields: [terminalId], references: [id])
+  items           SaleItem[]
 
   @@unique([branchId, invoiceNumber, financialYearId])
 }
@@ -376,52 +369,52 @@ model Expense {
 }
 
 model Payment {
-  id          Int       @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   type        String
-  amount      Decimal   @db.Decimal(10, 2)
+  amount      Decimal    @db.Decimal(10, 2)
   method      String
   reference   String?
   description String?
-  paymentDate DateTime  @default(now())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  paymentDate DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   customerId  Int?
   saleId      Int?
   supplierId  Int?
   branchId    Int
-  branch      Branch    @relation(fields: [branchId], references: [id])
-  customer    Customer? @relation(fields: [customerId], references: [id])
-  sale        Sale?     @relation(fields: [saleId], references: [id])
-  supplier    Supplier? @relation(fields: [supplierId], references: [id])
   quotationId Int?
+  branch      Branch     @relation(fields: [branchId], references: [id])
+  customer    Customer?  @relation(fields: [customerId], references: [id])
   quotation   Quotation? @relation(fields: [quotationId], references: [id])
+  sale        Sale?      @relation(fields: [saleId], references: [id])
+  supplier    Supplier?  @relation(fields: [supplierId], references: [id])
 }
 
 model Quotation {
   id              Int             @id @default(autoincrement())
   quotationNumber String
   customerId      Int?
-  customer        Customer?       @relation(fields: [customerId], references: [id])
   quotationDate   DateTime        @default(now())
   validUntil      DateTime?
   subTotal        Decimal         @db.Decimal(10, 2)
   taxAmount       Decimal         @db.Decimal(10, 2)
   totalAmount     Decimal         @db.Decimal(10, 2)
-  status          String          @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED, CONVERTED
+  status          String          @default("DRAFT")
   notes           String?
   terms           String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   branchId        Int
-  branch          Branch          @relation(fields: [branchId], references: [id])
-  items           QuotationItem[]
-  payments        Payment[]       // Advance payments linked to this quotation
   isTaxInclusive  Boolean         @default(false)
-  taxType         String?         // IGST, CGST_SGST, etc.
-  invoice         Sale?           @relation("QuotationToInvoice")
+  taxType         String?
   financialYearId Int?
-  financialYear   FinancialYear? @relation(fields: [financialYearId], references: [id])
-  lead            Lead? @relation("LeadToQuotation")
+  lead            Lead?           @relation("LeadToQuotation")
+  payments        Payment[]
+  branch          Branch          @relation(fields: [branchId], references: [id])
+  customer        Customer?       @relation(fields: [customerId], references: [id])
+  financialYear   FinancialYear?  @relation(fields: [financialYearId], references: [id])
+  items           QuotationItem[]
+  invoice         Sale?           @relation("QuotationToInvoice")
 
   @@unique([branchId, quotationNumber, financialYearId])
 }
@@ -429,9 +422,7 @@ model Quotation {
 model QuotationItem {
   id              Int       @id @default(autoincrement())
   quotationId     Int
-  quotation       Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
   productId       Int
-  product         Product   @relation(fields: [productId], references: [id])
   quantity        Int
   unitPrice       Decimal   @db.Decimal(10, 2)
   total           Decimal   @db.Decimal(10, 2)
@@ -439,21 +430,23 @@ model QuotationItem {
   taxRate         Decimal   @default(0) @db.Decimal(5, 2)
   discountAmount  Decimal   @default(0) @db.Decimal(10, 2)
   discountPercent Decimal   @default(0) @db.Decimal(5, 2)
+  product         Product   @relation(fields: [productId], references: [id])
+  quotation       Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
 }
 
 model StockTransfer {
   id           Int                 @id @default(autoincrement())
   fromBranchId Int
   toBranchId   Int
-  status       String              @default("PENDING") // PENDING, RECEIVED, CANCELLED
+  status       String              @default("PENDING")
   transferDate DateTime            @default(now())
   remarks      String?
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
   receivedById Int?
   receivedAt   DateTime?
-  receivedBy   User?               @relation("ReceivedTransfers", fields: [receivedById], references: [id])
   fromBranch   Branch              @relation("FromBranch", fields: [fromBranchId], references: [id])
+  receivedBy   User?               @relation("ReceivedTransfers", fields: [receivedById], references: [id])
   toBranch     Branch              @relation("ToBranch", fields: [toBranchId], references: [id])
   items        StockTransferItem[]
 }
@@ -463,113 +456,114 @@ model StockTransferItem {
   transferId Int
   productId  Int
   quantity   Int
-  unitCost   Decimal       @default(0) @db.Decimal(10, 2)
-  taxPercent Decimal       @default(0) @db.Decimal(5, 2)
   taxAmount  Decimal       @default(0) @db.Decimal(10, 2)
+  taxPercent Decimal       @default(0) @db.Decimal(5, 2)
   totalCost  Decimal       @default(0) @db.Decimal(10, 2)
+  unitCost   Decimal       @default(0) @db.Decimal(10, 2)
   product    Product       @relation(fields: [productId], references: [id])
   transfer   StockTransfer @relation(fields: [transferId], references: [id])
 }
+
 model BarcodeSetting {
-  id               Int     @id @default(autoincrement())
-  branchId         Int     @unique
-  branch           Branch  @relation(fields: [branchId], references: [id])
-  nameFontSize     Int     @default(20)
-  priceFontSize    Int     @default(16)
-  barcodeWidth     Float   @default(2)
-  barcodeHeight    Int     @default(100)
-  barcodeFontSize  Int     @default(18)
-  alignment        String  @default("center") // left, center, right
-  showName         Boolean @default(true)
-  showPrice        Boolean @default(true)
-  showBarcodeValue Boolean @default(true)
-  paperSize        String  @default("Single") // Single, A4-Grid
-  columns          Int     @default(1)
-  margin           Int     @default(10)
-  labelWidth       Float   @default(40)
-  labelHeight      Float   @default(20)
-  paperWidth       Float   @default(210) // Default A4 width
-  columnGap        Float   @default(5)
-  rowGap           Float   @default(5)
+  id               Int      @id @default(autoincrement())
+  branchId         Int      @unique
+  nameFontSize     Int      @default(20)
+  priceFontSize    Int      @default(16)
+  barcodeWidth     Float    @default(2)
+  barcodeHeight    Int      @default(100)
+  barcodeFontSize  Int      @default(18)
+  alignment        String   @default("center")
+  showName         Boolean  @default(true)
+  showPrice        Boolean  @default(true)
+  showBarcodeValue Boolean  @default(true)
+  paperSize        String   @default("Single")
+  columns          Int      @default(1)
+  margin           Int      @default(10)
+  labelWidth       Float    @default(40)
+  labelHeight      Float    @default(20)
+  paperWidth       Float    @default(210)
+  columnGap        Float    @default(5)
+  rowGap           Float    @default(5)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  branch           Branch   @relation(fields: [branchId], references: [id])
 }
 
 model EmployeeProfile {
   id            Int          @id @default(autoincrement())
   userId        Int          @unique
-  user          User         @relation(fields: [userId], references: [id])
-  employeeCode  String?      @unique
   designationId Int?
-  designation   Designation? @relation(fields: [designationId], references: [id])
   departmentId  Int?
-  department    Department?  @relation(fields: [departmentId], references: [id])
   joiningDate   DateTime     @default(now())
   basicSalary   Decimal      @default(0) @db.Decimal(10, 2)
   labourRule    String?
   nationalId    String?
-  bankName      String?
-  accountNumber String?
-  ifscCode       String?
-  branchName     String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  accountNumber String?
+  bankName      String?
+  branchName    String?
+  employeeCode  String?      @unique
+  ifscCode      String?
+  department    Department?  @relation(fields: [departmentId], references: [id])
+  designation   Designation? @relation(fields: [designationId], references: [id])
+  user          User         @relation(fields: [userId], references: [id])
 }
 
 model Designation {
   id        Int               @id @default(autoincrement())
   name      String            @unique
-  employees EmployeeProfile[]
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
+  employees EmployeeProfile[]
 }
 
 model Department {
   id        Int               @id @default(autoincrement())
   name      String            @unique
-  employees EmployeeProfile[]
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
+  employees EmployeeProfile[]
 }
 
 model Attendance {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  branchId  Int?
-  branch    Branch?  @relation(fields: [branchId], references: [id])
-  date      DateTime @default(now())
+  date      DateTime  @default(now())
   checkIn   DateTime?
   checkOut  DateTime?
-  status    String   @default("PRESENT") // PRESENT, ABSENT, HALF_DAY
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status    String    @default("PRESENT")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  branchId  Int?
+  branch    Branch?   @relation(fields: [branchId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model LeaveRequest {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  branchId    Int?
-  branch      Branch?  @relation(fields: [branchId], references: [id])
-  startDate   DateTime
-  endDate     DateTime
-  reason      String?
-  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  startDate    DateTime
+  endDate      DateTime
+  reason       String?
+  status       String     @default("PENDING")
   approvedById Int?
-  approvedBy  User?    @relation("LeaveApprover", fields: [approvedById], references: [id])
-  leaveTypeId Int?
-  leaveType   LeaveType? @relation(fields: [leaveTypeId], references: [id])
-  isHalfDay   Boolean    @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  leaveTypeId  Int?
+  isHalfDay    Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  branchId     Int?
+  approvedBy   User?      @relation("LeaveApprover", fields: [approvedById], references: [id])
+  branch       Branch?    @relation(fields: [branchId], references: [id])
+  leaveType    LeaveType? @relation(fields: [leaveTypeId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
 }
 
 model LeaveType {
   id           Int            @id @default(autoincrement())
   name         String
   isPaid       Boolean        @default(true)
-  color        String         @default("#3B82F6") // Default blue
+  color        String         @default("#3B82F6")
   monthlyLimit Int            @default(0)
   isActive     Boolean        @default(true)
   createdAt    DateTime       @default(now())
@@ -578,325 +572,297 @@ model LeaveType {
 }
 
 model Payroll {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  branchId    Int?
-  branch      Branch?  @relation(fields: [branchId], references: [id])
-  month       String
-  year        Int
-  basicSalary Decimal  @db.Decimal(10, 2)
-  allowances  Decimal  @default(0) @db.Decimal(10, 2)
-  deductions  Decimal  @default(0) @db.Decimal(10, 2)
-  netSalary   Decimal  @db.Decimal(10, 2)
-  status      String   @default("GENERATED") // GENERATED, PAID
-  fromDate    DateTime?
-  toDate      DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int             @id @default(autoincrement())
+  userId         Int
+  month          String
+  year           Int
+  basicSalary    Decimal         @db.Decimal(10, 2)
+  allowances     Decimal         @default(0) @db.Decimal(10, 2)
+  deductions     Decimal         @default(0) @db.Decimal(10, 2)
+  netSalary      Decimal         @db.Decimal(10, 2)
+  status         String          @default("GENERATED")
+  fromDate       DateTime?
+  toDate         DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  voucherId      Int?
+  branchId       Int?
+  branch         Branch?         @relation(fields: [branchId], references: [id])
+  user           User            @relation(fields: [userId], references: [id])
+  voucher        Voucher?        @relation(fields: [voucherId], references: [id])
   salaryAdvances SalaryAdvance[]
-  voucherId   Int?
-  voucher     Voucher? @relation(fields: [voucherId], references: [id])
 }
 
 model Lead {
-  id                Int       @id @default(autoincrement())
-  name              String    // Customer Name
-  phone             String?   // duplicate detection removed to allow multiple leads
-  email             String?
-  address           String?
-  source            String?   // Walk-in, Website, Call, WhatsApp
-  productId         Int?      // Interested Product (from inventory)
-  product           Product?  @relation(fields: [productId], references: [id])
-  quantity          Int?
-  budget            Decimal?  @db.Decimal(15, 2)
-  status            String    @default("NEW") // NEW, CONTACTED, QUALIFIED, QUOTATION_SENT, NEGOTIATION, WON, LOST
-  priority          String    @default("MEDIUM") // LOW, MEDIUM, HIGH
-  assignedTo        Int?
-  assignedUser      User?     @relation(fields: [assignedTo], references: [id])
-  notes             String?
-  followUpDate      DateTime?
-  lastFollowUpDate  DateTime?
-  nextFollowUpDate  DateTime?
-  outcome           String?
-  reminderFlag      Boolean   @default(false)
-  
-  // Negotiation & Referral
-  negotiationAmount     Decimal?  @db.Decimal(15, 2)
-  referredById          Int?
-  referredBy            User?     @relation("ReferredBy", fields: [referredById], references: [id])
-  commissionPercentage  Decimal?  @db.Decimal(5, 2)
-  commissionAmount      Decimal?  @db.Decimal(15, 2)
-  commissionPaid        Boolean   @default(false)
-
-  branchId          Int?
-  branch            Branch?   @relation(fields: [branchId], references: [id])
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
-  activities        LeadActivity[]
-  followUps         FollowUp[]
-  quotationId       Int?      @unique
-  quotation         Quotation? @relation("LeadToQuotation", fields: [quotationId], references: [id])
-  saleId            Int?      @unique
-  sale              Sale?      @relation("LeadToSale", fields: [saleId], references: [id])
-  
-  // Keep existing relations
-  company           String?
-  deals             Deal[]
-  tasks             CRMTask[]
-  referralPayments  ReferralPayment[]
+  id                   Int               @id @default(autoincrement())
+  name                 String
+  company              String?
+  email                String?
+  phone                String?
+  source               String?
+  status               String            @default("NEW")
+  assignedTo           Int?
+  notes                String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  address              String?
+  budget               Decimal?          @db.Decimal(15, 2)
+  followUpDate         DateTime?
+  priority             String            @default("MEDIUM")
+  productId            Int?
+  quantity             Int?
+  quotationId          Int?              @unique
+  saleId               Int?              @unique
+  lastFollowUpDate     DateTime?
+  nextFollowUpDate     DateTime?
+  outcome              String?
+  reminderFlag         Boolean           @default(false)
+  branchId             Int?
+  commissionAmount     Decimal?          @db.Decimal(15, 2)
+  commissionPaid       Boolean           @default(false)
+  commissionPercentage Decimal?          @db.Decimal(5, 2)
+  negotiationAmount    Decimal?          @db.Decimal(15, 2)
+  referredById         Int?
+  tasks                CRMTask[]
+  deals                Deal[]
+  followUps            FollowUp[]
+  assignedUser         User?             @relation(fields: [assignedTo], references: [id])
+  branch               Branch?           @relation(fields: [branchId], references: [id])
+  product              Product?          @relation(fields: [productId], references: [id])
+  quotation            Quotation?        @relation("LeadToQuotation", fields: [quotationId], references: [id])
+  referredBy           User?             @relation("ReferredBy", fields: [referredById], references: [id])
+  sale                 Sale?             @relation("LeadToSale", fields: [saleId], references: [id])
+  activities           LeadActivity[]
+  referralPayments     ReferralPayment[]
 }
 
 model ReferralPayment {
   id                Int      @id @default(autoincrement())
   leadId            Int
-  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   paymentDate       DateTime
   amountPaid        Decimal  @db.Decimal(15, 2)
-  paymentMethod     String   // Cash, Bank, UPI, etc.
+  paymentMethod     String
   bankName          String?
   transactionNumber String?
   notes             String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
 }
 
 model FollowUp {
-  id                Int      @id @default(autoincrement())
-  leadId            Int
-  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  date              DateTime
-  notes             String?
-  status            String   @default("PENDING") // PENDING, COMPLETED, OVERDUE
-  outcome           String?
-  completedAt       DateTime?
-  nextFollowUpDate  DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               Int       @id @default(autoincrement())
+  leadId           Int
+  date             DateTime
+  notes            String?
+  status           String    @default("PENDING")
+  nextFollowUpDate DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  completedAt      DateTime?
+  outcome          String?
+  lead             Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
 }
 
 model LeadActivity {
-  id                Int      @id @default(autoincrement())
-  leadId            Int
-  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  type              String   // CALL, NOTE, STATUS_CHANGE, QUOTATION_SENT, ORDER_CONVERTED, FOLLOW_UP_SCHEDULED
-  description       String
-  createdAt         DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  leadId      Int
+  type        String
+  description String
+  createdAt   DateTime @default(now())
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
 }
 
-
 model Deal {
-  id          Int      @id @default(autoincrement())
-  title       String
-  value       Decimal  @db.Decimal(15, 2)
-  stage       String   @default("PROSPECTING") // PROSPECTING, NEGOTIATION, WON, LOST
-  closeDate   DateTime?
-  probability Int      @default(0) // 0-100
-  leadId      Int?
-  lead        Lead?    @relation(fields: [leadId], references: [id])
-  assignedTo  Int?
-  assignedUser User?   @relation(fields: [assignedTo], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  tasks       CRMTask[]
+  id           Int       @id @default(autoincrement())
+  title        String
+  value        Decimal   @db.Decimal(15, 2)
+  stage        String    @default("PROSPECTING")
+  closeDate    DateTime?
+  probability  Int       @default(0)
+  leadId       Int?
+  assignedTo   Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  tasks        CRMTask[]
+  assignedUser User?     @relation(fields: [assignedTo], references: [id])
+  lead         Lead?     @relation(fields: [leadId], references: [id])
 }
 
 model CRMTask {
-  id          Int      @id @default(autoincrement())
-  title       String
-  dueDate     DateTime?
-  status      String   @default("PENDING") // PENDING, COMPLETED, OVERDUE
-  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH
-  description String?
-  leadId      Int?
-  lead        Lead?    @relation(fields: [leadId], references: [id])
-  dealId      Int?
-  deal        Deal?    @relation(fields: [dealId], references: [id])
-  assignedTo  Int?
-  assignedUser User?   @relation(fields: [assignedTo], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int       @id @default(autoincrement())
+  title        String
+  dueDate      DateTime?
+  status       String    @default("PENDING")
+  priority     String    @default("MEDIUM")
+  description  String?
+  leadId       Int?
+  dealId       Int?
+  assignedTo   Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  assignedUser User?     @relation(fields: [assignedTo], references: [id])
+  deal         Deal?     @relation(fields: [dealId], references: [id])
+  lead         Lead?     @relation(fields: [leadId], references: [id])
 }
 
 model MissPunchRequest {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  branchId    Int?
-  branch      Branch?  @relation(fields: [branchId], references: [id])
-  date        DateTime
-  checkInTime String?
+  id           Int       @id @default(autoincrement())
+  userId       Int
+  date         DateTime
+  checkInTime  String?
   checkOutTime String?
-  reason      String
-  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
-  reviewedBy  Int?
-  reviewer    User?    @relation("ReviewedMissPunch", fields: [reviewedBy], references: [id])
-  reviewedAt  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  reason       String
+  status       String    @default("PENDING")
+  reviewedBy   Int?
+  reviewedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  branchId     Int?
+  branch       Branch?   @relation(fields: [branchId], references: [id])
+  reviewer     User?     @relation("ReviewedMissPunch", fields: [reviewedBy], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
 }
 
 model SalaryAdvance {
-  id            Int      @id @default(autoincrement())
-  userId        Int
-  user          User     @relation(fields: [userId], references: [id])
-  branchId      Int?
-  branch        Branch?  @relation(fields: [branchId], references: [id])
-  amount        Decimal  @db.Decimal(10, 2)
-  reason        String
-  requestDate   DateTime @default(now())
-  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
-  approvedBy    Int?
-  approver      User?    @relation("ApprovedAdvances", fields: [approvedBy], references: [id])
-  approvedAt    DateTime?
-  deductedInPayroll Boolean @default(false)
-  payrollId     Int?
-  payroll       Payroll? @relation(fields: [payrollId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  voucherId     Int?
-  voucher       Voucher? @relation(fields: [voucherId], references: [id])
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  amount            Decimal   @db.Decimal(10, 2)
+  reason            String
+  requestDate       DateTime  @default(now())
+  status            String    @default("PENDING")
+  approvedBy        Int?
+  approvedAt        DateTime?
+  deductedInPayroll Boolean   @default(false)
+  payrollId         Int?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  voucherId         Int?
+  branchId          Int?
+  approver          User?     @relation("ApprovedAdvances", fields: [approvedBy], references: [id])
+  branch            Branch?   @relation(fields: [branchId], references: [id])
+  payroll           Payroll?  @relation(fields: [payrollId], references: [id])
+  user              User      @relation(fields: [userId], references: [id])
+  voucher           Voucher?  @relation(fields: [voucherId], references: [id])
 }
 
-// ==================== ACCOUNTING MODELS ====================
-
 model AccountGroup {
-  id          Int            @id @default(autoincrement())
-  name        String         @unique
-  groupType   String         // ASSETS, LIABILITIES, EQUITY, INCOME, EXPENSES
-  parentId    Int?
-  parent      AccountGroup?  @relation("SubGroups", fields: [parentId], references: [id])
-  subGroups   AccountGroup[] @relation("SubGroups")
-  ledgers     Ledger[]
-  isSystem    Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id        Int            @id @default(autoincrement())
+  name      String         @unique
+  groupType String
+  parentId  Int?
+  isSystem  Boolean        @default(false)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  parent    AccountGroup?  @relation("SubGroups", fields: [parentId], references: [id])
+  subGroups AccountGroup[] @relation("SubGroups")
+  ledgers   Ledger[]
 }
 
 model Ledger {
-  id              Int            @id @default(autoincrement())
-  name            String         @unique
-  groupId         Int
-  group           AccountGroup   @relation(fields: [groupId], references: [id])
-  openingBalance  Decimal        @default(0) @db.Decimal(15, 2)
-  balanceType     String         @default("DEBIT") // DEBIT or CREDIT
-  isActive        Boolean        @default(true)
-  isSystem        Boolean        @default(false)
-  description     String?
-  debitEntries    JournalEntry[] @relation("DebitLedger")
-  creditEntries   JournalEntry[] @relation("CreditLedger")
-  postings        TransactionPosting[]
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id             Int                  @id @default(autoincrement())
+  name           String               @unique
+  groupId        Int
+  openingBalance Decimal              @default(0) @db.Decimal(15, 2)
+  balanceType    String               @default("DEBIT")
+  isActive       Boolean              @default(true)
+  description    String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  isSystem       Boolean              @default(false)
+  creditEntries  JournalEntry[]       @relation("CreditLedger")
+  debitEntries   JournalEntry[]       @relation("DebitLedger")
+  group          AccountGroup         @relation(fields: [groupId], references: [id])
+  postings       TransactionPosting[]
 }
 
 model TransactionPosting {
   id              Int      @id @default(autoincrement())
-  transactionType String   // e.g., 'SALES', 'PURCHASE', 'PAYMENT', 'RECEIPT'
-  label           String?  // e.g., 'Advance Collection', 'Bank Transaction'
-  targetTable     String?  // The linked database model (e.g., 'Sale', 'Purchase')
-  role            String   // e.g., 'MAIN_ACCOUNT', 'TAX_CGST', 'TAX_SGST', 'TAX_IGST', 'ROUND_OFF', 'CASH', 'BANK'
+  transactionType String
+  label           String?
+  targetTable     String?
+  role            String
   ledgerId        Int
-  ledger          Ledger   @relation(fields: [ledgerId], references: [id])
-  side            String   @default("CREDIT") // DEBIT or CREDIT
-  postingMethod   String   @default("SUM") // 'SUM' or 'INDIVIDUAL'
-  amountField     String?  // The field from transaction model to use (e.g., 'subTotal', 'taxAmount')
-  customFormula   String?  // Custom math logic (e.g., 'totalAmount * 0.05')
-  condition       String?  // e.g., 'taxAmount > 0'
-  isSystem        Boolean  @default(false) // Core postings cannot be deleted
+  side            String   @default("CREDIT")
+  postingMethod   String   @default("SUM")
+  amountField     String?
+  customFormula   String?
+  condition       String?
+  isSystem        Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  ledger          Ledger   @relation(fields: [ledgerId], references: [id])
 
   @@unique([transactionType, role])
 }
 
 model Voucher {
-  id              Int            @id @default(autoincrement())
-  voucherNumber   String         @unique
-  voucherType     String         // PAYMENT, RECEIPT, JOURNAL, CONTRA, SALES, PURCHASE
-  date            DateTime
-  narration       String?
-  totalAmount     Decimal        @db.Decimal(15, 2)
-  status          String         @default("POSTED") // DRAFT, POSTED, CANCELLED
-  reference       String?
-  createdBy       Int
-  creator         User           @relation(fields: [createdBy], references: [id])
-  entries         JournalEntry[]
-  payrolls        Payroll[]
-  salaryAdvances  SalaryAdvance[]
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id             Int             @id @default(autoincrement())
+  voucherNumber  String          @unique
+  voucherType    String
+  date           DateTime
+  narration      String?
+  totalAmount    Decimal         @db.Decimal(15, 2)
+  status         String          @default("POSTED")
+  reference      String?
+  createdBy      Int
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  entries        JournalEntry[]
+  payrolls       Payroll[]
+  salaryAdvances SalaryAdvance[]
+  creator        User            @relation(fields: [createdBy], references: [id])
 }
 
 model JournalEntry {
-  id             Int      @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   voucherId      Int
-  voucher        Voucher  @relation(fields: [voucherId], references: [id], onDelete: Cascade)
   debitLedgerId  Int?
-  debitLedger    Ledger?  @relation("DebitLedger", fields: [debitLedgerId], references: [id])
   creditLedgerId Int?
-  creditLedger   Ledger?  @relation("CreditLedger", fields: [creditLedgerId], references: [id])
-  amount         Decimal  @db.Decimal(15, 2)
+  amount         Decimal   @db.Decimal(15, 2)
   description    String?
-  
-  // Bank Reconciliation Fields
-  isReconciled   Boolean  @default(false)
+  createdAt      DateTime  @default(now())
   bankDate       DateTime?
+  isReconciled   Boolean   @default(false)
   reconRemarks   String?
-  
-  createdAt      DateTime @default(now())
+  creditLedger   Ledger?   @relation("CreditLedger", fields: [creditLedgerId], references: [id])
+  debitLedger    Ledger?   @relation("DebitLedger", fields: [debitLedgerId], references: [id])
+  voucher        Voucher   @relation(fields: [voucherId], references: [id], onDelete: Cascade)
 }
 
 model FinancialYear {
-  id        Int      @id @default(autoincrement())
-  name      String // e.g., "FY 2024-25"
-  startDate DateTime
-  endDate   DateTime
-  isClosed  Boolean  @default(false)
-  isLocked  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  invoicePrefix   String   @default("INV")
-  invoiceSequence String   @default("001")
-  quotationPrefix   String @default("QT")
-  quotationSequence String @default("001")
-  challanPrefix     String @default("DC")
-  challanSequence   String @default("001")
-  purchasePrefix    String @default("PUR")
-  purchaseSequence  String @default("001")
-  branchId        Int?
-  branch          Branch?  @relation(fields: [branchId], references: [id])
-  sales           Sale[]
-  quotations      Quotation[]
-  purchases       Purchase[]
-  challans        DeliveryChallan[]
+  id                Int               @id @default(autoincrement())
+  name              String
+  startDate         DateTime
+  endDate           DateTime
+  isClosed          Boolean           @default(false)
+  isLocked          Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  invoicePrefix     String            @default("INV")
+  invoiceSequence   String            @default("001")
+  branchId          Int?
+  challanPrefix     String            @default("DC")
+  challanSequence   String            @default("001")
+  purchasePrefix    String            @default("PUR")
+  purchaseSequence  String            @default("001")
+  quotationPrefix   String            @default("QT")
+  quotationSequence String            @default("001")
+  challans          DeliveryChallan[]
+  branch            Branch?           @relation(fields: [branchId], references: [id])
+  purchases         Purchase[]
+  quotations        Quotation[]
+  sales             Sale[]
 
   @@unique([name, branchId])
 }
 
-// GST Settings for E-Way Bill and Invoice Configuration
 model GSTSettings {
   id                   Int      @id @default(autoincrement())
-  // E-Way Bill Credentials
   ewayBillUsername     String?
   ewayBillPassword     String?
-  ewayBillClientId     String?
-  ewayBillClientSecret String?
   ewayBillThreshold    Decimal  @default(50000) @db.Decimal(10, 2)
   autoGenerateEwayBill Boolean  @default(false)
-  
-  // E-Invoice Credentials
-  einvoiceUsername     String?
-  einvoicePassword     String?
-  einvoiceClientId     String?
-  einvoiceClientSecret String?
-  autoGenerateEinvoice Boolean  @default(false)
-
-  // API Integration (Bot) Settings
-  gspName              String?  @default("CDSL") // Default GSP
-  apiMode              String   @default("SANDBOX") // SANDBOX or PRODUCTION
-
   defaultPlaceOfSupply String?
   invoicePrefix        String   @default("INV")
   challanPrefix        String   @default("DC")
@@ -904,15 +870,22 @@ model GSTSettings {
   bankDetails          String?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
+  apiMode              String   @default("SANDBOX")
+  autoGenerateEinvoice Boolean  @default(false)
+  einvoiceClientId     String?
+  einvoiceClientSecret String?
+  einvoicePassword     String?
+  einvoiceUsername     String?
+  ewayBillClientId     String?
+  ewayBillClientSecret String?
+  gspName              String?  @default("CDSL")
 }
 
-// Delivery Challan for goods movement
 model DeliveryChallan {
-  id                Int       @id @default(autoincrement())
+  id                Int                   @id @default(autoincrement())
   challanNumber     String
   customerId        Int?
-  customer          Customer? @relation(fields: [customerId], references: [id])
-  challanDate       DateTime  @default(now())
+  challanDate       DateTime              @default(now())
   transportMode     String?
   vehicleNumber     String?
   transporterName   String?
@@ -924,13 +897,14 @@ model DeliveryChallan {
   ewayBillNumber    String?
   ewayBillDate      DateTime?
   branchId          Int
-  branch            Branch    @relation(fields: [branchId], references: [id])
-  status            String    @default("pending")
-  items             DeliveryChallanItem[]
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  status            String                @default("pending")
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
   financialYearId   Int?
-  financialYear     FinancialYear? @relation(fields: [financialYearId], references: [id])
+  branch            Branch                @relation(fields: [branchId], references: [id])
+  customer          Customer?             @relation(fields: [customerId], references: [id])
+  financialYear     FinancialYear?        @relation(fields: [financialYearId], references: [id])
+  items             DeliveryChallanItem[]
 
   @@unique([branchId, challanNumber, financialYearId])
 }
@@ -938,22 +912,22 @@ model DeliveryChallan {
 model DeliveryChallanItem {
   id          Int             @id @default(autoincrement())
   challanId   Int
-  challan     DeliveryChallan @relation(fields: [challanId], references: [id], onDelete: Cascade)
   productId   Int
-  product     Product         @relation(fields: [productId], references: [id])
   quantity    Int
   hsnCode     String?
   description String?
+  challan     DeliveryChallan @relation(fields: [challanId], references: [id], onDelete: Cascade)
+  product     Product         @relation(fields: [productId], references: [id])
 }
 
 model Bank {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique
-  accountNumber String?
-  ifscCode      String?
-  branchName    String?
-  address       String?
-  isActive      Boolean  @default(true)
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  accountNumber   String?
+  ifscCode        String?
+  branchName      String?
+  address         String?
+  isActive        Boolean          @default(true)
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   companyProfiles CompanyProfile[]
@@ -964,10 +938,10 @@ model WhatsAppSetting {
   apiKey            String?
   apiUrl            String   @default("http://whatsappapi.fastsmsindia.com/wapp/api/send")
   isActive          Boolean  @default(true)
-  salesTemplate     String?  @db.Text
-  quotationTemplate String?  @db.Text
-  paymentTemplate   String?  @db.Text
-  creditTemplate    String?  @db.Text
+  salesTemplate     String?
+  quotationTemplate String?
+  paymentTemplate   String?
+  creditTemplate    String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -975,7 +949,7 @@ model WhatsAppSetting {
 model WhatsAppLog {
   id        Int      @id @default(autoincrement())
   mobile    String
-  message   String   @db.Text
+  message   String
   status    String   @default("SENT")
   timestamp DateTime @default(now())
 }
@@ -985,101 +959,99 @@ model Terminal {
   terminalCode String   @unique
   name         String
   branchId     Int?
-  branch       Branch?  @relation(fields: [branchId], references: [id])
-  users        User[]
   isActive     Boolean  @default(true)
   lastUsed     DateTime @default(now())
   ipAddress    String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   sales        Sale[]
+  branch       Branch?  @relation(fields: [branchId], references: [id])
+  users        User[]   @relation("TerminalToUser")
 }
 
 model SystemSetting {
-  id                 Int     @id @default(autoincrement())
-  key                String  @unique
-  value              String
-  description        String?
-  category           String  @default("GENERAL")
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String
+  description String?
+  category    String   @default("GENERAL")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model ChatMessage {
-  id              Int      @id @default(autoincrement())
-  senderId        Int
-  receiverId      Int
-  message         String?  @db.Text
-  attachmentUrl   String?
-  attachmentType  String?  // IMAGE, FILE, etc.
-  attachmentName  String?
-  isRead          Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  sender          User     @relation("SentMessages", fields: [senderId], references: [id])
-  receiver        User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  id             Int      @id @default(autoincrement())
+  senderId       Int
+  receiverId     Int
+  message        String?
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  receiver       User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender         User     @relation("SentMessages", fields: [senderId], references: [id])
 }
 
 model Notification {
-  id          String   @id @default(cuid())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  title       String
-  message     String   @db.Text
-  type        String   @default("INFO") // INFO, SUCCESS, WARNING, ERROR, MESSAGE
-  isRead      Boolean  @default(false)
-  ticketId    String?  // Associated ticket reference
-  link        String?  // Optional link to navigate to
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    Int
+  title     String
+  message   String
+  type      String   @default("INFO")
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+  ticketId  String?
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model WorkLog {
   id          Int      @id @default(autoincrement())
   userId      Int
-  user        User     @relation(fields: [userId], references: [id])
   adminId     Int?
-  admin       User?    @relation("AdminWorkLogs", fields: [adminId], references: [id])
   branchId    Int?
-  branch      Branch?  @relation(fields: [branchId], references: [id])
   date        DateTime
-  description String   @db.Text
+  description String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  admin       User?    @relation("AdminWorkLogs", fields: [adminId], references: [id])
+  branch      Branch?  @relation(fields: [branchId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
 
-// ==================== ADVANCED TICKETING SYSTEM ====================
-
 model Ticket {
-  id            String   @id @default(uuid())
-  ticketId      String   @unique // Formatted ID: TKT-1001
-  title         String
-  description   String
-  categoryName  String?  // Legacy category string
-  categoryId    Int?
-  category      TicketCategory? @relation(fields: [categoryId], references: [id])
-  priority      String   // Low, Medium, High
-  status        String   @default("Created") // Created, Assigned, InProgress, Closed, Waiting
-  fileUrl       String?  // uploaded file
-  resignReason  String?  @db.Text
-  reassignReason String? @db.Text
-  branchId      Int
-  branch        Branch   @relation(fields: [branchId], references: [id])
-  adminId       Int?     // Target Branch Admin ID (for partitioning)
-  admin         User?    @relation("TicketAdmin", fields: [adminId], references: [id])
-  customerId    Int?
-  customer      Customer? @relation(fields: [customerId], references: [id])
-  assignedToId  Int?     // Staff ID
-  assignedTo    User?    @relation("AssignedTo", fields: [assignedToId], references: [id])
-  createdById   Int?     // NEW: User who initiated the ticket
-  createdBy     User?    @relation("CreatedTickets", fields: [createdById], references: [id])
-  previousAssigneeId Int?    // ID of the user who reassigned the ticket
-  previousAssignee   User?   @relation("PreviousAssignee", fields: [previousAssigneeId], references: [id])
-  createdByRole String   // customer / admin
-  slaStatus     String?  // OnTime / Delayed
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  history       TicketHistory[]
-  messages      TicketMessage[]
-  closureRequests TicketClosureRequest[]
+  id                 String                 @id @default(uuid())
+  ticketId           String                 @unique
+  title              String
+  description        String
+  categoryName       String?
+  categoryId         Int?
+  priority           String
+  status             String                 @default("Created")
+  fileUrl            String?
+  branchId           Int
+  customerId         Int?
+  assignedToId       Int?
+  createdByRole      String
+  slaStatus          String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  resignReason       String?
+  adminId            Int?
+  createdById        Int?
+  reassignReason     String?
+  previousAssigneeId Int?
+  admin              User?                  @relation("TicketAdmin", fields: [adminId], references: [id])
+  assignedTo         User?                  @relation("AssignedTo", fields: [assignedToId], references: [id])
+  branch             Branch                 @relation(fields: [branchId], references: [id])
+  category           TicketCategory?        @relation(fields: [categoryId], references: [id])
+  createdBy          User?                  @relation("CreatedTickets", fields: [createdById], references: [id])
+  customer           Customer?              @relation(fields: [customerId], references: [id])
+  previousAssignee   User?                  @relation("PreviousAssignee", fields: [previousAssigneeId], references: [id])
+  closureRequests    TicketClosureRequest[]
+  history            TicketHistory[]
+  messages           TicketMessage[]
 }
 
 model TicketCategory {
@@ -1091,43 +1063,41 @@ model TicketCategory {
 model TicketHistory {
   id        String   @id @default(uuid())
   ticketId  String
-  ticket    Ticket   @relation(fields: [ticketId], references: [id])
-  action    String   // Created, Assigned, StatusChanged, MessageAdded, ClosureRequested, etc.
+  action    String
   message   String
   doneById  Int
-  doneBy    User     @relation("TicketHistoryDoneBy", fields: [doneById], references: [id])
-  role      String   // admin / staff / customer
-  reason    String?  @db.Text
+  role      String
   createdAt DateTime @default(now())
+  reason    String?
+  doneBy    User     @relation("TicketHistoryDoneBy", fields: [doneById], references: [id])
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
 }
 
 model TicketMessage {
   id        String   @id @default(uuid())
   ticketId  String
-  ticket    Ticket   @relation(fields: [ticketId], references: [id])
-  message   String   @db.Text
+  message   String
   senderId  Int
-  sender    User     @relation("TicketMessageSender", fields: [senderId], references: [id])
-  role      String   // admin / staff / customer
+  role      String
   createdAt DateTime @default(now())
+  sender    User     @relation("TicketMessageSender", fields: [senderId], references: [id])
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
 }
 
 model TicketClosureRequest {
   id            String   @id @default(uuid())
   ticketId      String
-  ticket        Ticket   @relation(fields: [ticketId], references: [id])
   requestedById Int
-  requestedBy   User     @relation("ClosureRequestedBy", fields: [requestedById], references: [id])
-  reason        String   @db.Text
-  status        String   @default("Pending") // Pending, Approved, Rejected
+  reason        String
+  status        String   @default("Pending")
   createdAt     DateTime @default(now())
+  requestedBy   User     @relation("ClosureRequestedBy", fields: [requestedById], references: [id])
+  ticket        Ticket   @relation(fields: [ticketId], references: [id])
 }
 
 model InvoiceSetting {
   id        Int      @id @default(autoincrement())
-  type      String   @unique // 'sales' or 'return'
+  type      String   @unique
   settings  Json
   updatedAt DateTime @updatedAt
 }
-
-

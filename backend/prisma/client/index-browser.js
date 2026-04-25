@@ -149,19 +149,19 @@ exports.Prisma.CompanyProfileScalarFieldEnum = {
   website: 'website',
   registrationNumber: 'registrationNumber',
   logoUrl: 'logoUrl',
-  dashboardImageUrl: 'dashboardImageUrl',
-  showOnlyLogoOnDashboard: 'showOnlyLogoOnDashboard',
   currencyCode: 'currencyCode',
   currencySymbol: 'currencySymbol',
   country: 'country',
   taxSystem: 'taxSystem',
-  primaryColor: 'primaryColor',
-  secondaryColor: 'secondaryColor',
-  gradientType: 'gradientType',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   invoiceSettings: 'invoiceSettings',
-  bankId: 'bankId'
+  bankId: 'bankId',
+  dashboardImageUrl: 'dashboardImageUrl',
+  gradientType: 'gradientType',
+  primaryColor: 'primaryColor',
+  secondaryColor: 'secondaryColor',
+  showOnlyLogoOnDashboard: 'showOnlyLogoOnDashboard'
 };
 
 exports.Prisma.StateScalarFieldEnum = {
@@ -179,19 +179,19 @@ exports.Prisma.CustomerScalarFieldEnum = {
   phone: 'phone',
   email: 'email',
   address: 'address',
-  city: 'city',
   state: 'state',
-  pincode: 'pincode',
-  gstin: 'gstin',
-  partyType: 'partyType',
   area: 'area',
-  username: 'username',
-  password: 'password',
-  role: 'role',
-  accessPermissions: 'accessPermissions',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  branchId: 'branchId'
+  branchId: 'branchId',
+  city: 'city',
+  gstin: 'gstin',
+  partyType: 'partyType',
+  pincode: 'pincode',
+  accessPermissions: 'accessPermissions',
+  password: 'password',
+  role: 'role',
+  username: 'username'
 };
 
 exports.Prisma.AdvanceScalarFieldEnum = {
@@ -201,8 +201,8 @@ exports.Prisma.AdvanceScalarFieldEnum = {
   usedAmount: 'usedAmount',
   balance: 'balance',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  notes: 'notes'
+  notes: 'notes',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.AdvanceHistoryScalarFieldEnum = {
@@ -213,8 +213,8 @@ exports.Prisma.AdvanceHistoryScalarFieldEnum = {
   amount: 'amount',
   balanceAfter: 'balanceAfter',
   reference: 'reference',
-  date: 'date',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  date: 'date'
 };
 
 exports.Prisma.SupplierScalarFieldEnum = {
@@ -253,12 +253,12 @@ exports.Prisma.ProductScalarFieldEnum = {
   barcode: 'barcode',
   hasBarcode: 'hasBarcode',
   minStockLevel: 'minStockLevel',
-  isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   maxDiscount: 'maxDiscount',
   minDiscount: 'minDiscount',
-  imageUrl: 'imageUrl'
+  imageUrl: 'imageUrl',
+  isActive: 'isActive'
 };
 
 exports.Prisma.ProductStockScalarFieldEnum = {
@@ -273,8 +273,6 @@ exports.Prisma.PurchaseScalarFieldEnum = {
   invoiceNumber: 'invoiceNumber',
   supplierId: 'supplierId',
   purchaseDate: 'purchaseDate',
-  subTotal: 'subTotal',
-  taxAmount: 'taxAmount',
   totalAmount: 'totalAmount',
   status: 'status',
   createdAt: 'createdAt',
@@ -283,6 +281,8 @@ exports.Prisma.PurchaseScalarFieldEnum = {
   balanceAmount: 'balanceAmount',
   paidAmount: 'paidAmount',
   branchId: 'branchId',
+  subTotal: 'subTotal',
+  taxAmount: 'taxAmount',
   financialYearId: 'financialYearId'
 };
 
@@ -304,8 +304,6 @@ exports.Prisma.SaleScalarFieldEnum = {
   taxAmount: 'taxAmount',
   totalAmount: 'totalAmount',
   roundOffAmount: 'roundOffAmount',
-  discount: 'discount',
-  advanceUsed: 'advanceUsed',
   paymentMethod: 'paymentMethod',
   status: 'status',
   isReturn: 'isReturn',
@@ -313,8 +311,6 @@ exports.Prisma.SaleScalarFieldEnum = {
   originalInvoice: 'originalInvoice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  currencyCode: 'currencyCode',
-  exchangeRate: 'exchangeRate',
   balanceAmount: 'balanceAmount',
   paidAmount: 'paidAmount',
   cancelledAt: 'cancelledAt',
@@ -323,19 +319,23 @@ exports.Prisma.SaleScalarFieldEnum = {
   branchId: 'branchId',
   salesmanId: 'salesmanId',
   incentiveAmount: 'incentiveAmount',
+  ewayBillDate: 'ewayBillDate',
+  ewayBillNumber: 'ewayBillNumber',
   isB2B: 'isB2B',
   placeOfSupply: 'placeOfSupply',
-  ewayBillNumber: 'ewayBillNumber',
-  ewayBillDate: 'ewayBillDate',
   transportMode: 'transportMode',
-  vehicleNumber: 'vehicleNumber',
-  transporterName: 'transporterName',
   transporterId: 'transporterId',
+  transporterName: 'transporterName',
+  vehicleNumber: 'vehicleNumber',
   isTaxInclusive: 'isTaxInclusive',
   terminalId: 'terminalId',
-  quotationId: 'quotationId',
-  isInvoice: 'isInvoice',
   financialYearId: 'financialYearId',
+  isInvoice: 'isInvoice',
+  quotationId: 'quotationId',
+  currencyCode: 'currencyCode',
+  exchangeRate: 'exchangeRate',
+  discount: 'discount',
+  advanceUsed: 'advanceUsed',
   description: 'description'
 };
 
@@ -433,10 +433,10 @@ exports.Prisma.StockTransferItemScalarFieldEnum = {
   transferId: 'transferId',
   productId: 'productId',
   quantity: 'quantity',
-  unitCost: 'unitCost',
-  taxPercent: 'taxPercent',
   taxAmount: 'taxAmount',
-  totalCost: 'totalCost'
+  taxPercent: 'taxPercent',
+  totalCost: 'totalCost',
+  unitCost: 'unitCost'
 };
 
 exports.Prisma.BarcodeSettingScalarFieldEnum = {
@@ -466,19 +466,19 @@ exports.Prisma.BarcodeSettingScalarFieldEnum = {
 exports.Prisma.EmployeeProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  employeeCode: 'employeeCode',
   designationId: 'designationId',
   departmentId: 'departmentId',
   joiningDate: 'joiningDate',
   basicSalary: 'basicSalary',
   labourRule: 'labourRule',
   nationalId: 'nationalId',
-  bankName: 'bankName',
-  accountNumber: 'accountNumber',
-  ifscCode: 'ifscCode',
-  branchName: 'branchName',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  accountNumber: 'accountNumber',
+  bankName: 'bankName',
+  branchName: 'branchName',
+  employeeCode: 'employeeCode',
+  ifscCode: 'ifscCode'
 };
 
 exports.Prisma.DesignationScalarFieldEnum = {
@@ -498,19 +498,18 @@ exports.Prisma.DepartmentScalarFieldEnum = {
 exports.Prisma.AttendanceScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  branchId: 'branchId',
   date: 'date',
   checkIn: 'checkIn',
   checkOut: 'checkOut',
   status: 'status',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  branchId: 'branchId'
 };
 
 exports.Prisma.LeaveRequestScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  branchId: 'branchId',
   startDate: 'startDate',
   endDate: 'endDate',
   reason: 'reason',
@@ -519,7 +518,8 @@ exports.Prisma.LeaveRequestScalarFieldEnum = {
   leaveTypeId: 'leaveTypeId',
   isHalfDay: 'isHalfDay',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  branchId: 'branchId'
 };
 
 exports.Prisma.LeaveTypeScalarFieldEnum = {
@@ -536,7 +536,6 @@ exports.Prisma.LeaveTypeScalarFieldEnum = {
 exports.Prisma.PayrollScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  branchId: 'branchId',
   month: 'month',
   year: 'year',
   basicSalary: 'basicSalary',
@@ -548,39 +547,40 @@ exports.Prisma.PayrollScalarFieldEnum = {
   toDate: 'toDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  voucherId: 'voucherId'
+  voucherId: 'voucherId',
+  branchId: 'branchId'
 };
 
 exports.Prisma.LeadScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  phone: 'phone',
+  company: 'company',
   email: 'email',
-  address: 'address',
+  phone: 'phone',
   source: 'source',
-  productId: 'productId',
-  quantity: 'quantity',
-  budget: 'budget',
   status: 'status',
-  priority: 'priority',
   assignedTo: 'assignedTo',
   notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  address: 'address',
+  budget: 'budget',
   followUpDate: 'followUpDate',
+  priority: 'priority',
+  productId: 'productId',
+  quantity: 'quantity',
+  quotationId: 'quotationId',
+  saleId: 'saleId',
   lastFollowUpDate: 'lastFollowUpDate',
   nextFollowUpDate: 'nextFollowUpDate',
   outcome: 'outcome',
   reminderFlag: 'reminderFlag',
-  negotiationAmount: 'negotiationAmount',
-  referredById: 'referredById',
-  commissionPercentage: 'commissionPercentage',
+  branchId: 'branchId',
   commissionAmount: 'commissionAmount',
   commissionPaid: 'commissionPaid',
-  branchId: 'branchId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  quotationId: 'quotationId',
-  saleId: 'saleId',
-  company: 'company'
+  commissionPercentage: 'commissionPercentage',
+  negotiationAmount: 'negotiationAmount',
+  referredById: 'referredById'
 };
 
 exports.Prisma.ReferralPaymentScalarFieldEnum = {
@@ -602,11 +602,11 @@ exports.Prisma.FollowUpScalarFieldEnum = {
   date: 'date',
   notes: 'notes',
   status: 'status',
-  outcome: 'outcome',
-  completedAt: 'completedAt',
   nextFollowUpDate: 'nextFollowUpDate',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt',
+  outcome: 'outcome'
 };
 
 exports.Prisma.LeadActivityScalarFieldEnum = {
@@ -647,7 +647,6 @@ exports.Prisma.CRMTaskScalarFieldEnum = {
 exports.Prisma.MissPunchRequestScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  branchId: 'branchId',
   date: 'date',
   checkInTime: 'checkInTime',
   checkOutTime: 'checkOutTime',
@@ -656,13 +655,13 @@ exports.Prisma.MissPunchRequestScalarFieldEnum = {
   reviewedBy: 'reviewedBy',
   reviewedAt: 'reviewedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  branchId: 'branchId'
 };
 
 exports.Prisma.SalaryAdvanceScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  branchId: 'branchId',
   amount: 'amount',
   reason: 'reason',
   requestDate: 'requestDate',
@@ -673,7 +672,8 @@ exports.Prisma.SalaryAdvanceScalarFieldEnum = {
   payrollId: 'payrollId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  voucherId: 'voucherId'
+  voucherId: 'voucherId',
+  branchId: 'branchId'
 };
 
 exports.Prisma.AccountGroupScalarFieldEnum = {
@@ -693,10 +693,10 @@ exports.Prisma.LedgerScalarFieldEnum = {
   openingBalance: 'openingBalance',
   balanceType: 'balanceType',
   isActive: 'isActive',
-  isSystem: 'isSystem',
   description: 'description',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  isSystem: 'isSystem'
 };
 
 exports.Prisma.TransactionPostingScalarFieldEnum = {
@@ -737,10 +737,10 @@ exports.Prisma.JournalEntryScalarFieldEnum = {
   creditLedgerId: 'creditLedgerId',
   amount: 'amount',
   description: 'description',
-  isReconciled: 'isReconciled',
+  createdAt: 'createdAt',
   bankDate: 'bankDate',
-  reconRemarks: 'reconRemarks',
-  createdAt: 'createdAt'
+  isReconciled: 'isReconciled',
+  reconRemarks: 'reconRemarks'
 };
 
 exports.Prisma.FinancialYearScalarFieldEnum = {
@@ -754,37 +754,37 @@ exports.Prisma.FinancialYearScalarFieldEnum = {
   updatedAt: 'updatedAt',
   invoicePrefix: 'invoicePrefix',
   invoiceSequence: 'invoiceSequence',
-  quotationPrefix: 'quotationPrefix',
-  quotationSequence: 'quotationSequence',
+  branchId: 'branchId',
   challanPrefix: 'challanPrefix',
   challanSequence: 'challanSequence',
   purchasePrefix: 'purchasePrefix',
   purchaseSequence: 'purchaseSequence',
-  branchId: 'branchId'
+  quotationPrefix: 'quotationPrefix',
+  quotationSequence: 'quotationSequence'
 };
 
 exports.Prisma.GSTSettingsScalarFieldEnum = {
   id: 'id',
   ewayBillUsername: 'ewayBillUsername',
   ewayBillPassword: 'ewayBillPassword',
-  ewayBillClientId: 'ewayBillClientId',
-  ewayBillClientSecret: 'ewayBillClientSecret',
   ewayBillThreshold: 'ewayBillThreshold',
   autoGenerateEwayBill: 'autoGenerateEwayBill',
-  einvoiceUsername: 'einvoiceUsername',
-  einvoicePassword: 'einvoicePassword',
-  einvoiceClientId: 'einvoiceClientId',
-  einvoiceClientSecret: 'einvoiceClientSecret',
-  autoGenerateEinvoice: 'autoGenerateEinvoice',
-  gspName: 'gspName',
-  apiMode: 'apiMode',
   defaultPlaceOfSupply: 'defaultPlaceOfSupply',
   invoicePrefix: 'invoicePrefix',
   challanPrefix: 'challanPrefix',
   termsAndConditions: 'termsAndConditions',
   bankDetails: 'bankDetails',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  apiMode: 'apiMode',
+  autoGenerateEinvoice: 'autoGenerateEinvoice',
+  einvoiceClientId: 'einvoiceClientId',
+  einvoiceClientSecret: 'einvoiceClientSecret',
+  einvoicePassword: 'einvoicePassword',
+  einvoiceUsername: 'einvoiceUsername',
+  ewayBillClientId: 'ewayBillClientId',
+  ewayBillClientSecret: 'ewayBillClientSecret',
+  gspName: 'gspName'
 };
 
 exports.Prisma.DeliveryChallanScalarFieldEnum = {
@@ -892,9 +892,9 @@ exports.Prisma.NotificationScalarFieldEnum = {
   message: 'message',
   type: 'type',
   isRead: 'isRead',
-  ticketId: 'ticketId',
   link: 'link',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  ticketId: 'ticketId'
 };
 
 exports.Prisma.WorkLogScalarFieldEnum = {
@@ -918,18 +918,18 @@ exports.Prisma.TicketScalarFieldEnum = {
   priority: 'priority',
   status: 'status',
   fileUrl: 'fileUrl',
-  resignReason: 'resignReason',
-  reassignReason: 'reassignReason',
   branchId: 'branchId',
-  adminId: 'adminId',
   customerId: 'customerId',
   assignedToId: 'assignedToId',
-  createdById: 'createdById',
-  previousAssigneeId: 'previousAssigneeId',
   createdByRole: 'createdByRole',
   slaStatus: 'slaStatus',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  resignReason: 'resignReason',
+  adminId: 'adminId',
+  createdById: 'createdById',
+  reassignReason: 'reassignReason',
+  previousAssigneeId: 'previousAssigneeId'
 };
 
 exports.Prisma.TicketCategoryScalarFieldEnum = {
@@ -944,8 +944,8 @@ exports.Prisma.TicketHistoryScalarFieldEnum = {
   message: 'message',
   doneById: 'doneById',
   role: 'role',
-  reason: 'reason',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  reason: 'reason'
 };
 
 exports.Prisma.TicketMessageScalarFieldEnum = {
