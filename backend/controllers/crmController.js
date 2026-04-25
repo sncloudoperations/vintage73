@@ -207,7 +207,10 @@ exports.updateLead = asyncHandler(async (req, res) => {
             budget: data.budget !== undefined ? (parseFloat(data.budget) || 0) : undefined,
             negotiationAmount: data.negotiationAmount !== undefined ? (parseFloat(data.negotiationAmount) || 0) : undefined,
             commissionAmount: data.commissionAmount !== undefined ? parseFloat(data.commissionAmount) : undefined,
-            commissionPercentage: data.commissionPercentage !== undefined ? parseFloat(data.commissionPercentage) : undefined
+            commissionPercentage: data.commissionPercentage !== undefined ? parseFloat(data.commissionPercentage) : undefined,
+            followUpDate: data.followUpDate ? new Date(data.followUpDate) : (data.followUpDate === "" ? null : undefined),
+            lastFollowUpDate: data.lastFollowUpDate ? new Date(data.lastFollowUpDate) : (data.lastFollowUpDate === "" ? null : undefined),
+            nextFollowUpDate: data.nextFollowUpDate ? new Date(data.nextFollowUpDate) : (data.nextFollowUpDate === "" ? null : undefined)
         }
     });
 

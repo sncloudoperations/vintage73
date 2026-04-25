@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
-import { FiPlus, FiSearch, FiFilter, FiCalendar, FiUser, FiArrowRight, FiPhone, FiMail } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiFilter, FiCalendar, FiUser, FiArrowRight, FiPhone, FiMail, FiEdit2 } from 'react-icons/fi';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -184,9 +184,21 @@ export default function LeadList() {
                                     </span>
                                 </td>
                                 <td className="text-right">
-                                    <button className="p-2 text-slate-300 group-hover:text-emerald-500 transition-colors">
-                                        <FiArrowRight />
-                                    </button>
+                                    <div className="flex items-center justify-end gap-2">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                router.push(`/crm/leads/create?id=${lead.id}`);
+                                            }}
+                                            className="p-2 text-slate-300 hover:text-primary transition-colors"
+                                            title="Edit Lead"
+                                        >
+                                            <FiEdit2 />
+                                        </button>
+                                        <button className="p-2 text-slate-300 group-hover:text-emerald-500 transition-colors">
+                                            <FiArrowRight />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

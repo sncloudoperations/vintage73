@@ -328,7 +328,11 @@ export default function PayrollPage() {
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-slate-400 font-medium">Designation:</span>
-                                                <span className="text-slate-900 font-medium">{selectedPayroll.user?.employeeProfile?.designation || '-'}</span>
+                                                <span className="text-slate-900 font-medium">{selectedPayroll.user?.employeeProfile?.designation?.name || selectedPayroll.user?.employeeProfile?.designation || '-'}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-400 font-medium">Department:</span>
+                                                <span className="text-slate-900 font-medium">{selectedPayroll.user?.employeeProfile?.department?.name || selectedPayroll.user?.employeeProfile?.department || '-'}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-slate-400 font-medium">Employee Code:</span>
@@ -354,7 +358,6 @@ export default function PayrollPage() {
                                         </div>
                                     </div>
                                 </div>
-
                                 {/* Earnings & Deductions Table */}
                                 <div className="grid grid-cols-2 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden mb-10">
                                     <div className="bg-white p-6">
@@ -362,7 +365,7 @@ export default function PayrollPage() {
                                         <div className="space-y-3">
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-slate-600">Basic Salary</span>
-                                                <span className="text-slate-900 font-medium">{Number(selectedPayroll.basicSalary).toLocaleString()}</span>
+                                                <span className="text-slate-900 font-medium">{Number(selectedPayroll.fullBasicSalary).toLocaleString()}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-slate-600">Incentives</span>
@@ -377,10 +380,18 @@ export default function PayrollPage() {
                                     <div className="bg-white p-6">
                                         <h4 className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.2em] mb-4">Deductions</h4>
                                         <div className="space-y-3">
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-slate-600">Absence Deduction</span>
-                                                <span className="text-red-600 font-medium">-{Number(selectedPayroll.deductions).toLocaleString()}</span>
-                                            </div>
+                                            {selectedPayroll.lopAmount > 0 && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-slate-600 font-medium text-red-500">LOP (Loss of Pay)</span>
+                                                    <span className="text-red-600 font-medium">-{Number(selectedPayroll.lopAmount).toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            {(selectedPayroll.deductions - selectedPayroll.lopAmount) > 0 && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-slate-600">Other Deductions</span>
+                                                    <span className="text-red-600 font-medium">-{Number(selectedPayroll.deductions - selectedPayroll.lopAmount).toLocaleString()}</span>
+                                                </div>
+                                            )}
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-slate-600">Salary Advance</span>
                                                 <span className="text-red-600 font-medium">-{Number(selectedPayroll.advanceDeduction || 0).toLocaleString()}</span>
