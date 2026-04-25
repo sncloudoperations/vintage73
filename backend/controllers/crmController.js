@@ -91,14 +91,20 @@ exports.getLeads = asyncHandler(async (req, res) => {
     if (search && search.trim() !== '') {
         where.OR = [
             { name: { contains: search, mode: 'insensitive' } },
-            { phone: { contains: search, mode: 'insensitive' } }
+            { phone: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+            { referredBy: { name: { contains: search, mode: 'insensitive' } } }
         ];
     }
     
+    if (req.query.source && req.query.source !== '') where.source = req.query.source;
     if (status && status !== '') where.status = status;
     
     const assignedId = parseInt(assignedTo);
     if (!isNaN(assignedId)) where.assignedTo = assignedId;
+
+    const referrerId = parseInt(req.query.referredById);
+    if (!isNaN(referrerId)) where.referredById = referrerId;
 
     if (fromDate || toDate) {
         where.createdAt = {};
@@ -119,11 +125,24 @@ exports.getLeads = asyncHandler(async (req, res) => {
             where,
             include: { 
                 assignedUser: { select: { name: true, username: true } },
-                product: { select: { name: true, price: true } }
+                product: { select: { name: true, price: true } },
+                referralPayments: true,
+                referredBy: { select: { name: true, username: true } }
             },
             orderBy: { createdAt: 'desc' }
         });
-        res.json(leads);
+
+        const mappedLeads = leads.map(l => {
+            const totalPaid = l.referralPayments ? l.referralPayments.reduce((sum, p) => sum + Number(p.amountPaid), 0) : 0;
+            const balance = Number(l.commissionAmount || 0) - totalPaid;
+            return {
+                ...l,
+                totalPaid,
+                balance: balance > 0 ? balance : 0
+            };
+        });
+
+        res.json(mappedLeads);
     } catch (error) {
         console.error('❌ CRM GET LEADS ERROR:', error.message);
         throw error;
@@ -551,11 +570,83 @@ exports.getMyReferralLeads = asyncHandler(async (req, res) => {
     const leads = await prisma.lead.findMany({
         where: { referredById: userId },
         include: {
-            product: { select: { name: true } }
+            product: { select: { name: true } },
+            referralPayments: true
         },
         orderBy: { createdAt: 'desc' }
     });
-    res.json(leads);
+
+    const mappedLeads = leads.map(l => {
+        const totalPaid = l.referralPayments.reduce((sum, p) => sum + Number(p.amountPaid), 0);
+        const balance = Number(l.commissionAmount || 0) - totalPaid;
+        return {
+            ...l,
+            totalPaid,
+            balance: balance > 0 ? balance : 0
+        };
+    });
+
+    res.json(mappedLeads);
+});
+
+exports.recordReferralPayment = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { paymentDate, amountPaid, paymentMethod, bankName, transactionNumber, notes } = req.body;
+    
+    const leadId = parseInt(id);
+    if (isNaN(leadId)) {
+        res.status(400);
+        throw new Error('Invalid Lead ID');
+    }
+
+    const payment = await prisma.referralPayment.create({
+        data: {
+            leadId,
+            paymentDate: new Date(paymentDate),
+            amountPaid: parseFloat(amountPaid),
+            paymentMethod,
+            bankName,
+            transactionNumber,
+            notes
+        }
+    });
+
+    // Check if fully paid
+    const lead = await prisma.lead.findUnique({
+        where: { id: leadId },
+        include: { referralPayments: true }
+    });
+
+    const totalPaid = lead.referralPayments.reduce((sum, p) => sum + Number(p.amountPaid), 0);
+    if (totalPaid >= Number(lead.commissionAmount)) {
+        await prisma.lead.update({
+            where: { id: leadId },
+            data: { commissionPaid: true }
+        });
+    }
+
+    // Log Activity
+    await prisma.leadActivity.create({
+        data: {
+            leadId,
+            type: 'NOTE',
+            description: `Referral payment of ₹${amountPaid} recorded via ${paymentMethod}. Reference: ${transactionNumber || 'N/A'}`
+        }
+    });
+
+    res.status(201).json(payment);
+});
+
+exports.getReferralPaymentHistory = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const leadId = parseInt(id);
+
+    const payments = await prisma.referralPayment.findMany({
+        where: { leadId },
+        orderBy: { paymentDate: 'desc' }
+    });
+
+    res.json(payments);
 });
 
 exports.updateCommissionStatus = asyncHandler(async (req, res) => {

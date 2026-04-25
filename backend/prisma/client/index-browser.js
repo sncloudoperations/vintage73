@@ -583,6 +583,19 @@ exports.Prisma.LeadScalarFieldEnum = {
   company: 'company'
 };
 
+exports.Prisma.ReferralPaymentScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  paymentDate: 'paymentDate',
+  amountPaid: 'amountPaid',
+  paymentMethod: 'paymentMethod',
+  bankName: 'bankName',
+  transactionNumber: 'transactionNumber',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.FollowUpScalarFieldEnum = {
   id: 'id',
   leadId: 'leadId',
@@ -1022,6 +1035,7 @@ exports.Prisma.ModelName = {
   LeaveType: 'LeaveType',
   Payroll: 'Payroll',
   Lead: 'Lead',
+  ReferralPayment: 'ReferralPayment',
   FollowUp: 'FollowUp',
   LeadActivity: 'LeadActivity',
   Deal: 'Deal',

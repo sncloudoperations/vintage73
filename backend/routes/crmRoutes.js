@@ -15,6 +15,8 @@ router.put('/leads/:id', crmController.updateLead);
 router.put('/leads/:id/status', crmController.updateLeadStatus);
 router.get('/my-leads', crmController.getMyReferralLeads);
 router.put('/leads/:id/commission', crmController.updateCommissionStatus);
+router.post('/leads/:id/payments', crmController.recordReferralPayment);
+router.get('/leads/:id/payments', crmController.getReferralPaymentHistory);
 router.post('/leads/:id/activities', crmController.addLeadActivity);
 router.post('/leads/:id/followups', crmController.scheduleFollowUp);
 router.post('/leads/:id/convert-quotation', crmController.convertToQuotation);

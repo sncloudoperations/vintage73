@@ -164,6 +164,11 @@ export type Payroll = $Result.DefaultSelection<Prisma.$PayrollPayload>
  */
 export type Lead = $Result.DefaultSelection<Prisma.$LeadPayload>
 /**
+ * Model ReferralPayment
+ * 
+ */
+export type ReferralPayment = $Result.DefaultSelection<Prisma.$ReferralPaymentPayload>
+/**
  * Model FollowUp
  * 
  */
@@ -730,6 +735,16 @@ export class PrismaClient<
     * ```
     */
   get lead(): Prisma.LeadDelegate<ExtArgs>;
+
+  /**
+   * `prisma.referralPayment`: Exposes CRUD operations for the **ReferralPayment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ReferralPayments
+    * const referralPayments = await prisma.referralPayment.findMany()
+    * ```
+    */
+  get referralPayment(): Prisma.ReferralPaymentDelegate<ExtArgs>;
 
   /**
    * `prisma.followUp`: Exposes CRUD operations for the **FollowUp** model.
@@ -1520,6 +1535,7 @@ export namespace Prisma {
     LeaveType: 'LeaveType',
     Payroll: 'Payroll',
     Lead: 'Lead',
+    ReferralPayment: 'ReferralPayment',
     FollowUp: 'FollowUp',
     LeadActivity: 'LeadActivity',
     Deal: 'Deal',
@@ -1565,7 +1581,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     meta: {
-      modelProps: 'user' | 'branch' | 'companyProfile' | 'state' | 'customer' | 'advance' | 'advanceHistory' | 'supplier' | 'category' | 'product' | 'productStock' | 'purchase' | 'purchaseItem' | 'sale' | 'saleItem' | 'expense' | 'payment' | 'quotation' | 'quotationItem' | 'stockTransfer' | 'stockTransferItem' | 'barcodeSetting' | 'employeeProfile' | 'designation' | 'department' | 'attendance' | 'leaveRequest' | 'leaveType' | 'payroll' | 'lead' | 'followUp' | 'leadActivity' | 'deal' | 'cRMTask' | 'missPunchRequest' | 'salaryAdvance' | 'accountGroup' | 'ledger' | 'transactionPosting' | 'voucher' | 'journalEntry' | 'financialYear' | 'gSTSettings' | 'deliveryChallan' | 'deliveryChallanItem' | 'bank' | 'whatsAppSetting' | 'whatsAppLog' | 'terminal' | 'systemSetting' | 'chatMessage' | 'notification' | 'workLog' | 'ticket' | 'ticketCategory' | 'ticketHistory' | 'ticketMessage' | 'ticketClosureRequest' | 'invoiceSetting'
+      modelProps: 'user' | 'branch' | 'companyProfile' | 'state' | 'customer' | 'advance' | 'advanceHistory' | 'supplier' | 'category' | 'product' | 'productStock' | 'purchase' | 'purchaseItem' | 'sale' | 'saleItem' | 'expense' | 'payment' | 'quotation' | 'quotationItem' | 'stockTransfer' | 'stockTransferItem' | 'barcodeSetting' | 'employeeProfile' | 'designation' | 'department' | 'attendance' | 'leaveRequest' | 'leaveType' | 'payroll' | 'lead' | 'referralPayment' | 'followUp' | 'leadActivity' | 'deal' | 'cRMTask' | 'missPunchRequest' | 'salaryAdvance' | 'accountGroup' | 'ledger' | 'transactionPosting' | 'voucher' | 'journalEntry' | 'financialYear' | 'gSTSettings' | 'deliveryChallan' | 'deliveryChallanItem' | 'bank' | 'whatsAppSetting' | 'whatsAppLog' | 'terminal' | 'systemSetting' | 'chatMessage' | 'notification' | 'workLog' | 'ticket' | 'ticketCategory' | 'ticketHistory' | 'ticketMessage' | 'ticketClosureRequest' | 'invoiceSetting'
       txIsolationLevel: Prisma.TransactionIsolationLevel
     },
     model: {
@@ -3546,6 +3562,72 @@ export namespace Prisma {
           count: {
             args: Prisma.LeadCountArgs<ExtArgs>,
             result: $Utils.Optional<LeadCountAggregateOutputType> | number
+          }
+        }
+      }
+      ReferralPayment: {
+        payload: Prisma.$ReferralPaymentPayload<ExtArgs>
+        fields: Prisma.ReferralPaymentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ReferralPaymentFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ReferralPaymentFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload>
+          }
+          findFirst: {
+            args: Prisma.ReferralPaymentFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ReferralPaymentFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload>
+          }
+          findMany: {
+            args: Prisma.ReferralPaymentFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload>[]
+          }
+          create: {
+            args: Prisma.ReferralPaymentCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload>
+          }
+          createMany: {
+            args: Prisma.ReferralPaymentCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.ReferralPaymentDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload>
+          }
+          update: {
+            args: Prisma.ReferralPaymentUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload>
+          }
+          deleteMany: {
+            args: Prisma.ReferralPaymentDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ReferralPaymentUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.ReferralPaymentUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$ReferralPaymentPayload>
+          }
+          aggregate: {
+            args: Prisma.ReferralPaymentAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateReferralPayment>
+          }
+          groupBy: {
+            args: Prisma.ReferralPaymentGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<ReferralPaymentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ReferralPaymentCountArgs<ExtArgs>,
+            result: $Utils.Optional<ReferralPaymentCountAggregateOutputType> | number
           }
         }
       }
@@ -6732,6 +6814,7 @@ export namespace Prisma {
     followUps: number
     deals: number
     tasks: number
+    referralPayments: number
   }
 
   export type LeadCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6739,6 +6822,7 @@ export namespace Prisma {
     followUps?: boolean | LeadCountOutputTypeCountFollowUpsArgs
     deals?: boolean | LeadCountOutputTypeCountDealsArgs
     tasks?: boolean | LeadCountOutputTypeCountTasksArgs
+    referralPayments?: boolean | LeadCountOutputTypeCountReferralPaymentsArgs
   }
 
   // Custom InputTypes
@@ -6783,6 +6867,14 @@ export namespace Prisma {
    */
   export type LeadCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CRMTaskWhereInput
+  }
+
+
+  /**
+   * LeadCountOutputType without action
+   */
+  export type LeadCountOutputTypeCountReferralPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReferralPaymentWhereInput
   }
 
 
@@ -40743,6 +40835,7 @@ export namespace Prisma {
     sale?: boolean | Lead$saleArgs<ExtArgs>
     deals?: boolean | Lead$dealsArgs<ExtArgs>
     tasks?: boolean | Lead$tasksArgs<ExtArgs>
+    referralPayments?: boolean | Lead$referralPaymentsArgs<ExtArgs>
     _count?: boolean | LeadCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lead"]>
 
@@ -40789,6 +40882,7 @@ export namespace Prisma {
     sale?: boolean | Lead$saleArgs<ExtArgs>
     deals?: boolean | Lead$dealsArgs<ExtArgs>
     tasks?: boolean | Lead$tasksArgs<ExtArgs>
+    referralPayments?: boolean | Lead$referralPaymentsArgs<ExtArgs>
     _count?: boolean | LeadCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -40806,6 +40900,7 @@ export namespace Prisma {
       sale: Prisma.$SalePayload<ExtArgs> | null
       deals: Prisma.$DealPayload<ExtArgs>[]
       tasks: Prisma.$CRMTaskPayload<ExtArgs>[]
+      referralPayments: Prisma.$ReferralPaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -41221,6 +41316,8 @@ export namespace Prisma {
     deals<T extends Lead$dealsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     tasks<T extends Lead$tasksArgs<ExtArgs> = {}>(args?: Subset<T, Lead$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CRMTaskPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    referralPayments<T extends Lead$referralPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$referralPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -41771,6 +41868,27 @@ export namespace Prisma {
 
 
   /**
+   * Lead.referralPayments
+   */
+  export type Lead$referralPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    where?: ReferralPaymentWhereInput
+    orderBy?: ReferralPaymentOrderByWithRelationInput | ReferralPaymentOrderByWithRelationInput[]
+    cursor?: ReferralPaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReferralPaymentScalarFieldEnum | ReferralPaymentScalarFieldEnum[]
+  }
+
+
+  /**
    * Lead without action
    */
   export type LeadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -41782,6 +41900,1021 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well.
      */
     include?: LeadInclude<ExtArgs> | null
+  }
+
+
+
+  /**
+   * Model ReferralPayment
+   */
+
+  export type AggregateReferralPayment = {
+    _count: ReferralPaymentCountAggregateOutputType | null
+    _avg: ReferralPaymentAvgAggregateOutputType | null
+    _sum: ReferralPaymentSumAggregateOutputType | null
+    _min: ReferralPaymentMinAggregateOutputType | null
+    _max: ReferralPaymentMaxAggregateOutputType | null
+  }
+
+  export type ReferralPaymentAvgAggregateOutputType = {
+    id: number | null
+    leadId: number | null
+    amountPaid: Decimal | null
+  }
+
+  export type ReferralPaymentSumAggregateOutputType = {
+    id: number | null
+    leadId: number | null
+    amountPaid: Decimal | null
+  }
+
+  export type ReferralPaymentMinAggregateOutputType = {
+    id: number | null
+    leadId: number | null
+    paymentDate: Date | null
+    amountPaid: Decimal | null
+    paymentMethod: string | null
+    bankName: string | null
+    transactionNumber: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ReferralPaymentMaxAggregateOutputType = {
+    id: number | null
+    leadId: number | null
+    paymentDate: Date | null
+    amountPaid: Decimal | null
+    paymentMethod: string | null
+    bankName: string | null
+    transactionNumber: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ReferralPaymentCountAggregateOutputType = {
+    id: number
+    leadId: number
+    paymentDate: number
+    amountPaid: number
+    paymentMethod: number
+    bankName: number
+    transactionNumber: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ReferralPaymentAvgAggregateInputType = {
+    id?: true
+    leadId?: true
+    amountPaid?: true
+  }
+
+  export type ReferralPaymentSumAggregateInputType = {
+    id?: true
+    leadId?: true
+    amountPaid?: true
+  }
+
+  export type ReferralPaymentMinAggregateInputType = {
+    id?: true
+    leadId?: true
+    paymentDate?: true
+    amountPaid?: true
+    paymentMethod?: true
+    bankName?: true
+    transactionNumber?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ReferralPaymentMaxAggregateInputType = {
+    id?: true
+    leadId?: true
+    paymentDate?: true
+    amountPaid?: true
+    paymentMethod?: true
+    bankName?: true
+    transactionNumber?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ReferralPaymentCountAggregateInputType = {
+    id?: true
+    leadId?: true
+    paymentDate?: true
+    amountPaid?: true
+    paymentMethod?: true
+    bankName?: true
+    transactionNumber?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ReferralPaymentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ReferralPayment to aggregate.
+     */
+    where?: ReferralPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReferralPayments to fetch.
+     */
+    orderBy?: ReferralPaymentOrderByWithRelationInput | ReferralPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ReferralPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReferralPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReferralPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ReferralPayments
+    **/
+    _count?: true | ReferralPaymentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ReferralPaymentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ReferralPaymentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ReferralPaymentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ReferralPaymentMaxAggregateInputType
+  }
+
+  export type GetReferralPaymentAggregateType<T extends ReferralPaymentAggregateArgs> = {
+        [P in keyof T & keyof AggregateReferralPayment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReferralPayment[P]>
+      : GetScalarType<T[P], AggregateReferralPayment[P]>
+  }
+
+
+
+
+  export type ReferralPaymentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReferralPaymentWhereInput
+    orderBy?: ReferralPaymentOrderByWithAggregationInput | ReferralPaymentOrderByWithAggregationInput[]
+    by: ReferralPaymentScalarFieldEnum[] | ReferralPaymentScalarFieldEnum
+    having?: ReferralPaymentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ReferralPaymentCountAggregateInputType | true
+    _avg?: ReferralPaymentAvgAggregateInputType
+    _sum?: ReferralPaymentSumAggregateInputType
+    _min?: ReferralPaymentMinAggregateInputType
+    _max?: ReferralPaymentMaxAggregateInputType
+  }
+
+  export type ReferralPaymentGroupByOutputType = {
+    id: number
+    leadId: number
+    paymentDate: Date
+    amountPaid: Decimal
+    paymentMethod: string
+    bankName: string | null
+    transactionNumber: string | null
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ReferralPaymentCountAggregateOutputType | null
+    _avg: ReferralPaymentAvgAggregateOutputType | null
+    _sum: ReferralPaymentSumAggregateOutputType | null
+    _min: ReferralPaymentMinAggregateOutputType | null
+    _max: ReferralPaymentMaxAggregateOutputType | null
+  }
+
+  type GetReferralPaymentGroupByPayload<T extends ReferralPaymentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ReferralPaymentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ReferralPaymentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ReferralPaymentGroupByOutputType[P]>
+            : GetScalarType<T[P], ReferralPaymentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ReferralPaymentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    leadId?: boolean
+    paymentDate?: boolean
+    amountPaid?: boolean
+    paymentMethod?: boolean
+    bankName?: boolean
+    transactionNumber?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["referralPayment"]>
+
+  export type ReferralPaymentSelectScalar = {
+    id?: boolean
+    leadId?: boolean
+    paymentDate?: boolean
+    amountPaid?: boolean
+    paymentMethod?: boolean
+    bankName?: boolean
+    transactionNumber?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ReferralPaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }
+
+
+  export type $ReferralPaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ReferralPayment"
+    objects: {
+      lead: Prisma.$LeadPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      leadId: number
+      paymentDate: Date
+      amountPaid: Prisma.Decimal
+      paymentMethod: string
+      bankName: string | null
+      transactionNumber: string | null
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["referralPayment"]>
+    composites: {}
+  }
+
+
+  type ReferralPaymentGetPayload<S extends boolean | null | undefined | ReferralPaymentDefaultArgs> = $Result.GetResult<Prisma.$ReferralPaymentPayload, S>
+
+  type ReferralPaymentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ReferralPaymentFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ReferralPaymentCountAggregateInputType | true
+    }
+
+  export interface ReferralPaymentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ReferralPayment'], meta: { name: 'ReferralPayment' } }
+    /**
+     * Find zero or one ReferralPayment that matches the filter.
+     * @param {ReferralPaymentFindUniqueArgs} args - Arguments to find a ReferralPayment
+     * @example
+     * // Get one ReferralPayment
+     * const referralPayment = await prisma.referralPayment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends ReferralPaymentFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralPaymentFindUniqueArgs<ExtArgs>>
+    ): Prisma__ReferralPaymentClient<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+
+    /**
+     * Find one ReferralPayment that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {ReferralPaymentFindUniqueOrThrowArgs} args - Arguments to find a ReferralPayment
+     * @example
+     * // Get one ReferralPayment
+     * const referralPayment = await prisma.referralPayment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends ReferralPaymentFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralPaymentFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__ReferralPaymentClient<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find the first ReferralPayment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralPaymentFindFirstArgs} args - Arguments to find a ReferralPayment
+     * @example
+     * // Get one ReferralPayment
+     * const referralPayment = await prisma.referralPayment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends ReferralPaymentFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralPaymentFindFirstArgs<ExtArgs>>
+    ): Prisma__ReferralPaymentClient<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+
+    /**
+     * Find the first ReferralPayment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralPaymentFindFirstOrThrowArgs} args - Arguments to find a ReferralPayment
+     * @example
+     * // Get one ReferralPayment
+     * const referralPayment = await prisma.referralPayment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends ReferralPaymentFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralPaymentFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__ReferralPaymentClient<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find zero or more ReferralPayments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralPaymentFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ReferralPayments
+     * const referralPayments = await prisma.referralPayment.findMany()
+     * 
+     * // Get first 10 ReferralPayments
+     * const referralPayments = await prisma.referralPayment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const referralPaymentWithIdOnly = await prisma.referralPayment.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends ReferralPaymentFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralPaymentFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'findMany'>>
+
+    /**
+     * Create a ReferralPayment.
+     * @param {ReferralPaymentCreateArgs} args - Arguments to create a ReferralPayment.
+     * @example
+     * // Create one ReferralPayment
+     * const ReferralPayment = await prisma.referralPayment.create({
+     *   data: {
+     *     // ... data to create a ReferralPayment
+     *   }
+     * })
+     * 
+    **/
+    create<T extends ReferralPaymentCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralPaymentCreateArgs<ExtArgs>>
+    ): Prisma__ReferralPaymentClient<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+
+    /**
+     * Create many ReferralPayments.
+     *     @param {ReferralPaymentCreateManyArgs} args - Arguments to create many ReferralPayments.
+     *     @example
+     *     // Create many ReferralPayments
+     *     const referralPayment = await prisma.referralPayment.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends ReferralPaymentCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralPaymentCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ReferralPayment.
+     * @param {ReferralPaymentDeleteArgs} args - Arguments to delete one ReferralPayment.
+     * @example
+     * // Delete one ReferralPayment
+     * const ReferralPayment = await prisma.referralPayment.delete({
+     *   where: {
+     *     // ... filter to delete one ReferralPayment
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends ReferralPaymentDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralPaymentDeleteArgs<ExtArgs>>
+    ): Prisma__ReferralPaymentClient<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+
+    /**
+     * Update one ReferralPayment.
+     * @param {ReferralPaymentUpdateArgs} args - Arguments to update one ReferralPayment.
+     * @example
+     * // Update one ReferralPayment
+     * const referralPayment = await prisma.referralPayment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends ReferralPaymentUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralPaymentUpdateArgs<ExtArgs>>
+    ): Prisma__ReferralPaymentClient<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+
+    /**
+     * Delete zero or more ReferralPayments.
+     * @param {ReferralPaymentDeleteManyArgs} args - Arguments to filter ReferralPayments to delete.
+     * @example
+     * // Delete a few ReferralPayments
+     * const { count } = await prisma.referralPayment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends ReferralPaymentDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ReferralPaymentDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ReferralPayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralPaymentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ReferralPayments
+     * const referralPayment = await prisma.referralPayment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends ReferralPaymentUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralPaymentUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ReferralPayment.
+     * @param {ReferralPaymentUpsertArgs} args - Arguments to update or create a ReferralPayment.
+     * @example
+     * // Update or create a ReferralPayment
+     * const referralPayment = await prisma.referralPayment.upsert({
+     *   create: {
+     *     // ... data to create a ReferralPayment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ReferralPayment we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends ReferralPaymentUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, ReferralPaymentUpsertArgs<ExtArgs>>
+    ): Prisma__ReferralPaymentClient<$Result.GetResult<Prisma.$ReferralPaymentPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+
+    /**
+     * Count the number of ReferralPayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralPaymentCountArgs} args - Arguments to filter ReferralPayments to count.
+     * @example
+     * // Count the number of ReferralPayments
+     * const count = await prisma.referralPayment.count({
+     *   where: {
+     *     // ... the filter for the ReferralPayments we want to count
+     *   }
+     * })
+    **/
+    count<T extends ReferralPaymentCountArgs>(
+      args?: Subset<T, ReferralPaymentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ReferralPaymentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ReferralPayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralPaymentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ReferralPaymentAggregateArgs>(args: Subset<T, ReferralPaymentAggregateArgs>): Prisma.PrismaPromise<GetReferralPaymentAggregateType<T>>
+
+    /**
+     * Group by ReferralPayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReferralPaymentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ReferralPaymentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ReferralPaymentGroupByArgs['orderBy'] }
+        : { orderBy?: ReferralPaymentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ReferralPaymentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReferralPaymentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ReferralPayment model
+   */
+  readonly fields: ReferralPaymentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ReferralPayment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ReferralPaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    lead<T extends LeadDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LeadDefaultArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+
+
+  /**
+   * Fields of the ReferralPayment model
+   */ 
+  interface ReferralPaymentFieldRefs {
+    readonly id: FieldRef<"ReferralPayment", 'Int'>
+    readonly leadId: FieldRef<"ReferralPayment", 'Int'>
+    readonly paymentDate: FieldRef<"ReferralPayment", 'DateTime'>
+    readonly amountPaid: FieldRef<"ReferralPayment", 'Decimal'>
+    readonly paymentMethod: FieldRef<"ReferralPayment", 'String'>
+    readonly bankName: FieldRef<"ReferralPayment", 'String'>
+    readonly transactionNumber: FieldRef<"ReferralPayment", 'String'>
+    readonly notes: FieldRef<"ReferralPayment", 'String'>
+    readonly createdAt: FieldRef<"ReferralPayment", 'DateTime'>
+    readonly updatedAt: FieldRef<"ReferralPayment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+
+  /**
+   * ReferralPayment findUnique
+   */
+  export type ReferralPaymentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralPayment to fetch.
+     */
+    where: ReferralPaymentWhereUniqueInput
+  }
+
+
+  /**
+   * ReferralPayment findUniqueOrThrow
+   */
+  export type ReferralPaymentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralPayment to fetch.
+     */
+    where: ReferralPaymentWhereUniqueInput
+  }
+
+
+  /**
+   * ReferralPayment findFirst
+   */
+  export type ReferralPaymentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralPayment to fetch.
+     */
+    where?: ReferralPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReferralPayments to fetch.
+     */
+    orderBy?: ReferralPaymentOrderByWithRelationInput | ReferralPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ReferralPayments.
+     */
+    cursor?: ReferralPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReferralPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReferralPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ReferralPayments.
+     */
+    distinct?: ReferralPaymentScalarFieldEnum | ReferralPaymentScalarFieldEnum[]
+  }
+
+
+  /**
+   * ReferralPayment findFirstOrThrow
+   */
+  export type ReferralPaymentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralPayment to fetch.
+     */
+    where?: ReferralPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReferralPayments to fetch.
+     */
+    orderBy?: ReferralPaymentOrderByWithRelationInput | ReferralPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ReferralPayments.
+     */
+    cursor?: ReferralPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReferralPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReferralPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ReferralPayments.
+     */
+    distinct?: ReferralPaymentScalarFieldEnum | ReferralPaymentScalarFieldEnum[]
+  }
+
+
+  /**
+   * ReferralPayment findMany
+   */
+  export type ReferralPaymentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which ReferralPayments to fetch.
+     */
+    where?: ReferralPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReferralPayments to fetch.
+     */
+    orderBy?: ReferralPaymentOrderByWithRelationInput | ReferralPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ReferralPayments.
+     */
+    cursor?: ReferralPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReferralPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReferralPayments.
+     */
+    skip?: number
+    distinct?: ReferralPaymentScalarFieldEnum | ReferralPaymentScalarFieldEnum[]
+  }
+
+
+  /**
+   * ReferralPayment create
+   */
+  export type ReferralPaymentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ReferralPayment.
+     */
+    data: XOR<ReferralPaymentCreateInput, ReferralPaymentUncheckedCreateInput>
+  }
+
+
+  /**
+   * ReferralPayment createMany
+   */
+  export type ReferralPaymentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ReferralPayments.
+     */
+    data: ReferralPaymentCreateManyInput | ReferralPaymentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * ReferralPayment update
+   */
+  export type ReferralPaymentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ReferralPayment.
+     */
+    data: XOR<ReferralPaymentUpdateInput, ReferralPaymentUncheckedUpdateInput>
+    /**
+     * Choose, which ReferralPayment to update.
+     */
+    where: ReferralPaymentWhereUniqueInput
+  }
+
+
+  /**
+   * ReferralPayment updateMany
+   */
+  export type ReferralPaymentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ReferralPayments.
+     */
+    data: XOR<ReferralPaymentUpdateManyMutationInput, ReferralPaymentUncheckedUpdateManyInput>
+    /**
+     * Filter which ReferralPayments to update
+     */
+    where?: ReferralPaymentWhereInput
+  }
+
+
+  /**
+   * ReferralPayment upsert
+   */
+  export type ReferralPaymentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ReferralPayment to update in case it exists.
+     */
+    where: ReferralPaymentWhereUniqueInput
+    /**
+     * In case the ReferralPayment found by the `where` argument doesn't exist, create a new ReferralPayment with this data.
+     */
+    create: XOR<ReferralPaymentCreateInput, ReferralPaymentUncheckedCreateInput>
+    /**
+     * In case the ReferralPayment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ReferralPaymentUpdateInput, ReferralPaymentUncheckedUpdateInput>
+  }
+
+
+  /**
+   * ReferralPayment delete
+   */
+  export type ReferralPaymentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
+    /**
+     * Filter which ReferralPayment to delete.
+     */
+    where: ReferralPaymentWhereUniqueInput
+  }
+
+
+  /**
+   * ReferralPayment deleteMany
+   */
+  export type ReferralPaymentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ReferralPayments to delete
+     */
+    where?: ReferralPaymentWhereInput
+  }
+
+
+  /**
+   * ReferralPayment without action
+   */
+  export type ReferralPaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralPayment
+     */
+    select?: ReferralPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ReferralPaymentInclude<ExtArgs> | null
   }
 
 
@@ -72619,6 +73752,22 @@ export namespace Prisma {
   export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
 
 
+  export const ReferralPaymentScalarFieldEnum: {
+    id: 'id',
+    leadId: 'leadId',
+    paymentDate: 'paymentDate',
+    amountPaid: 'amountPaid',
+    paymentMethod: 'paymentMethod',
+    bankName: 'bankName',
+    transactionNumber: 'transactionNumber',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ReferralPaymentScalarFieldEnum = (typeof ReferralPaymentScalarFieldEnum)[keyof typeof ReferralPaymentScalarFieldEnum]
+
+
   export const FollowUpScalarFieldEnum: {
     id: 'id',
     leadId: 'leadId',
@@ -76295,6 +77444,7 @@ export namespace Prisma {
     sale?: XOR<SaleNullableRelationFilter, SaleWhereInput> | null
     deals?: DealListRelationFilter
     tasks?: CRMTaskListRelationFilter
+    referralPayments?: ReferralPaymentListRelationFilter
   }
 
   export type LeadOrderByWithRelationInput = {
@@ -76337,6 +77487,7 @@ export namespace Prisma {
     sale?: SaleOrderByWithRelationInput
     deals?: DealOrderByRelationAggregateInput
     tasks?: CRMTaskOrderByRelationAggregateInput
+    referralPayments?: ReferralPaymentOrderByRelationAggregateInput
   }
 
   export type LeadWhereUniqueInput = Prisma.AtLeast<{
@@ -76382,6 +77533,7 @@ export namespace Prisma {
     sale?: XOR<SaleNullableRelationFilter, SaleWhereInput> | null
     deals?: DealListRelationFilter
     tasks?: CRMTaskListRelationFilter
+    referralPayments?: ReferralPaymentListRelationFilter
   }, "id" | "quotationId" | "saleId">
 
   export type LeadOrderByWithAggregationInput = {
@@ -76454,6 +77606,88 @@ export namespace Prisma {
     quotationId?: IntNullableWithAggregatesFilter<"Lead"> | number | null
     saleId?: IntNullableWithAggregatesFilter<"Lead"> | number | null
     company?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+  }
+
+  export type ReferralPaymentWhereInput = {
+    AND?: ReferralPaymentWhereInput | ReferralPaymentWhereInput[]
+    OR?: ReferralPaymentWhereInput[]
+    NOT?: ReferralPaymentWhereInput | ReferralPaymentWhereInput[]
+    id?: IntFilter<"ReferralPayment"> | number
+    leadId?: IntFilter<"ReferralPayment"> | number
+    paymentDate?: DateTimeFilter<"ReferralPayment"> | Date | string
+    amountPaid?: DecimalFilter<"ReferralPayment"> | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFilter<"ReferralPayment"> | string
+    bankName?: StringNullableFilter<"ReferralPayment"> | string | null
+    transactionNumber?: StringNullableFilter<"ReferralPayment"> | string | null
+    notes?: StringNullableFilter<"ReferralPayment"> | string | null
+    createdAt?: DateTimeFilter<"ReferralPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"ReferralPayment"> | Date | string
+    lead?: XOR<LeadRelationFilter, LeadWhereInput>
+  }
+
+  export type ReferralPaymentOrderByWithRelationInput = {
+    id?: SortOrder
+    leadId?: SortOrder
+    paymentDate?: SortOrder
+    amountPaid?: SortOrder
+    paymentMethod?: SortOrder
+    bankName?: SortOrderInput | SortOrder
+    transactionNumber?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lead?: LeadOrderByWithRelationInput
+  }
+
+  export type ReferralPaymentWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ReferralPaymentWhereInput | ReferralPaymentWhereInput[]
+    OR?: ReferralPaymentWhereInput[]
+    NOT?: ReferralPaymentWhereInput | ReferralPaymentWhereInput[]
+    leadId?: IntFilter<"ReferralPayment"> | number
+    paymentDate?: DateTimeFilter<"ReferralPayment"> | Date | string
+    amountPaid?: DecimalFilter<"ReferralPayment"> | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFilter<"ReferralPayment"> | string
+    bankName?: StringNullableFilter<"ReferralPayment"> | string | null
+    transactionNumber?: StringNullableFilter<"ReferralPayment"> | string | null
+    notes?: StringNullableFilter<"ReferralPayment"> | string | null
+    createdAt?: DateTimeFilter<"ReferralPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"ReferralPayment"> | Date | string
+    lead?: XOR<LeadRelationFilter, LeadWhereInput>
+  }, "id">
+
+  export type ReferralPaymentOrderByWithAggregationInput = {
+    id?: SortOrder
+    leadId?: SortOrder
+    paymentDate?: SortOrder
+    amountPaid?: SortOrder
+    paymentMethod?: SortOrder
+    bankName?: SortOrderInput | SortOrder
+    transactionNumber?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ReferralPaymentCountOrderByAggregateInput
+    _avg?: ReferralPaymentAvgOrderByAggregateInput
+    _max?: ReferralPaymentMaxOrderByAggregateInput
+    _min?: ReferralPaymentMinOrderByAggregateInput
+    _sum?: ReferralPaymentSumOrderByAggregateInput
+  }
+
+  export type ReferralPaymentScalarWhereWithAggregatesInput = {
+    AND?: ReferralPaymentScalarWhereWithAggregatesInput | ReferralPaymentScalarWhereWithAggregatesInput[]
+    OR?: ReferralPaymentScalarWhereWithAggregatesInput[]
+    NOT?: ReferralPaymentScalarWhereWithAggregatesInput | ReferralPaymentScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ReferralPayment"> | number
+    leadId?: IntWithAggregatesFilter<"ReferralPayment"> | number
+    paymentDate?: DateTimeWithAggregatesFilter<"ReferralPayment"> | Date | string
+    amountPaid?: DecimalWithAggregatesFilter<"ReferralPayment"> | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringWithAggregatesFilter<"ReferralPayment"> | string
+    bankName?: StringNullableWithAggregatesFilter<"ReferralPayment"> | string | null
+    transactionNumber?: StringNullableWithAggregatesFilter<"ReferralPayment"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"ReferralPayment"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ReferralPayment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ReferralPayment"> | Date | string
   }
 
   export type FollowUpWhereInput = {
@@ -82294,6 +83528,7 @@ export namespace Prisma {
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateInput = {
@@ -82330,6 +83565,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUpdateInput = {
@@ -82365,6 +83601,7 @@ export namespace Prisma {
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateInput = {
@@ -82401,6 +83638,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadCreateManyInput = {
@@ -82490,6 +83728,93 @@ export namespace Prisma {
     quotationId?: NullableIntFieldUpdateOperationsInput | number | null
     saleId?: NullableIntFieldUpdateOperationsInput | number | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReferralPaymentCreateInput = {
+    paymentDate: Date | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    paymentMethod: string
+    bankName?: string | null
+    transactionNumber?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lead: LeadCreateNestedOneWithoutReferralPaymentsInput
+  }
+
+  export type ReferralPaymentUncheckedCreateInput = {
+    id?: number
+    leadId: number
+    paymentDate: Date | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    paymentMethod: string
+    bankName?: string | null
+    transactionNumber?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReferralPaymentUpdateInput = {
+    paymentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lead?: LeadUpdateOneRequiredWithoutReferralPaymentsNestedInput
+  }
+
+  export type ReferralPaymentUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    leadId?: IntFieldUpdateOperationsInput | number
+    paymentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralPaymentCreateManyInput = {
+    id?: number
+    leadId: number
+    paymentDate: Date | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    paymentMethod: string
+    bankName?: string | null
+    transactionNumber?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReferralPaymentUpdateManyMutationInput = {
+    paymentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralPaymentUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    leadId?: IntFieldUpdateOperationsInput | number
+    paymentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type FollowUpCreateInput = {
@@ -87752,11 +89077,21 @@ export namespace Prisma {
     none?: FollowUpWhereInput
   }
 
+  export type ReferralPaymentListRelationFilter = {
+    every?: ReferralPaymentWhereInput
+    some?: ReferralPaymentWhereInput
+    none?: ReferralPaymentWhereInput
+  }
+
   export type LeadActivityOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type FollowUpOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReferralPaymentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -87889,6 +89224,57 @@ export namespace Prisma {
   export type LeadRelationFilter = {
     is?: LeadWhereInput
     isNot?: LeadWhereInput
+  }
+
+  export type ReferralPaymentCountOrderByAggregateInput = {
+    id?: SortOrder
+    leadId?: SortOrder
+    paymentDate?: SortOrder
+    amountPaid?: SortOrder
+    paymentMethod?: SortOrder
+    bankName?: SortOrder
+    transactionNumber?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ReferralPaymentAvgOrderByAggregateInput = {
+    id?: SortOrder
+    leadId?: SortOrder
+    amountPaid?: SortOrder
+  }
+
+  export type ReferralPaymentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    leadId?: SortOrder
+    paymentDate?: SortOrder
+    amountPaid?: SortOrder
+    paymentMethod?: SortOrder
+    bankName?: SortOrder
+    transactionNumber?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ReferralPaymentMinOrderByAggregateInput = {
+    id?: SortOrder
+    leadId?: SortOrder
+    paymentDate?: SortOrder
+    amountPaid?: SortOrder
+    paymentMethod?: SortOrder
+    bankName?: SortOrder
+    transactionNumber?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ReferralPaymentSumOrderByAggregateInput = {
+    id?: SortOrder
+    leadId?: SortOrder
+    amountPaid?: SortOrder
   }
 
   export type FollowUpCountOrderByAggregateInput = {
@@ -93793,6 +95179,13 @@ export namespace Prisma {
     connect?: CRMTaskWhereUniqueInput | CRMTaskWhereUniqueInput[]
   }
 
+  export type ReferralPaymentCreateNestedManyWithoutLeadInput = {
+    create?: XOR<ReferralPaymentCreateWithoutLeadInput, ReferralPaymentUncheckedCreateWithoutLeadInput> | ReferralPaymentCreateWithoutLeadInput[] | ReferralPaymentUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: ReferralPaymentCreateOrConnectWithoutLeadInput | ReferralPaymentCreateOrConnectWithoutLeadInput[]
+    createMany?: ReferralPaymentCreateManyLeadInputEnvelope
+    connect?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+  }
+
   export type LeadActivityUncheckedCreateNestedManyWithoutLeadInput = {
     create?: XOR<LeadActivityCreateWithoutLeadInput, LeadActivityUncheckedCreateWithoutLeadInput> | LeadActivityCreateWithoutLeadInput[] | LeadActivityUncheckedCreateWithoutLeadInput[]
     connectOrCreate?: LeadActivityCreateOrConnectWithoutLeadInput | LeadActivityCreateOrConnectWithoutLeadInput[]
@@ -93819,6 +95212,13 @@ export namespace Prisma {
     connectOrCreate?: CRMTaskCreateOrConnectWithoutLeadInput | CRMTaskCreateOrConnectWithoutLeadInput[]
     createMany?: CRMTaskCreateManyLeadInputEnvelope
     connect?: CRMTaskWhereUniqueInput | CRMTaskWhereUniqueInput[]
+  }
+
+  export type ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput = {
+    create?: XOR<ReferralPaymentCreateWithoutLeadInput, ReferralPaymentUncheckedCreateWithoutLeadInput> | ReferralPaymentCreateWithoutLeadInput[] | ReferralPaymentUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: ReferralPaymentCreateOrConnectWithoutLeadInput | ReferralPaymentCreateOrConnectWithoutLeadInput[]
+    createMany?: ReferralPaymentCreateManyLeadInputEnvelope
+    connect?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
   }
 
   export type ProductUpdateOneWithoutLeadsNestedInput = {
@@ -93937,6 +95337,20 @@ export namespace Prisma {
     deleteMany?: CRMTaskScalarWhereInput | CRMTaskScalarWhereInput[]
   }
 
+  export type ReferralPaymentUpdateManyWithoutLeadNestedInput = {
+    create?: XOR<ReferralPaymentCreateWithoutLeadInput, ReferralPaymentUncheckedCreateWithoutLeadInput> | ReferralPaymentCreateWithoutLeadInput[] | ReferralPaymentUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: ReferralPaymentCreateOrConnectWithoutLeadInput | ReferralPaymentCreateOrConnectWithoutLeadInput[]
+    upsert?: ReferralPaymentUpsertWithWhereUniqueWithoutLeadInput | ReferralPaymentUpsertWithWhereUniqueWithoutLeadInput[]
+    createMany?: ReferralPaymentCreateManyLeadInputEnvelope
+    set?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+    disconnect?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+    delete?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+    connect?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+    update?: ReferralPaymentUpdateWithWhereUniqueWithoutLeadInput | ReferralPaymentUpdateWithWhereUniqueWithoutLeadInput[]
+    updateMany?: ReferralPaymentUpdateManyWithWhereWithoutLeadInput | ReferralPaymentUpdateManyWithWhereWithoutLeadInput[]
+    deleteMany?: ReferralPaymentScalarWhereInput | ReferralPaymentScalarWhereInput[]
+  }
+
   export type LeadActivityUncheckedUpdateManyWithoutLeadNestedInput = {
     create?: XOR<LeadActivityCreateWithoutLeadInput, LeadActivityUncheckedCreateWithoutLeadInput> | LeadActivityCreateWithoutLeadInput[] | LeadActivityUncheckedCreateWithoutLeadInput[]
     connectOrCreate?: LeadActivityCreateOrConnectWithoutLeadInput | LeadActivityCreateOrConnectWithoutLeadInput[]
@@ -93991,6 +95405,34 @@ export namespace Prisma {
     update?: CRMTaskUpdateWithWhereUniqueWithoutLeadInput | CRMTaskUpdateWithWhereUniqueWithoutLeadInput[]
     updateMany?: CRMTaskUpdateManyWithWhereWithoutLeadInput | CRMTaskUpdateManyWithWhereWithoutLeadInput[]
     deleteMany?: CRMTaskScalarWhereInput | CRMTaskScalarWhereInput[]
+  }
+
+  export type ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput = {
+    create?: XOR<ReferralPaymentCreateWithoutLeadInput, ReferralPaymentUncheckedCreateWithoutLeadInput> | ReferralPaymentCreateWithoutLeadInput[] | ReferralPaymentUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: ReferralPaymentCreateOrConnectWithoutLeadInput | ReferralPaymentCreateOrConnectWithoutLeadInput[]
+    upsert?: ReferralPaymentUpsertWithWhereUniqueWithoutLeadInput | ReferralPaymentUpsertWithWhereUniqueWithoutLeadInput[]
+    createMany?: ReferralPaymentCreateManyLeadInputEnvelope
+    set?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+    disconnect?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+    delete?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+    connect?: ReferralPaymentWhereUniqueInput | ReferralPaymentWhereUniqueInput[]
+    update?: ReferralPaymentUpdateWithWhereUniqueWithoutLeadInput | ReferralPaymentUpdateWithWhereUniqueWithoutLeadInput[]
+    updateMany?: ReferralPaymentUpdateManyWithWhereWithoutLeadInput | ReferralPaymentUpdateManyWithWhereWithoutLeadInput[]
+    deleteMany?: ReferralPaymentScalarWhereInput | ReferralPaymentScalarWhereInput[]
+  }
+
+  export type LeadCreateNestedOneWithoutReferralPaymentsInput = {
+    create?: XOR<LeadCreateWithoutReferralPaymentsInput, LeadUncheckedCreateWithoutReferralPaymentsInput>
+    connectOrCreate?: LeadCreateOrConnectWithoutReferralPaymentsInput
+    connect?: LeadWhereUniqueInput
+  }
+
+  export type LeadUpdateOneRequiredWithoutReferralPaymentsNestedInput = {
+    create?: XOR<LeadCreateWithoutReferralPaymentsInput, LeadUncheckedCreateWithoutReferralPaymentsInput>
+    connectOrCreate?: LeadCreateOrConnectWithoutReferralPaymentsInput
+    upsert?: LeadUpsertWithoutReferralPaymentsInput
+    connect?: LeadWhereUniqueInput
+    update?: XOR<XOR<LeadUpdateToOneWithWhereWithoutReferralPaymentsInput, LeadUpdateWithoutReferralPaymentsInput>, LeadUncheckedUpdateWithoutReferralPaymentsInput>
   }
 
   export type LeadCreateNestedOneWithoutFollowUpsInput = {
@@ -96338,6 +97780,7 @@ export namespace Prisma {
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutAssignedUserInput = {
@@ -96373,6 +97816,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutAssignedUserInput = {
@@ -96808,6 +98252,7 @@ export namespace Prisma {
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutReferredByInput = {
@@ -96843,6 +98288,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutReferredByInput = {
@@ -99547,6 +100993,7 @@ export namespace Prisma {
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutBranchInput = {
@@ -99582,6 +101029,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutBranchInput = {
@@ -101567,6 +103015,7 @@ export namespace Prisma {
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutProductInput = {
@@ -101602,6 +103051,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutProductInput = {
@@ -103162,6 +104612,7 @@ export namespace Prisma {
     quotation?: QuotationCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutSaleInput = {
@@ -103197,6 +104648,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutSaleInput = {
@@ -103671,6 +105123,7 @@ export namespace Prisma {
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutSaleInput = {
@@ -103706,6 +105159,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type ProductCreateWithoutSaleItemsInput = {
@@ -105222,6 +106676,7 @@ export namespace Prisma {
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutQuotationInput = {
@@ -105257,6 +106712,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutQuotationInput = {
@@ -105639,6 +107095,7 @@ export namespace Prisma {
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutQuotationInput = {
@@ -105674,6 +107131,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type QuotationCreateWithoutItemsInput = {
@@ -109328,6 +110786,39 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ReferralPaymentCreateWithoutLeadInput = {
+    paymentDate: Date | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    paymentMethod: string
+    bankName?: string | null
+    transactionNumber?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReferralPaymentUncheckedCreateWithoutLeadInput = {
+    id?: number
+    paymentDate: Date | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    paymentMethod: string
+    bankName?: string | null
+    transactionNumber?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReferralPaymentCreateOrConnectWithoutLeadInput = {
+    where: ReferralPaymentWhereUniqueInput
+    create: XOR<ReferralPaymentCreateWithoutLeadInput, ReferralPaymentUncheckedCreateWithoutLeadInput>
+  }
+
+  export type ReferralPaymentCreateManyLeadInputEnvelope = {
+    data: ReferralPaymentCreateManyLeadInput | ReferralPaymentCreateManyLeadInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProductUpsertWithoutLeadsInput = {
     update: XOR<ProductUpdateWithoutLeadsInput, ProductUncheckedUpdateWithoutLeadsInput>
     create: XOR<ProductCreateWithoutLeadsInput, ProductUncheckedCreateWithoutLeadsInput>
@@ -109931,6 +111422,196 @@ export namespace Prisma {
     data: XOR<CRMTaskUpdateManyMutationInput, CRMTaskUncheckedUpdateManyWithoutLeadInput>
   }
 
+  export type ReferralPaymentUpsertWithWhereUniqueWithoutLeadInput = {
+    where: ReferralPaymentWhereUniqueInput
+    update: XOR<ReferralPaymentUpdateWithoutLeadInput, ReferralPaymentUncheckedUpdateWithoutLeadInput>
+    create: XOR<ReferralPaymentCreateWithoutLeadInput, ReferralPaymentUncheckedCreateWithoutLeadInput>
+  }
+
+  export type ReferralPaymentUpdateWithWhereUniqueWithoutLeadInput = {
+    where: ReferralPaymentWhereUniqueInput
+    data: XOR<ReferralPaymentUpdateWithoutLeadInput, ReferralPaymentUncheckedUpdateWithoutLeadInput>
+  }
+
+  export type ReferralPaymentUpdateManyWithWhereWithoutLeadInput = {
+    where: ReferralPaymentScalarWhereInput
+    data: XOR<ReferralPaymentUpdateManyMutationInput, ReferralPaymentUncheckedUpdateManyWithoutLeadInput>
+  }
+
+  export type ReferralPaymentScalarWhereInput = {
+    AND?: ReferralPaymentScalarWhereInput | ReferralPaymentScalarWhereInput[]
+    OR?: ReferralPaymentScalarWhereInput[]
+    NOT?: ReferralPaymentScalarWhereInput | ReferralPaymentScalarWhereInput[]
+    id?: IntFilter<"ReferralPayment"> | number
+    leadId?: IntFilter<"ReferralPayment"> | number
+    paymentDate?: DateTimeFilter<"ReferralPayment"> | Date | string
+    amountPaid?: DecimalFilter<"ReferralPayment"> | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFilter<"ReferralPayment"> | string
+    bankName?: StringNullableFilter<"ReferralPayment"> | string | null
+    transactionNumber?: StringNullableFilter<"ReferralPayment"> | string | null
+    notes?: StringNullableFilter<"ReferralPayment"> | string | null
+    createdAt?: DateTimeFilter<"ReferralPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"ReferralPayment"> | Date | string
+  }
+
+  export type LeadCreateWithoutReferralPaymentsInput = {
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    source?: string | null
+    quantity?: number | null
+    budget?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    priority?: string
+    notes?: string | null
+    followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company?: string | null
+    product?: ProductCreateNestedOneWithoutLeadsInput
+    assignedUser?: UserCreateNestedOneWithoutLeadsInput
+    referredBy?: UserCreateNestedOneWithoutReferredLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
+    activities?: LeadActivityCreateNestedManyWithoutLeadInput
+    followUps?: FollowUpCreateNestedManyWithoutLeadInput
+    quotation?: QuotationCreateNestedOneWithoutLeadInput
+    sale?: SaleCreateNestedOneWithoutLeadInput
+    deals?: DealCreateNestedManyWithoutLeadInput
+    tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutReferralPaymentsInput = {
+    id?: number
+    name: string
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    source?: string | null
+    productId?: number | null
+    quantity?: number | null
+    budget?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    priority?: string
+    assignedTo?: number | null
+    notes?: string | null
+    followUpDate?: Date | string | null
+    lastFollowUpDate?: Date | string | null
+    nextFollowUpDate?: Date | string | null
+    outcome?: string | null
+    reminderFlag?: boolean
+    negotiationAmount?: Decimal | DecimalJsLike | number | string | null
+    referredById?: number | null
+    commissionPercentage?: Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: boolean
+    branchId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quotationId?: number | null
+    saleId?: number | null
+    company?: string | null
+    activities?: LeadActivityUncheckedCreateNestedManyWithoutLeadInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
+    deals?: DealUncheckedCreateNestedManyWithoutLeadInput
+    tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutReferralPaymentsInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutReferralPaymentsInput, LeadUncheckedCreateWithoutReferralPaymentsInput>
+  }
+
+  export type LeadUpsertWithoutReferralPaymentsInput = {
+    update: XOR<LeadUpdateWithoutReferralPaymentsInput, LeadUncheckedUpdateWithoutReferralPaymentsInput>
+    create: XOR<LeadCreateWithoutReferralPaymentsInput, LeadUncheckedCreateWithoutReferralPaymentsInput>
+    where?: LeadWhereInput
+  }
+
+  export type LeadUpdateToOneWithWhereWithoutReferralPaymentsInput = {
+    where?: LeadWhereInput
+    data: XOR<LeadUpdateWithoutReferralPaymentsInput, LeadUncheckedUpdateWithoutReferralPaymentsInput>
+  }
+
+  export type LeadUpdateWithoutReferralPaymentsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: NullableIntFieldUpdateOperationsInput | number | null
+    budget?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    product?: ProductUpdateOneWithoutLeadsNestedInput
+    assignedUser?: UserUpdateOneWithoutLeadsNestedInput
+    referredBy?: UserUpdateOneWithoutReferredLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
+    activities?: LeadActivityUpdateManyWithoutLeadNestedInput
+    followUps?: FollowUpUpdateManyWithoutLeadNestedInput
+    quotation?: QuotationUpdateOneWithoutLeadNestedInput
+    sale?: SaleUpdateOneWithoutLeadNestedInput
+    deals?: DealUpdateManyWithoutLeadNestedInput
+    tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutReferralPaymentsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableIntFieldUpdateOperationsInput | number | null
+    quantity?: NullableIntFieldUpdateOperationsInput | number | null
+    budget?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outcome?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderFlag?: BoolFieldUpdateOperationsInput | boolean
+    negotiationAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    referredById?: NullableIntFieldUpdateOperationsInput | number | null
+    commissionPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commissionPaid?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotationId?: NullableIntFieldUpdateOperationsInput | number | null
+    saleId?: NullableIntFieldUpdateOperationsInput | number | null
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    activities?: LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
+    deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
+    tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
   export type LeadCreateWithoutFollowUpsInput = {
     name: string
     phone?: string | null
@@ -109963,6 +111644,7 @@ export namespace Prisma {
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutFollowUpsInput = {
@@ -109998,6 +111680,7 @@ export namespace Prisma {
     activities?: LeadActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutFollowUpsInput = {
@@ -110048,6 +111731,7 @@ export namespace Prisma {
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutFollowUpsInput = {
@@ -110083,6 +111767,7 @@ export namespace Prisma {
     activities?: LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadCreateWithoutActivitiesInput = {
@@ -110117,6 +111802,7 @@ export namespace Prisma {
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutActivitiesInput = {
@@ -110152,6 +111838,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutActivitiesInput = {
@@ -110202,6 +111889,7 @@ export namespace Prisma {
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutActivitiesInput = {
@@ -110237,6 +111925,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadCreateWithoutDealsInput = {
@@ -110271,6 +111960,7 @@ export namespace Prisma {
     quotation?: QuotationCreateNestedOneWithoutLeadInput
     sale?: SaleCreateNestedOneWithoutLeadInput
     tasks?: CRMTaskCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutDealsInput = {
@@ -110306,6 +111996,7 @@ export namespace Prisma {
     activities?: LeadActivityUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     tasks?: CRMTaskUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutDealsInput = {
@@ -110487,6 +112178,7 @@ export namespace Prisma {
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
     sale?: SaleUpdateOneWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutDealsInput = {
@@ -110522,6 +112214,7 @@ export namespace Prisma {
     activities?: LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type UserUpsertWithoutDealsInput = {
@@ -110674,6 +112367,7 @@ export namespace Prisma {
     quotation?: QuotationCreateNestedOneWithoutLeadInput
     sale?: SaleCreateNestedOneWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutTasksInput = {
@@ -110709,6 +112403,7 @@ export namespace Prisma {
     activities?: LeadActivityUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
+    referralPayments?: ReferralPaymentUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutTasksInput = {
@@ -110885,6 +112580,7 @@ export namespace Prisma {
     quotation?: QuotationUpdateOneWithoutLeadNestedInput
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutTasksInput = {
@@ -110920,6 +112616,7 @@ export namespace Prisma {
     activities?: LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type DealUpsertWithoutTasksInput = {
@@ -119259,6 +120956,7 @@ export namespace Prisma {
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutAssignedUserInput = {
@@ -119294,6 +120992,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateManyWithoutAssignedUserInput = {
@@ -119788,6 +121487,7 @@ export namespace Prisma {
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutReferredByInput = {
@@ -119823,6 +121523,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateManyWithoutReferredByInput = {
@@ -121871,6 +123572,7 @@ export namespace Prisma {
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutBranchInput = {
@@ -121906,6 +123608,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateManyWithoutBranchInput = {
@@ -123055,6 +124758,7 @@ export namespace Prisma {
     sale?: SaleUpdateOneWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutProductInput = {
@@ -123090,6 +124794,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     tasks?: CRMTaskUncheckedUpdateManyWithoutLeadNestedInput
+    referralPayments?: ReferralPaymentUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateManyWithoutProductInput = {
@@ -123713,6 +125418,18 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ReferralPaymentCreateManyLeadInput = {
+    id?: number
+    paymentDate: Date | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    paymentMethod: string
+    bankName?: string | null
+    transactionNumber?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type LeadActivityUpdateWithoutLeadInput = {
     type?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -123839,6 +125556,41 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableIntFieldUpdateOperationsInput | number | null
     assignedTo?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralPaymentUpdateWithoutLeadInput = {
+    paymentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralPaymentUncheckedUpdateWithoutLeadInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    paymentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReferralPaymentUncheckedUpdateManyWithoutLeadInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    paymentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -125582,6 +127334,10 @@ export namespace Prisma {
      * @deprecated Use LeadDefaultArgs instead
      */
     export type LeadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = LeadDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ReferralPaymentDefaultArgs instead
+     */
+    export type ReferralPaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReferralPaymentDefaultArgs<ExtArgs>
     /**
      * @deprecated Use FollowUpDefaultArgs instead
      */
