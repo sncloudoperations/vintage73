@@ -55,6 +55,8 @@ model User {
   managedWorkLogs         WorkLog[]              @relation("AdminWorkLogs")
   workLogs                WorkLog[]
   terminals               Terminal[]             @relation("TerminalToUser")
+
+  @@map("user")
 }
 
 model Branch {
@@ -634,6 +636,8 @@ model Lead {
   sale                 Sale?             @relation("LeadToSale", fields: [saleId], references: [id])
   activities           LeadActivity[]
   referralPayments     ReferralPayment[]
+
+  @@map("lead")
 }
 
 model ReferralPayment {
@@ -648,6 +652,8 @@ model ReferralPayment {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@map("referral_payment")
 }
 
 model FollowUp {

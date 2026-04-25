@@ -8,9 +8,9 @@ const fs = require('fs');
 const { initSocket } = require("./utils/socket");
 const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
-const prisma = require('./config/prisma'); // Singleton Prisma
-
 dotenv.config();
+
+const prisma = require('./config/prisma'); // Singleton Prisma
 
 const validateEnv = require("./utils/envValidator");
 validateEnv();
