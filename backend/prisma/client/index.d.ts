@@ -39153,6 +39153,10 @@ export namespace Prisma {
     branchId: number | null
     year: number | null
     basicSalary: Decimal | null
+    fullBasicSalary: Decimal | null
+    totalDays: number | null
+    presentDays: number | null
+    absentDays: number | null
     allowances: Decimal | null
     deductions: Decimal | null
     netSalary: Decimal | null
@@ -39165,6 +39169,10 @@ export namespace Prisma {
     branchId: number | null
     year: number | null
     basicSalary: Decimal | null
+    fullBasicSalary: Decimal | null
+    totalDays: number | null
+    presentDays: number | null
+    absentDays: number | null
     allowances: Decimal | null
     deductions: Decimal | null
     netSalary: Decimal | null
@@ -39178,6 +39186,10 @@ export namespace Prisma {
     month: string | null
     year: number | null
     basicSalary: Decimal | null
+    fullBasicSalary: Decimal | null
+    totalDays: number | null
+    presentDays: number | null
+    absentDays: number | null
     allowances: Decimal | null
     deductions: Decimal | null
     netSalary: Decimal | null
@@ -39196,6 +39208,10 @@ export namespace Prisma {
     month: string | null
     year: number | null
     basicSalary: Decimal | null
+    fullBasicSalary: Decimal | null
+    totalDays: number | null
+    presentDays: number | null
+    absentDays: number | null
     allowances: Decimal | null
     deductions: Decimal | null
     netSalary: Decimal | null
@@ -39214,6 +39230,10 @@ export namespace Prisma {
     month: number
     year: number
     basicSalary: number
+    fullBasicSalary: number
+    totalDays: number
+    presentDays: number
+    absentDays: number
     allowances: number
     deductions: number
     netSalary: number
@@ -39233,6 +39253,10 @@ export namespace Prisma {
     branchId?: true
     year?: true
     basicSalary?: true
+    fullBasicSalary?: true
+    totalDays?: true
+    presentDays?: true
+    absentDays?: true
     allowances?: true
     deductions?: true
     netSalary?: true
@@ -39245,6 +39269,10 @@ export namespace Prisma {
     branchId?: true
     year?: true
     basicSalary?: true
+    fullBasicSalary?: true
+    totalDays?: true
+    presentDays?: true
+    absentDays?: true
     allowances?: true
     deductions?: true
     netSalary?: true
@@ -39258,6 +39286,10 @@ export namespace Prisma {
     month?: true
     year?: true
     basicSalary?: true
+    fullBasicSalary?: true
+    totalDays?: true
+    presentDays?: true
+    absentDays?: true
     allowances?: true
     deductions?: true
     netSalary?: true
@@ -39276,6 +39308,10 @@ export namespace Prisma {
     month?: true
     year?: true
     basicSalary?: true
+    fullBasicSalary?: true
+    totalDays?: true
+    presentDays?: true
+    absentDays?: true
     allowances?: true
     deductions?: true
     netSalary?: true
@@ -39294,6 +39330,10 @@ export namespace Prisma {
     month?: true
     year?: true
     basicSalary?: true
+    fullBasicSalary?: true
+    totalDays?: true
+    presentDays?: true
+    absentDays?: true
     allowances?: true
     deductions?: true
     netSalary?: true
@@ -39399,6 +39439,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal
+    fullBasicSalary: Decimal
+    totalDays: number
+    presentDays: number
+    absentDays: number
     allowances: Decimal
     deductions: Decimal
     netSalary: Decimal
@@ -39436,6 +39480,10 @@ export namespace Prisma {
     month?: boolean
     year?: boolean
     basicSalary?: boolean
+    fullBasicSalary?: boolean
+    totalDays?: boolean
+    presentDays?: boolean
+    absentDays?: boolean
     allowances?: boolean
     deductions?: boolean
     netSalary?: boolean
@@ -39459,6 +39507,10 @@ export namespace Prisma {
     month?: boolean
     year?: boolean
     basicSalary?: boolean
+    fullBasicSalary?: boolean
+    totalDays?: boolean
+    presentDays?: boolean
+    absentDays?: boolean
     allowances?: boolean
     deductions?: boolean
     netSalary?: boolean
@@ -39494,6 +39546,10 @@ export namespace Prisma {
       month: string
       year: number
       basicSalary: Prisma.Decimal
+      fullBasicSalary: Prisma.Decimal
+      totalDays: number
+      presentDays: number
+      absentDays: number
       allowances: Prisma.Decimal
       deductions: Prisma.Decimal
       netSalary: Prisma.Decimal
@@ -39910,6 +39966,10 @@ export namespace Prisma {
     readonly month: FieldRef<"Payroll", 'String'>
     readonly year: FieldRef<"Payroll", 'Int'>
     readonly basicSalary: FieldRef<"Payroll", 'Decimal'>
+    readonly fullBasicSalary: FieldRef<"Payroll", 'Decimal'>
+    readonly totalDays: FieldRef<"Payroll", 'Int'>
+    readonly presentDays: FieldRef<"Payroll", 'Float'>
+    readonly absentDays: FieldRef<"Payroll", 'Float'>
     readonly allowances: FieldRef<"Payroll", 'Decimal'>
     readonly deductions: FieldRef<"Payroll", 'Decimal'>
     readonly netSalary: FieldRef<"Payroll", 'Decimal'>
@@ -72570,6 +72630,10 @@ export namespace Prisma {
     month: 'month',
     year: 'year',
     basicSalary: 'basicSalary',
+    fullBasicSalary: 'fullBasicSalary',
+    totalDays: 'totalDays',
+    presentDays: 'presentDays',
+    absentDays: 'absentDays',
     allowances: 'allowances',
     deductions: 'deductions',
     netSalary: 'netSalary',
@@ -76146,6 +76210,10 @@ export namespace Prisma {
     month?: StringFilter<"Payroll"> | string
     year?: IntFilter<"Payroll"> | number
     basicSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFilter<"Payroll"> | number
+    presentDays?: FloatFilter<"Payroll"> | number
+    absentDays?: FloatFilter<"Payroll"> | number
     allowances?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
@@ -76168,6 +76236,10 @@ export namespace Prisma {
     month?: SortOrder
     year?: SortOrder
     basicSalary?: SortOrder
+    fullBasicSalary?: SortOrder
+    totalDays?: SortOrder
+    presentDays?: SortOrder
+    absentDays?: SortOrder
     allowances?: SortOrder
     deductions?: SortOrder
     netSalary?: SortOrder
@@ -76193,6 +76265,10 @@ export namespace Prisma {
     month?: StringFilter<"Payroll"> | string
     year?: IntFilter<"Payroll"> | number
     basicSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFilter<"Payroll"> | number
+    presentDays?: FloatFilter<"Payroll"> | number
+    absentDays?: FloatFilter<"Payroll"> | number
     allowances?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
@@ -76215,6 +76291,10 @@ export namespace Prisma {
     month?: SortOrder
     year?: SortOrder
     basicSalary?: SortOrder
+    fullBasicSalary?: SortOrder
+    totalDays?: SortOrder
+    presentDays?: SortOrder
+    absentDays?: SortOrder
     allowances?: SortOrder
     deductions?: SortOrder
     netSalary?: SortOrder
@@ -76241,6 +76321,10 @@ export namespace Prisma {
     month?: StringWithAggregatesFilter<"Payroll"> | string
     year?: IntWithAggregatesFilter<"Payroll"> | number
     basicSalary?: DecimalWithAggregatesFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalWithAggregatesFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
+    totalDays?: IntWithAggregatesFilter<"Payroll"> | number
+    presentDays?: FloatWithAggregatesFilter<"Payroll"> | number
+    absentDays?: FloatWithAggregatesFilter<"Payroll"> | number
     allowances?: DecimalWithAggregatesFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
     deductions?: DecimalWithAggregatesFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalWithAggregatesFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
@@ -82141,6 +82225,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -82162,6 +82250,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -82178,6 +82270,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -82199,6 +82295,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -82218,6 +82318,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -82233,6 +82337,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -82250,6 +82358,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -87664,6 +87776,10 @@ export namespace Prisma {
     month?: SortOrder
     year?: SortOrder
     basicSalary?: SortOrder
+    fullBasicSalary?: SortOrder
+    totalDays?: SortOrder
+    presentDays?: SortOrder
+    absentDays?: SortOrder
     allowances?: SortOrder
     deductions?: SortOrder
     netSalary?: SortOrder
@@ -87681,6 +87797,10 @@ export namespace Prisma {
     branchId?: SortOrder
     year?: SortOrder
     basicSalary?: SortOrder
+    fullBasicSalary?: SortOrder
+    totalDays?: SortOrder
+    presentDays?: SortOrder
+    absentDays?: SortOrder
     allowances?: SortOrder
     deductions?: SortOrder
     netSalary?: SortOrder
@@ -87694,6 +87814,10 @@ export namespace Prisma {
     month?: SortOrder
     year?: SortOrder
     basicSalary?: SortOrder
+    fullBasicSalary?: SortOrder
+    totalDays?: SortOrder
+    presentDays?: SortOrder
+    absentDays?: SortOrder
     allowances?: SortOrder
     deductions?: SortOrder
     netSalary?: SortOrder
@@ -87712,6 +87836,10 @@ export namespace Prisma {
     month?: SortOrder
     year?: SortOrder
     basicSalary?: SortOrder
+    fullBasicSalary?: SortOrder
+    totalDays?: SortOrder
+    presentDays?: SortOrder
+    absentDays?: SortOrder
     allowances?: SortOrder
     deductions?: SortOrder
     netSalary?: SortOrder
@@ -87729,6 +87857,10 @@ export namespace Prisma {
     branchId?: SortOrder
     year?: SortOrder
     basicSalary?: SortOrder
+    fullBasicSalary?: SortOrder
+    totalDays?: SortOrder
+    presentDays?: SortOrder
+    absentDays?: SortOrder
     allowances?: SortOrder
     deductions?: SortOrder
     netSalary?: SortOrder
@@ -96265,6 +96397,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -96284,6 +96420,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -97764,6 +97904,10 @@ export namespace Prisma {
     month?: StringFilter<"Payroll"> | string
     year?: IntFilter<"Payroll"> | number
     basicSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFilter<"Payroll"> | number
+    presentDays?: FloatFilter<"Payroll"> | number
+    absentDays?: FloatFilter<"Payroll"> | number
     allowances?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFilter<"Payroll"> | Decimal | DecimalJsLike | number | string
@@ -99250,6 +99394,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -99269,6 +99417,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -111874,6 +112026,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -111894,6 +112050,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -112243,6 +112403,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -112263,6 +112427,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -112961,6 +113129,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -112981,6 +113153,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -118532,6 +118708,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -119179,6 +119359,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -119198,6 +119382,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -119216,6 +119404,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -120634,6 +120826,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -121535,6 +121731,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -121554,6 +121754,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -121572,6 +121776,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -124162,6 +124370,10 @@ export namespace Prisma {
     month: string
     year: number
     basicSalary: Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: Decimal | DecimalJsLike | number | string
+    totalDays?: number
+    presentDays?: number
+    absentDays?: number
     allowances?: Decimal | DecimalJsLike | number | string
     deductions?: Decimal | DecimalJsLike | number | string
     netSalary: Decimal | DecimalJsLike | number | string
@@ -124227,6 +124439,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -124247,6 +124463,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -124265,6 +124485,10 @@ export namespace Prisma {
     month?: StringFieldUpdateOperationsInput | string
     year?: IntFieldUpdateOperationsInput | number
     basicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    fullBasicSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalDays?: IntFieldUpdateOperationsInput | number
+    presentDays?: FloatFieldUpdateOperationsInput | number
+    absentDays?: FloatFieldUpdateOperationsInput | number
     allowances?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     deductions?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     netSalary?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string

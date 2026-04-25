@@ -32,12 +32,51 @@ export default function CreateLead() {
     const [loading, setLoading] = useState(false);
     const [existingLeadWarning, setExistingLeadWarning] = useState(false);
     const router = useRouter();
+    const { id } = router.query;
+    const isEdit = !!id;
 
     useEffect(() => {
         fetchProducts();
         fetchUsers();
         fetchBranches();
     }, []);
+
+    useEffect(() => {
+        if (id) {
+            fetchLeadDetails(id);
+        }
+    }, [id]);
+
+    const fetchLeadDetails = async (leadId) => {
+        setLoading(true);
+        try {
+            const res = await api.get(`/crm/leads/${leadId}`);
+            const lead = res.data;
+            setForm({
+                name: lead.name || '',
+                email: lead.email || '',
+                phone: lead.phone || '',
+                address: lead.address || '',
+                source: lead.source || 'Walk-in',
+                productId: lead.productId?.toString() || '',
+                quantity: lead.quantity?.toString() || '1',
+                budget: lead.budget?.toString() || '',
+                negotiationAmount: lead.negotiationAmount?.toString() || '',
+                priority: lead.priority || 'MEDIUM',
+                assignedTo: lead.assignedTo?.toString() || '',
+                branchId: lead.branchId?.toString() || '',
+                referredById: lead.referredById?.toString() || '',
+                commissionPercentage: lead.commissionPercentage?.toString() || '5',
+                notes: lead.notes || '',
+                followUpDate: lead.followUpDate ? moment(lead.followUpDate).format('YYYY-MM-DDTHH:mm') : ''
+            });
+        } catch (err) {
+            toast.error("Failed to fetch lead details");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchProducts = async () => {
         try {
@@ -106,11 +145,16 @@ export default function CreateLead() {
         if (e) e.preventDefault();
         setLoading(true);
         try {
-            await api.post('/crm/leads', form);
-            toast.success("Lead created successfully");
+            if (isEdit) {
+                await api.put(`/crm/leads/${id}`, form);
+                toast.success("Lead updated successfully");
+            } else {
+                await api.post('/crm/leads', form);
+                toast.success("Lead created successfully");
+            }
             router.push('/crm/leads');
         } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to create lead");
+            toast.error(err.response?.data?.message || `Failed to ${isEdit ? 'update' : 'create'} lead`);
         } finally {
             setLoading(false);
         }
@@ -131,8 +175,8 @@ export default function CreateLead() {
                 {/* Modal Header */}
                 <header className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center flex-shrink-0">
                     <div>
-                        <h1 className="text-xl font-bold text-slate-800 tracking-tight">Create New Lead</h1>
-                        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Initialize a new sales opportunity</p>
+                        <h1 className="text-xl font-bold text-slate-800 tracking-tight">{isEdit ? 'Edit Lead' : 'Create New Lead'}</h1>
+                        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-0.5">{isEdit ? 'Update lead information' : 'Initialize a new sales opportunity'}</p>
                     </div>
                     <button 
                         onClick={() => router.push('/crm/leads')}
@@ -355,7 +399,7 @@ export default function CreateLead() {
                                 disabled={loading} 
                                 className="bg-slate-900 text-white px-12 py-3 rounded-2xl font-medium text-xs uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 ring-4 ring-slate-900/10"
                             >
-                                {loading ? 'Processing...' : <><FiSave className="text-sm" /> Save Lead</>}
+                                {loading ? 'Processing...' : <><FiSave className="text-sm" /> {isEdit ? 'Update Lead' : 'Save Lead'}</>}
                             </button>
                         )}
                     </div>

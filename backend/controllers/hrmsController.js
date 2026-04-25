@@ -483,6 +483,10 @@ exports.generatePayroll = asyncHandler(async (req, res) => {
             month,
             year,
             basicSalary: basic,
+            fullBasicSalary: Number(profile.basicSalary),
+            totalDays: calc.totalDays,
+            presentDays: calc.presentDays || calc.payableDays, // Use payableDays if presentDays not explicitly tracked
+            absentDays: calc.absentCount,
             allowances: allow,
             deductions: deduc,
             netSalary: net,
@@ -612,29 +616,38 @@ exports.getPayrollHistory = asyncHandler(async (req, res) => {
                     name: true,
                     username: true,
                     employeeProfile: {
-                        select: {
-                            employeeCode: true,
-                            bankName: true,
-                            accountNumber: true,
-                            ifscCode: true,
-                            branchName: true
+                        include: {
+                            designation: { select: { name: true } },
+                            department: { select: { name: true } }
                         }
                     }
                 }
             }
         },
+        orderBy: { createdAt: 'desc' }
     });
 
     const mappedPayrolls = payrolls.map(p => {
         const advanceDeduction = p.salaryAdvances ? p.salaryAdvances.reduce((sum, adv) => sum + Number(adv.amount), 0) : 0;
-        const grossSalary = Number(p.basicSalary) + Number(p.allowances);
+        
+        // Use stored fullBasicSalary if available, otherwise fallback to current profile or pro-rated basic
+        const fullBasic = Number(p.fullBasicSalary) > 0 ? Number(p.fullBasicSalary) : Number(p.user?.employeeProfile?.basicSalary || p.basicSalary);
+        const lopAmount = fullBasic - Number(p.basicSalary);
+        
+        const grossSalary = fullBasic + Number(p.allowances);
         const incentives = Number(p.allowances);
+        
         return {
             ...p,
+            fullBasicSalary: fullBasic,
+            lopAmount: lopAmount > 0 ? lopAmount : 0,
             advanceDeduction,
             grossSalary,
             incentives,
-            deductions: Number(p.deductions)
+            deductions: Number(p.deductions) + (lopAmount > 0 ? lopAmount : 0),
+            // Fallbacks for missing attendance data in old records
+            totalDays: p.totalDays || 30,
+            presentDays: p.presentDays || 30
         };
     });
 

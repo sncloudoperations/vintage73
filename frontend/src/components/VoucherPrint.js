@@ -195,26 +195,46 @@ export default function VoucherPrint({ voucher, onClose }) {
                 }
                 /* Print: full-page render of the voucher only */
                 @page {
-                    size: A4 landscape;
-                    margin: 10mm;
+                    size: A4 portrait;
+                    margin: 0;
                 }
                 @media print {
+                    html, body {
+                        height: 100%;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        overflow: hidden !important;
+                    }
                     body * {
                         visibility: hidden;
                     }
                     .voucher-print-root {
                         display: block !important;
                         visibility: visible !important;
-                        position: fixed;
+                        position: absolute !important;
                         left: 0;
                         top: 0;
                         width: 100%;
+                        height: 100%;
                         padding: 0;
                         margin: 0;
                         background: white;
+                        page-break-after: avoid;
+                        page-break-before: avoid;
+                        break-inside: avoid;
                     }
                     .voucher-print-root * {
                         visibility: visible !important;
+                    }
+                    .voucher-print-root > div {
+                        width: 100% !important;
+                        max-width: 100% !important;
+                        margin: 0 !important;
+                        padding: 1.5cm !important;
+                        box-sizing: border-box !important;
+                        break-inside: avoid !important;
+                        page-break-inside: avoid !important;
+                        min-height: unset !important;
                     }
                     button {
                         display: none !important;
