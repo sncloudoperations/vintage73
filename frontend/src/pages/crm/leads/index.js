@@ -130,97 +130,116 @@ export default function LeadList() {
                 ))}
             </div>
 
-            {/* Search & Filters Section */}
-            <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 p-6 mb-8">
-                <form onSubmit={applyFilters} className="space-y-6">
-                    {/* Primary Row: Search and Actions */}
-                    <div className="flex flex-col lg:flex-row items-center gap-4">
-                        <div className="w-full lg:flex-1 relative group">
-                            <div className={`absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors ${searchTerm ? 'text-primary' : 'text-slate-400 group-focus-within:text-primary'}`}>
-                                <FiSearch size={20} />
-                            </div>
-                            <input 
-                                type="text"
-                                className="w-full pl-14 pr-12 py-4 bg-slate-50/50 border border-slate-200 rounded-[20px] focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-slate-700 placeholder:text-slate-400 shadow-sm" 
-                                placeholder="Search by name, phone, email or referrer..." 
-                                value={searchTerm} 
-                                onChange={(e) => setSearchTerm(e.target.value)} 
-                            />
-                            {searchTerm && (
-                                <button 
-                                    type="button"
-                                    onClick={() => setSearchTerm('')}
-                                    className="absolute inset-y-0 right-0 pr-5 flex items-center text-slate-400 hover:text-red-500 transition-colors"
-                                >
-                                    <FiXCircle size={20} />
-                                </button>
-                            )}
-                        </div>
-                        
-                        <div className="flex items-center gap-3 w-full lg:w-auto">
-                            <button type="submit" className="flex-1 lg:flex-none bg-slate-900 text-white px-8 py-4 rounded-[20px] font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-slate-900/10">
-                                <FiFilter className="text-sm" /> Apply Filters
+            {/* Search & Filters Section - Single Row SaaS Toolbar */}
+            <div className="bg-white p-3 rounded-[24px] border border-slate-100 shadow-sm mb-6">
+                <form onSubmit={applyFilters} className="flex flex-wrap items-center gap-2">
+                    {/* Search Input - Flex-1 to take available space */}
+                    <div className="flex-1 min-w-[300px] relative group">
+                        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={16} />
+                        <input 
+                            type="text"
+                            className="w-full pl-11 pr-10 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm font-medium text-slate-700 placeholder:text-slate-400" 
+                            placeholder="Search by name, customer, phone or email..." 
+                            value={searchTerm} 
+                            onChange={(e) => setSearchTerm(e.target.value)} 
+                        />
+                        {searchTerm && (
+                            <button type="button" onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-red-500 transition-colors">
+                                <FiXCircle size={16} />
                             </button>
-                            {Object.values(filters).some(v => v !== '') && (
-                                <button 
-                                    type="button" 
-                                    onClick={() => {
-                                        const reset = { search: '', status: '', assignedTo: '', source: '', referredById: '', fromDate: '', toDate: '' };
-                                        setFilters(reset);
-                                        setSearchTerm('');
-                                        setLoading(true);
-                                        api.get('/crm/leads').then(res => setLeads(res.data)).finally(() => setLoading(false));
-                                    }}
-                                    className="w-12 h-12 flex items-center justify-center bg-red-50 text-red-500 rounded-[20px] hover:bg-red-500 hover:text-white transition-all shadow-sm"
-                                    title="Clear All Filters"
-                                >
-                                    <FiX size={20} />
-                                </button>
-                            )}
-                        </div>
+                        )}
                     </div>
 
-                    {/* Secondary Row: Specific Filters */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Source</label>
-                            <select name="source" className="input bg-slate-50 border-slate-200 rounded-xl text-xs py-2.5" value={filters.source} onChange={handleFilterChange}>
-                                <option value="">All Sources</option>
-                                <option value="Walk-in">Walk-in</option>
-                                <option value="Website">Website</option>
-                                <option value="Call">Call</option>
-                                <option value="WhatsApp">WhatsApp</option>
-                                <option value="Social Media">Social Media</option>
-                                <option value="Referral">Referral</option>
-                            </select>
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Status</label>
-                            <select name="status" className="input bg-slate-50 border-slate-200 rounded-xl text-xs py-2.5" value={filters.status} onChange={handleFilterChange}>
-                                <option value="">All Statuses</option>
-                                <option value="NEW">New</option>
-                                <option value="CONTACTED">Contacted</option>
-                                <option value="QUALIFIED">Qualified</option>
-                                <option value="QUOTATION_SENT">Quotation Sent</option>
-                                <option value="NEGOTIATION">Negotiation</option>
-                                <option value="WON">Won</option>
-                                <option value="LOST">Lost</option>
-                            </select>
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Assigned Specialist</label>
-                            <select name="assignedTo" className="input bg-slate-50 border-slate-200 rounded-xl text-xs py-2.5" value={filters.assignedTo} onChange={handleFilterChange}>
-                                <option value="">All Employees</option>
-                                {users.map(u => <option key={u.id} value={u.id}>{u.name || u.username}</option>)}
-                            </select>
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Referrer</label>
-                            <select name="referredById" className="input bg-purple-50/30 border-purple-100 rounded-xl text-xs text-purple-600 font-semibold py-2.5" value={filters.referredById} onChange={handleFilterChange}>
-                                <option value="">All Referrers</option>
-                                {users.map(u => <option key={u.id} value={u.id}>{u.name || u.username}</option>)}
-                            </select>
-                        </div>
+                    {/* Status Dropdown */}
+                    <div className="w-32 lg:w-40">
+                        <select 
+                            name="status" 
+                            className="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5 text-xs font-bold uppercase tracking-widest focus:ring-primary focus:border-primary" 
+                            value={filters.status} 
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">Status</option>
+                            <option value="NEW">New</option>
+                            <option value="FOLLOW_UP">Follow-up</option>
+                            <option value="NEGOTIATION">Negotiation</option>
+                            <option value="WON">Won</option>
+                            <option value="LOST">Lost</option>
+                        </select>
+                    </div>
+
+                    {/* Source Dropdown */}
+                    <div className="w-32 lg:w-40">
+                        <select 
+                            name="source" 
+                            className="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5 text-xs font-bold uppercase tracking-widest focus:ring-primary focus:border-primary" 
+                            value={filters.source} 
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">Source</option>
+                            <option value="Walk-in">Walk-in</option>
+                            <option value="Website">Website</option>
+                            <option value="Call">Call</option>
+                            <option value="Referral">Referral</option>
+                        </select>
+                    </div>
+
+                    {/* Assigned User Dropdown */}
+                    <div className="w-32 lg:w-40">
+                        <select 
+                            name="assignedTo" 
+                            className="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5 text-xs font-bold uppercase tracking-widest focus:ring-primary focus:border-primary" 
+                            value={filters.assignedTo} 
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">Assigned</option>
+                            {users.map(u => (
+                                <option key={u.id} value={u.id}>{u.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Date Filters - Compact Inputs */}
+                    <div className="flex items-center gap-1">
+                        <input 
+                            type="date" 
+                            name="fromDate"
+                            className="bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-primary focus:border-primary max-w-[130px]" 
+                            value={filters.fromDate}
+                            onChange={handleFilterChange}
+                            title="From Date"
+                        />
+                        <span className="text-slate-300 text-xs">-</span>
+                        <input 
+                            type="date" 
+                            name="toDate"
+                            className="bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-primary focus:border-primary max-w-[130px]" 
+                            value={filters.toDate}
+                            onChange={handleFilterChange}
+                            title="To Date"
+                        />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 ml-auto">
+                        <button 
+                            type="button" 
+                            onClick={() => {
+                                const reset = { search: '', status: '', assignedTo: '', source: '', referredById: '', fromDate: '', toDate: '' };
+                                setFilters(reset);
+                                setSearchTerm('');
+                                setLoading(true);
+                                api.get('/crm/leads').then(res => setLeads(res.data)).finally(() => setLoading(false));
+                            }}
+                            className="px-4 py-2.5 text-slate-400 hover:text-red-500 text-xs font-bold uppercase tracking-widest transition-colors"
+                        >
+                            Reset
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="bg-primary text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-primary-dark hover:shadow-lg transition-all"
+                        >
+                            Search
+                        </button>
                     </div>
                 </form>
             </div>
