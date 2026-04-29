@@ -158,15 +158,18 @@ export default function BarcodeGenerator() {
                             style={{
                                 width: settings.paperSize === 'Grid' ? `${settings.paperWidth}mm` : 'auto',
                                 minWidth: settings.paperSize === 'Grid' ? `${settings.paperWidth}mm` : 'auto',
-                                padding: settings.paperSize === 'Grid' ? '10mm' : '0',
+                                padding: settings.paperSize === 'Grid' ? '2mm' : '0',
                                 display: settings.paperSize === 'Grid' ? 'grid' : 'block',
-                                gridTemplateColumns: settings.paperSize === 'Grid' ? `repeat(${settings.columns}, 1fr)` : 'none',
-                                columnGap: `${settings.columnGap}mm`,
-                                rowGap: `${settings.rowGap}mm`
+                                gridTemplateColumns: settings.paperSize === 'Grid' ? `repeat(${settings.columns || 1}, ${settings.labelWidth}mm)` : 'none',
+                                gap: `${settings.rowGap}mm ${settings.columnGap}mm`,
+                                justifyItems: 'center',
+                                justifyContent: 'center',
+                                alignItems: 'start',
+                                boxSizing: 'border-box'
                             }}
                         >
                             {/* Render multiple labels if valid grid, otherwise just one */}
-                            {Array.from({ length: settings.paperSize === 'Grid' ? (settings.columns * 5) : 1 }).map((_, idx) => (
+                            {Array.from({ length: settings.paperSize === 'Grid' ? (settings.columns * 10) : 1 }).map((_, idx) => (
                                 <div
                                     key={idx}
                                     className="border border-slate-100 rounded-sm overflow-hidden print:border-0"
@@ -179,7 +182,8 @@ export default function BarcodeGenerator() {
                                         justifyContent: 'center',
                                         padding: settings.paperSize === 'Grid' ? '2mm' : `${settings.margin}px`,
                                         textAlign: settings.alignment,
-                                        pageBreakInside: 'avoid'
+                                        pageBreakInside: 'avoid',
+                                        boxSizing: 'border-box'
                                     }}
                                 >
                                     {settings.showName && (
@@ -251,7 +255,7 @@ export default function BarcodeGenerator() {
                                             Single
                                         </button>
                                         <button
-                                            onClick={() => setSettings({ ...settings, paperSize: 'Grid' })}
+                                            onClick={() => setSettings({ ...settings, paperSize: 'Grid', columns: settings.columns <= 1 ? 2 : settings.columns })}
                                             className={`px-2 py-1 text-[10px] font-medium rounded ${settings.paperSize === 'Grid' ? 'bg-primary text-white shadow-sm' : 'text-slate-500'}`}
                                         >
                                             Multi-up
@@ -267,7 +271,7 @@ export default function BarcodeGenerator() {
                                                 <input
                                                     type="number" className="input text-xs py-1"
                                                     value={settings.columns}
-                                                    onChange={e => setSettings({ ...settings, columns: parseInt(e.target.value) })}
+                                                    onChange={e => setSettings({ ...settings, columns: Math.max(1, parseInt(e.target.value) || 1) })}
                                                 />
                                             </div>
                                             <div className="space-y-1">
