@@ -262,9 +262,6 @@ export default function LeadDetail() {
                 <div className="flex flex-nowrap items-center justify-start lg:justify-end gap-2.5 w-full lg:w-auto mt-4 md:mt-0 overflow-x-auto scrollbar-hide py-1">
                     {lead.status !== 'WON' && lead.status !== 'LOST' && (
                         <>
-                            <button onClick={() => setShowConvertModal('QUOTATION')} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-purple-200 text-purple-600 hover:bg-purple-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Convert to Quotation</button>
-                            <button onClick={() => setShowConvertModal('ORDER')} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-emerald-200 text-emerald-600 hover:bg-emerald-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Convert to Order</button>
-                            <button onClick={() => { setEditForm(lead); setShowEditModal(true); }} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-blue-200 text-blue-600 hover:bg-blue-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Edit Lead</button>
                             <button onClick={() => setShowStatusModal(true)} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Update Status</button>
                         </>
                     )}

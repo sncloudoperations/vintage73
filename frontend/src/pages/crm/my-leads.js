@@ -16,12 +16,15 @@ export default function MyReferralLeads() {
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
     const [user, setUser] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) setUser(JSON.parse(storedUser));
     }, []);
+
+    const isAdmin = user?.role === 'admin';
 
     useEffect(() => {
         fetchMyLeads();
@@ -154,7 +157,8 @@ export default function MyReferralLeads() {
                             <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-right text-emerald-600">Paid</th>
                             <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-right text-amber-500">Balance</th>
                             <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-center">Status</th>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 px-8 text-center">History</th>
+                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-center">History</th>
+                            {isAdmin && <th className="text-[10px] font-bold uppercase tracking-widest py-6 px-8 text-center">Action</th>}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
@@ -163,7 +167,11 @@ export default function MyReferralLeads() {
                         ) : filteredLeads.length === 0 ? (
                             <tr><td colSpan="8" className="p-24 text-center text-slate-400 font-medium italic italic">No leads found matching the filters.</td></tr>
                         ) : filteredLeads.map(lead => (
-                            <tr key={lead.id} className="hover:bg-slate-50/50 transition-all group">
+                            <tr 
+                                key={lead.id} 
+                                className="hover:bg-slate-50/50 transition-all group cursor-pointer"
+                                onClick={() => router.push(`/crm/leads/${lead.id}`)}
+                            >
                                 <td className="py-5 px-8 font-semibold text-slate-700">
                                     {lead.product?.name || 'Inquiry'}
                                 </td>
@@ -188,7 +196,7 @@ export default function MyReferralLeads() {
                                         {lead.status.replace('_', ' ')}
                                     </span>
                                 </td>
-                                <td className="text-center px-8">
+                                <td className="text-center" onClick={(e) => e.stopPropagation()}>
                                     <button 
                                         onClick={() => {
                                             setSelectedLead(lead);
@@ -201,6 +209,19 @@ export default function MyReferralLeads() {
                                         <FiInfo />
                                     </button>
                                 </td>
+                                {isAdmin && (
+                                    <td className="text-center px-8" onClick={(e) => e.stopPropagation()}>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <button 
+                                                onClick={() => router.push(`/crm/leads/${lead.id}`)}
+                                                className="p-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-emerald-100 hover:text-emerald-600 transition-all"
+                                                title="View Details"
+                                            >
+                                                <FiArrowRight />
+                                            </button>
+                                        </div>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
