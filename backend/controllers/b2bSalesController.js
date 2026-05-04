@@ -298,7 +298,9 @@ exports.getInvoiceForPrint = asyncHandler(async (req, res) => {
     throw new Error('Invoice not found');
   }
 
-  const company = await prisma.companyProfile.findFirst();
+  const company = await prisma.companyProfile.findFirst({
+    include: { bank: true }
+  });
   const settings = await prisma.gSTSettings.findFirst();
   const taxType = await determineTaxType(sale.placeOfSupply);
 

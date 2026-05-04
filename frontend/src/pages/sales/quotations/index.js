@@ -4,14 +4,14 @@ import { FiPlus, FiPrinter, FiEye, FiCheckCircle, FiFileText, FiDollarSign, FiX,
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
-import DynamicInvoice from '@/components/DynamicInvoice';
+import ProfessionalInvoice from '@/components/ProfessionalInvoice';
 import Swal from 'sweetalert2';
 
 export default function QuotationsList() {
     const [quotations, setQuotations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [companyProfile, setCompanyProfile] = useState(null);
-    const [invoiceSettings, setInvoiceSettings] = useState(null);
+    const [salesSettings, setSalesSettings] = useState(null);
     const router = useRouter();
 
     // Print/View State
@@ -27,14 +27,12 @@ export default function QuotationsList() {
 
     const fetchSettings = async () => {
         try {
-            const [compRes, branchRes] = await Promise.all([
+            const [compRes, settingsRes] = await Promise.all([
                 api.get('/company'),
-                // For now, let's assume default branch 1 settings or from user branch
-                // Simplification for list view print:
-                api.get('/company') // Fallback to company settings if branch logic complex here
+                api.get('/invoice-settings', { params: { type: 'sales' } })
             ]);
             setCompanyProfile(compRes.data);
-            setInvoiceSettings(compRes.data?.invoiceSettings || null);
+            if (settingsRes.data?.settings) setSalesSettings(settingsRes.data.settings);
         } catch (err) {
             console.error(err);
         }
@@ -276,10 +274,9 @@ export default function QuotationsList() {
                             </div>
                             <div className="p-8 max-h-[80vh] overflow-y-auto bg-gray-100">
                                 <div className="mx-auto shadow-lg bg-white">
-                                    <DynamicInvoice
-                                        printData={printData}
+                                    <ProfessionalInvoice
+                                        printData={{ ...printData, settings: salesSettings }}
                                         companyProfile={companyProfile}
-                                        invoiceSettings={invoiceSettings}
                                     />
                                 </div>
                             </div>
@@ -291,10 +288,9 @@ export default function QuotationsList() {
             {/* Off-screen Print Container (Always available for both modal and direct print) */}
             <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', pointerEvents: 'none' }}>
                 <div ref={printRef}>
-                    <DynamicInvoice
-                        printData={printData}
+                    <ProfessionalInvoice
+                        printData={{ ...printData, settings: salesSettings }}
                         companyProfile={companyProfile}
-                        invoiceSettings={invoiceSettings}
                     />
                 </div>
             </div>

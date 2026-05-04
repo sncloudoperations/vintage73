@@ -233,10 +233,29 @@ export default function GSTInvoicePrint({ data }) {
 
       {/* Bank Details & Terms */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        {settings?.bankDetails && (
+        {((company?.bank) || settings?.bankDetails) && (
           <div className="border border-black p-3">
-            <h4 className="font-medium border-b border-black mb-2 pb-1">Bank Details:</h4>
-            <p className="whitespace-pre-wrap text-xs">{settings.bankDetails}</p>
+            <h4 className="font-bold border-b border-black mb-2 pb-1 text-sm uppercase">Bank Details:</h4>
+            {company?.bank ? (
+              <div className="grid grid-cols-2 gap-y-1 text-xs">
+                <div className="font-semibold uppercase">Bank Name:</div>
+                <div>{company.bank.name}</div>
+                
+                <div className="font-semibold uppercase">Account Holder:</div>
+                <div>{company.companyName}</div>
+                
+                <div className="font-semibold uppercase">Account Number:</div>
+                <div className="font-bold">{company.bank.accountNumber}</div>
+                
+                <div className="font-semibold uppercase">IFSC Code:</div>
+                <div className="font-bold">{company.bank.ifscCode}</div>
+                
+                <div className="font-semibold uppercase">Branch:</div>
+                <div>{company.bank.branchName}</div>
+              </div>
+            ) : (
+              <p className="whitespace-pre-wrap text-xs">{settings.bankDetails}</p>
+            )}
           </div>
         )}
         {settings?.termsAndConditions && (
