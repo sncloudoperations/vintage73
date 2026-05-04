@@ -37,10 +37,12 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
     if (!printData) return null;
 
     const {
-        invoiceNumber, saleDate, createdAt, items, subTotal, taxAmount, totalAmount, roundOffAmount,
+        invoiceNumber, quotationNumber, saleDate, quotationDate, createdAt, items, subTotal, taxAmount, totalAmount, roundOffAmount,
         customer, customerName, previousBalance, currentBalance, placeOfSupply,
-        currencyCode, currencySymbol, exchangeRate, discount, advanceUsed, description, paidAmount
+        currencyCode, currencySymbol, exchangeRate, discount, advanceUsed, description, notes, terms, paidAmount
     } = printData;
+
+    const isQuotation = !!quotationNumber;
 
     // Bank details come from Company Profile → default selected bank
     const companyBank = companyProfile?.bank || null;
@@ -48,7 +50,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
 
     // Use createdAt (server timestamp, always accurate) as primary;
     // fallback to saleDate if createdAt is missing
-    const invoiceDate = createdAt || saleDate || null;
+    const invoiceDate = quotationDate || createdAt || saleDate || null;
 
     const getCurrencySymbol = (code) => {
         if (!code) return null;
@@ -150,10 +152,10 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                     {settings.showCompanyName !== false && <h2 className="text-[14px] font-semibold uppercase">{companyProfile?.companyName || 'OUR STORE'}</h2>}
                     <p className="text-[10px]">{companyProfile?.address}</p>
                     <p className="text-[10px]">Ph: {companyProfile?.phone}</p>
-                    <div className="border-t border-b border-black py-1 mt-1 font-semibold">{settings.headerTitle || 'TAX INVOICE'}</div>
+                    <div className="border-t border-b border-black py-1 mt-1 font-semibold">{settings.headerTitle || (isQuotation ? 'QUOTATION' : 'TAX INVOICE')}</div>
                 </div>
                 <div className="text-[10px] mb-4">
-                    <div className="flex justify-between"><span>Inv: {invoiceNumber || ''}</span><span>{invoiceDate ? new Date(invoiceDate).toLocaleDateString() : ''}</span></div>
+                    <div className="flex justify-between"><span>{isQuotation ? 'Quote' : 'Inv'}: {quotationNumber || invoiceNumber || ''}</span><span>{invoiceDate ? new Date(invoiceDate).toLocaleDateString() : ''}</span></div>
                     <div className="font-medium mt-1">Bill To: {customer?.name || customerName || 'Walk-in'}</div>
                 </div>
                 <table className="w-full text-[10px] border-b border-dashed border-black mb-4">
@@ -209,7 +211,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                 </div>
                 <div className="text-right flex-1">
                     <h1 className={`${s_Title} mb-2`} style={{ color: (isBold || isModern) ? accent : '#1f2937' }}>
-                        {settings.headerTitle || 'TAX INVOICE'}
+                        {settings.headerTitle || (isQuotation ? 'QUOTATION' : 'TAX INVOICE')}
                     </h1>
                     {settings.showCompanyName !== false && (
                         <p className={s_Company}>{companyProfile?.companyName || 'Your Company Name'}</p>
@@ -242,8 +244,8 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
                         <p className={`${s_SecHead}`} style={(isBold || isModern) ? { color: accent } : { color: '#94a3b8' }}>Invoice Details</p>
                         <div className="space-y-2">
                             <div className="flex items-center gap-6">
-                                <span className={s_Label}>Invoice No:</span>
-                                <span className={s_Value}>{invoiceNumber || ''}</span>
+                                <span className={s_Label}>{isQuotation ? 'Quotation No:' : 'Invoice No:'}</span>
+                                <span className={s_Value}>{quotationNumber || invoiceNumber || ''}</span>
                             </div>
                             <div className="flex items-center gap-6">
                                 <span className={s_Label}>Date:</span>
@@ -285,10 +287,10 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
             </div>
 
             {/* DESCRIPTION / NOTES */}
-            {description && (
+            {(description || notes) && (
                 <div className="mb-4 p-3 bg-slate-50 border border-slate-100 rounded-lg">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Description / Notes:</p>
-                    <p className="text-[12px] text-slate-600 leading-relaxed italic">{description}</p>
+                    <p className="text-[12px] text-slate-600 leading-relaxed italic">{description || notes}</p>
                 </div>
             )}
 
@@ -435,7 +437,7 @@ const ProfessionalInvoice = React.forwardRef(({ printData, companyProfile, previ
             <div className={`mt-auto pt-8 border-t border-slate-50 flex justify-between items-end`}>
                 <div className="flex-1">
                     <p className={`${s_SecHead} mb-1.5`} style={isBold ? { color: accent } : { color: '#94a3b8' }}>Terms</p>
-                    <p className="text-[12px] text-slate-400 leading-relaxed max-w-[380px] font-normal">{settings.termsConditions || 'Goods once sold will not be taken back.'}</p>
+                    <p className="text-[12px] text-slate-400 leading-relaxed max-w-[380px] font-normal">{terms || settings.termsConditions || 'Goods once sold will not be taken back.'}</p>
                 </div>
                 <div className="text-right text-slate-300 font-medium italic text-[14px] opacity-80">
                     {settings.footerText || settings.footerNote || 'Thank you for your business!'}
