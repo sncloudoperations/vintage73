@@ -448,12 +448,17 @@ exports.generatePayroll = asyncHandler(async (req, res) => {
     const { userId, month, year, allowances, deductions, fromDate, toDate } = req.body;
     const profile = await prisma.employeeProfile.findUnique({
         where: { userId: parseInt(userId) },
-        include: { user: { select: { weeklyOff: true } } }
+        include: { user: { select: { weeklyOff: true, isActive: true } } }
     });
 
     if (!profile) {
         res.status(404);
         throw new Error("Employee profile not found");
+    }
+
+    if (profile.user?.isActive === false) {
+        res.status(400);
+        throw new Error("Cannot process salary for an inactive employee");
     }
 
     const calc = await calculatePayrollData({
@@ -518,12 +523,17 @@ exports.getPayrollPreview = asyncHandler(async (req, res) => {
 
     const profile = await prisma.employeeProfile.findUnique({
         where: { userId: parseInt(userId) },
-        include: { user: { select: { weeklyOff: true } } }
+        include: { user: { select: { weeklyOff: true, isActive: true } } }
     });
 
     if (!profile) {
         res.status(404);
         throw new Error("Employee profile not found");
+    }
+
+    if (profile.user?.isActive === false) {
+        res.status(400);
+        throw new Error("Cannot show preview for an inactive employee");
     }
 
     const calc = await calculatePayrollData({
@@ -597,8 +607,11 @@ exports.getPayrollHistory = asyncHandler(async (req, res) => {
     if (year && !isNaN(parseInt(year))) where.year = parseInt(year);
     if (status) where.status = status;
 
-    // Branch Isolation
-    if (req.user.branchId) {
+    // RBAC: Staff can only see their own records
+    if (req.user.role === 'staff') {
+        where.userId = req.user.id;
+    } else if (req.user.branchId) {
+        // Branch Isolation for non-staff
         where.branchId = req.user.branchId;
     }
 
