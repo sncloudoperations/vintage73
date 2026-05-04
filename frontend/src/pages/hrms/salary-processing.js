@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
-import { FiPlus, FiCalendar, FiDollarSign, FiUsers, FiCheckCircle, FiLoader, FiTrash2, FiFileText } from 'react-icons/fi';
+import { FiPlus, FiCalendar, FiDollarSign, FiUsers, FiCheckCircle, FiLoader, FiTrash2, FiFileText, FiSearch, FiFilter, FiTrendingUp } from 'react-icons/fi';
 import ProfessionalModal from '@/components/ProfessionalModal';
 import SearchableSelect from '@/components/SearchableSelect';
 
@@ -21,6 +21,17 @@ export default function SalaryProcessing() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [recentProcessed, setRecentProcessed] = useState([]);
     const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0, processing: false });
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+
+    // Simple Debounce implementation
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [searchQuery]);
 
     // Confirmation Modal State
     const [confirmModal, setConfirmModal] = useState({
@@ -96,6 +107,25 @@ export default function SalaryProcessing() {
             console.error(err);
         }
     };
+
+    const filteredProcessed = useMemo(() => {
+        return recentProcessed.filter(p => {
+            const matchesSearch = 
+                p.user?.name?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                p.user?.username?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                p.user?.employeeProfile?.employeeCode?.toLowerCase().includes(debouncedSearch.toLowerCase());
+            
+            const matchesStatus = statusFilter === '' || p.status === statusFilter;
+            
+            return matchesSearch && matchesStatus;
+        });
+    }, [recentProcessed, debouncedSearch, statusFilter]);
+
+    const stats = useMemo(() => {
+        const totalSalary = filteredProcessed.reduce((sum, p) => sum + Number(p.netSalary), 0);
+        const uniqueEmployees = new Set(filteredProcessed.map(p => p.userId)).size;
+        return { totalSalary, totalEmployees: uniqueEmployees };
+    }, [filteredProcessed]);
 
     const handleProcessSalary = async (e) => {
         e.preventDefault();
@@ -239,6 +269,69 @@ export default function SalaryProcessing() {
                 <p className="text-slate-500 text-sm mt-1">Process employee salaries with custom date ranges</p>
             </header>
 
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                        <FiUsers size={28} />
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Employees</p>
+                        <p className="text-2xl font-extrabold text-slate-800">{stats.totalEmployees}</p>
+                    </div>
+                </div>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <FiTrendingUp size={28} />
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Salary</p>
+                        <p className="text-2xl font-extrabold text-slate-800">
+                            {companyProfile?.currencySymbol || '₹'}{stats.totalSalary.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Filters Bar */}
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-wrap gap-4 items-center">
+                <div className="flex-1 min-w-[280px] relative group">
+                    <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors z-10" />
+                    <input
+                        type="text"
+                        placeholder="Search by name or employee code..."
+                        className="w-full h-11 pl-11 pr-4 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium placeholder:text-slate-400 outline-none flex items-center"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="relative group">
+                        <FiFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors z-10" size={14} />
+                        <select
+                            className="h-11 pl-10 pr-8 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium outline-none appearance-none cursor-pointer min-w-[160px]"
+                            value={statusFilter}
+                            onChange={e => setStatusFilter(e.target.value)}
+                        >
+                            <option value="">All Statuses</option>
+                            <option value="GENERATED">Generated</option>
+                            <option value="APPROVED">Approved</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
+                        </div>
+                    </div>
+                    {(searchQuery || statusFilter) && (
+                        <button 
+                            onClick={() => { setSearchQuery(''); setStatusFilter(''); }}
+                            className="px-4 h-11 text-xs font-bold text-primary hover:text-primary-dark uppercase tracking-widest transition-colors"
+                        >
+                            Clear
+                        </button>
+                    )}
+                </div>
+            </div>
+
             {/* Processing Mode Selector */}
             <div className="mb-6 flex bg-slate-100 p-1 rounded-xl gap-1 w-fit">
                 <button
@@ -292,7 +385,7 @@ export default function SalaryProcessing() {
                         <form 
                             onSubmit={processingMode === 'individual' ? handleProcessSalary : handleBulkProcess} 
                             className="p-6 space-y-5 overflow-y-auto"
-                            style={{ maxHeight: 'calc(100vh - 350px)' }}
+                            style={{ height: 'calc(100vh - 550px)', minHeight: '400px' }}
                         >
                             {processingMode === 'individual' && (
                                 <div>
@@ -451,15 +544,15 @@ export default function SalaryProcessing() {
                         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Recently Processed</h2>
                         </div>
-                        <div className="p-6 overflow-y-auto" style={{ maxHeight: '600px', scrollbarWidth: 'thin' }}>
-                            {recentProcessed.length === 0 ? (
+                        <div className="p-6 overflow-y-auto" style={{ height: 'calc(100vh - 550px)', minHeight: '400px', scrollbarWidth: 'thin' }}>
+                            {filteredProcessed.length === 0 ? (
                                 <div className="text-center py-8 text-slate-400">
                                     <FiCalendar className="mx-auto text-4xl mb-2" />
-                                    <p>No salaries processed yet</p>
+                                    <p>{recentProcessed.length === 0 ? 'No salaries processed yet' : 'No records match your filters'}</p>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
-                                    {recentProcessed.map(p => (
+                                    {filteredProcessed.map(p => (
                                         <div key={p.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-primary/30 transition-colors group">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-primary-light/10 flex items-center justify-center">
