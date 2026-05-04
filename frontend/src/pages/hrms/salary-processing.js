@@ -71,7 +71,8 @@ export default function SalaryProcessing() {
     const fetchUsers = async () => {
         try {
             const res = await api.get('/users');
-            setUsers(res.data);
+            // Filter only active users
+            setUsers(res.data.filter(u => u.isActive));
         } catch (err) {
             console.error(err);
             toast.error('Failed to load users');
@@ -288,7 +289,11 @@ export default function SalaryProcessing() {
                                 {processingMode === 'individual' ? 'Process Individual' : 'Process All Employees'}
                             </h2>
                         </div>
-                        <form onSubmit={processingMode === 'individual' ? handleProcessSalary : handleBulkProcess} className="p-6 space-y-5">
+                        <form 
+                            onSubmit={processingMode === 'individual' ? handleProcessSalary : handleBulkProcess} 
+                            className="p-6 space-y-5 overflow-y-auto"
+                            style={{ maxHeight: 'calc(100vh - 350px)' }}
+                        >
                             {processingMode === 'individual' && (
                                 <div>
                                     <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">Employee</label>
@@ -446,7 +451,7 @@ export default function SalaryProcessing() {
                         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Recently Processed</h2>
                         </div>
-                        <div className="p-6">
+                        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
                             {recentProcessed.length === 0 ? (
                                 <div className="text-center py-8 text-slate-400">
                                     <FiCalendar className="mx-auto text-4xl mb-2" />
