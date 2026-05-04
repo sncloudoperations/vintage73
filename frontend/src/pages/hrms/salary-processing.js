@@ -91,7 +91,7 @@ export default function SalaryProcessing() {
     const fetchRecentProcessed = async () => {
         try {
             const res = await api.get('/hrms/payroll/history');
-            setRecentProcessed(res.data.slice(0, 10));
+            setRecentProcessed(res.data); // Removed slice(0, 10) to show all records
         } catch (err) {
             console.error(err);
         }
@@ -282,7 +282,7 @@ export default function SalaryProcessing() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Process Salary Form */}
                 <div className="lg:col-span-1">
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200">
                         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
                                 <FiPlus className="text-primary" />
@@ -447,11 +447,11 @@ export default function SalaryProcessing() {
 
                 {/* Recent Processed & Stats */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200">
                         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Recently Processed</h2>
                         </div>
-                        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
+                        <div className="p-6 overflow-y-auto" style={{ maxHeight: '600px', scrollbarWidth: 'thin' }}>
                             {recentProcessed.length === 0 ? (
                                 <div className="text-center py-8 text-slate-400">
                                     <FiCalendar className="mx-auto text-4xl mb-2" />
