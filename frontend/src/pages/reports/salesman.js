@@ -79,14 +79,14 @@ export default function SalesmanReport() {
 
     return (
         <div className="min-h-screen bg-slate-50/50 p-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
                         Salesman Performance <span className="bg-amber-100 text-amber-600 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-widest font-medium">Elite</span>
                     </h1>
                     <p className="text-slate-500 text-xs font-medium">Productivity tracking</p>
                 </div>
-                <button className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 text-xs font-medium text-slate-600 hover:text-primary transition-all" onClick={() => window.print()}>
+                <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 text-xs font-medium text-slate-600 hover:text-primary transition-all" onClick={() => window.print()}>
                     <FiDownload size={14} /> Export
                 </button>
             </div>
@@ -115,7 +115,7 @@ export default function SalesmanReport() {
                         <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">To</label>
                         <input type="date" className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 font-medium text-slate-700" value={endDate} onChange={e => setEndDate(e.target.value)} />
                     </div>
-                    <button className="px-4 py-2.5 text-xs font-medium text-rose-500 hover:bg-rose-50 rounded-xl transition-all" onClick={() => { setStartDate(''); setEndDate(''); }}>Clear</button>
+                    <button className="w-full sm:w-auto px-4 py-2.5 text-xs font-medium text-rose-500 hover:bg-rose-50 rounded-xl transition-all" onClick={() => { setStartDate(''); setEndDate(''); }}>Clear</button>
                 </div>
             </div>
 

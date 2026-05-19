@@ -262,12 +262,12 @@ export default function Users() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Users</h1>
           <p className="text-slate-500 text-sm mt-1">Manage system access and roles</p>
         </div>
-        <button className="btn btn-primary" onClick={handleOpenAddUser}>
+        <button className="btn btn-primary w-full md:w-auto" onClick={handleOpenAddUser}>
           <FiPlus className="text-lg" /> Add User
         </button>
       </div>

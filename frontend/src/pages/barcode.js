@@ -113,9 +113,9 @@ export default function BarcodeGenerator() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 {/* Step 1: Product Selection */}
-                <div className="lg:col-span-3 card h-fit print:hidden">
+                <div className="md:col-span-4 lg:col-span-3 card h-fit print:hidden">
                     <div className="flex items-center gap-2 mb-4 text-slate-400 font-medium uppercase text-[10px] tracking-widest">
                         <span className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">1</span>
                         Select Product
@@ -151,7 +151,7 @@ export default function BarcodeGenerator() {
                 </div>
 
                 {/* Step 2: Visualization (The Designer) */}
-                <div className="lg:col-span-6 bg-slate-100/50 rounded-2xl border-2 border-dashed border-slate-200 p-8 flex flex-col items-center justify-center min-h-[500px] print:w-full print:bg-white print:border-0 print:p-0 overflow-auto">
+                <div className="md:col-span-8 lg:col-span-6 bg-slate-100/50 rounded-2xl border-2 border-dashed border-slate-200 p-8 flex flex-col items-center justify-center min-h-[500px] print:w-full print:bg-white print:border-0 print:p-0 overflow-auto scroll-line lg:no-scrollbar">
                     {selectedProduct ? (
                         <div
                             className="DesignerContent bg-white shadow-2xl transition-all duration-300 print:shadow-none print:p-0 mx-auto"
@@ -232,7 +232,7 @@ export default function BarcodeGenerator() {
                 </div>
 
                 {/* Step 3: Properties Panel */}
-                <div className="lg:col-span-3 card h-fit print:hidden max-h-[85vh] overflow-y-auto custom-scrollbar">
+                <div className="md:col-span-12 lg:col-span-3 card h-fit print:hidden max-h-[85vh] overflow-y-auto custom-scrollbar">
                     <div className="flex items-center gap-2 mb-6 text-slate-400 font-medium uppercase text-[10px] tracking-widest sticky top-0 bg-white py-2 z-10 border-b border-slate-50">
                         <FiSettings className="text-sm" />
                         Design Properties

@@ -21,7 +21,13 @@ export default function CreateQuotation() {
         isTaxInclusive: false,
         items: []
     });
-
+    const customerOptions = [
+        { value: '', label: 'Select Customer' },
+        ...(customers || []).map(c => ({
+            value: c?.id || '',
+            label: `${c?.name || ''}${c?.phone ? ` (${c.phone})` : ''}`
+        }))
+    ];
 
     useEffect(() => {
         fetchInitialData();
@@ -208,33 +214,30 @@ export default function CreateQuotation() {
     return (
         <>
             <div className="p-6 max-w-5xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-semibold">New Quotation</h1>
-                    <button
-                        onClick={handleSubmit}
-                        disabled={loading}
-                        className="btn btn-primary flex items-center gap-2"
-                    >
-                        <FiSave /> Save Quotation
-                    </button>
-                </div>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h1 className="text-2xl font-semibold">New Quotation</h1>
+                <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="btn btn-primary flex items-center justify-center gap-2 w-full sm:w-auto"
+                >
+                    <FiSave /> Save Quotation
+                </button>
+            </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div className="bg-white p-4 rounded-lg shadow-sm">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
-                        <div className="flex gap-2">
-                            <select
-                                className="input flex-1"
+                        <div className="flex gap-2 w-full">
+                            <SearchableSelect
+                                options={customerOptions}
                                 value={formData.customerId}
-                                onChange={e => setFormData({ ...formData, customerId: e.target.value })}
-                            >
-                                <option value="">Select Customer</option>
-                                {customers.map(c => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.name}{c.phone ? ` (${c.phone})` : ''}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={(val) => setFormData({ ...formData, customerId: val })}
+                                placeholder="Select Customer"
+                                direction="down"
+                                triggerClassName="min-h-0 h-[38px] py-1.5 px-3 text-sm w-full"
+                                className="flex-1"
+                            />
                         </div>
                     </div>
 
@@ -278,10 +281,10 @@ export default function CreateQuotation() {
                     </div>
 
                     {/* Items Table */}
-                    <div className="mt-6 overflow-x-auto">
-                        <table className="w-full text-left">
+                    <div className="mt-6 table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                        <table className="w-full text-left min-w-[850px]">
                             <thead>
-                                <tr className="border-b border-gray-200 text-sm font-medium text-gray-500">
+                                <tr className="border-b border-gray-200 text-sm font-medium text-gray-500 whitespace-nowrap">
                                     <th className="pb-3">Product</th>
                                     <th className="pb-3 w-20">HSN</th>
                                     <th className="pb-3 w-24">Qty</th>

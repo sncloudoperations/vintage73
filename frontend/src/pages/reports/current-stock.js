@@ -5,6 +5,7 @@ import {
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
+import SearchableSelect from '@/components/SearchableSelect';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function CurrentStockBalance() {
@@ -95,27 +96,27 @@ export default function CurrentStockBalance() {
     return (
         <div className="p-6 max-w-[1600px] mx-auto">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-800">Current Stock Balance</h1>
                     <p className="text-slate-500 text-sm mt-1">{filteredStocks.length} products listed</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full sm:w-auto">
                     <button
                         onClick={handlePrint}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
                     >
                         <FiPrinter size={16} /> Print
                     </button>
                     <button
                         onClick={handleExport}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
                     >
                         <FiDownload size={16} /> Export CSV
                     </button>
                     <button
                         onClick={fetchReport}
-                        className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
+                        className="w-full sm:w-auto bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
                         style={{ backgroundColor: theme.primaryColor }}
                     >
                         <FiRefreshCw size={16} /> Refresh
@@ -135,25 +136,35 @@ export default function CurrentStockBalance() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full md:w-auto">
                     {user?.role === 'admin' && (
-                        <select
-                            className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary"
-                            value={selectedBranch}
-                            onChange={e => setSelectedBranch(e.target.value)}
-                        >
-                            <option value="all">All Branches</option>
-                            {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                        </select>
+                        <div className="w-full sm:w-48">
+                            <SearchableSelect
+                                options={[
+                                    { label: 'All Branches', value: 'all' },
+                                    ...branches.map(b => ({ label: b.name, value: b.id }))
+                                ]}
+                                value={selectedBranch}
+                                onChange={val => setSelectedBranch(val)}
+                                direction="down"
+                                triggerClassName="h-[38px] border-slate-300 rounded-lg text-sm font-semibold text-slate-700 bg-white"
+                                placeholder="All Branches"
+                            />
+                        </div>
                     )}
-                    <select
-                        className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary"
-                        value={selectedCategory}
-                        onChange={e => setSelectedCategory(e.target.value)}
-                    >
-                        <option value="all">All Categories</option>
-                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
+                    <div className="w-full sm:w-48">
+                        <SearchableSelect
+                            options={[
+                                { label: 'All Categories', value: 'all' },
+                                ...categories.map(c => ({ label: c.name, value: c.id }))
+                            ]}
+                            value={selectedCategory}
+                            onChange={val => setSelectedCategory(val)}
+                            direction="down"
+                            triggerClassName="h-[38px] border-slate-300 rounded-lg text-sm font-semibold text-slate-700 bg-white"
+                            placeholder="All Categories"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -170,7 +181,7 @@ export default function CurrentStockBalance() {
                     </div>
 
                     <div className="table-container">
-                        <table className="table-modern">
+                        <table className="table-modern" style={{ minWidth: '900px' }}>
                             <thead>
                                 <tr>
                                     <th style={{ width: '4%' }}>#</th>
@@ -185,7 +196,7 @@ export default function CurrentStockBalance() {
                             <tbody>
                                 {filteredStocks.length === 0 ? (
                                     <tr>
-                                        <td colSpan="7" className="text-center py-8 text-slate-400 italic">
+                                        <td colSpan="7" className="text-center py-8 text-slate-400 italic whitespace-nowrap">
                                             No stock records found
                                         </td>
                                     </tr>
@@ -232,25 +243,24 @@ export default function CurrentStockBalance() {
                                 )}
                             </tbody>
                         </table>
-                    </div>
-
-                    {/* Summary Footer */}
-                    <div className="bg-slate-50 border-t border-slate-300 px-6 py-4 flex justify-between items-center">
-                        <div className="text-sm text-slate-600">
-                            Showing <span className="font-semibold">{filteredStocks.length}</span> products
-                        </div>
-                        <div className="flex gap-8 text-sm">
-                            <div className="flex items-center gap-2">
-                                <span className="text-slate-500">Low Stock Items:</span>
-                                <span className="font-medium text-red-600">
-                                    {filteredStocks.filter(s => s.quantity <= s.minStock).length}
-                                </span>
+                        {/* Summary Footer */}
+                        <div className="bg-slate-50 border-t border-slate-300 px-6 py-4 flex justify-between items-center" style={{ minWidth: '900px' }}>
+                            <div className="text-sm text-slate-600 whitespace-nowrap">
+                                Showing <span className="font-semibold">{filteredStocks.length}</span> products
                             </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-slate-500 font-medium">Total Inventory Count:</span>
-                                <span className="font-medium text-slate-800 text-lg" style={{ color: theme.primaryColor }}>
-                                    {filteredStocks.reduce((sum, s) => sum + s.quantity, 0).toLocaleString()}
-                                </span>
+                            <div className="flex gap-8 text-sm whitespace-nowrap">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-slate-500">Low Stock Items:</span>
+                                    <span className="font-medium text-red-600">
+                                        {filteredStocks.filter(s => s.quantity <= s.minStock).length}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-slate-500 font-medium">Total Inventory Count:</span>
+                                    <span className="font-medium text-slate-800 text-lg" style={{ color: theme.primaryColor }}>
+                                        {filteredStocks.reduce((sum, s) => sum + s.quantity, 0).toLocaleString()}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

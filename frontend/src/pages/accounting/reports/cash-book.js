@@ -147,8 +147,8 @@ export default function CashBookReport() {
             `}</style>
 
             {/* Controls (Hidden in Print) */}
-            <div className="mb-6 flex justify-between items-end print:hidden">
-                <div className="flex gap-4 items-end">
+            <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 print:hidden">
+                <div className="flex flex-wrap gap-4 items-end w-full md:w-auto">
                     <div>
                         <label className="block text-xs font-medium text-slate-500 mb-1">From Date</label>
                         <input
@@ -201,10 +201,10 @@ export default function CashBookReport() {
             </div>
 
             {/* Report Content */}
-            <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-slate-300 text-sm">
+            <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                <table className="table-modern w-full border-collapse border border-slate-300 text-sm min-w-[800px]">
                     <thead>
-                        <tr className="bg-slate-100 text-slate-700">
+                        <tr className="bg-slate-100 text-slate-700 whitespace-nowrap">
                             <th className="border border-slate-300 px-3 py-2 text-left w-[12%]">Date</th>
                             <th className="border border-slate-300 px-3 py-2 text-left w-[15%]">Voucher No</th>
                             <th className="border border-slate-300 px-3 py-2 text-left w-[35%]">Particulars</th>

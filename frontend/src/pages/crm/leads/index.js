@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { FiPlus, FiSearch, FiFilter, FiCalendar, FiUser, FiArrowRight, FiPhone, FiMail, FiEdit2, FiDollarSign, FiX, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function LeadList() {
     const [leads, setLeads] = useState([]);
@@ -116,16 +117,16 @@ export default function LeadList() {
             </header>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                     { label: 'Total Leads', value: leads.length, color: 'blue' },
                     { label: 'Won', value: leads.filter(l => l.status === 'WON').length, color: 'emerald' },
                     { label: 'Pending', value: leads.filter(l => !['WON', 'LOST'].includes(l.status)).length, color: 'amber' },
                     { label: 'Conversion', value: leads.length ? `${((leads.filter(l => l.status === 'WON').length / leads.length) * 100).toFixed(1)}%` : '0%', color: 'indigo' }
                 ].map((kpi, i) => (
-                    <div key={i} className="card p-4 flex flex-col justify-center">
-                        <p className="text-[10px] font-medium uppercase text-slate-400 tracking-widest leading-none mb-1">{kpi.label}</p>
-                        <h3 className={`text-2xl font-semibold text-${kpi.color}-600`}>{kpi.value}</h3>
+                    <div key={i} className="card p-5 flex flex-col justify-center border border-slate-100 shadow-sm rounded-2xl bg-white">
+                        <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest leading-none mb-2">{kpi.label}</p>
+                        <h3 className={`text-2xl font-black text-${kpi.color}-600`}>{kpi.value}</h3>
                     </div>
                 ))}
             </div>
@@ -152,50 +153,54 @@ export default function LeadList() {
 
                     {/* Status Dropdown */}
                     <div className="w-32 lg:w-40">
-                        <select 
-                            name="status" 
-                            className="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5 text-xs font-bold uppercase tracking-widest focus:ring-primary focus:border-primary" 
+                        <SearchableSelect 
+                            options={[
+                                { label: 'Status', value: '' },
+                                { label: 'New', value: 'NEW' },
+                                { label: 'Follow-up', value: 'FOLLOW_UP' },
+                                { label: 'Negotiation', value: 'NEGOTIATION' },
+                                { label: 'Won', value: 'WON' },
+                                { label: 'Lost', value: 'LOST' }
+                            ]}
                             value={filters.status} 
-                            onChange={handleFilterChange}
-                        >
-                            <option value="">Status</option>
-                            <option value="NEW">New</option>
-                            <option value="FOLLOW_UP">Follow-up</option>
-                            <option value="NEGOTIATION">Negotiation</option>
-                            <option value="WON">Won</option>
-                            <option value="LOST">Lost</option>
-                        </select>
+                            onChange={(val) => setFilters({ ...filters, status: val })}
+                            placeholder="Status"
+                            direction="down"
+                            triggerClassName="w-full bg-slate-50 border-slate-100 rounded-xl min-h-[42px] px-3 text-xs font-bold uppercase tracking-widest text-slate-700"
+                        />
                     </div>
 
                     {/* Source Dropdown */}
                     <div className="w-32 lg:w-40">
-                        <select 
-                            name="source" 
-                            className="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5 text-xs font-bold uppercase tracking-widest focus:ring-primary focus:border-primary" 
+                        <SearchableSelect 
+                            options={[
+                                { label: 'Source', value: '' },
+                                { label: 'Walk-in', value: 'Walk-in' },
+                                { label: 'Website', value: 'Website' },
+                                { label: 'Call', value: 'Call' },
+                                { label: 'Referral', value: 'Referral' }
+                            ]}
                             value={filters.source} 
-                            onChange={handleFilterChange}
-                        >
-                            <option value="">Source</option>
-                            <option value="Walk-in">Walk-in</option>
-                            <option value="Website">Website</option>
-                            <option value="Call">Call</option>
-                            <option value="Referral">Referral</option>
-                        </select>
+                            onChange={(val) => setFilters({ ...filters, source: val })}
+                            placeholder="Source"
+                            direction="down"
+                            triggerClassName="w-full bg-slate-50 border-slate-100 rounded-xl min-h-[42px] px-3 text-xs font-bold uppercase tracking-widest text-slate-700"
+                        />
                     </div>
 
                     {/* Assigned User Dropdown */}
                     <div className="w-32 lg:w-40">
-                        <select 
-                            name="assignedTo" 
-                            className="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5 text-xs font-bold uppercase tracking-widest focus:ring-primary focus:border-primary" 
+                        <SearchableSelect 
+                            options={[
+                                { label: 'Assigned', value: '' },
+                                ...users.map(u => ({ label: u.name, value: u.id.toString() }))
+                            ]}
                             value={filters.assignedTo} 
-                            onChange={handleFilterChange}
-                        >
-                            <option value="">Assigned</option>
-                            {users.map(u => (
-                                <option key={u.id} value={u.id}>{u.name}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => setFilters({ ...filters, assignedTo: val })}
+                            placeholder="Assigned"
+                            direction="down"
+                            triggerClassName="w-full bg-slate-50 border-slate-100 rounded-xl min-h-[42px] px-3 text-xs font-bold uppercase tracking-widest text-slate-700"
+                        />
                     </div>
 
                     {/* Date Filters - Compact Inputs */}
@@ -245,10 +250,10 @@ export default function LeadList() {
             </div>
 
             {/* Table */}
-            <div className="table-container shadow-sm border border-slate-200">
-                <table className="table-modern">
+            <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto shadow-sm border border-slate-200">
+                <table className="table-modern w-full">
                     <thead>
-                        <tr>
+                        <tr className="whitespace-nowrap">
                             <th className="w-16">ID</th>
                             <th>Customer / Contact</th>
                             <th>Status / Source</th>

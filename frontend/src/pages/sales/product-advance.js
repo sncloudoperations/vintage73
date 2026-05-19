@@ -22,7 +22,12 @@ export default function ProductAdvance() {
     const [showHistoryModal, setShowHistoryModal] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [historyData, setHistoryData] = useState([]);
-    const [loadingHistory, setLoadingHistory] = useState(false);
+    const [loadingHistory, setLoadingHistory] = useState(false);    const paymentMethodOptions = [
+        { value: 'Cash', label: 'Cash' },
+        { value: 'Online', label: 'Online' },
+        { value: 'Bank Transfer', label: 'Bank Transfer' },
+        { value: 'Card', label: 'Card' }
+    ];
 
     useEffect(() => {
         fetchAdvances();
@@ -125,9 +130,9 @@ export default function ProductAdvance() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[800px]">
+                        <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 whitespace-nowrap">
                             <tr>
                                 <th className="p-4 font-semibold uppercase tracking-wider text-[11px]">Customer</th>
                                 <th className="p-4 font-semibold uppercase tracking-wider text-[11px] text-right">Total Advance</th>
@@ -168,7 +173,7 @@ export default function ProductAdvance() {
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
                             <h2 className="text-xl font-semibold text-slate-800">Add Advance</h2>
@@ -219,18 +224,16 @@ export default function ProductAdvance() {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div>
+                                <div className="w-full">
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Payment Method</label>
-                                    <select 
-                                        className="input"
+                                    <SearchableSelect
+                                        options={paymentMethodOptions}
                                         value={formData.paymentMethod}
-                                        onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
-                                    >
-                                        <option value="Cash">Cash</option>
-                                        <option value="Online">Online</option>
-                                        <option value="Bank Transfer">Bank Transfer</option>
-                                        <option value="Card">Card</option>
-                                    </select>
+                                        onChange={(val) => setFormData({ ...formData, paymentMethod: val })}
+                                        placeholder="Select Payment Method"
+                                        direction="down"
+                                        triggerClassName="min-h-0 h-[38px] py-1.5 px-3 text-sm w-full"
+                                    />
                                 </div>
                             </div>
                             
@@ -244,7 +247,7 @@ export default function ProductAdvance() {
             )}
             {/* History Modal */}
             {showHistoryModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                         <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                             <div>
@@ -256,16 +259,17 @@ export default function ProductAdvance() {
                             <button onClick={() => setShowHistoryModal(false)} className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors shadow-sm">&times;</button>
                         </div>
                         <div className="p-0 max-h-[60vh] overflow-y-auto">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-white text-slate-400 border-b sticky top-0 z-10">
-                                    <tr>
-                                        <th className="p-4 font-semibold uppercase tracking-wider text-[10px]">Date</th>
-                                        <th className="p-4 font-semibold uppercase tracking-wider text-[10px]">Action</th>
-                                        <th className="p-4 font-semibold uppercase tracking-wider text-[10px] text-right">Amount</th>
-                                        <th className="p-4 font-semibold uppercase tracking-wider text-[10px] text-right">Pool Bal.</th>
-                                        <th className="p-4 font-semibold uppercase tracking-wider text-[10px]">Reference</th>
-                                    </tr>
-                                </thead>
+                            <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                                <table className="w-full text-sm text-left min-w-[500px]">
+                                    <thead className="bg-white text-slate-400 border-b sticky top-0 z-10 whitespace-nowrap">
+                                        <tr>
+                                            <th className="p-4 font-semibold uppercase tracking-wider text-[10px]">Date</th>
+                                            <th className="p-4 font-semibold uppercase tracking-wider text-[10px]">Action</th>
+                                            <th className="p-4 font-semibold uppercase tracking-wider text-[10px] text-right">Amount</th>
+                                            <th className="p-4 font-semibold uppercase tracking-wider text-[10px] text-right">Pool Bal.</th>
+                                            <th className="p-4 font-semibold uppercase tracking-wider text-[10px]">Reference</th>
+                                        </tr>
+                                    </thead>
                                 <tbody className="divide-y divide-slate-50">
                                     {loadingHistory ? (
                                         <tr><td colSpan="5" className="p-8 text-center"><FiClock className="animate-spin mx-auto mb-2" /> Loading History...</td></tr>
@@ -290,6 +294,7 @@ export default function ProductAdvance() {
                                     )}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                         <div className="p-4 border-t border-slate-100 flex justify-end bg-slate-50">
                             <button className="btn btn-primary px-6" onClick={() => setShowHistoryModal(false)}>Close</button>

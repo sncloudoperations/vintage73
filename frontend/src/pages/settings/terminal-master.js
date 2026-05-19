@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getTerminalId, registerThisTerminal } from '@/lib/terminal';
 import ProfessionalModal from '@/components/ProfessionalModal';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function TerminalMaster() {
     const { primaryColor } = useTheme();
@@ -199,9 +200,9 @@ export default function TerminalMaster() {
             )}
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
+                <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <h3 className="font-medium text-slate-800">Authorized Terminals</h3>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <button
                             onClick={() => {
                                 setIsBulkMode(true);
@@ -224,22 +225,22 @@ export default function TerminalMaster() {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse" style={{ minWidth: '900px' }}>
                         {/* ... table content remains same ... */}
                         <thead>
                             <tr className="bg-slate-50/50">
-                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Terminal Info</th>
-                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Fingerprint (ID)</th>
-                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Linked User</th>
-                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Last Activity</th>
-                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider text-center">Status</th>
-                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider whitespace-nowrap">Terminal Info</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider whitespace-nowrap">Fingerprint (ID)</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider whitespace-nowrap">Linked User</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider whitespace-nowrap">Last Activity</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider text-center whitespace-nowrap">Status</th>
+                                <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {terminals.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" className="px-6 py-12 text-center text-slate-400">
+                                    <td colSpan="5" className="px-6 py-12 text-center text-slate-400 whitespace-nowrap">
                                         No terminals registered yet.
                                     </td>
                                 </tr>
@@ -321,12 +322,12 @@ export default function TerminalMaster() {
             {/* Registration Modal */}
             <AnimatePresence>
                 {isModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 py-6 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100"
+                            className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 my-auto"
                         >
                             <div className="p-8">
                                 <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 mx-auto">
@@ -345,16 +346,17 @@ export default function TerminalMaster() {
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-1">Target Branch</label>
-                                        <select
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-800 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all"
+                                        <SearchableSelect
+                                            options={[
+                                                { label: 'Select Branch (Optional for current device)', value: '' },
+                                                ...branches.map(b => ({ label: b.name, value: b.id }))
+                                            ]}
                                             value={selectedBranchId}
-                                            onChange={(e) => setSelectedBranchId(e.target.value)}
-                                        >
-                                            <option value="">Select Branch (Optional for current device)</option>
-                                            {branches.map(b => (
-                                                <option key={b.id} value={b.id}>{b.name}</option>
-                                            ))}
-                                        </select>
+                                            onChange={(val) => setSelectedBranchId(val)}
+                                            direction="down"
+                                            triggerClassName="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 h-[56px] text-slate-800 text-sm font-medium"
+                                            placeholder="Select Branch (Optional for current device)"
+                                        />
                                     </div>
 
                                     {isBulkMode ? (

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiDownload } from 'react-icons/fi';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function ChartOfAccounts() {
     const [ledgers, setLedgers] = useState([]);
@@ -40,6 +41,10 @@ export default function ChartOfAccounts() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!formData.groupId) {
+            toast.error('Account Group is required');
+            return;
+        }
         try {
             if (editingId) {
                 await api.put(`/accounting/ledgers/${editingId}`, formData);
@@ -122,12 +127,12 @@ export default function ChartOfAccounts() {
     return (
         <div className="p-6 max-w-[1600px] mx-auto">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-800">Chart of Accounts</h1>
                     <p className="text-slate-500 text-sm mt-1">{filteredLedgers.length} ledgers</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full md:w-auto">
                     <button
                         onClick={handleExport}
                         className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all"
@@ -164,10 +169,10 @@ export default function ChartOfAccounts() {
                 <div className="text-center py-12 text-slate-400">Loading...</div>
             ) : (
                 <div className="card shadow-md border border-slate-200">
-                    <div className="table-container">
-                        <table className="table-modern">
+                    <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto shadow-sm border border-slate-200">
+                        <table className="table-modern w-full">
                             <thead>
-                                <tr>
+                                <tr className="whitespace-nowrap">
                                     <th style={{ width: '4%' }}>#</th>
                                     <th style={{ width: '26%' }}>Ledger Name</th>
                                     <th style={{ width: '18%' }}>Group</th>
@@ -257,11 +262,11 @@ export default function ChartOfAccounts() {
                     </div>
 
                     {/* Summary Footer */}
-                    <div className="bg-slate-50 border-t border-slate-300 px-4 py-3 flex justify-between items-center">
+                    <div className="bg-slate-50 border-t border-slate-300 px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="text-sm text-slate-600">
                             Showing <span className="font-semibold">{filteredLedgers.length}</span> of <span className="font-semibold">{ledgers.length}</span> ledgers
                         </div>
-                        <div className="flex gap-6 text-sm">
+                        <div className="flex flex-wrap gap-6 text-sm justify-center">
                             <div>
                                 <span className="text-slate-500">Total Opening Balance: </span>
                                 <span className="font-medium text-slate-800">
@@ -305,19 +310,16 @@ export default function ChartOfAccounts() {
                                 <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
                                     Account Group *
                                 </label>
-                                <select
-                                    required
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                <SearchableSelect
+                                    options={groups.map(group => ({
+                                        value: group.id,
+                                        label: group.parent ? `${group.parent.name} > ${group.name}` : group.name
+                                    }))}
                                     value={formData.groupId}
-                                    onChange={e => setFormData({ ...formData, groupId: e.target.value })}
-                                >
-                                    <option value="">Select Group</option>
-                                    {groups.map(group => (
-                                        <option key={group.id} value={group.id}>
-                                            {group.parent ? `${group.parent.name} > ` : ''}{group.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={val => setFormData({ ...formData, groupId: val })}
+                                    placeholder="Select Group"
+                                    direction="down"
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -336,14 +338,16 @@ export default function ChartOfAccounts() {
                                     <label className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
                                         Balance Type
                                     </label>
-                                    <select
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    <SearchableSelect
+                                        options={[
+                                            { value: 'DEBIT', label: 'Debit' },
+                                            { value: 'CREDIT', label: 'Credit' }
+                                        ]}
                                         value={formData.balanceType}
-                                        onChange={e => setFormData({ ...formData, balanceType: e.target.value })}
-                                    >
-                                        <option value="DEBIT">Debit</option>
-                                        <option value="CREDIT">Credit</option>
-                                    </select>
+                                        onChange={val => setFormData({ ...formData, balanceType: val })}
+                                        placeholder="Select Type"
+                                        direction="down"
+                                    />
                                 </div>
                             </div>
                             <div>

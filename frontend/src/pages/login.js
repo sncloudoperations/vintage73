@@ -59,55 +59,46 @@ export default function Login() {
   if (!isSetupChecked) return null;
 
   return (
-    <div className="min-h-screen flex bg-slate-50 overflow-hidden">
-      {/* Left Side: Branding (Visible on desktop) */}
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
+
+      {/* Left / Top: Branding Panel — compact strip on mobile, full panel on md+ */}
       <motion.div
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="hidden lg:flex flex-1 bg-white relative overflow-hidden items-center justify-center border-r border-slate-100 p-16"
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="flex md:flex-1 bg-white border-b md:border-b-0 md:border-r border-slate-100 items-center justify-center
+                   p-6 md:p-10 lg:p-16
+                   min-h-[180px] md:min-h-screen"
       >
         <motion.div
-          animate={{
-            y: [0, -15, 0],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="relative z-10 w-full h-full flex items-center justify-center"
+          animate={{ y: [0, -12, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="w-full flex items-center justify-center"
         >
           <img
-            src={theme.companyProfile?.dashboardImageUrl ? `${getServerUrl()}${theme.companyProfile.dashboardImageUrl}` : "/login-branding.png"}
+            src={theme.companyProfile?.dashboardImageUrl
+              ? `${getServerUrl()}${theme.companyProfile.dashboardImageUrl}`
+              : "/login-branding.png"}
             alt="Branding"
-            className="max-w-[70%] max-h-[70%] object-contain drop-shadow-2xl"
+            className="w-auto object-contain drop-shadow-xl
+                       max-h-[140px] md:max-h-[60vh] lg:max-h-[70vh]
+                       max-w-[260px] sm:max-w-[340px] md:max-w-[90%] lg:max-w-[75%]"
           />
         </motion.div>
       </motion.div>
 
-      {/* Right Side: Login Form */}
-      <div className="w-full lg:w-[450px] flex items-center justify-center p-8 bg-white lg:bg-slate-50/50 relative">
+      {/* Right / Bottom: Login Form */}
+      <div className="w-full md:w-[480px] lg:w-[460px] flex items-center justify-center
+                      p-6 sm:p-8 md:p-10
+                      bg-white md:bg-slate-50/40">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full max-w-md relative z-10"
+          className="w-full max-w-sm sm:max-w-md"
         >
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex flex-col items-center mb-10">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-xl shadow-green-100"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <FiLock className="text-white text-3xl" />
-            </motion.div>
-            <h1 className="text-xl font-semibold text-slate-900 tracking-tight">Quick POS</h1>
-          </div>
-
-          <div className="mb-10">
+          {/* Heading */}
+          <div className="mb-8">
             <h2 className="text-2xl font-semibold text-slate-900 mb-2 tracking-tight">Welcome Back</h2>
             <p className="text-slate-500 font-medium text-sm">Please enter your credentials to proceed.</p>
           </div>
@@ -163,11 +154,7 @@ export default function Login() {
 
             <div className="flex items-center space-x-2 py-1">
               <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  className="sr-only peer"
-                />
+                <input type="checkbox" id="remember" className="sr-only peer" />
                 <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                 <span className="ml-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider">Keep me signed in</span>
               </label>
@@ -179,9 +166,7 @@ export default function Login() {
               type="submit"
               disabled={loading}
               className="group w-full text-white font-medium py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-primary/20 disabled:opacity-50 text-[11px] uppercase tracking-[0.2em] relative overflow-hidden"
-              style={{
-                background: `linear-gradient(135deg, ${primaryColor} 0%, ${theme?.secondaryColor || primaryColor} 100%)`
-              }}
+              style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, ${theme?.secondaryColor || primaryColor} 100%)` }}
             >
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <span>{loading ? 'Validating...' : 'Authenticate'}</span>
@@ -189,7 +174,7 @@ export default function Login() {
             </motion.button>
           </form>
 
-          <div className="mt-12 text-center">
+          <div className="mt-10 text-center">
             <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[3px] mb-1">
               &copy; {new Date().getFullYear()} SN Tech Solutions
             </p>
@@ -200,4 +185,6 @@ export default function Login() {
     </div>
   );
 }
+
+
 

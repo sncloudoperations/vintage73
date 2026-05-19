@@ -335,10 +335,10 @@ export default function JournalEntry() {
                             </div>
 
                             {/* Entry Table Grid */}
-                            <div className="border border-primary-light rounded-lg mb-6 shadow-sm">
-                                <table className="w-full text-left border-collapse">
+                            <div className="border border-primary-light rounded-lg mb-6 shadow-sm table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                                <table className="table-modern w-full text-left border-collapse min-w-[800px]">
                                     <thead>
-                                        <tr className="bg-primary-dark">
+                                        <tr className="bg-primary-dark whitespace-nowrap">
                                             <th className="px-5 py-3 text-[10px] font-medium text-white uppercase tracking-wider w-[40%]">Account Particulars</th>
                                             <th className="px-5 py-3 text-[10px] font-medium text-white uppercase tracking-wider w-[18%] text-right bg-primary-dark/80">Debit (Dr)</th>
                                             <th className="px-5 py-3 text-[10px] font-medium text-white uppercase tracking-wider w-[18%] text-right bg-primary-dark/80">Credit (Cr)</th>
@@ -554,10 +554,10 @@ export default function JournalEntry() {
                                 </button>
                             </div>
                         </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
+                        <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                            <table className="table-modern w-full text-left border-collapse min-w-[800px]">
                                 <thead>
-                                    <tr className="bg-slate-50 border-b border-slate-200">
+                                    <tr className="bg-slate-50 border-b border-slate-200 whitespace-nowrap">
                                         <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[15%]">Date</th>
                                         <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[15%]">Voucher No</th>
                                         <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[45%]">Particulars</th>

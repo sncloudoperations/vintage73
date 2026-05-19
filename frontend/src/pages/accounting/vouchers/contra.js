@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
-import { FiRefreshCw, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiCalendar, FiPrinter, FiSearch } from 'react-icons/fi';
+import { FiRefreshCw, FiSave, FiList, FiPlus, FiTrash2, FiEdit2, FiCalendar, FiPrinter, FiSearch, FiX } from 'react-icons/fi';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import ProfessionalModal from '@/components/ProfessionalModal';
 import VoucherPrint from '@/components/VoucherPrint';
@@ -445,10 +445,10 @@ export default function ContraEntry() {
                                 </button>
                             </div>
                         </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
+                        <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                            <table className="table-modern w-full text-left border-collapse min-w-[800px]">
                                 <thead>
-                                    <tr className="bg-slate-50 border-b border-slate-200">
+                                    <tr className="bg-slate-50 border-b border-slate-200 whitespace-nowrap">
                                         <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[15%]">Date</th>
                                         <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[15%]">Voucher No</th>
                                         <th className="px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider w-[45%]">Movement Path</th>

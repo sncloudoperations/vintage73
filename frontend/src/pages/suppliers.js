@@ -109,10 +109,10 @@ export default function Suppliers() {
         </div>
       </div>
 
-      <div className="table-container card">
+      <div className="table-container card scroll-line lg:no-scrollbar">
         <table className="table-modern">
           <thead>
-            <tr>
+            <tr className="whitespace-nowrap">
               <th>Supplier Name</th>
               <th>Contact Person</th>
               <th>Phone</th>
@@ -123,7 +123,7 @@ export default function Suppliers() {
           </thead>
           <tbody>
             {filteredSuppliers.map(supplier => (
-              <tr key={supplier.id} className="hover:bg-slate-50/50 transition-colors">
+              <tr key={supplier.id} className="hover:bg-slate-50/50 transition-colors whitespace-nowrap">
                 <td className="font-medium text-slate-700">{supplier.name}</td>
                 <td className="text-sm text-slate-600">{supplier.contactPerson || '-'}</td>
                 <td className="text-sm text-slate-600">{supplier.phone}</td>
@@ -148,42 +148,46 @@ export default function Suppliers() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-slate-800">{isEdit ? 'Edit Supplier' : 'Add Supplier'}</h2>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">&times;</button>
+        <div className="fixed inset-0 z-[100000] flex items-start justify-center bg-slate-900/50 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full sm:max-w-lg max-h-[95vh] flex flex-col mt-20 sm:my-auto">
+            <div className="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
+              <h2 className="text-lg sm:text-xl font-semibold text-slate-800">{isEdit ? 'Edit Supplier' : 'Add Supplier'}</h2>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 p-1">&times;</button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="label">Supplier Name</label>
-                  <input required className="input" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-1">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                <div className="col-span-1">
+                  <label className="label text-xs sm:text-sm">Supplier Name</label>
+                  <input required className="input py-2 sm:py-2.5" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 </div>
-                <div>
-                  <label className="label">Contact Person</label>
-                  <input className="input" value={formData.contactPerson} onChange={e => setFormData({ ...formData, contactPerson: e.target.value })} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <label className="label text-xs sm:text-sm">Contact Person</label>
+                    <input className="input py-2 sm:py-2.5" value={formData.contactPerson} onChange={e => setFormData({ ...formData, contactPerson: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="label text-xs sm:text-sm">GST Number</label>
+                    <input className="input py-2 sm:py-2.5" value={formData.gstNumber} onChange={e => setFormData({ ...formData, gstNumber: e.target.value })} />
+                  </div>
                 </div>
-                <div>
-                  <label className="label">GST Number</label>
-                  <input className="input" value={formData.gstNumber} onChange={e => setFormData({ ...formData, gstNumber: e.target.value })} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <label className="label text-xs sm:text-sm">Phone</label>
+                    <input className="input py-2 sm:py-2.5" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="label text-xs sm:text-sm">Email</label>
+                    <input type="email" className="input py-2 sm:py-2.5" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                  </div>
                 </div>
-                <div>
-                  <label className="label">Phone</label>
-                  <input className="input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-                </div>
-                <div>
-                  <label className="label">Email</label>
-                  <input type="email" className="input" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                </div>
-                <div className="col-span-2">
-                  <label className="label">Address</label>
-                  <textarea className="input" rows="2" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })}></textarea>
+                <div className="col-span-1">
+                  <label className="label text-xs sm:text-sm">Address</label>
+                  <textarea className="input py-2 sm:py-2.5" rows="2" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })}></textarea>
                 </div>
               </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">{isEdit ? 'Update' : 'Save'}</button>
+              <div className="flex justify-end gap-3 mt-6 pb-2">
+                <button type="button" className="btn btn-secondary px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base" onClick={() => setShowModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base">{isEdit ? 'Update' : 'Save'}</button>
               </div>
             </form>
           </div>

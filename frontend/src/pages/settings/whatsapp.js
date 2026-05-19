@@ -65,12 +65,12 @@ export default function WhatsAppSettings() {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-5xl mx-auto space-y-8 pb-12"
         >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">WhatsApp Integration</h1>
                     <p className="text-slate-500 text-sm">Configure your fastsmsindia API credentials and design message templates.</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     <Link href="/settings/whatsapp-history">
                         <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-medium text-sm hover:shadow-sm transition-all">
                             <FiClock /> View History

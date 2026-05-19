@@ -3,6 +3,7 @@ import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { FiDownload } from 'react-icons/fi';
 import Head from 'next/head';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function HSNSummaryReport() {
     const [loading, setLoading] = useState(false);
@@ -55,14 +56,14 @@ export default function HSNSummaryReport() {
             </Head>
 
             <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
                         <h1 className="text-2xl font-semibold text-slate-800">HSN Summary</h1>
                         <p className="text-slate-500 text-sm">Item-wise Summary Details</p>
                     </div>
 
-                    <div className="flex gap-2">
-                        <button className="btn btn-secondary text-sm">
+                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <button className="w-full sm:w-auto btn btn-secondary text-sm flex items-center justify-center">
                             <FiDownload /> Export Excel
                         </button>
                     </div>
@@ -73,16 +74,18 @@ export default function HSNSummaryReport() {
                     <div className="flex flex-wrap items-end gap-4">
                         <div className="w-full md:w-48">
                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Period</label>
-                            <select
-                                name="period"
+                            <SearchableSelect
+                                options={[
+                                    { label: 'This Month', value: 'this_month' },
+                                    { label: 'Last Month', value: 'last_month' },
+                                    { label: 'Custom Range', value: 'custom' }
+                                ]}
                                 value={filters.period}
-                                onChange={handleFilterChange}
-                                className="input py-2 text-sm"
-                            >
-                                <option value="this_month">This Month</option>
-                                <option value="last_month">Last Month</option>
-                                <option value="custom">Custom Range</option>
-                            </select>
+                                onChange={(val) => handleFilterChange({ target: { name: 'period', value: val } })}
+                                direction="down"
+                                triggerClassName="input h-[38px] py-2 text-sm bg-white"
+                                placeholder="Select Period"
+                            />
                         </div>
 
                         {filters.period === 'custom' && (
@@ -109,7 +112,7 @@ export default function HSNSummaryReport() {
                                 </div>
                                 <button
                                     onClick={fetchReport}
-                                    className="btn btn-primary py-2 px-4 h-[38px] mb-[1px]"
+                                    className="w-full sm:w-auto btn btn-primary py-2 px-4 h-[38px] mb-[1px]"
                                 >
                                     Apply
                                 </button>

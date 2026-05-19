@@ -195,10 +195,10 @@ export default function BankReconciliation() {
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                    <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto shadow-sm border border-slate-200">
+                        <table className="w-full text-left border-collapse table-modern">
                             <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200 text-[10px] uppercase tracking-wider font-medium text-slate-500">
+                                <tr className="bg-slate-50 border-b border-slate-200 text-[10px] uppercase tracking-wider font-medium text-slate-500 whitespace-nowrap">
                                     <th className="px-6 py-4">System Date</th>
                                     <th className="px-6 py-4">Voucher Info</th>
                                     <th className="px-6 py-4">Tx Path</th>

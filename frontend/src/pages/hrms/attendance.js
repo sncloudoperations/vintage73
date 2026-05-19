@@ -79,7 +79,7 @@ export default function AttendanceCalendar() {
 
         // Empty cells for previous month
         for (let i = 0; i < firstDay; i++) {
-            days.push(<div key={`empty-${i}`} className="h-24 bg-slate-50/50 border border-slate-100/50"></div>);
+            days.push(<div key={`empty-${i}`} className="h-20 xs:h-24 sm:h-28 md:h-32 bg-slate-50/50 border border-slate-100/50"></div>);
         }
 
         // Days of current month
@@ -126,25 +126,25 @@ export default function AttendanceCalendar() {
             }
 
             days.push(
-                <div key={day} className={`h-24 border border-slate-100 p-2 relative group transition-all hover:bg-slate-50 ${bgClass}`} style={customStyle}>
+                <div key={day} className={`h-20 xs:h-24 sm:h-28 md:h-32 border border-slate-100 p-1.5 sm:p-2 relative group transition-all hover:bg-slate-50 ${bgClass}`} style={customStyle}>
                     <div className="flex justify-between items-start">
-                        <span className={`text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-primary text-white' : isWeekend ? 'text-red-400' : 'text-slate-700'}`}>
+                        <span className={`text-xs sm:text-sm font-medium w-5 h-5 sm:w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-primary text-white' : isWeekend ? 'text-red-400' : 'text-slate-700'}`}>
                             {day}
                         </span>
 
                         <div className="flex flex-col items-end gap-1">
                             {record && (
-                                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${record.status === 'PRESENT' ? 'bg-green-100 text-green-700' :
+                                <span className={`text-[8px] sm:text-[10px] font-medium px-1 sm:px-1.5 py-0.5 rounded leading-none ${record.status === 'PRESENT' ? 'bg-green-100 text-green-700' :
                                     record.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' :
                                         record.status === 'CHECKED_IN' ? 'bg-blue-100 text-blue-700' :
                                             'bg-red-100 text-red-700'
                                     }`}>
-                                    {record.status === 'CHECKED_IN' ? 'IN PROGRESS' : record.status}
+                                    {record.status === 'CHECKED_IN' ? 'ACTIVE' : record.status}
                                 </span>
                             )}
                             {leave && (
                                 <span
-                                    className="text-[10px] font-medium px-1.5 py-0.5 rounded text-white shadow-sm"
+                                    className="text-[8px] sm:text-[10px] font-medium px-1 sm:px-1.5 py-0.5 rounded text-white shadow-sm leading-none"
                                     style={{ backgroundColor: leave.leaveType?.color || '#3B82F6' }}
                                 >
                                     {leave.leaveType?.name}
@@ -154,24 +154,24 @@ export default function AttendanceCalendar() {
                     </div>
 
                     {record ? (
-                        <div className="mt-2 space-y-1">
+                        <div className="mt-1 sm:mt-2 space-y-0.5 sm:space-y-1">
                             {record.checkIn && (
-                                <div className="text-xs text-slate-500 flex items-center gap-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                                <div className="text-[9px] sm:text-xs text-slate-500 flex items-center gap-1">
+                                    <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-primary"></div>
                                     {new Date(record.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                             )}
                             {record.checkOut && (
-                                <div className="text-xs text-slate-500 flex items-center gap-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                                <div className="text-[9px] sm:text-xs text-slate-500 flex items-center gap-1">
+                                    <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-slate-400"></div>
                                     {new Date(record.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                             )}
                         </div>
                     ) : (
                         !isWeekend && !leave && currentDayDate < today && (
-                            <div className="mt-4 flex justify-center">
-                                <span className="text-[10px] text-red-500 font-medium tracking-widest bg-red-100 px-2 py-0.5 rounded-full">ABSENT</span>
+                            <div className="mt-2 sm:mt-4 flex justify-center">
+                                <span className="text-[8px] sm:text-[10px] text-red-500 font-medium tracking-widest bg-red-100 px-1.5 sm:px-2 py-0.5 rounded-full">ABSENT</span>
                             </div>
                         )
                     )}
@@ -191,49 +191,54 @@ export default function AttendanceCalendar() {
                 </div>
 
                 {/* Legend/Stats */}
-                <div className="flex gap-4 text-sm">
-                    <div className="flex flex-col items-center bg-white border border-slate-100 p-3 rounded-lg shadow-sm min-w-[100px]">
-                        <span className="text-2xl font-semibold text-primary">{stats.present}</span>
-                        <span className="text-slate-400 text-xs font-medium uppercase">Present</span>
+                <div className="flex flex-wrap gap-2 sm:gap-4 text-sm">
+                    <div className="flex flex-col items-center bg-white border border-slate-100 p-2 sm:p-3 rounded-xl shadow-sm min-w-[80px] sm:min-w-[100px] flex-1 sm:flex-none">
+                        <span className="text-xl sm:text-2xl font-semibold text-primary leading-none mb-1">{stats.present}</span>
+                        <span className="text-slate-400 text-[9px] sm:text-xs font-medium uppercase tracking-wider">Present</span>
                     </div>
-                    <div className="flex flex-col items-center bg-white border border-slate-100 p-3 rounded-lg shadow-sm min-w-[100px]">
-                        <span className="text-2xl font-bold text-slate-700">{stats.totalHours}</span>
-                        <span className="text-slate-400 text-xs font-medium uppercase">Total Hrs</span>
+                    <div className="flex flex-col items-center bg-white border border-slate-100 p-2 sm:p-3 rounded-xl shadow-sm min-w-[80px] sm:min-w-[100px] flex-1 sm:flex-none">
+                        <span className="text-xl sm:text-2xl font-bold text-slate-700 leading-none mb-1">{stats.totalHours}</span>
+                        <span className="text-slate-400 text-[9px] sm:text-xs font-medium uppercase tracking-wider">Total Hrs</span>
                     </div>
                 </div>
             </div>
 
             {/* Calendar Controls */}
             <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 backdrop-blur-sm">
-                    <button onClick={handlePrevMonth} className="p-2 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200 hover:shadow-sm text-slate-600">
+                <div className="p-3 sm:p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 backdrop-blur-sm">
+                    <button onClick={handlePrevMonth} className="p-2 sm:p-2.5 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200 hover:shadow-sm text-slate-600">
                         <FiChevronLeft size={20} />
                     </button>
-                    <h2 className="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                        <FiCalendar className="text-primary mb-0.5" />
+                    <h2 className="text-base sm:text-lg font-semibold text-slate-700 flex items-center gap-2">
+                        <FiCalendar className="text-primary mb-0.5 hidden xs:block" />
                         {date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
                     </h2>
-                    <button onClick={handleNextMonth} className="p-2 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200 hover:shadow-sm text-slate-600">
+                    <button onClick={handleNextMonth} className="p-2 sm:p-2.5 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200 hover:shadow-sm text-slate-600">
                         <FiChevronRight size={20} />
                     </button>
                 </div>
 
-                {/* Days Header */}
-                <div className="grid grid-cols-7 bg-white border-b border-slate-100">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                        <div key={day} className="py-3 text-center text-xs font-medium text-slate-400 uppercase tracking-wider">
-                            {day}
+                {/* Calendar Grid Wrapper */}
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                    <div className="min-w-[600px] lg:min-w-full">
+                        {/* Days Header */}
+                        <div className="grid grid-cols-7 bg-white border-b border-slate-100">
+                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                                <div key={day} className="py-2 sm:py-3 text-center text-[10px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider">
+                                    {day}
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
 
-                {/* Calendar Grid */}
-                <div className="grid grid-cols-7 bg-white">
-                    {loading ? (
-                        <div className="col-span-7 h-64 flex items-center justify-center text-slate-400">
-                            Loading calendar...
+                        {/* Calendar Grid */}
+                        <div className="grid grid-cols-7 bg-white">
+                            {loading ? (
+                                <div className="col-span-7 h-64 flex items-center justify-center text-slate-400">
+                                    Loading calendar...
+                                </div>
+                            ) : renderCalendarDays()}
                         </div>
-                    ) : renderCalendarDays()}
+                    </div>
                 </div>
             </div>
         </div>

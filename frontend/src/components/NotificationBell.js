@@ -39,6 +39,7 @@ const NotificationBell = ({ variant = 'default' }) => {
     const fetchNotifications = async () => {
         try {
             const token = localStorage.getItem('token');
+            if (!token) return; // Skip call if no token exists
             const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });

@@ -70,12 +70,12 @@ export default function Branches() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Branches</h1>
           <p className="text-slate-500 text-sm mt-1">Manage multiple business locations</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary w-full md:w-auto justify-center whitespace-nowrap" onClick={() => setShowModal(true)}>
           <FiPlus className="text-lg" /> Add Branch
         </button>
       </div>

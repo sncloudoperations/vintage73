@@ -96,23 +96,24 @@ export default function CreditManagement() {
     };
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto">
             <div className="mb-8">
                 <span className="text-3xl font-extrabold text-slate-800 tracking-tight">{companyProfile?.currencySymbol || '₹'}{Number(stats.totalCredit).toFixed(0)}</span>
                 <p className="text-slate-500 mt-1 font-medium">Track outstanding payments and send reminders</p>
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200 uppercase tracking-wider text-xs">
-                        <tr>
-                            <th className="px-6 py-5">Customer</th>
-                            <th className="px-6 py-5">Phone</th>
-                            <th className="px-6 py-5">Pending Invoices</th>
-                            <th className="px-6 py-5">Total Debt</th>
-                            <th className="px-6 py-5 text-right">Actions</th>
-                        </tr>
-                    </thead>
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[800px]">
+                        <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200 uppercase tracking-wider text-xs whitespace-nowrap">
+                            <tr>
+                                <th className="px-6 py-5">Customer</th>
+                                <th className="px-6 py-5">Phone</th>
+                                <th className="px-6 py-5">Pending Invoices</th>
+                                <th className="px-6 py-5">Total Debt</th>
+                                <th className="px-6 py-5 text-right">Actions</th>
+                            </tr>
+                        </thead>
                     <tbody className="divide-y divide-slate-100">
                         {debtors.map(c => (
                             <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
@@ -148,6 +149,7 @@ export default function CreditManagement() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* Detail Modal */}
@@ -162,16 +164,17 @@ export default function CreditManagement() {
                             <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 font-medium transition">✕</button>
                         </div>
                         <div className="p-6 max-h-[60vh] overflow-y-auto">
-                            <table className="w-full text-sm">
-                                <thead className="bg-slate-50 text-slate-500 font-medium uppercase text-xs">
-                                    <tr>
-                                        <th className="px-4 py-3 text-left">Date</th>
-                                        <th className="px-4 py-3 text-left">Invoice No</th>
-                                        <th className="px-4 py-3 text-right">Total</th>
-                                        <th className="px-4 py-3 text-right">Paid</th>
-                                        <th className="px-4 py-3 text-right">Balance</th>
-                                    </tr>
-                                </thead>
+                            <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                                <table className="w-full text-sm min-w-[500px]">
+                                    <thead className="bg-slate-50 text-slate-500 font-medium uppercase text-xs whitespace-nowrap">
+                                        <tr>
+                                            <th className="px-4 py-3 text-left">Date</th>
+                                            <th className="px-4 py-3 text-left">Invoice No</th>
+                                            <th className="px-4 py-3 text-right">Total</th>
+                                            <th className="px-4 py-3 text-right">Paid</th>
+                                            <th className="px-4 py-3 text-right">Balance</th>
+                                        </tr>
+                                    </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     {selectedCustomer.sales.map(sale => (
                                         <tr key={sale.id}>
@@ -184,16 +187,17 @@ export default function CreditManagement() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
-                        <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <div className="p-6 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                                 <span className="text-xs font-medium text-slate-400 uppercase">Total Outstanding</span>
                                 <p className="text-2xl font-extrabold text-slate-800">₹{selectedCustomer.totalDebt}</p>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                                 <button
                                     onClick={() => sendWhatsApp(selectedCustomer.phone, selectedCustomer.name, selectedCustomer.totalDebt, selectedCustomer.sales.length)}
-                                    className="bg-primary text-white px-4 py-2 rounded-xl font-medium hover:bg-primary-dark flex items-center gap-2 text-sm"
+                                    className="bg-primary text-white px-4 py-2 rounded-xl font-medium hover:bg-primary-dark flex items-center justify-center gap-2 text-sm flex-1 sm:flex-initial"
                                 >
                                     <FiMessageCircle /> WhatsApp
                                 </button>
@@ -202,7 +206,7 @@ export default function CreditManagement() {
                                         setSettleForm({ amount: selectedCustomer.totalDebt, method: 'Cash', notes: '' });
                                         setShowSettleModal(true);
                                     }}
-                                    className="bg-slate-900 text-white px-6 py-2 rounded-xl font-medium hover:bg-slate-800 shadow-lg text-sm"
+                                    className="bg-slate-900 text-white px-6 py-2 rounded-xl font-medium hover:bg-slate-800 shadow-lg text-sm flex-1 sm:flex-initial text-center"
                                 >
                                     Settle Payment
                                 </button>

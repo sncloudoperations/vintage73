@@ -10,6 +10,7 @@ import {
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import Select from 'react-select';
+import SearchableSelect from '@/components/SearchableSelect';
 
 // Custom Dropdown Direction Fix
 const dropdownStyles = `
@@ -178,6 +179,10 @@ export default function Ticketing() {
 
   const handleCreateTicket = async (e) => {
     e.preventDefault();
+    if (!newTicket.categoryId) {
+      toast.error('Please select a category');
+      return;
+    }
     
     const formData = new FormData();
     Object.keys(newTicket).forEach(key => {
@@ -338,7 +343,7 @@ export default function Ticketing() {
             <p className="text-slate-500 text-sm mt-1">Manage and track support requests</p>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto justify-start sm:justify-end">
             {user?.role !== 'customer' && (
               <div className="hidden md:flex items-center bg-white border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
                 <FiUserCheck className="text-primary mr-2" />
@@ -347,7 +352,7 @@ export default function Ticketing() {
             )}
             <button 
               onClick={() => { setNewTicket({ ...newTicket, branchId: user?.branchId || '' }); setShowCreateModal(true); }}
-              className="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg">
+              className="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg w-full sm:w-auto">
               <FiPlus size={18} />
               <span>{user?.role === 'admin' ? 'New Ticket' : 'Create Ticket'}</span>
             </button>
@@ -428,19 +433,19 @@ export default function Ticketing() {
             </div>
           </div>
 
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full border-separate border-spacing-0">
+          <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+            <table className="w-full border-separate border-spacing-0 min-w-[850px]">
               <thead>
                 <tr className="bg-slate-50">
                   {['Ticket ID', 'Ticket Title', 'Requested By', 'Priority', 'Status', 'Actions'].map((h, i) => (
-                    <th key={i} className={`px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider ${i === 0 ? 'text-left' : h === 'Actions' ? 'text-right' : 'text-left'}`}>{h}</th>
+                    <th key={i} className={`px-6 py-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider whitespace-nowrap ${i === 0 ? 'text-left' : h === 'Actions' ? 'text-right' : 'text-left'}`}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {displayedTickets.map(ticket => (
                   <tr key={ticket.id} className="group cursor-pointer hover:bg-slate-50 transition-all duration-200" onClick={() => { setSelectedTicket(ticket); setShowDetailModal(true); }}>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                        <div className="flex flex-col">
                           <span className="text-xs font-medium text-primary bg-primary/5 px-3 py-1 rounded-lg border border-primary/10 inline-block w-fit">{ticket.ticketId}</span>
                           <span className="text-[10px] text-slate-400 font-medium mt-1">{new Date(ticket.createdAt).toLocaleDateString()}</span>
@@ -448,31 +453,31 @@ export default function Ticketing() {
                     </td>
                     <td className="px-6 py-4">
                        <div className="space-y-0.5">
-                          <div className="font-semibold text-slate-800 text-sm">{ticket.title}</div>
+                          <div className="font-semibold text-slate-800 text-sm max-w-[280px] truncate">{ticket.title}</div>
                           <span className="text-xs text-slate-400 font-medium">{ticket.category?.name || 'General'}</span>
                        </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800 font-medium text-xs uppercase">
+                          <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800 font-medium text-xs uppercase flex-shrink-0">
                              {ticket.customer?.name?.charAt(0) || <FiUser />}
                           </div>
-                          <span className="text-sm font-medium text-slate-800">{ticket.customer?.name || 'Internal'}</span>
+                          <span className="text-sm font-medium text-slate-800 truncate max-w-[150px]">{ticket.customer?.name || 'Internal'}</span>
                        </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                        <span className={`px-3 py-1 rounded-full text-[10px] font-medium border ${getPriorityColor(ticket.priority)}`}>
                           {ticket.priority}
                        </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                            {(() => {
                               const isWaiting = ticket.previousAssigneeId === user?.id && ticket.status === 'Assigned';
                               const displayStatus = isWaiting ? 'Waiting' : ticket.status;
                               return (
                                 <>
-                                  <div className={`w-2 h-2 rounded-full ${displayStatus === 'InProgress' ? 'bg-blue-500 animate-pulse' : displayStatus === 'Closed' ? 'bg-emerald-500' : displayStatus === 'Waiting' ? 'bg-amber-500' : 'bg-slate-300'}`} />
+                                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${displayStatus === 'InProgress' ? 'bg-blue-500 animate-pulse' : displayStatus === 'Closed' ? 'bg-emerald-500' : displayStatus === 'Waiting' ? 'bg-amber-500' : 'bg-slate-300'}`} />
                                   <span className={`text-xs font-medium ${getStatusColor(displayStatus)} bg-transparent p-0`}>{displayStatus}</span>
                                 </>
                               );
@@ -536,14 +541,14 @@ export default function Ticketing() {
                       Category
                       <button type="button" onClick={() => setShowCategoryModal(true)} className="text-primary hover:underline font-medium text-[9px]">Add New</button>
                     </label>
-                    <div className="relative">
-                        <select required className="w-full bg-slate-50 border border-slate-200 focus:border-primary rounded-xl px-4 py-2.5 text-sm font-medium outline-none appearance-none" value={newTicket.categoryId}
-                        onChange={e => setNewTicket({...newTicket, categoryId: e.target.value})}>
-                        <option value="">Select Category</option>
-                        {categories.map(c => <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>)}
-                        </select>
-                        <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none" />
-                    </div>
+                    <SearchableSelect
+                      options={categories.map(c => ({ value: c.id, label: c.name.toUpperCase() }))}
+                      value={newTicket.categoryId}
+                      onChange={val => setNewTicket({...newTicket, categoryId: val})}
+                      placeholder="SELECT CATEGORY"
+                      direction="down"
+                      triggerClassName="w-full bg-slate-50 border border-slate-200 focus:border-primary rounded-xl px-4 py-2.5 text-sm font-medium outline-none min-h-0 h-[38px] flex items-center justify-between"
+                    />
                   </div>
                 </div>
 
@@ -646,39 +651,39 @@ export default function Ticketing() {
       {/* (rest of the file stays same) */}
       <AnimatePresence>
         {showDetailModal && t && (
-          <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-start md:items-center justify-center p-2 sm:p-4 overflow-y-auto">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-6xl h-[90vh] bg-white rounded-2xl shadow-xl flex flex-col lg:flex-row overflow-hidden border border-slate-200">
+              className="w-full max-w-6xl bg-white rounded-2xl shadow-xl flex flex-col lg:flex-row border border-slate-200 my-2 sm:my-4 min-h-[90vh] lg:h-[90vh] lg:overflow-hidden">
               
               {/* LEFT: Ticket Content */}
-              <div className="flex-1 flex flex-col overflow-hidden bg-white">
-                <div className="px-8 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
-                  <div className="flex items-center gap-3">
+              <div className="flex-1 flex flex-col lg:overflow-hidden bg-white">
+                <div className="px-4 sm:px-8 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0 sticky top-0 z-10 rounded-t-2xl lg:rounded-none">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                     <span className="px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-medium tracking-wider">#{t.ticketId}</span>
                     <span className={`px-2 py-1 rounded text-[10px] font-medium uppercase border ${getStatusColor(t.status)}`}>{t.status}</span>
                   </div>
-                  <button onClick={closeDetailAndClearUrl} className="text-slate-400 hover:text-slate-600 transition-colors"><FiXCircle size={22} /></button>
+                  <button onClick={closeDetailAndClearUrl} className="text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0"><FiXCircle size={22} /></button>
                 </div>
 
-                <div className="px-8 py-6 border-b border-slate-100 shrink-0 bg-white">
-                   <h2 className="text-xl font-semibold text-slate-800 tracking-tight">{t.title}</h2>
-                   <div className="flex flex-wrap items-center gap-4 mt-2">
+                <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-100 shrink-0 bg-white">
+                   <h2 className="text-lg sm:text-xl font-semibold text-slate-800 tracking-tight leading-snug">{t.title}</h2>
+                   <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase border ${getPriorityColor(t.priority)}`}>{t.priority}</span>
-                      <span className="text-xs font-medium text-slate-500 flex items-center gap-1"><FiTag size={14} className="text-primary" /> {t.category?.name || 'General'}</span>
-                      <span className="text-xs font-medium text-slate-500 flex items-center gap-1"><FiMapPin size={14} className="text-blue-500" /> {t.branch?.name || 'Branch'}</span>
-                      <span className="text-xs font-medium text-slate-400 flex items-center gap-1"><FiCalendar size={14} /> {new Date(t.createdAt).toLocaleDateString()}</span>
+                      <span className="text-xs font-medium text-slate-500 flex items-center gap-1"><FiTag size={12} className="text-primary flex-shrink-0" /> {t.category?.name || 'General'}</span>
+                      <span className="text-xs font-medium text-slate-500 flex items-center gap-1"><FiMapPin size={12} className="text-blue-500 flex-shrink-0" /> {t.branch?.name || 'Branch'}</span>
+                      <span className="text-xs font-medium text-slate-400 flex items-center gap-1"><FiCalendar size={12} className="flex-shrink-0" /> {new Date(t.createdAt).toLocaleDateString()}</span>
                    </div>
                 </div>
 
                 {/* Tab Switcher */}
-                <div className="px-8 mt-4 shrink-0 bg-white">
+                <div className="px-4 sm:px-8 mt-4 shrink-0 bg-white">
                   <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit border border-slate-100">
                     {[
                       { key: 'timeline', label: 'History', icon: <FiActivity size={14} /> },
                       { key: 'chat', label: `Messages (${t.messages?.length || 0})`, icon: <FiMessageSquare size={14} /> },
                     ].map(tab => (
                       <button key={tab.key} onClick={() => setActiveDetailTab(tab.key)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all ${activeDetailTab === tab.key ? 'bg-white text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
+                        className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-medium transition-all ${activeDetailTab === tab.key ? 'bg-white text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
                         {tab.icon} {tab.label}
                       </button>
                     ))}
@@ -686,7 +691,7 @@ export default function Ticketing() {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-white">
+                <div className="flex-1 lg:overflow-y-auto custom-scrollbar p-4 sm:p-8 bg-white">
                    {activeDetailTab === 'timeline' ? (
                       <div className="space-y-8">
                          {/* Description Card */}
@@ -781,13 +786,13 @@ export default function Ticketing() {
               </div>
 
               {/* Sidebar: Actions */}
-              <div className="w-full lg:w-[320px] bg-slate-50 border-l border-slate-100 flex flex-col shrink-0 relative">
-                <div className="p-6 border-b border-slate-200 bg-white">
-                  <h3 className="text-lg font-medium text-slate-800">Actions</h3>
+              <div className="w-full lg:w-[320px] bg-slate-50 border-t lg:border-t-0 border-l-0 lg:border-l border-slate-100 flex flex-col shrink-0 relative">
+                <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-slate-200 bg-white">
+                  <h3 className="text-base sm:text-lg font-medium text-slate-800">Actions</h3>
                   <p className="text-xs text-slate-500 mt-1">Ticket management</p>
                 </div>
 
-                <div className="p-6 space-y-8 flex-1 overflow-y-auto custom-scrollbar pb-40">
+                <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 flex-1 lg:overflow-y-auto custom-scrollbar pb-6">
                    {/* Entities */}
                    <div className="space-y-4">
                       <h4 className="text-[10px] font-medium text-slate-400 uppercase tracking-wider flex items-center gap-2">
@@ -807,8 +812,8 @@ export default function Ticketing() {
                                <p className="text-[11px] text-slate-500 font-medium">@{t.assignedTo.username}</p>
                             </div>
                          ) : (
-                            <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 flex items-center gap-3">
-                               <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-amber-500 shadow-sm"><FiUserCheck /></div>
+                            <div className="bg-amber-50 p-3 sm:p-4 rounded-xl border border-amber-200 flex items-center gap-3">
+                               <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-amber-500 shadow-sm flex-shrink-0"><FiUserCheck /></div>
                                <span className="text-xs font-medium text-amber-700">Waiting for Agent</span>
                             </div>
                          )}
@@ -822,14 +827,20 @@ export default function Ticketing() {
                             Initial Assignment
                          </h4>
                          
-                         <div className="relative">
-                            <select className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium uppercase tracking-wider outline-none appearance-none"
-                               value={assignStaffId} onChange={e => setAssignStaffId(e.target.value)}>
-                               <option value="">Choose Agent</option>
-                               {staff.map(s => <option key={s.id} value={s.id}>{s.name} ({s.id === user.id ? 'YOU' : s.role.toUpperCase()})</option>)}
-                            </select>
-                            <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                         </div>
+                         <SearchableSelect
+                           options={[
+                             { value: '', label: 'Choose Agent' },
+                             ...staff.map(s => ({
+                               value: String(s.id),
+                               label: `${s.name} (${s.id === user.id ? 'YOU' : s.role.toUpperCase()})`
+                             }))
+                           ]}
+                           value={String(assignStaffId)}
+                           onChange={val => setAssignStaffId(val)}
+                           placeholder="Choose Agent"
+                           direction="down"
+                           triggerClassName="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium uppercase tracking-wider outline-none min-h-0 h-[38px] flex items-center justify-between"
+                         />
                          
                          <div className="space-y-2">
                             <button onClick={() => handleAssign(t.id)} className="w-full py-3 bg-blue-600 text-white rounded-xl text-[10px] font-medium uppercase hover:bg-blue-700 transition-all shadow-md">
@@ -881,21 +892,33 @@ export default function Ticketing() {
                    )}
 
                    {/* Metadata card */}
-                   <div className="pt-6 border-t border-slate-200">
-                      <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-lg border border-slate-800">
-                         <h4 className="text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-4">Ticket Metadata</h4>
+                   <div className="pt-4 sm:pt-6 border-t border-slate-200">
+                      <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 text-white shadow-lg border border-slate-800">
+                         <h4 className="text-[10px] font-medium uppercase tracking-wider text-slate-400 mb-4">Ticket Metadata</h4>
                          <div className="space-y-3">
-                            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                               <span className="text-[9px] font-medium uppercase text-white/30 truncate">Created</span>
-                               <span className="text-[10px] font-medium">{new Date(t.createdAt).toLocaleDateString()}</span>
+                            <div className="flex justify-between items-start gap-2 border-b border-white/5 pb-2">
+                               <span className="text-[9px] font-medium uppercase text-white/40 whitespace-nowrap">Ticket ID</span>
+                               <span className="text-[10px] font-medium text-right break-all">{t.ticketId}</span>
                             </div>
-                            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                               <span className="text-[9px] font-medium uppercase text-white/30 truncate">Created By</span>
-                               <span className="text-[10px] font-medium text-primary">{t.createdBy?.name || 'Customer'}</span>
+                            <div className="flex justify-between items-start gap-2 border-b border-white/5 pb-2">
+                               <span className="text-[9px] font-medium uppercase text-white/40 whitespace-nowrap">Created</span>
+                               <span className="text-[10px] font-medium text-right">{new Date(t.createdAt).toLocaleDateString()}</span>
                             </div>
-                            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                               <span className="text-[9px] font-medium uppercase text-white/30 truncate">Current Agent</span>
-                               <span className="text-[10px] font-medium text-primary">{t.assignedTo?.name || 'Unassigned'}</span>
+                            <div className="flex justify-between items-start gap-2 border-b border-white/5 pb-2">
+                               <span className="text-[9px] font-medium uppercase text-white/40 whitespace-nowrap">Created By</span>
+                               <span className="text-[10px] font-medium text-primary text-right">{t.createdBy?.name || t.createdBy?.username || 'Customer'}</span>
+                            </div>
+                            <div className="flex justify-between items-start gap-2 border-b border-white/5 pb-2">
+                               <span className="text-[9px] font-medium uppercase text-white/40 whitespace-nowrap">Created By Role</span>
+                               <span className="text-[10px] font-medium text-right capitalize">{t.createdByRole || '—'}</span>
+                            </div>
+                            <div className="flex justify-between items-start gap-2 border-b border-white/5 pb-2">
+                               <span className="text-[9px] font-medium uppercase text-white/40 whitespace-nowrap">Current Agent</span>
+                               <span className="text-[10px] font-medium text-primary text-right">{t.assignedTo?.name || 'Unassigned'}</span>
+                            </div>
+                            <div className="flex justify-between items-start gap-2">
+                               <span className="text-[9px] font-medium uppercase text-white/40 whitespace-nowrap">Category</span>
+                               <span className="text-[10px] font-medium text-right">{t.category?.name || 'General'}</span>
                             </div>
                          </div>
                       </div>

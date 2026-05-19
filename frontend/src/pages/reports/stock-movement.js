@@ -108,30 +108,30 @@ export default function StockMovementRegister() {
     return (
         <div className="p-6 max-w-[1600px] mx-auto">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-800">Stock Movement Register</h1>
                     <p className="text-slate-500 text-sm mt-1">Detailed transaction log for personal stock tracking</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full sm:w-auto">
                     <button
                         onClick={handlePrint}
                         disabled={!reportData}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all disabled:opacity-50"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all disabled:opacity-50"
                     >
                         <FiPrinter size={16} /> Print Report
                     </button>
                     <button
                         onClick={handleExport}
                         disabled={!reportData}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all disabled:opacity-50"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all disabled:opacity-50"
                     >
                         <FiDownload size={16} /> Export CSV
                     </button>
                     <button
                         onClick={fetchReport}
                         disabled={loading}
-                        className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm disabled:opacity-50"
+                        className="w-full sm:w-auto bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-sm disabled:opacity-50"
                         style={{ backgroundColor: theme.primaryColor }}
                     >
                         <FiRefreshCw size={16} className={loading ? 'animate-spin' : ''} /> {loading ? "Loading..." : "Generate"}
@@ -171,21 +171,24 @@ export default function StockMovementRegister() {
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-4 items-end">
+                <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-end">
                     {user?.role === 'admin' && (
                         <div className="flex flex-col gap-1 w-full md:w-64">
                             <label className="text-[10px] font-medium text-slate-500 uppercase">Branch</label>
-                            <select
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary h-[38px]"
+                            <SearchableSelect
+                                options={[
+                                    { label: 'All Branches', value: 'all' },
+                                    ...branches.map(b => ({ label: b.name, value: b.id }))
+                                ]}
                                 value={selectedBranch}
-                                onChange={e => setSelectedBranch(e.target.value)}
-                            >
-                                <option value="all">All Branches</option>
-                                {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                            </select>
+                                onChange={val => setSelectedBranch(val)}
+                                direction="down"
+                                triggerClassName="h-[38px] px-3 border-slate-300 rounded-lg text-sm bg-white"
+                                placeholder="All Branches"
+                            />
                         </div>
                     )}
-                    <div className="relative flex-1">
+                    <div className="relative flex-1 w-full">
                         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                         <input
                             type="text"
@@ -231,7 +234,7 @@ export default function StockMovementRegister() {
                     </div>
 
                     <div className="table-container">
-                        <table className="table-modern">
+                        <table className="table-modern" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
                                     <th style={{ width: '4%' }}>#</th>
@@ -251,7 +254,7 @@ export default function StockMovementRegister() {
                                 </tr>
                                 {filteredMovements.length === 0 ? (
                                     <tr>
-                                        <td colSpan="8" className="text-center py-8 text-slate-400 italic">
+                                        <td colSpan="8" className="text-left sm:text-center pl-4 sm:pl-0 py-8 text-slate-400 italic whitespace-nowrap">
                                             No movement transactions found
                                         </td>
                                     </tr>
@@ -290,27 +293,26 @@ export default function StockMovementRegister() {
                                 )}
                             </tbody>
                         </table>
-                    </div>
-
-                    {/* Summary Footer */}
-                    <div className="bg-slate-50 border-t border-slate-300 px-6 py-4 flex justify-between items-center">
-                        <div className="text-sm text-slate-600">
-                            Showing <span className="font-semibold">{filteredMovements.length}</span> transactions
-                        </div>
-                        <div className="flex gap-8 text-[13px]">
-                            <div className="flex flex-col items-center">
-                                <span className="text-[10px] font-medium text-slate-400 uppercase">Movement In</span>
-                                <span className="font-medium text-emerald-600">+{totalIn.toLocaleString()}</span>
+                        {/* Summary Footer */}
+                        <div className="bg-slate-50 border-t border-slate-300 px-6 py-4 flex justify-between items-center" style={{ minWidth: '800px' }}>
+                            <div className="text-sm text-slate-600 whitespace-nowrap">
+                                Showing <span className="font-semibold">{filteredMovements.length}</span> transactions
                             </div>
-                            <div className="flex flex-col items-center">
-                                <span className="text-[10px] font-medium text-slate-400 uppercase">Movement Out</span>
-                                <span className="font-medium text-red-500">-{totalOut.toLocaleString()}</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-medium text-slate-400 uppercase">Net Closing</span>
-                                <span className="font-medium text-slate-900 text-base" style={{ color: theme.primaryColor }}>
-                                    {reportData.closingStock.toLocaleString()}
-                                </span>
+                            <div className="flex gap-8 text-[13px]">
+                                <div className="flex flex-col items-center whitespace-nowrap">
+                                    <span className="text-[10px] font-medium text-slate-400 uppercase">Movement In</span>
+                                    <span className="font-medium text-emerald-600">+{totalIn.toLocaleString()}</span>
+                                </div>
+                                <div className="flex flex-col items-center whitespace-nowrap">
+                                    <span className="text-[10px] font-medium text-slate-400 uppercase">Movement Out</span>
+                                    <span className="font-medium text-red-500">-{totalOut.toLocaleString()}</span>
+                                </div>
+                                <div className="flex flex-col items-end whitespace-nowrap">
+                                    <span className="text-[10px] font-medium text-slate-400 uppercase">Net Closing</span>
+                                    <span className="font-medium text-slate-900 text-base" style={{ color: theme.primaryColor }}>
+                                        {reportData.closingStock.toLocaleString()}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

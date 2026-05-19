@@ -247,201 +247,212 @@ export default function Customers() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white">
-              <h2 className="text-xl font-semibold text-slate-800">{isEdit ? 'Edit Customer' : 'Add Customer'}</h2>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              {/* Tabs */}
-              <div className="flex gap-6 border-b border-slate-100 mb-4 bg-white z-10">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('general')}
-                  className={`pb-3 text-xs font-medium uppercase tracking-wider transition-all border-b-2 ${activeTab === 'general' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
-                >
-                  General Info
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('access')}
-                  className={`pb-3 text-xs font-medium uppercase tracking-wider transition-all border-b-2 ${activeTab === 'access' ? 'text-primary border-primary' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
-                >
-                  Customer Access
-                </button>
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            {/* Sticky Header */}
+            <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white flex-shrink-0">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Customer' : 'Add Customer'}</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Please fill in the customer or business details below</p>
               </div>
-
-              {/* General Tab */}
-              <div className={activeTab === 'general' ? 'block space-y-4' : 'hidden'}>
-                {/* GSTIN Verification Section */}
-                <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                  <label className="block text-sm font-semibold text-blue-800 mb-2">
-                    🔍 GST Number Lookup
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      className="input flex-1 font-mono uppercase"
-                      placeholder="Enter 15-digit GSTIN"
-                      value={formData.gstin}
-                      onChange={e => handleGSTINChange(e.target.value)}
-                      maxLength={15}
-                    />
-                    <button
-                      type="button"
-                      onClick={verifyGSTIN}
-                      disabled={verifyingGST || formData.gstin.length !== 15}
-                      className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all ${gstVerified
-                        ? 'bg-green-500 text-white'
-                        : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed'
-                        }`}
-                    >
-                      {verifyingGST ? (
-                        <><FiLoader className="animate-spin" /> Verifying...</>
-                      ) : gstVerified ? (
-                        <><FiCheck /> Verified</>
-                      ) : (
-                        'Verify GST'
-                      )}
-                    </button>
-                  </div>
-                  <p className="text-xs text-blue-600 mt-2">
-                    Enter GSTIN to auto-fill business details from GST portal
-                  </p>
+              <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center font-semibold transition-colors">&times;</button>
+            </div>
+            
+            {/* Form wrapping body and sticky footer */}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+              {/* Scrollable Body */}
+              <div className="p-6 overflow-y-auto flex-1 space-y-5">
+                {/* Segmented Control Tabs */}
+                <div className="flex gap-1 p-1 bg-slate-100 rounded-xl mb-6 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('general')}
+                    className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${activeTab === 'general' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  >
+                    General Info
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('access')}
+                    className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${activeTab === 'access' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  >
+                    Customer Access
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2">
-                    <label className="label">Business / Customer Name <span className="text-red-500">*</span></label>
-                    <input
-                      required
-                      className="input"
-                      value={formData.name}
-                      onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      placeholder={gstVerified ? 'Auto-filled from GST' : 'Enter name'}
-                    />
+                {/* General Tab */}
+                <div className={activeTab === 'general' ? 'block space-y-5' : 'hidden'}>
+                  {/* GSTIN Verification Section */}
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 border border-blue-100/70 rounded-2xl p-5 shadow-sm">
+                    <label className="block text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">
+                      🔍 GST Number Lookup
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        className="input flex-1 font-mono uppercase text-sm"
+                        placeholder="Enter 15-digit GSTIN"
+                        value={formData.gstin}
+                        onChange={e => handleGSTINChange(e.target.value)}
+                        maxLength={15}
+                      />
+                      <button
+                        type="button"
+                        onClick={verifyGSTIN}
+                        disabled={verifyingGST || formData.gstin.length !== 15}
+                        className={`px-5 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all w-full sm:w-auto shadow-md shadow-blue-500/10 ${gstVerified
+                          ? 'bg-green-500 hover:bg-green-600 text-white'
+                          : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed'
+                          }`}
+                      >
+                        {verifyingGST ? (
+                          <><FiLoader className="animate-spin" /> Verifying...</>
+                        ) : gstVerified ? (
+                          <><FiCheck /> Verified</>
+                        ) : (
+                          'Verify GST'
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-blue-500 font-medium mt-2">
+                      Enter GSTIN to auto-fill business name, address, and state details from GST portal.
+                    </p>
                   </div>
-                  <div>
-                    <label className="label">Phone</label>
-                    <input className="input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-                  </div>
-                  <div>
-                    <label className="label">Email</label>
-                    <input type="email" className="input" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                  </div>
-                  <div className="col-span-2">
-                    <label className="label">Address</label>
-                    <textarea className="input" rows="2" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })}></textarea>
-                  </div>
-                  <div>
-                    <label className="label">City</label>
-                    <input className="input" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
-                  </div>
-                  <div>
-                    <label className="label">State</label>
-                    <input className="input" value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} />
-                  </div>
-                  <div>
-                    <label className="label">Pincode</label>
-                    <input className="input" value={formData.pincode} onChange={e => setFormData({ ...formData, pincode: e.target.value })} />
-                  </div>
-                  <div>
-                    <label className="label">Party Type</label>
-                    <select className="input" value={formData.partyType} onChange={e => setFormData({ ...formData, partyType: e.target.value })}>
-                      <option value="B2C">B2C (Consumer)</option>
-                      <option value="B2B">B2B (Business)</option>
-                      <option value="Unregistered">Unregistered</option>
-                    </select>
-                  </div>
-                  
-                  <div className="col-span-2 pt-4 border-t border-slate-100 mt-2">
-                    <h3 className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-4">
-                      <FiKey className="text-primary" /> Login Credentials
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="label">Username</label>
-                        <input className="input" placeholder="Optional" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} />
+
+                  {/* Fields Container */}
+                  <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
+                    <div className="col-span-2">
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Business / Customer Name <span className="text-red-500">*</span></label>
+                      <input
+                        required
+                        className="input"
+                        value={formData.name}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        placeholder={gstVerified ? 'Auto-filled from GST' : 'Enter name'}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Phone</label>
+                      <input className="input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} placeholder="Enter phone" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email</label>
+                      <input type="email" className="input" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="Enter email" />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Address</label>
+                      <textarea className="input" rows="2" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} placeholder="Enter billing address"></textarea>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">City</label>
+                      <input className="input" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} placeholder="Enter city" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">State</label>
+                      <input className="input" value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} placeholder="Enter state" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Pincode</label>
+                      <input className="input" value={formData.pincode} onChange={e => setFormData({ ...formData, pincode: e.target.value })} placeholder="Enter pincode" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Party Type</label>
+                      <select className="input" value={formData.partyType} onChange={e => setFormData({ ...formData, partyType: e.target.value })}>
+                        <option value="B2C">B2C (Consumer)</option>
+                        <option value="B2B">B2B (Business)</option>
+                        <option value="Unregistered">Unregistered</option>
+                      </select>
+                    </div>
+                    
+                    <div className="col-span-2 pt-4 border-t border-slate-100 mt-2">
+                      <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-4">
+                        <FiKey className="text-primary" /> Login Credentials
+                      </h3>
+                      <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Username</label>
+                          <input className="input" placeholder="Optional" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">{isEdit ? 'Set New Password' : 'Password'}</label>
+                          <input type="password" placeholder={isEdit ? 'Leave blank to keep current' : 'Optional'} className="input" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+                        </div>
                       </div>
-                      <div>
-                        <label className="label">{isEdit ? 'Set New Password' : 'Password'}</label>
-                        <input type="password" placeholder={isEdit ? 'Leave blank to keep current' : 'Optional'} className="input" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
-                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Access Tab */}
+                <div className={activeTab === 'access' ? 'block' : 'hidden'}>
+                  <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <div className="w-1.5 h-3.5 bg-primary rounded-full"></div>
+                      Customer Module Permissions
+                    </label>
+
+                    {/* Dashboard separate */}
+                    <div className="mb-4">
+                      <label className="relative inline-flex items-center cursor-pointer p-3 rounded-xl border transition-all hover:bg-slate-100 border-slate-200 bg-white shadow-sm">
+                        <input
+                          type="checkbox"
+                          checked={formData.accessPermissions?.includes('DASHBOARD')}
+                          onChange={() => toggleModule('DASHBOARD')}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                        <span className={`ml-3 text-[10px] font-bold tracking-tight uppercase ${formData.accessPermissions?.includes('DASHBOARD') ? 'text-primary-dark font-extrabold' : 'text-slate-500'}`}>DASHBOARD</span>
+                      </label>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[35vh] overflow-y-auto pr-2">
+                      {MENU_STRUCTURE.map(group => (
+                        <div key={group.title} className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                          <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={formData.accessPermissions?.includes(group.title)}
+                                onChange={() => toggleModule(group.title)}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                            </label>
+                            <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
+                          </div>
+
+                          <div className="space-y-1">
+                            {group.items.map(item => {
+                              const permissionKey = `${group.title}:${item.name}`;
+                              const isParentSelected = formData.accessPermissions?.includes(group.title);
+                              const isSelected = formData.accessPermissions?.includes(permissionKey);
+
+                              return (
+                                <label key={permissionKey} className={`flex items-center gap-2 cursor-pointer px-1 py-0.5 rounded hover:bg-slate-50 transition-colors ${isParentSelected ? 'opacity-50' : ''}`}>
+                                  <div className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected || isParentSelected}
+                                      onChange={() => toggleModule(permissionKey)}
+                                      disabled={isParentSelected}
+                                      className="sr-only peer"
+                                    />
+                                    <div className="w-7 h-4 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+                                  </div>
+                                  <span className={`text-[11px] ${isSelected || isParentSelected ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>{item.name}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Access Tab */}
-              <div className={activeTab === 'access' ? 'block space-y-4' : 'hidden'}>
-                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                  <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <div className="w-1 h-3 bg-primary rounded-full"></div>
-                    Customer Module Permissions
-                  </label>
-
-                  {/* Dashboard separate */}
-                  <div className="mb-3">
-                    <label className="relative inline-flex items-center cursor-pointer p-2.5 rounded-lg border transition-all hover:bg-slate-50 border-slate-200">
-                      <input
-                        type="checkbox"
-                        checked={formData.accessPermissions?.includes('DASHBOARD')}
-                        onChange={() => toggleModule('DASHBOARD')}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                      <span className={`ml-3 text-[10px] font-medium tracking-tight uppercase ${formData.accessPermissions?.includes('DASHBOARD') ? 'text-primary-dark' : 'text-slate-500'}`}>DASHBOARD</span>
-                    </label>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[40vh] overflow-y-auto pr-2">
-                    {MENU_STRUCTURE.map(group => (
-                      <div key={group.title} className="bg-white p-2.5 rounded-lg border border-slate-200">
-                        <div className="flex items-center gap-2 mb-1.5 pb-1.5 border-b border-slate-100">
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={formData.accessPermissions?.includes(group.title)}
-                              onChange={() => toggleModule(group.title)}
-                              className="sr-only peer"
-                            />
-                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                          </label>
-                          <span className="font-semibold text-slate-700 text-[10px] uppercase tracking-wide">{group.title}</span>
-                        </div>
-
-                        <div className="space-y-0.5">
-                          {group.items.map(item => {
-                            const permissionKey = `${group.title}:${item.name}`;
-                            const isParentSelected = formData.accessPermissions?.includes(group.title);
-                            const isSelected = formData.accessPermissions?.includes(permissionKey);
-
-                            return (
-                              <label key={permissionKey} className={`flex items-center gap-2 cursor-pointer px-1 py-0.5 rounded hover:bg-slate-50 transition-colors ${isParentSelected ? 'opacity-50' : ''}`}>
-                                <div className="relative inline-flex items-center cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected || isParentSelected}
-                                    onChange={() => toggleModule(permissionKey)}
-                                    disabled={isParentSelected}
-                                    className="sr-only peer"
-                                  />
-                                  <div className="w-7 h-4 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                                </div>
-                                <span className={`text-[11px] ${isSelected || isParentSelected ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>{item.name}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">{isEdit ? 'Update' : 'Save'}</button>
+              {/* Sticky Footer */}
+              <div className="flex flex-col sm:flex-row justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50 flex-shrink-0">
+                <button type="button" className="btn btn-secondary w-full sm:w-auto justify-center rounded-xl" onClick={() => setShowModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary w-full sm:w-auto justify-center rounded-xl shadow-lg shadow-primary/20">{isEdit ? 'Update' : 'Save'}</button>
               </div>
             </form>
           </div>

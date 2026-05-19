@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
-import { FiDollarSign, FiPrinter, FiX, FiFilter, FiUser, FiCalendar, FiFileText, FiCheckCircle } from 'react-icons/fi';
+import { FiDollarSign, FiPrinter, FiX, FiFilter, FiUser, FiCalendar, FiFileText, FiCheckCircle, FiCreditCard } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function PayrollPage() {
     const [payrolls, setPayrolls] = useState([]);
@@ -90,20 +91,20 @@ export default function PayrollPage() {
     };
 
     return (
-        <div className="p-6 max-w-[1600px] mx-auto space-y-4">
-            <header className="flex justify-between items-end">
+        <div className="p-6 max-w-[1600px] mx-auto space-y-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 tracking-tight flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
                         <FiFileText className="text-primary" />
                         Payroll Management
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">Manage and view salary history</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-3 w-full md:w-auto">
                     {payrolls.length > 0 && filters.month && filters.year && (
                         <button
                             onClick={() => setShowBankStatement(true)}
-                            className="bg-white text-slate-700 border border-slate-200 px-5 py-2 rounded-xl font-medium text-xs flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
+                            className="w-full md:w-auto bg-white text-slate-700 border border-slate-200 px-6 py-3 rounded-xl font-medium text-xs flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
                         >
                             <FiCreditCard className="text-primary" /> Bank Statement
                         </button>
@@ -112,75 +113,75 @@ export default function PayrollPage() {
             </header>
 
             {/* Filters Bar */}
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4 items-end">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 items-end">
                 {currentUser?.role === 'admin' && (
-                    <div className="space-y-1.5">
-                        <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 ml-1">
                             <FiUser size={10} /> Employee
                         </label>
-                        <select
-                            className="input-select w-full bg-slate-50 border-slate-200 text-xs font-medium"
+                        <SearchableSelect
+                            options={users.map(u => ({ value: u.id.toString(), label: u.name }))}
                             value={filters.userId}
-                            onChange={e => setFilters({ ...filters, userId: e.target.value })}
-                        >
-                            <option value="">All Employees</option>
-                            {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                        </select>
+                            onChange={val => setFilters({ ...filters, userId: val })}
+                            placeholder="All Employees"
+                            className="w-full"
+                            direction="down"
+                        />
                     </div>
                 )}
-                <div className="space-y-1.5">
-                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 ml-1">
                         <FiCalendar size={10} /> Month
                     </label>
-                    <select
-                        className="input-select w-full bg-slate-50 border-slate-200 text-xs font-medium"
+                    <SearchableSelect
+                        options={['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(m => ({ value: m, label: m }))}
                         value={filters.month}
-                        onChange={e => setFilters({ ...filters, month: e.target.value })}
-                    >
-                        <option value="">All Months</option>
-                        {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(m => (
-                            <option key={m} value={m}>{m}</option>
-                        ))}
-                    </select>
+                        onChange={val => setFilters({ ...filters, month: val })}
+                        placeholder="All Months"
+                        className="w-full"
+                        direction="down"
+                    />
                 </div>
-                <div className="space-y-1.5">
-                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 ml-1">
                         <FiCalendar size={10} /> Year
                     </label>
                     <input
                         type="number"
-                        className="input w-full bg-slate-50 border-slate-200 text-xs font-medium"
+                        className="input w-full bg-slate-50 border-slate-200 p-3 sm:p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 text-xs"
                         value={filters.year}
                         onChange={e => setFilters({ ...filters, year: e.target.value })}
                     />
                 </div>
-                <div className="space-y-1.5">
-                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 ml-1">
                         <FiFilter size={10} /> Status
                     </label>
-                    <select
-                        className="input-select w-full bg-slate-50 border-slate-200 text-xs font-medium"
+                    <SearchableSelect
+                        options={[
+                            { value: 'GENERATED', label: 'Generated' },
+                            { value: 'APPROVED', label: 'Approved' },
+                            { value: 'PAID', label: 'Paid' }
+                        ]}
                         value={filters.status}
-                        onChange={e => setFilters({ ...filters, status: e.target.value })}
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="GENERATED">Generated</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="PAID">Paid</option>
-                    </select>
+                        onChange={val => setFilters({ ...filters, status: val })}
+                        placeholder="All Statuses"
+                        className="w-full"
+                        direction="down"
+                    />
                 </div>
                 <button
                     onClick={fetchPayroll}
-                    className="h-10 bg-slate-100 text-slate-600 rounded-xl px-4 flex items-center justify-center gap-2 hover:bg-slate-200 transition-all text-xs font-medium uppercase tracking-widest"
+                    className="w-full bg-slate-900 text-white rounded-xl h-[42px] sm:h-[48px] flex items-center justify-center gap-2 hover:bg-black transition-all text-[10px] font-bold uppercase tracking-widest shadow-sm"
                 >
-                    Refresh
+                    Refresh Data
                 </button>
             </div>
 
-            <div className="card shadow-md border border-slate-200">
-                <div className="table-container">
+            <div className="card shadow-md border border-slate-200 overflow-hidden">
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
                     <table className="table-modern">
-                        <thead>
+                        <thead className="whitespace-nowrap">
                             <tr>
                                 <th style={{ width: '4%' }}>#</th>
                                 <th style={{ width: '18%' }}>Employee</th>
@@ -249,6 +250,7 @@ export default function PayrollPage() {
                         </tbody>
                     </table>
                 </div>
+                </div>
 
                 {/* Summary Footer */}
                 {!loading && payrolls.length > 0 && (
@@ -278,7 +280,6 @@ export default function PayrollPage() {
                         </div>
                     </div>
                 )}
-            </div>
 
             {/* Payslip Modal */}
             {selectedPayroll && (

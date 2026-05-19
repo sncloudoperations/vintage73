@@ -506,16 +506,20 @@ export default function TicketingDashboard() {
         <div className="space-y-2">
           <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">View Role</label>
           <div className="relative">
-            <FiFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
-            <select 
-              className="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl pl-10 pr-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all appearance-none"
+            <FiFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10" size={14} />
+            <SearchableSelect
+              options={[
+                { value: '', label: 'Company Overview' },
+                { value: 'customer', label: 'Customers' },
+                { value: 'employee', label: 'Employees' }
+              ]}
               value={filters.role}
-              onChange={(e) => handleFilterChange('role', e.target.value)}
-            >
-              <option value="">Company Overview</option>
-              <option value="customer">Customers</option>
-              <option value="employee">Employees</option>
-            </select>
+              onChange={(val) => handleFilterChange('role', val)}
+              placeholder="Company Overview"
+              direction="down"
+              className="h-11"
+              triggerClassName="w-full bg-slate-50 border-slate-100 rounded-xl pl-10 pr-4 flex items-center justify-between min-h-0 h-11 text-xs text-slate-700 font-medium"
+            />
           </div>
         </div>
 
@@ -529,6 +533,7 @@ export default function TicketingDashboard() {
             onChange={(val) => handleFilterChange('personId', val)}
             placeholder="Search name..."
             className="h-11"
+            triggerClassName="w-full bg-slate-50 border-slate-100 rounded-xl px-4 flex items-center justify-between min-h-0 h-11 text-xs text-slate-700 font-medium"
           />
         </div>
 
@@ -1145,27 +1150,27 @@ export default function TicketingDashboard() {
                    {loading && <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />}
                 </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+        <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+          <table className="w-full text-left min-w-[850px]">
             <thead className="bg-white text-slate-400 text-[10px] uppercase font-semibold tracking-wider border-b border-slate-100">
               <tr>
-                <th className="px-8 py-5">Ticket ID</th>
-                <th className="px-8 py-5">Customer</th>
-                <th className="px-8 py-5">Summary</th>
-                <th className="px-8 py-5">Status</th>
-                <th className="px-8 py-5">Priority</th>
-                <th className="px-8 py-5 text-right">Date</th>
+                <th className="px-8 py-5 whitespace-nowrap">Ticket ID</th>
+                <th className="px-8 py-5 whitespace-nowrap">Customer</th>
+                <th className="px-8 py-5 whitespace-nowrap">Summary</th>
+                <th className="px-8 py-5 whitespace-nowrap">Status</th>
+                <th className="px-8 py-5 whitespace-nowrap">Priority</th>
+                <th className="px-8 py-5 text-right whitespace-nowrap">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {stats?.tickets.map(t => (
                 <tr key={t.id} className="hover:bg-indigo-50/20 transition-all cursor-pointer group" onClick={() => openTicketDetails(t)}>
-                  <td className="px-8 py-5 font-semibold text-indigo-600 text-sm group-hover:underline">{t.ticketId}</td>
-                  <td className="px-8 py-5 text-sm font-medium text-slate-700">
+                  <td className="px-8 py-5 font-semibold text-indigo-600 text-sm group-hover:underline whitespace-nowrap">{t.ticketId}</td>
+                  <td className="px-8 py-5 text-sm font-medium text-slate-700 whitespace-nowrap">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[10px] font-semibold text-slate-400">{t.customer?.name?.charAt(0) || 'C'}</div>
+                      <div className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[10px] font-semibold text-slate-400 flex-shrink-0">{t.customer?.name?.charAt(0) || 'C'}</div>
                       <div>
-                        <p className="font-semibold text-slate-800">{t.customer?.name || 'Internal'}</p>
+                        <p className="font-semibold text-slate-800 truncate max-w-[150px]">{t.customer?.name || 'Internal'}</p>
                         <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-tight">{t.category?.name || 'General'}</p>
                       </div>
                     </div>
@@ -1174,12 +1179,12 @@ export default function TicketingDashboard() {
                     <p className="text-sm font-semibold text-slate-800 truncate max-w-[200px]">{t.title}</p>
                     <p className="text-[10px] text-slate-400 font-medium truncate max-w-[200px]">{t.description}</p>
                   </td>
-                  <td className="px-8 py-5">
+                  <td className="px-8 py-5 whitespace-nowrap">
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${getStatusStyles(t.status)} border border-slate-200/50`}>
                       {t.status}
                     </span>
                   </td>
-                  <td className="px-8 py-5">
+                  <td className="px-8 py-5 whitespace-nowrap">
                     <span className={`px-2.5 py-0.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider border ${getPriorityStyles(t.priority)}`}>
                       {t.priority}
                     </span>
@@ -1233,16 +1238,16 @@ export default function TicketingDashboard() {
       {/* Ticket Details Modal */}
       <AnimatePresence>
         {showModal && selectedTicket && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-hidden">
+          <div className="fixed inset-0 z-[20000] flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm shadow-2xl overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col lg:flex-row overflow-hidden border border-slate-100"
+              className="bg-white w-full max-w-4xl max-h-[95vh] lg:max-h-[90vh] rounded-2xl shadow-2xl flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden border border-slate-100"
             >
               {/* Left Side: Detail & Timeline */}
-              <div className="flex-1 flex flex-col min-h-0 bg-white">
-                <div className="p-8 border-b border-slate-50 flex justify-between items-start shrink-0">
+              <div className="w-full lg:flex-1 flex flex-col flex-none lg:flex-1 bg-white">
+                <div className="p-6 sm:p-8 border-b border-slate-50 flex justify-between items-start shrink-0">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
                       <span className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wider">{selectedTicket.ticketId}</span>
@@ -1255,14 +1260,14 @@ export default function TicketingDashboard() {
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-10">
+                <div className="w-full flex-none lg:flex-1 lg:overflow-y-auto overflow-y-visible p-6 sm:p-8 custom-scrollbar space-y-8 sm:space-y-10">
                    {/* Description */}
                    <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <div className="w-1 h-3 bg-indigo-600 rounded-full"></div>
                         <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Initial Request Description</h4>
                       </div>
-                      <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 text-sm font-medium text-slate-700 leading-relaxed">
+                      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-2xl border border-slate-100 text-sm font-medium text-slate-700 leading-relaxed">
                         {selectedTicket.description}
                       </div>
                    </div>
@@ -1280,7 +1285,7 @@ export default function TicketingDashboard() {
                               <div className="absolute left-[-29px] top-0 w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-[10px] font-semibold text-indigo-500 shadow-sm z-10 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                                 {idx + 1}
                               </div>
-                              <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm">
                                  <div className="flex justify-between items-center mb-1.5">
                                     <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{entry.action}</span>
                                     <span className="text-[9px] font-semibold text-slate-300">{moment(entry.createdAt).format('DD MMM, LT')}</span>
@@ -1302,7 +1307,7 @@ export default function TicketingDashboard() {
               </div>
 
               {/* Right Side: Meta Info */}
-              <div className="w-full lg:w-[320px] bg-slate-50 border-t lg:border-t-0 lg:border-l border-slate-100 flex flex-col shrink-0 p-8 space-y-8 overflow-y-auto custom-scrollbar">
+              <div className="w-full lg:w-[320px] bg-slate-50 border-t lg:border-t-0 lg:border-l border-slate-100 flex flex-col flex-none lg:flex-initial p-6 sm:p-8 space-y-6 sm:space-y-8 lg:overflow-y-auto overflow-y-visible custom-scrollbar">
                 <div className="space-y-6">
                    <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-200 pb-2">Technical Overview</h4>
                    
@@ -1320,7 +1325,7 @@ export default function TicketingDashboard() {
                    </div>
                 </div>
 
-                <div className="flex-1" />
+                <div className="flex-1 min-h-4 lg:min-h-0" />
 
                 <div className="pt-6 border-t border-slate-200">
                   <div className="bg-indigo-600 rounded-[1.25rem] p-5 text-white shadow-lg shadow-indigo-100 relative overflow-hidden group">
@@ -1341,7 +1346,7 @@ export default function TicketingDashboard() {
       {/* Quick Stats Modal */}
       <AnimatePresence>
         {showSummaryModal && summaryUser && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+          <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
              <motion.div 
                initial={{ opacity: 0, scale: 0.9 }}
                animate={{ opacity: 1, scale: 1 }}
@@ -1399,7 +1404,7 @@ export default function TicketingDashboard() {
       {/* DASHBOARD REASSIGN MODAL */}
       <AnimatePresence>
         {showReassignModal && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-[20001] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
               <div className="p-8 border-b border-slate-50 bg-indigo-50/50">

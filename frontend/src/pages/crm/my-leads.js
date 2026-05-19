@@ -5,6 +5,7 @@ import { FiTrendingUp, FiDollarSign, FiUser, FiArrowRight, FiCheckCircle, FiCloc
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import moment from 'moment';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function MyReferralLeads() {
     const [leads, setLeads] = useState([]);
@@ -97,8 +98,8 @@ export default function MyReferralLeads() {
                 </div>
             </header>
 
-            {/* Top Summary Cards - User Request: Total Earned | Paid | Pending | Won Leads | Negotiation | Quotation Sent */}
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            {/* Top Summary Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {[
                     { label: 'Total Earned', value: '₹' + stats.totalEarning.toLocaleString(), color: 'purple' },
                     { label: 'Paid', value: '₹' + stats.totalPaid.toLocaleString(), color: 'emerald' },
@@ -107,8 +108,8 @@ export default function MyReferralLeads() {
                     { label: 'Negotiation', value: stats.negotiation, color: 'indigo', status: 'NEGOTIATION' },
                     { label: 'Quotation Sent', value: stats.quotation, color: 'purple', status: 'QUOTATION_SENT' }
                 ].map((s, i) => (
-                    <div key={i} className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm">
-                        <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-2 truncate">{s.label}</p>
+                    <div key={i} className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm flex flex-col justify-center min-h-[100px]">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2 truncate leading-none">{s.label}</p>
                         <h4 className={`text-xl font-black ${s.color === 'emerald' ? 'text-emerald-600' : s.color === 'purple' ? 'text-purple-600' : s.color === 'amber' ? 'text-amber-500' : 'text-slate-800'}`}>
                             {s.value}
                         </h4>
@@ -129,36 +130,41 @@ export default function MyReferralLeads() {
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto">
                     <FiFilter className="text-slate-400 mr-1" />
-                    <select 
-                        className="bg-slate-50 border border-slate-100 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-xl focus:ring-purple-500 focus:border-purple-500" 
-                        value={statusFilter} 
-                        onChange={e => setStatusFilter(e.target.value)}
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="NEW">New</option>
-                        <option value="FOLLOW_UP">Follow-up</option>
-                        <option value="NEGOTIATION">Negotiation</option>
-                        <option value="QUOTATION_SENT">Quotation Sent</option>
-                        <option value="WON">Won</option>
-                        <option value="LOST">Lost</option>
-                    </select>
+                    <div className="w-full md:w-48">
+                        <SearchableSelect 
+                            options={[
+                                { label: 'Status', value: '' },
+                                { label: 'New', value: 'NEW' },
+                                { label: 'Follow-up', value: 'FOLLOW_UP' },
+                                { label: 'Negotiation', value: 'NEGOTIATION' },
+                                { label: 'Quotation Sent', value: 'QUOTATION_SENT' },
+                                { label: 'Won', value: 'WON' },
+                                { label: 'Lost', value: 'LOST' }
+                            ]}
+                            value={statusFilter} 
+                            onChange={(val) => setStatusFilter(val)}
+                            placeholder="Status"
+                            direction="down"
+                            triggerClassName="w-full bg-slate-50 border-slate-100 rounded-xl min-h-[40px] px-4 text-xs font-bold uppercase tracking-widest text-slate-700"
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* Referral Table - User Request: Lead Name | Client | Deal Value | Earning | Paid | Balance | Status | History */}
-            <div className="table-container shadow-xl shadow-slate-200/40 border border-slate-100 rounded-[32px] overflow-hidden bg-white">
+            {/* Referral Table */}
+            <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto shadow-xl shadow-slate-200/40 border border-slate-100 rounded-[32px] bg-white">
                 <table className="table-modern w-full">
                     <thead className="bg-slate-50/50 border-b border-slate-100">
-                        <tr>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 px-8 text-left">Lead Name</th>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-left">Client</th>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-right">Deal Value</th>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-right text-purple-600">Earning</th>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-right text-emerald-600">Paid</th>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-right text-amber-500">Balance</th>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-center">Status</th>
-                            <th className="text-[10px] font-bold uppercase tracking-widest py-6 text-center">History</th>
-                            {isAdmin && <th className="text-[10px] font-bold uppercase tracking-widest py-6 px-8 text-center">Action</th>}
+                        <tr className="whitespace-nowrap">
+                            <th className="text-[10px] font-black uppercase tracking-widest py-6 px-8 text-left">Lead Name</th>
+                            <th className="text-[10px] font-black uppercase tracking-widest py-6 text-left">Client</th>
+                            <th className="text-[10px] font-black uppercase tracking-widest py-6 text-right">Deal Value</th>
+                            <th className="text-[10px] font-black uppercase tracking-widest py-6 text-right text-purple-600">Earning</th>
+                            <th className="text-[10px] font-black uppercase tracking-widest py-6 text-right text-emerald-600">Paid</th>
+                            <th className="text-[10px] font-black uppercase tracking-widest py-6 text-right text-amber-500">Balance</th>
+                            <th className="text-[10px] font-black uppercase tracking-widest py-6 text-center">Status</th>
+                            <th className="text-[10px] font-black uppercase tracking-widest py-6 text-center">History</th>
+                            {isAdmin && <th className="text-[10px] font-black uppercase tracking-widest py-6 px-8 text-center">Action</th>}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">

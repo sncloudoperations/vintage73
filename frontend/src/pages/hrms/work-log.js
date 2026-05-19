@@ -157,6 +157,7 @@ export default function WorkLogPage() {
 
             {/* Table */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
                 {loading ? (
                     <div className="p-8 text-center text-slate-400">Loading work logs...</div>
                 ) : filteredLogs.length === 0 ? (
@@ -170,7 +171,7 @@ export default function WorkLogPage() {
                 ) : (
                     <table className="w-full text-sm text-left">
                         <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100">
-                            <tr>
+                            <tr className="whitespace-nowrap">
                                 <th className="px-6 py-3">Date</th>
                                 {isAdmin && <th className="px-6 py-3">Employee</th>}
                                 <th className="px-6 py-3">Description</th>
@@ -215,68 +216,64 @@ export default function WorkLogPage() {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
             {/* Add Work Log Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-in fade-in zoom-in duration-200">
-                        {/* Modal Header */}
-                        <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/40 rounded-t-2xl">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                             <div>
-                                <h2 className="text-lg font-semibold text-slate-800">{editingLog ? 'Edit Work Log' : 'Add Work Log'}</h2>
-                                <p className="text-slate-400 text-xs mt-0.5">{editingLog ? 'Update your activity record' : 'Record your daily work activities'}</p>
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight">{editingLog ? 'Edit Work Log' : 'Add Work Log'}</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">{editingLog ? 'Update your activity record' : 'Record your daily activities'}</p>
                             </div>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 transition-all"
-                            >
-                                <FiX />
+                            <button onClick={() => setShowModal(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiX size={20} />
                             </button>
-                        </div>
+                        </header>
 
-                        {/* Modal Body */}
-                        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                        <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto custom-scrollbar">
                             <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">
-                                    Date <span className="text-red-500">*</span>
-                                </label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Activity Date</label>
                                 <input
                                     required
                                     type="date"
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800"
                                     value={formData.date}
                                     onChange={e => setFormData({ ...formData, date: e.target.value })}
                                 />
                             </div>
+
                             <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-1.5">
-                                    Work Description <span className="text-red-500">*</span>
-                                </label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Work Description</label>
                                 <textarea
                                     required
-                                    rows={5}
-                                    placeholder="Describe the work done today..."
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                                    rows="5"
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 min-h-[150px]"
                                     value={formData.description}
                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                    placeholder="What activities did you complete today?"
                                 />
-                                <p className="text-xs text-slate-400 mt-1">{formData.description.length} characters</p>
+                                <div className="mt-2 flex justify-end">
+                                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{formData.description.length} Characters</span>
+                                </div>
                             </div>
-                            <div className="flex gap-3 pt-2">
+
+                            <div className="pt-4 flex gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-lg font-medium hover:bg-slate-50 transition"
+                                    className="flex-1 px-6 py-3.5 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex-1 bg-primary text-white py-2.5 rounded-lg font-medium hover:bg-primary-dark transition disabled:opacity-60"
+                                    className="flex-1 px-6 py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest disabled:opacity-50"
                                 >
-                                    {submitting ? 'Saving...' : editingLog ? 'Update Work Log' : 'Save Work Log'}
+                                    {submitting ? 'Saving...' : editingLog ? 'Update' : 'Save Log'}
                                 </button>
                             </div>
                         </form>

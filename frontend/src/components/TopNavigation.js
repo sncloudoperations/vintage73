@@ -11,9 +11,12 @@ export default function TopNavigation() {
   const { addTab } = useTabs();
   const [user, setUser] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [dropdownPos, setDropdownPos] = useState({ left: 0, top: 0 });
+  const menuScrollRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const searchRef = useRef(null);
+  const navRef = useRef(null);
   const closeTimeoutRef = useRef(null);
 
   useEffect(() => {
@@ -22,25 +25,64 @@ export default function TopNavigation() {
       setUser(JSON.parse(storedUser));
     }
 
-    // Click outside to close search
+    // Click outside to close search and module dropdowns
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setSearchTerm('');
+      }
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setActiveDropdown(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleMouseEnter = (groupTitle) => {
+  const updateDropdownPosition = () => {
+    if (activeDropdown) {
+      const activeBtn = document.querySelector(`[data-group="${activeDropdown}"]`);
+      if (activeBtn) {
+        const rect = activeBtn.getBoundingClientRect();
+        setDropdownPos({ left: rect.left, top: rect.bottom });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (activeDropdown) {
+      updateDropdownPosition();
+      const menuEl = menuScrollRef.current;
+      
+      window.addEventListener('resize', updateDropdownPosition);
+      window.addEventListener('scroll', updateDropdownPosition, true); // Capture phase for all scrolls
+      if (menuEl) menuEl.addEventListener('scroll', updateDropdownPosition);
+
+      return () => {
+        window.removeEventListener('resize', updateDropdownPosition);
+        window.removeEventListener('scroll', updateDropdownPosition, true);
+        if (menuEl) menuEl.removeEventListener('scroll', updateDropdownPosition);
+      };
+    }
+  }, [activeDropdown]);
+
+  const handleMouseEnter = (groupTitle, event) => {
+    // Ignore hover events on small screens/touch devices to prevent flickering
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
+
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
     }
     setActiveDropdown(groupTitle);
+    if (event && event.currentTarget) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setDropdownPos({ left: rect.left, top: rect.bottom });
+    }
   };
 
   const handleMouseLeave = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
+
     closeTimeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
     }, 300); // 300ms delay for stability
@@ -111,60 +153,84 @@ export default function TopNavigation() {
   }).filter(Boolean);
 
   return (
-    <nav className="bg-gradient-to-r from-primary-dark to-primary px-4 h-12 flex items-center justify-between gap-1 shadow-md relative z-30">
-      <div className="flex items-center gap-1">
-
-        {/* Dynamic Menu Groups */}
-        <div className="flex items-center gap-1">
-          {filteredGroups.map((group, idx) => (
-            <div
-              key={idx}
-              className="relative group h-full flex items-center"
-              onMouseEnter={() => handleMouseEnter(group.title)}
-              onMouseLeave={handleMouseLeave}
-            >
-              <button
-                onClick={() => setActiveDropdown(activeDropdown === group.title ? null : group.title)}
-                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold capitalize tracking-normal transition-all
-                        ${activeDropdown === group.title
-                    ? 'bg-white text-primary-dark shadow-sm transform scale-105'
-                    : 'text-white/90 hover:bg-white/20 hover:text-white'}
-                    `}
+    <nav className="bg-gradient-to-r from-primary-dark to-primary px-4 h-12 flex items-center justify-between gap-4 shadow-md relative z-[999]">
+        <div 
+          ref={navRef}
+          className="flex-1 flex items-center overflow-hidden"
+        >
+          {/* Dynamic Menu Groups - Always in one line, scrolls if needed */}
+          <div 
+            ref={menuScrollRef}
+            className="flex items-center gap-1 overflow-x-auto scroll-line lg:no-scrollbar whitespace-nowrap py-1 w-full scroll-smooth"
+          >
+            {filteredGroups.map((group, idx) => (
+              <div
+                key={idx}
+                className="relative group h-full flex items-center"
+                data-group={group.title}
+                onMouseEnter={(e) => handleMouseEnter(group.title, e)}
+                onMouseLeave={handleMouseLeave}
               >
-                {group.icon && <group.icon className="text-lg" />}
-                <span>{group.title.toLowerCase()}</span>
-                <FiChevronDown className={`transition-transform duration-200 ${activeDropdown === group.title ? 'rotate-180' : 'opacity-70'}`} />
-              </button>
-
-              {/* Dropdown Menu */}
-              {activeDropdown === group.title && (
-                <div
-                  className="absolute top-full left-0 w-64 pt-2 z-50"
-                  onMouseEnter={() => handleMouseEnter(group.title)}
+                <button
+                  onClick={(e) => {
+                      e.stopPropagation();
+                      if (activeDropdown === group.title) {
+                          setActiveDropdown(null);
+                      } else {
+                          // Update position for mobile before showing
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setDropdownPos({ left: rect.left, top: rect.bottom });
+                          setActiveDropdown(group.title);
+                      }
+                  }}
+                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold capitalize tracking-normal transition-all flex-shrink-0
+                          ${activeDropdown === group.title
+                      ? 'bg-white text-primary-dark shadow-sm transform scale-105'
+                      : 'text-white/90 hover:bg-white/20 hover:text-white'}
+                      `}
                 >
-                  <div className="bg-white border text-left border-gray-100 rounded-lg shadow-xl py-2 overflow-hidden">
-                    <div className="px-3 py-1.5 mb-1 bg-slate-50 border-b border-gray-50">
-                      <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{group.title} Modules</h4>
-                    </div>
-                    {group.items.map((item) => (
-                      <div
-                        key={item.path}
-                        onClick={() => handleItemClick(item)}
-                        className={`flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors
-                                            ${router.pathname === item.path ? 'bg-primary-light text-primary-dark font-medium border-l-4 border-primary' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-dark'}
-                                        `}
-                      >
-                        <item.icon className={router.pathname === item.path ? 'text-primary' : 'text-slate-400'} />
-                        {item.name}
+                  {group.icon && <group.icon className="text-lg flex-shrink-0" />}
+                  <span className="flex-shrink-0">{group.title.toLowerCase()}</span>
+                  <FiChevronDown className={`transition-transform duration-200 flex-shrink-0 ${activeDropdown === group.title ? 'rotate-180' : 'opacity-70'}`} />
+                </button>
+
+                {/* Dropdown Menu - Fixed positioning to avoid parent clipping */}
+                {activeDropdown === group.title && (
+                  <div
+                    className="fixed !z-[99999]"
+                    style={{ 
+                      top: `${dropdownPos.top}px`,
+                      left: typeof window !== 'undefined' && window.innerWidth < 768 ? '1rem' : `${dropdownPos.left}px`,
+                      right: typeof window !== 'undefined' && window.innerWidth < 768 ? '1rem' : 'auto',
+                      minWidth: '240px',
+                      paddingTop: '8px' // Buffer spacing
+                    }}
+                    onMouseEnter={() => handleMouseEnter(group.title)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <div className="bg-white border text-left border-gray-100 rounded-lg shadow-xl py-2 overflow-y-auto max-h-[70vh] md:max-h-none md:overflow-visible">
+                      <div className="px-3 py-1.5 mb-1 bg-slate-50 border-b border-gray-50">
+                        <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{group.title} Modules</h4>
                       </div>
-                    ))}
+                      {group.items.map((item) => (
+                        <div
+                          key={item.path}
+                          onClick={() => handleItemClick(item)}
+                          className={`flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors
+                                              ${router.pathname === item.path ? 'bg-primary-light text-primary-dark font-medium border-l-4 border-primary' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-dark'}
+                                          `}
+                        >
+                          <item.icon className={router.pathname === item.path ? 'text-primary' : 'text-slate-400'} />
+                          {item.name}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
 
       <div className="flex items-center gap-4">
@@ -177,14 +243,14 @@ export default function TopNavigation() {
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-48 pl-8 pr-3 py-1.5 text-sm bg-white border border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-800 placeholder-slate-400 shadow-sm/20 transition-all"
+            className="w-32 sm:w-48 pl-8 pr-3 py-1.5 text-sm bg-white border border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-800 placeholder-slate-400 shadow-sm/20 transition-all"
           />
         </div>
 
-        {/* Search Results Dropdown */}
+        {/* Search Results Dropdown - Also fixed on mobile */}
         {searchTerm && searchResults.length > 0 && (
-          <div className="absolute top-full right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-xl py-2 z-50 max-h-[400px] overflow-y-auto">
-            <div className="px-3 py-1.5 bg-slate-50 border-b border-gray-50 text-xs font-medium text-slate-400 uppercase mb-1">
+          <div className="fixed md:absolute top-[104px] md:top-full left-4 right-4 md:right-0 md:mt-2 md:w-72 bg-white border border-gray-200 rounded-lg shadow-xl py-2 !z-[99999] md:!z-[99999] max-h-[400px] overflow-y-auto">
+            <div className="flex flex-col bg-white border-b border-gray-200 sticky top-0 z-[9999] px-3 py-1.5 mb-1 text-xs font-medium text-slate-400 uppercase">
               Search Results
             </div>
             {searchResults.map((item, idx) => (
@@ -204,7 +270,7 @@ export default function TopNavigation() {
         )}
 
         {searchTerm && searchResults.length === 0 && (
-          <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl p-4 text-center z-50">
+          <div className="fixed md:absolute top-[104px] md:top-full left-4 right-4 md:right-0 md:mt-2 md:w-48 bg-white border border-gray-200 rounded-lg shadow-xl p-4 text-center z-[100] md:z-50">
             <p className="text-sm text-slate-500">No results found</p>
           </div>
         )}

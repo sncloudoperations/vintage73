@@ -15,20 +15,23 @@ export default function LeavesPage() {
     const isAdmin = user?.role === 'admin';
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
-            <header className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold text-slate-800">Leaves Management</h1>
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-800 leading-tight">Leaves Management</h1>
+                    <p className="text-slate-500 text-sm mt-1">Track and manage employee leave requests</p>
+                </div>
                 {isAdmin && (
-                    <div className="flex bg-slate-100 rounded-lg p-1">
+                    <div className="flex bg-slate-100 rounded-xl p-1 w-full md:w-auto">
                         <button
                             onClick={() => setActiveTab('my-leaves')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'my-leaves' ? 'bg-white shadow text-primary' : 'text-slate-500'}`}
+                            className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'my-leaves' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             My Leaves
                         </button>
                         <button
                             onClick={() => setActiveTab('manage')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === 'manage' ? 'bg-white shadow text-primary' : 'text-slate-500'}`}
+                            className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'manage' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             Approve Requests
                         </button>
@@ -96,30 +99,35 @@ function MyLeaves({ user }) {
             <div className="flex justify-end">
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    className="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-dark transition"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-black transition-all shadow-sm hover:shadow-lg"
                 >
-                    {showForm ? 'Cancel' : 'Apply for Leave'}
+                    {showForm ? 'Cancel Request' : 'Apply for Leave'}
                 </button>
             </div>
 
             {showForm && (
-                <div className="bg-white p-6 rounded-xl border border-slate-200 max-w-lg mx-auto">
-                    <h3 className="text-lg font-medium mb-4">New Leave Request</h3>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl max-w-xl mx-auto animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="mb-6">
+                        <h3 className="text-xl font-bold text-slate-900">New Leave Request</h3>
+                        <p className="text-slate-400 text-xs mt-0.5">Please provide accurate details for approval</p>
+                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Leave Type</label>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Leave Type</label>
                             <SearchableSelect
                                 options={leaveTypes.map(t => ({
                                     value: t.id,
-                                    label: `${t.name} (${t.isPaid ? 'Paid' : 'Unpaid'} - Limit: ${t.monthlyLimit || '∞'})`
+                                    label: `${t.name} (${t.isPaid ? 'Paid' : 'Unpaid'})`
                                 }))}
                                 value={formData.leaveTypeId}
                                 onChange={val => setFormData({ ...formData, leaveTypeId: val })}
                                 placeholder="Select Leave Type"
+                                className="w-full"
                             />
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-between p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
+                            <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Half Day Request</span>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -128,15 +136,14 @@ function MyLeaves({ user }) {
                                     checked={formData.isHalfDay}
                                     onChange={e => setFormData({ ...formData, isHalfDay: e.target.checked })}
                                 />
-                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                                <span className="ml-3 text-sm font-medium text-slate-700">Half Day</span>
+                                <div className="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
-                                <input required type="date" className="p-2 border rounded w-full"
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Start Date</label>
+                                <input required type="date" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800"
                                     value={formData.startDate} onChange={e => {
                                         setFormData(prev => ({
                                             ...prev,
@@ -147,8 +154,8 @@ function MyLeaves({ user }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">End Date</label>
-                                <input required type="date" className="p-2 border rounded w-full"
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">End Date</label>
+                                <input required type="date" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                                     value={formData.endDate}
                                     min={formData.startDate || undefined}
                                     onChange={e => setFormData({ ...formData, endDate: e.target.value })}
@@ -157,20 +164,23 @@ function MyLeaves({ user }) {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Reason</label>
-                            <textarea required className="p-2 border rounded w-full" rows="3"
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Reason for Leave</label>
+                            <textarea required className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 min-h-[100px]" rows="3"
+                                placeholder="e.g. Family function / Medical emergency"
                                 value={formData.reason} onChange={e => setFormData({ ...formData, reason: e.target.value })}
                             ></textarea>
                         </div>
-                        <button type="submit" className="w-full bg-primary text-white py-2 rounded font-medium">Submit Request</button>
+                        <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest">Submit Request</button>
                     </form>
                 </div>
             )}
 
+
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100">
-                        <tr>
+                <div className="table-container scroll-line lg:no-scrollbar">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100">
+                            <tr className="whitespace-nowrap">
                             <th className="px-6 py-3">Type</th>
                             <th className="px-6 py-3">Dates</th>
                             <th className="px-6 py-3">Reason</th>
@@ -202,6 +212,7 @@ function MyLeaves({ user }) {
                         {leaves.length === 0 && <tr><td colSpan="5" className="p-4 text-center">No leaves found</td></tr>}
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     );
@@ -235,9 +246,10 @@ function ManageLeaves() {
     return (
         <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100">
-                        <tr>
+                <div className="table-container scroll-line lg:no-scrollbar">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100">
+                            <tr className="whitespace-nowrap">
                             <th className="px-6 py-3">Employee</th>
                             <th className="px-6 py-3">Type</th>
                             <th className="px-6 py-3">Dates</th>
@@ -280,6 +292,7 @@ function ManageLeaves() {
                         ))}
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     );

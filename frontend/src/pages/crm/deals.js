@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { FiPlus, FiMoreHorizontal, FiDollarSign, FiCalendar, FiUser, FiArrowRight } from 'react-icons/fi';
+import { FiPlus, FiMoreHorizontal, FiDollarSign, FiCalendar, FiUser, FiArrowRight, FiX } from 'react-icons/fi';
+import SearchableSelect from '@/components/SearchableSelect';
 
 const STAGES = {
     'PROSPECTING': { label: 'Prospecting', color: 'bg-blue-50/50 border-blue-200 text-blue-700', bar: 'bg-blue-500' },
@@ -96,7 +97,7 @@ export default function Deals() {
 
     return (
         <div className="p-8 h-[calc(100vh-64px)] overflow-hidden flex flex-col bg-slate-50/50">
-            <div className="flex justify-between items-center mb-8 flex-shrink-0">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 flex-shrink-0">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Pipeline</h1>
                     <div className="flex items-center gap-2 mt-1">
@@ -110,11 +111,11 @@ export default function Deals() {
                         setForm({ title: '', value: '', stage: 'PROSPECTING', leadId: '', assignedTo: '', probability: 50 });
                         setShowModal(true);
                     }}
-                    className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-medium hover:bg-slate-800 transition shadow-xl shadow-slate-900/10 active:scale-95"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-medium hover:bg-slate-800 transition shadow-xl shadow-slate-900/10 active:scale-95"
                 >
                     <FiPlus className="text-lg" /> <span className="text-sm">New Deal</span>
                 </button>
-            </div>
+            </header>
 
             {/* Kanban Board */}
             <DragDropContext onDragEnd={onDragEnd}>
@@ -206,32 +207,62 @@ export default function Deals() {
                     </div>
                 </div>
             </DragDropContext>
-
-            {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-                        <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-slate-800">{editingId ? 'Edit Deal' : 'New Deal'}</h2>
-                            <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 font-medium transition-colors">✕</button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col mx-auto">
+
+                        {/* ── Header ── */}
+                        <header className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem] flex-shrink-0">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-400 uppercase mb-1.5 ml-1">Deal Title</label>
-                                <input required className="input w-full bg-slate-50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all font-semibold" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Website Redesign" />
+                                <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">{editingId ? 'Edit Deal' : 'New Deal'}</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Manage opportunity details</p>
+                            </div>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
+                            >
+                                <FiX size={18} />
+                            </button>
+                        </header>
+
+                        {/* ── Form ── */}
+                        <form onSubmit={handleSubmit} className="px-6 py-5 sm:px-8 sm:py-6 space-y-4 sm:space-y-5 overflow-y-auto custom-scrollbar flex-1 pb-2">
+
+                            {/* Deal Title */}
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Deal Title</label>
+                                <input
+                                    required
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold text-slate-800 text-sm placeholder:font-normal placeholder:text-slate-400"
+                                    value={form.title}
+                                    onChange={e => setForm({ ...form, title: e.target.value })}
+                                    placeholder="e.g. Website Redesign"
+                                />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            {/* Value + Stage — always 2-col, equal widths */}
+                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-400 uppercase mb-1.5 ml-1">Value</label>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Value</label>
                                     <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">₹</span>
-                                        <input type="number" required className="input w-full bg-slate-50 border-slate-200 focus:bg-white pl-8 font-medium text-primary" value={form.value} onChange={e => setForm({ ...form, value: e.target.value })} placeholder="0.00" />
+                                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm select-none">₹</span>
+                                        <input
+                                            type="number"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-200 pl-8 pr-3 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold text-slate-800 text-sm"
+                                            value={form.value}
+                                            onChange={e => setForm({ ...form, value: e.target.value })}
+                                            placeholder="0.00"
+                                        />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-400 uppercase mb-1.5 ml-1">Stage</label>
-                                    <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.stage} onChange={e => setForm({ ...form, stage: e.target.value })}>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Stage</label>
+                                    <select
+                                        className="w-full bg-slate-50 border border-slate-200 px-3 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold text-slate-800 appearance-none text-sm"
+                                        value={form.stage}
+                                        onChange={e => setForm({ ...form, stage: e.target.value })}
+                                    >
                                         {Object.entries(STAGES).map(([key, config]) => (
                                             <option key={key} value={key}>{config.label}</option>
                                         ))}
@@ -239,19 +270,30 @@ export default function Deals() {
                                 </div>
                             </div>
 
+                            {/* Related Lead */}
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1.5 ml-1">Related Lead</label>
-                                <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.leadId} onChange={e => setForm({ ...form, leadId: e.target.value })}>
-                                    <option value="">Select Lead</option>
-                                    {leads.map(l => (
-                                        <option key={l.id} value={l.id}>{l.name} ({l.company || 'No Company'})</option>
-                                    ))}
-                                </select>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Related Lead</label>
+                                <SearchableSelect
+                                    direction="down"
+                                    placeholder="Select Lead"
+                                    value={form.leadId}
+                                    onChange={val => setForm({ ...form, leadId: val })}
+                                    options={[
+                                        { value: '', label: 'Select Lead' },
+                                        ...leads.map(l => ({ value: l.id, label: `${l.name}${l.company ? ' (' + l.company + ')' : ''}` }))
+                                    ]}
+                                    triggerClassName="min-h-[46px] !bg-slate-50 !shadow-none !border-slate-200 !rounded-xl"
+                                />
                             </div>
 
+                            {/* Assigned To */}
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1.5 ml-1">Assigned To</label>
-                                <select className="input w-full bg-slate-50 border-slate-200 focus:bg-white font-medium" value={form.assignedTo} onChange={e => setForm({ ...form, assignedTo: e.target.value })}>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Assigned To</label>
+                                <select
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold text-slate-800 appearance-none text-sm"
+                                    value={form.assignedTo}
+                                    onChange={e => setForm({ ...form, assignedTo: e.target.value })}
+                                >
                                     <option value="">Unassigned</option>
                                     {users.map(u => (
                                         <option key={u.id} value={u.id}>{u.name || u.username}</option>
@@ -259,17 +301,43 @@ export default function Deals() {
                                 </select>
                             </div>
 
-                            <div>
-                                <div className="flex justify-between items-center mb-1.5 ml-1">
-                                    <label className="block text-xs font-medium text-slate-400 uppercase">Probability</label>
-                                    <span className="text-xs font-medium text-primary bg-primary-light/10 px-2 py-0.5 rounded-full">{form.probability}%</span>
+                            {/* Probability */}
+                            <div className="bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3.5">
+                                <div className="flex justify-between items-center mb-2.5">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Probability</label>
+                                    <span className="text-[10px] font-bold text-primary bg-primary-light/10 px-2.5 py-0.5 rounded-full tracking-wider">{form.probability}%</span>
                                 </div>
-                                <input type="range" min="0" max="100" step="10" className="w-full accent-primary h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer" value={form.probability} onChange={e => setForm({ ...form, probability: e.target.value })} />
+                                <input
+                                    type="range"
+                                    min="0" max="100" step="10"
+                                    className="w-full accent-primary h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer touch-pan-x"
+                                    value={form.probability}
+                                    onChange={e => setForm({ ...form, probability: e.target.value })}
+                                />
+                                <div className="flex justify-between mt-1.5">
+                                    <span className="text-[9px] text-slate-300 font-semibold">0%</span>
+                                    <span className="text-[9px] text-slate-300 font-semibold">50%</span>
+                                    <span className="text-[9px] text-slate-300 font-semibold">100%</span>
+                                </div>
                             </div>
 
-                            <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-xl font-medium hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 active:scale-[0.98]">
-                                {editingId ? 'Update Deal' : 'Create Deal'}
-                            </button>
+                            {/* Action Buttons */}
+                            <div className="flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="flex-1 py-3.5 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 active:scale-95 transition-all text-[11px] uppercase tracking-widest"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-black active:scale-95 transition-all shadow-lg shadow-slate-900/15 text-[11px] uppercase tracking-widest"
+                                >
+                                    {editingId ? 'Update Deal' : 'Create Deal'}
+                                </button>
+                            </div>
+
                         </form>
                     </div>
                 </div>

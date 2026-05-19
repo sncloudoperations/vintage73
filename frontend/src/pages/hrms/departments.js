@@ -52,10 +52,10 @@ export default function Departments() {
     if (loading) return <div className="p-8">Loading...</div>;
 
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-6">
-            <div className="flex justify-between items-center">
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2 leading-tight">
                         <FiLayers className="text-primary" />
                         Departments Master
                     </h1>
@@ -63,18 +63,18 @@ export default function Departments() {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-medium hover:bg-primary-dark transition shadow-sm"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-black transition-all shadow-sm hover:shadow-lg"
                 >
                     <FiPlus /> Add New Department
                 </button>
-            </div>
+            </header>
 
             {/* List Table */}
             <div className="card shadow-md border border-slate-200">
-                <div className="table-container">
+                <div className="table-container scroll-line lg:no-scrollbar">
                     <table className="table-modern">
                         <thead>
-                            <tr>
+                            <tr className="whitespace-nowrap">
                                 <th style={{ width: '10%' }}>#</th>
                                 <th style={{ width: '40%' }}>Department Name</th>
                                 <th style={{ width: '30%' }}>Employees</th>
@@ -124,41 +124,44 @@ export default function Departments() {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-                        <header className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h3 className="text-lg font-medium text-slate-800">Add Department</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-900">Add Department</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Define a new organizational unit</p>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
                                 <FiX size={20} />
                             </button>
                         </header>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                        <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Department Name</label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Department Name</label>
                                 <input
                                     required
                                     autoFocus
-                                    className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800"
                                     placeholder="e.g. Sales & Marketing"
                                     value={form.name}
                                     onChange={e => setForm({ ...form, name: e.target.value })}
                                 />
-                                <p className="text-xs text-slate-500 mt-1">Enter a unique department name for your organization.</p>
+                                <p className="text-[10px] text-slate-400 mt-2 font-medium">Use a descriptive name that clearly identifies the department's function.</p>
                             </div>
 
-                            <div className="pt-2 flex gap-3">
+                            <div className="pt-4 flex gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-4 py-2.5 border border-slate-300 rounded-lg font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                                    className="flex-1 px-6 py-3.5 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors shadow-sm"
+                                    className="flex-1 px-6 py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest"
                                 >
-                                    Create Department
+                                    Create Dept
                                 </button>
                             </div>
                         </form>

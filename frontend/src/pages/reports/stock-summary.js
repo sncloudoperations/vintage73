@@ -5,6 +5,7 @@ import {
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
+import SearchableSelect from '@/components/SearchableSelect';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function StockSummary() {
@@ -97,28 +98,28 @@ export default function StockSummary() {
     return (
         <div className="p-6 max-w-[1600px] mx-auto">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-800">Stock Summary Report</h1>
                     <p className="text-slate-500 text-sm mt-1">{filteredSummary.length} products analyzed</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full sm:w-auto">
                     <button
                         onClick={handlePrint}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
                     >
                         <FiPrinter size={16} /> Print Report
                     </button>
                     <button
                         onClick={handleExport}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
                     >
                         <FiDownload size={16} /> Export CSV
                     </button>
                     <button
                         onClick={fetchReport}
                         disabled={loading}
-                        className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm disabled:opacity-50"
+                        className="w-full sm:w-auto bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-sm disabled:opacity-50"
                         style={{ backgroundColor: theme.primaryColor }}
                     >
                         <FiRefreshCw size={16} className={loading ? 'animate-spin' : ''} /> {loading ? "Loading..." : "Generate"}
@@ -149,26 +150,33 @@ export default function StockSummary() {
                     </div>
                     <div className="flex flex-col gap-1">
                         <label className="text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1">Branch</label>
-                        <select
-                            disabled={user?.role !== 'admin'}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-slate-50"
-                            value={selectedBranch}
-                            onChange={e => setSelectedBranch(e.target.value)}
-                        >
-                            <option value="all">All Branches</option>
-                            {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                        </select>
+                        <div className={user?.role !== 'admin' ? 'pointer-events-none opacity-60' : ''}>
+                            <SearchableSelect
+                                options={[
+                                    { label: 'All Branches', value: 'all' },
+                                    ...branches.map(b => ({ label: b.name, value: b.id }))
+                                ]}
+                                value={selectedBranch}
+                                onChange={val => setSelectedBranch(val)}
+                                direction="down"
+                                triggerClassName={`h-[38px] px-3 border border-slate-300 rounded-lg text-sm ${user?.role !== 'admin' ? 'bg-slate-50' : 'bg-white'}`}
+                                placeholder="All Branches"
+                            />
+                        </div>
                     </div>
                     <div className="flex flex-col gap-1">
                         <label className="text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1">Category</label>
-                        <select
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        <SearchableSelect
+                            options={[
+                                { label: 'All Categories', value: 'all' },
+                                ...categories.map(c => ({ label: c.name, value: c.id }))
+                            ]}
                             value={selectedCategory}
-                            onChange={e => setSelectedCategory(e.target.value)}
-                        >
-                            <option value="all">All Categories</option>
-                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                        </select>
+                            onChange={val => setSelectedCategory(val)}
+                            direction="down"
+                            triggerClassName="h-[38px] px-3 border border-slate-300 rounded-lg text-sm bg-white"
+                            placeholder="All Categories"
+                        />
                     </div>
                 </div>
 
@@ -197,7 +205,7 @@ export default function StockSummary() {
                     </div>
 
                     <div className="table-container">
-                        <table className="table-modern">
+                        <table className="table-modern" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
                                     <th style={{ width: '4%' }}>#</th>
@@ -211,7 +219,7 @@ export default function StockSummary() {
                             <tbody>
                                 {filteredSummary.length === 0 ? (
                                     <tr>
-                                        <td colSpan="6" className="text-center py-12 text-slate-400 italic">
+                                        <td colSpan="6" className="text-left sm:text-center pl-4 sm:pl-0 py-12 text-slate-400 italic whitespace-nowrap">
                                             No movement data found for the selected period
                                         </td>
                                     </tr>
@@ -240,27 +248,26 @@ export default function StockSummary() {
                                 )}
                             </tbody>
                         </table>
-                    </div>
-
-                    {/* Summary Footer */}
-                    <div className="bg-slate-50 border-t border-slate-300 px-6 py-4 flex justify-between items-center">
-                        <div className="text-sm text-slate-600">
-                            Summary for <span className="font-semibold">{filteredSummary.length}</span> items
-                        </div>
-                        <div className="flex gap-10 text-[13px]">
-                            <div className="flex flex-col items-center">
-                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Total In</span>
-                                <span className="font-medium text-emerald-600">+{filteredSummary.reduce((sum, i) => sum + i.periodIn, 0).toLocaleString()}</span>
+                        {/* Summary Footer */}
+                        <div className="bg-slate-50 border-t border-slate-300 px-6 py-4 flex justify-between items-center" style={{ minWidth: '800px' }}>
+                            <div className="text-sm text-slate-600 whitespace-nowrap">
+                                Summary for <span className="font-semibold">{filteredSummary.length}</span> items
                             </div>
-                            <div className="flex flex-col items-center">
-                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Total Out</span>
-                                <span className="font-medium text-red-500">-{filteredSummary.reduce((sum, i) => sum + i.periodOut, 0).toLocaleString()}</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Closing Value</span>
-                                <span className="font-medium text-slate-900 text-base" style={{ color: theme.primaryColor }}>
-                                    {filteredSummary.reduce((sum, i) => sum + i.closingStock, 0).toLocaleString()}
-                                </span>
+                            <div className="flex gap-10 text-[13px]">
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest whitespace-nowrap">Total In</span>
+                                    <span className="font-medium text-emerald-600">+{filteredSummary.reduce((sum, i) => sum + i.periodIn, 0).toLocaleString()}</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest whitespace-nowrap">Total Out</span>
+                                    <span className="font-medium text-red-500">-{filteredSummary.reduce((sum, i) => sum + i.periodOut, 0).toLocaleString()}</span>
+                                </div>
+                                <div className="flex flex-col items-end">
+                                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest whitespace-nowrap">Closing Value</span>
+                                    <span className="font-medium text-slate-900 text-base" style={{ color: theme.primaryColor }}>
+                                        {filteredSummary.reduce((sum, i) => sum + i.closingStock, 0).toLocaleString()}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

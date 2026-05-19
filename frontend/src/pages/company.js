@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { FiImage, FiBriefcase, FiGlobe, FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function CompanyProfile() {
   const [formData, setFormData] = useState({
@@ -181,16 +182,12 @@ export default function CompanyProfile() {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">State</label>
-                    <select
-                      className="input w-full"
+                    <SearchableSelect
+                      options={states.map(s => ({ label: s.name, value: s.name }))}
                       value={formData.state || ''}
-                      onChange={e => setFormData({ ...formData, state: e.target.value })}
-                    >
-                      <option value="">Select State...</option>
-                      {states.map(state => (
-                        <option key={state.id} value={state.name}>{state.name}</option>
-                      ))}
-                    </select>
+                      onChange={val => setFormData({ ...formData, state: val })}
+                      placeholder="Select State..."
+                    />
                   </div>
 
                   <div>
@@ -220,16 +217,13 @@ export default function CompanyProfile() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-slate-700 mb-1">Company Default Bank</label>
-                        <select
-                          className="input w-full"
+                        <SearchableSelect
+                          options={banks.map(b => ({ label: `${b.name} - ${b.accountNumber}`, value: b.id }))}
                           value={formData.bankId || ''}
-                          onChange={e => setFormData({ ...formData, bankId: e.target.value })}
-                        >
-                          <option value="">Select Bank from Master...</option>
-                          {banks.map(bank => (
-                            <option key={bank.id} value={bank.id}>{bank.name} - {bank.accountNumber}</option>
-                          ))}
-                        </select>
+                          onChange={val => setFormData({ ...formData, bankId: val })}
+                          placeholder="Select Bank from Master..."
+                          direction="down"
+                        />
                         <p className="text-[10px] text-slate-400 mt-1.5 italic">* This bank's details will appear as the "Source Bank" on your Salary Bank Statements.</p>
                       </div>
                     </div>

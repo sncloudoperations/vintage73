@@ -97,10 +97,10 @@ export default function SalaryAdvance() {
         .reduce((sum, a) => sum + parseFloat(a.amount), 0);
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <header className="flex justify-between items-center mb-8">
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2 leading-tight">
                         <FiDollarSign className="text-primary" />
                         Salary Advance
                     </h1>
@@ -108,7 +108,7 @@ export default function SalaryAdvance() {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-black transition-all shadow-sm hover:shadow-lg"
                 >
                     <FiPlus /> Request Advance
                 </button>
@@ -116,13 +116,15 @@ export default function SalaryAdvance() {
 
             {/* Pending Advances Alert */}
             {!isAdmin && pendingTotal > 0 && (
-                <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <div className="flex items-start gap-3">
-                        <FiCheckCircle className="text-amber-600 mt-0.5 flex-shrink-0" size={20} />
+                <div className="bg-amber-50 border border-amber-200 rounded-[1.5rem] p-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 border border-amber-200/50">
+                            <FiCheckCircle className="text-amber-600" size={20} />
+                        </div>
                         <div>
-                            <p className="text-sm font-medium text-amber-900">Pending Deduction</p>
-                            <p className="text-xs text-amber-700 mt-1">
-                                You have {currencySymbol}{pendingTotal.toFixed(2)} in approved advances that will be deducted from your next salary.
+                            <p className="text-sm font-bold text-amber-900 uppercase tracking-wider">Pending Deduction</p>
+                            <p className="text-xs text-amber-700 mt-1 font-medium leading-relaxed">
+                                You have <span className="font-bold text-amber-900">{currencySymbol}{pendingTotal.toLocaleString()}</span> in approved advances that will be automatically deducted from your next generated salary.
                             </p>
                         </div>
                     </div>
@@ -130,10 +132,10 @@ export default function SalaryAdvance() {
             )}
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="overflow-x-auto">
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100 uppercase text-[10px] tracking-wider">
-                            <tr>
+                            <tr className="whitespace-nowrap">
                                 <th className="px-6 py-4 text-left">Employee</th>
                                 <th className="px-6 py-4 text-right">Amount</th>
                                 <th className="px-6 py-4 text-left">Reason</th>
@@ -223,58 +225,66 @@ export default function SalaryAdvance() {
                         </tbody>
                     </table>
                 </div>
-            </div>
+                </div>
 
             {/* Request Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-                        <div className="p-6 border-b border-slate-100">
-                            <h2 className="text-xl font-semibold text-slate-800">Request Salary Advance</h2>
-                            <p className="text-sm text-slate-500 mt-1">Submit a request for salary advance</p>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
-                                    Amount ({currencySymbol})
-                                </label>
-                                <input
-                                    required
-                                    type="number"
-                                    step="0.01"
-                                    min="0.01"
-                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all font-medium text-lg"
-                                    value={formData.amount}
-                                    onChange={e => setFormData({ ...formData, amount: e.target.value })}
-                                    placeholder="0.00"
-                                />
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight">Request Advance</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Submit salary advance request</p>
                             </div>
+                            <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiX size={20} />
+                            </button>
+                        </header>
+
+                        <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto">
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
-                                    Reason
-                                </label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Amount ({currencySymbol})</label>
+                                <div className="relative">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">{currencySymbol}</div>
+                                    <input
+                                        required
+                                        type="number"
+                                        step="0.01"
+                                        min="0.01"
+                                        className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-xl text-slate-800"
+                                        value={formData.amount}
+                                        onChange={e => setFormData({ ...formData, amount: e.target.value })}
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                                <p className="text-[10px] text-slate-400 mt-2 font-medium italic">Approved amount will be deducted from your next payslip.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Reason for Advance</label>
                                 <textarea
                                     required
-                                    rows="4"
-                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all resize-none"
+                                    rows="3"
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 min-h-[100px]"
                                     value={formData.reason}
                                     onChange={e => setFormData({ ...formData, reason: e.target.value })}
-                                    placeholder="Explain why you need the advance..."
+                                    placeholder="e.g. Medical emergency / Family function"
                                 />
                             </div>
-                            <div className="flex gap-3 pt-4">
+
+                            <div className="pt-4 flex gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-4 py-3 border border-slate-200 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-50 transition-all"
+                                    className="flex-1 px-6 py-3.5 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-medium text-sm hover:bg-black transition-all"
+                                    className="flex-1 px-6 py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest"
                                 >
-                                    Submit Request
+                                    Submit
                                 </button>
                             </div>
                         </form>

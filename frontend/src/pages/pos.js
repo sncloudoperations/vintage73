@@ -883,10 +883,10 @@ const CURRENCY_SYMBOLS = {
     };
 
     return (
-        <div className="flex h-[calc(100vh-80px)] gap-4 overflow-hidden">
+        <div className="flex flex-col md:flex-row h-auto md:h-[calc(100vh-80px)] gap-4 overflow-y-auto md:overflow-hidden">
 
             {/* LEFT PANEL: PRODUCTS (60%) */}
-            <div className="flex-[3] flex flex-col bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="w-full md:flex-[3] flex flex-col bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden min-h-[500px] md:min-h-0">
                 {/* Search Bar */}
                 <div className="p-4 border-b border-slate-100 bg-white z-10">
                     <div className="relative">
@@ -905,7 +905,7 @@ const CURRENCY_SYMBOLS = {
 
                 {/* Product Grid */}
                 <div className="flex-1 overflow-y-auto p-4 bg-slate-50/50">
-                    <div className="grid grid-cols-3 xl:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                         {products.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(product => (
                             <div key={product.id}
                                 className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group active:scale-95"
@@ -936,7 +936,7 @@ const CURRENCY_SYMBOLS = {
             </div>
 
             {/* RIGHT PANEL: CART & NUMPAD (40%) */}
-            <div className="md:w-[400px] lg:w-[450px] xl:w-[500px] flex flex-col bg-white h-full border-l border-slate-200">
+            <div className="w-full md:w-[400px] lg:w-[450px] xl:w-[500px] flex flex-col bg-white h-auto md:h-full border-l border-slate-200">
 
                 {/* Header: Cashier, Salesman & Customer - Compact View */}
                 <div className="bg-white border-b border-slate-200 p-4 space-y-3">
@@ -1122,7 +1122,7 @@ const CURRENCY_SYMBOLS = {
                 </div>
 
                 {/* Cart Headers */}
-                <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex text-[10px] font-medium text-slate-500 uppercase tracking-wide">
+                <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex text-[10px] font-medium text-slate-500 uppercase tracking-wide sticky top-0 z-10">
                     <div className="flex-[3]">Item</div>
                     <div className="flex-[2] text-center">Qty</div>
                     <div className="flex-[2] text-right">Price</div>

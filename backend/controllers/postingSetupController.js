@@ -49,7 +49,7 @@ exports.getSchemaMetadata = asyncHandler(async (req, res) => {
             fields: ['totalCost', 'taxAmount', 'quantity']
         },
         {
-            id: 'StockTransfer',
+            id: 'StockReceipt',
             name: 'Stock Receipt',
             fields: ['totalCost', 'taxAmount', 'quantity']
         },

@@ -71,6 +71,7 @@ export default function Layout({ children }) {
   const fetchUnreadCount = async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) return;
       const res = await api.get('/chat/conversations');
       const total = res.data.reduce((sum, c) => sum + (c.unreadCount || 0), 0);
       setTotalUnread(total);
@@ -101,7 +102,7 @@ export default function Layout({ children }) {
       )}
 
       {showNavigation && (
-        <div className="flex flex-col bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div className="flex flex-col bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-[9999]">
           {/* 1. Global Header */}
           <header className="h-14 flex items-center justify-between px-6 border-b border-gray-100">
             {/* Left - Logo */}

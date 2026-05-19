@@ -198,14 +198,14 @@ export default function Purchase() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Purchase Management</h1>
           <p className="text-slate-500 text-sm mt-1">Stock Inward & History</p>
         </div>
 
         {activeTab === 'entry' && (
-          <div className="flex items-center gap-3 bg-primary-light px-4 py-2 rounded-xl border border-primary/20">
+          <div className="flex items-center gap-3 bg-primary-light px-4 py-2 rounded-xl border border-primary/20 w-full md:w-auto justify-between md:justify-end">
             <div className="text-right">
               <p className="text-xs text-primary font-medium uppercase tracking-wider">Estimate Total</p>
               <p className="text-2xl font-bold text-primary-dark">₹ {grandTotal.toFixed(2)}</p>
@@ -241,6 +241,7 @@ export default function Purchase() {
                 value={supplier}
                 onChange={val => setSupplier(val)}
                 placeholder="-- Choose Supplier --"
+                direction="down"
               />
               <div className="text-xs text-slate-400 mt-1">
                 Supplier not in list? <a href="/suppliers" className="text-primary hover:underline">Add new supplier</a>
@@ -256,6 +257,7 @@ export default function Purchase() {
                   value={selectedBranch}
                   onChange={val => setSelectedBranch(val)}
                   placeholder="-- Choose Branch --"
+                  direction="down"
                 />
                 <div className="text-xs text-slate-400 mt-1">Req. for Inventory</div>
               </div>
@@ -274,23 +276,25 @@ export default function Purchase() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Payment Method</label>
-              <select
-                className="input w-full p-2 border rounded-lg"
+              <SearchableSelect
+                options={[
+                  { value: 'Cash', label: 'Cash' },
+                  { value: 'Bank Transfer', label: 'Bank Transfer' },
+                  { value: 'UPI', label: 'UPI / GPay' },
+                  { value: 'Cheque', label: 'Cheque' },
+                  { value: 'Credit', label: 'Credit (Unpaid)' }
+                ]}
                 value={paymentMethod}
-                onChange={e => setPaymentMethod(e.target.value)}
-              >
-                <option value="Cash">Cash</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="UPI">UPI / GPay</option>
-                <option value="Cheque">Cheque</option>
-                <option value="Credit">Credit (Unpaid)</option>
-              </select>
+                onChange={val => setPaymentMethod(val)}
+                placeholder="Select Method"
+                direction="down"
+              />
               <p className="text-xs text-slate-400 mt-1">Affects Supplier Payments</p>
             </div>
           </div>
 
-          <div className="table-container mb-6 overflow-x-auto min-h-[400px] pb-32">
-            <table className="table-modern w-full">
+          <div className="table-container scroll-line lg:no-scrollbar mb-6 overflow-x-auto min-h-[400px] pb-32">
+            <table className="table-modern w-full min-w-[800px]">
               <thead>
                 <tr className="bg-slate-50 text-left">
                   <th className="p-3 w-1/3">Product</th>
@@ -313,6 +317,7 @@ export default function Purchase() {
                         value={row.productId}
                         onChange={val => handleRowChange(index, 'productId', val)}
                         placeholder="Select Product..."
+                        direction="down"
                         className="min-w-[300px]"
                       />
                     </td>
@@ -337,10 +342,10 @@ export default function Purchase() {
                 ))}
               </tbody>
             </table>
-            <div className="mt-4 flex justify-end gap-8 px-4 text-sm font-medium text-slate-600">
-              <div>SubTotal: ₹ {rows.reduce((s, r) => s + (r.quantity * r.unitCost), 0).toFixed(2)}</div>
-              <div>Tax: ₹ {rows.reduce((s, r) => s + ((r.quantity * r.unitCost) * ((r.taxPercent || 0) / 100)), 0).toFixed(2)}</div>
-              <div className="text-primary-dark font-bold text-lg">Total: ₹ {grandTotal.toFixed(2)}</div>
+            <div className="mt-6 flex flex-wrap justify-end items-center gap-4 md:gap-8 px-4 py-4 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="text-sm font-medium text-slate-600">SubTotal: <span className="text-slate-900 ml-1">₹ {rows.reduce((s, r) => s + (r.quantity * r.unitCost), 0).toFixed(2)}</span></div>
+              <div className="text-sm font-medium text-slate-600">Tax: <span className="text-slate-900 ml-1">₹ {rows.reduce((s, r) => s + ((r.quantity * r.unitCost) * ((r.taxPercent || 0) / 100)), 0).toFixed(2)}</span></div>
+              <div className="text-primary-dark font-bold text-xl bg-white px-4 py-2 rounded-lg shadow-sm border border-primary/10">Total: ₹ {grandTotal.toFixed(2)}</div>
             </div>
           </div>
 
@@ -352,23 +357,23 @@ export default function Purchase() {
       ) : (
         <div>
           {/* Filters */}
-          <div className="card mb-4 border-0 shadow-sm bg-white p-4 rounded-xl flex flex-wrap gap-4 items-end">
+          <div className="card mb-4 border-0 shadow-sm bg-white p-4 rounded-xl flex flex-col md:flex-row gap-4 items-start md:items-end">
             {user?.role === 'admin' && (
-              <div className="min-w-[150px]">
+              <div className="w-full md:min-w-[150px] md:w-auto">
                 <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Branch</label>
-                <select
-                  className="input w-full py-2 border rounded-lg px-3"
+                <SearchableSelect
+                  options={[
+                    { value: 'all', label: 'All Branches' },
+                    ...branches.map(b => ({ value: b.id, label: b.name }))
+                  ]}
                   value={selectedBranch}
-                  onChange={e => setSelectedBranch(e.target.value)}
-                >
-                  <option value="all">All Branches</option>
-                  {branches.map(b => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
-                  ))}
-                </select>
+                  onChange={val => setSelectedBranch(val)}
+                  placeholder="Select Branch"
+                  direction="down"
+                />
               </div>
             )}
-            <div className="flex-1 min-w-[200px]">
+            <div className="w-full md:flex-1 md:min-w-[200px]">
               <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Search Supplier / Inv #</label>
               <input
                 type="text"
@@ -378,36 +383,36 @@ export default function Purchase() {
                 onChange={e => setHistSearch(e.target.value)}
               />
             </div>
-            <div>
+            <div className="w-full md:w-auto">
               <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Start Date</label>
               <input
                 type="date"
-                className="input py-2 border rounded-lg px-3"
+                className="input w-full py-2 border rounded-lg px-3"
                 value={histStartDate}
                 onChange={e => setHistStartDate(e.target.value)}
               />
             </div>
-            <div>
+            <div className="w-full md:w-auto">
               <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">End Date</label>
               <input
                 type="date"
-                className="input py-2 border rounded-lg px-3"
+                className="input w-full py-2 border rounded-lg px-3"
                 value={histEndDate}
                 onChange={e => setHistEndDate(e.target.value)}
               />
             </div>
             <button
-              className="text-sm font-medium text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="w-full md:w-auto text-sm font-medium text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
               onClick={() => { setHistSearch(''); setHistStartDate(''); setHistEndDate(''); }}
             >
               <FiRefreshCw size={14} /> Clear
             </button>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 text-slate-700 border-b border-slate-200">
-                <tr>
+          <div className="table-container scroll-line lg:no-scrollbar">
+            <table className="table-modern w-full min-w-[900px] text-sm text-left">
+              <thead>
+                <tr className="whitespace-nowrap">
                   <th className="p-4">Date</th>
                   <th className="p-4">Supplier</th>
                   <th className="p-4">Inv No (Ref)</th>
@@ -433,23 +438,25 @@ export default function Purchase() {
                       <td className="p-4 text-center">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium uppercase ${p.status === 'CANCELLED' ? 'bg-red-100 text-red-700' : 'bg-primary-light text-primary-dark'}`}>{p.status}</span>
                       </td>
-                      <td className="p-4 text-center flex justify-center gap-2">
-                        <button
-                          onClick={() => setSelectedPurchase(p)}
-                          className="p-2 text-slate-400 hover:text-primary hover:bg-primary-light rounded-lg transition-all"
-                          title="View Details"
-                        >
-                          <FiEye size={18} />
-                        </button>
-                        {p.status !== 'CANCELLED' && (
+                      <td className="p-4 text-center">
+                        <div className="flex justify-center gap-1 sm:gap-2">
                           <button
-                            onClick={() => handleDelete(p.id)}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                            title="Cancel Purchase"
+                            onClick={() => setSelectedPurchase(p)}
+                            className="p-2 text-slate-400 hover:text-primary hover:bg-primary-light rounded-lg transition-all"
+                            title="View Details"
                           >
-                            <FiTrash size={18} />
+                            <FiEye size={18} />
                           </button>
-                        )}
+                          {p.status !== 'CANCELLED' && (
+                            <button
+                              onClick={() => handleDelete(p.id)}
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                              title="Cancel Purchase"
+                            >
+                              <FiTrash size={18} />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))

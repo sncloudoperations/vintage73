@@ -48,7 +48,7 @@ export default function WhatsAppHistory() {
             className="p-6 min-h-screen bg-slate-50"
         >
             <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                     <div className="flex items-center gap-4">
                         <Link href="/settings/whatsapp">
                             <button className="p-2 hover:bg-white rounded-xl border border-transparent hover:border-slate-200 transition-all text-slate-400 hover:text-slate-600">
@@ -65,7 +65,7 @@ export default function WhatsAppHistory() {
                     <button
                         onClick={fetchLogs}
                         disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 font-medium text-sm hover:shadow-sm transition-all active:scale-95 disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 font-medium text-sm hover:shadow-sm transition-all active:scale-95 disabled:opacity-50 self-start sm:self-auto"
                     >
                         <FiRefreshCw className={loading ? 'animate-spin' : ''} /> Refresh
                     </button>
@@ -132,13 +132,13 @@ export default function WhatsAppHistory() {
                 {/* History Table */}
                 <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden min-h-[400px]">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left">
+                        <table className="w-full text-left" style={{ minWidth: '700px' }}>
                             <thead className="bg-slate-50 border-b border-slate-100 uppercase text-[10px] tracking-widest font-medium text-slate-400">
                                 <tr>
-                                    <th className="px-6 py-5">Status</th>
-                                    <th className="px-6 py-5">Customer Mob</th>
-                                    <th className="px-6 py-5">Message Content</th>
-                                    <th className="px-6 py-5 text-right">Sent Time</th>
+                                    <th className="px-6 py-5 whitespace-nowrap">Status</th>
+                                    <th className="px-6 py-5 whitespace-nowrap">Customer Mob</th>
+                                    <th className="px-6 py-5 whitespace-nowrap">Message Content</th>
+                                    <th className="px-6 py-5 text-right whitespace-nowrap">Sent Time</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50 text-sm">

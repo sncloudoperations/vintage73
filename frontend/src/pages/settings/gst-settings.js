@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { FiSave, FiSettings, FiTruck, FiFileText, FiDollarSign } from 'react-icons/fi';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function GSTSettings() {
   const [settings, setSettings] = useState({
@@ -101,17 +102,19 @@ export default function GSTSettings() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-[10px] font-medium text-primary mb-1 uppercase tracking-widest">GSP Provider Name</label>
-              <select
-                name="gspName"
+              <SearchableSelect
+                options={[
+                  { label: 'CDSL (Recommended)', value: 'CDSL' },
+                  { label: 'Tally GSP', value: 'TALLY' },
+                  { label: 'MasterSoft', value: 'MASTERSOFT' },
+                  { label: 'ClearTax', value: 'CLEAR_TAX' }
+                ]}
                 value={settings.gspName}
-                onChange={handleChange}
-                className="input bg-white border-primary/20"
-              >
-                <option value="CDSL">CDSL (Recommended)</option>
-                <option value="TALLY">Tally GSP</option>
-                <option value="MASTERSOFT">MasterSoft</option>
-                <option value="CLEAR_TAX">ClearTax</option>
-              </select>
+                onChange={(val) => handleChange({ target: { name: 'gspName', value: val } })}
+                direction="down"
+                triggerClassName="input bg-white border-primary/20 h-[42px]"
+                placeholder="Select GSP Provider"
+              />
             </div>
             <div>
               <label className="block text-[10px] font-medium text-primary mb-1 uppercase tracking-widest">API Environment Mode</label>
@@ -247,12 +250,17 @@ export default function GSTSettings() {
             </div>
             <div>
               <label className="block text-[10px] font-medium text-slate-500 mb-1 uppercase">Default Place of Supply</label>
-              <select name="defaultPlaceOfSupply" value={settings.defaultPlaceOfSupply} onChange={handleChange} className="input">
-                <option value="">Select State</option>
-                {states.map(state => (
-                  <option key={state.id} value={state.name}>{state.name}</option>
-                ))}
-              </select>
+              <SearchableSelect
+                options={[
+                  { label: 'Select State', value: '' },
+                  ...states.map(state => ({ label: state.name, value: state.name }))
+                ]}
+                value={settings.defaultPlaceOfSupply}
+                onChange={(val) => handleChange({ target: { name: 'defaultPlaceOfSupply', value: val } })}
+                direction="down"
+                triggerClassName="input h-[42px]"
+                placeholder="Select State"
+              />
             </div>
           </div>
 

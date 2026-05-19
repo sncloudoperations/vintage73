@@ -9,6 +9,7 @@ import {
     PieChart, Pie, Cell, AreaChart, Area, Legend, BarChart, Bar
 } from 'recharts';
 import { useTheme } from '@/context/ThemeContext';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function SalesPerformance() {
     const { theme } = useTheme();
@@ -123,22 +124,22 @@ export default function SalesPerformance() {
     return (
         <div className="p-6 max-w-[1600px] mx-auto">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-800">Sales Performance</h1>
                     <p className="text-slate-500 text-sm mt-1">Real-time revenue metrics tracking</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full sm:w-auto">
                     <button
                         onClick={() => window.print()}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
                     >
                         <FiDownload size={16} /> Export View
                     </button>
                     <button
                         onClick={fetchData}
                         disabled={loading}
-                        className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
+                        className="w-full sm:w-auto bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
                         style={{ backgroundColor: theme.primaryColor }}
                     >
                         <FiRefreshCw size={16} className={loading ? 'animate-spin' : ''} /> {loading ? "Loading..." : "Refresh"}
@@ -160,13 +161,20 @@ export default function SalesPerformance() {
                     {user?.role === 'admin' && (
                         <div className="flex-1 min-w-[150px]">
                             <label className="block text-[9px] font-medium text-slate-400 uppercase tracking-widest mb-1">Branch</label>
-                            <select className="w-full bg-slate-50 border-none rounded-xl p-2.5 text-xs focus:ring-1 focus:ring-primary/20 font-medium text-slate-700 outline-none" value={selectedBranch} onChange={e => setSelectedBranch(e.target.value)}>
-                                <option value="all">All Branches</option>
-                                {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                            </select>
+                            <SearchableSelect
+                                options={[
+                                    { label: 'All Branches', value: 'all' },
+                                    ...branches.map(b => ({ label: b.name, value: b.id }))
+                                ]}
+                                value={selectedBranch}
+                                onChange={val => setSelectedBranch(val)}
+                                direction="down"
+                                triggerClassName="bg-slate-50 border-none rounded-xl py-1.5 px-3 text-xs font-medium text-slate-700"
+                                placeholder="Select Branch"
+                            />
                         </div>
                     )}
-                    <button className="px-4 py-2.5 text-xs font-medium text-rose-500 hover:bg-rose-50 rounded-xl transition-all" onClick={() => { setStartDate(''); setEndDate(''); }}>Reset Filters</button>
+                    <button className="w-full sm:w-auto px-4 py-2.5 text-xs font-medium text-rose-500 hover:bg-rose-50 rounded-xl transition-all" onClick={() => { setStartDate(''); setEndDate(''); }}>Reset Filters</button>
                 </div>
             </div>
 

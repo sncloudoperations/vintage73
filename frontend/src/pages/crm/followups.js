@@ -67,22 +67,22 @@ export default function LeadFollowups() {
 
     return (
         <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
-            <header className="flex justify-between items-center">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-3xl font-semibold text-slate-800 tracking-tight">Follow-up Dashboard</h1>
-                    <p className="text-slate-500 font-medium">Manage your active leads and scheduled tasks</p>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Follow-up Dashboard</h1>
+                    <p className="text-slate-500 font-medium mt-1">Manage your active leads and scheduled tasks</p>
                 </div>
-                <div className="flex gap-4">
-                    <div className="text-right">
-                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest leading-none">Total Pending</p>
-                        <p className="text-2xl font-semibold text-primary">
+                <div className="w-full md:w-auto bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between md:justify-end gap-6">
+                    <div className="text-left md:text-right">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Total Pending</p>
+                        <p className="text-2xl font-black text-primary">
                             {sections.overdue.length + sections.today.length + sections.upcoming.length}
                         </p>
                     </div>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                 {/* Overdue */}
                 <Section 
                     title="Overdue Follow-ups" 
@@ -120,21 +120,23 @@ export default function LeadFollowups() {
             {/* Outcome Modal */}
             {showOutcomeModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <form onSubmit={handleSubmitOutcome} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
-                        <header className="flex justify-between items-start">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                             <div>
-                                <h3 className="text-xl font-semibold text-slate-800 tracking-tight">Record Outcome</h3>
-                                <p className="text-xs text-slate-400 font-medium mt-1">Updating follow-up for {selectedFollowUp.lead.name}</p>
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight">Record Outcome</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Follow-up for {selectedFollowUp.lead.name}</p>
                             </div>
-                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiX /></button>
+                            <button onClick={() => setShowOutcomeModal(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiX size={20} />
+                            </button>
                         </header>
-                        
-                        <div className="space-y-4">
+
+                        <form onSubmit={handleSubmitOutcome} className="p-8 space-y-6 overflow-y-auto custom-scrollbar">
                             <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Action Outcome</label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Action Outcome</label>
                                 <select 
                                     required 
-                                    className="input" 
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800 appearance-none" 
                                     value={outcomeForm.outcome} 
                                     onChange={e => setOutcomeForm({ ...outcomeForm, outcome: e.target.value })}
                                 >
@@ -147,38 +149,48 @@ export default function LeadFollowups() {
                             </div>
                             
                             <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Internal Notes</label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Internal Notes</label>
                                 <textarea 
-                                    className="input min-h-[80px]" 
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 min-h-[100px]" 
                                     placeholder="What happened during this follow-up?"
                                     value={outcomeForm.notes}
                                     onChange={e => setOutcomeForm({ ...outcomeForm, notes: e.target.value })}
                                 />
                             </div>
 
-                            {/* Next Follow-up required unless Not Interested */}
                             {outcomeForm.outcome !== 'Not Interested' && (
                                 <div>
-                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest flex justify-between items-center">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex justify-between items-center">
                                         Next Follow-up Date
-                                        <span className="text-primary text-[8px]">REQUIRED</span>
+                                        <span className="text-primary text-[8px] bg-primary-light/10 px-2 py-0.5 rounded-full tracking-wider">REQUIRED</span>
                                     </label>
                                     <input 
                                         required 
                                         type="datetime-local" 
-                                        className="input" 
+                                        className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800" 
                                         value={outcomeForm.nextFollowUpDate} 
                                         onChange={e => setOutcomeForm({ ...outcomeForm, nextFollowUpDate: e.target.value })} 
                                     />
                                 </div>
                             )}
-                        </div>
 
-                        <div className="flex gap-3 pt-4">
-                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="btn btn-secondary flex-1 font-medium text-xs uppercase tracking-widest">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Update & Schedule</button>
-                        </div>
-                    </form>
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowOutcomeModal(false)}
+                                    className="flex-1 px-6 py-4 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-6 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest"
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
         </div>

@@ -76,51 +76,59 @@ export default function CRMDashboard() {
     };
 
     return (
-        <div className="p-8 max-w-7xl mx-auto space-y-8">
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-slate-800 tracking-tight">CRM Dashboard</h1>
-                <p className="text-slate-500 mt-2 font-medium">Overview of your sales pipeline and activities</p>
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-10">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">CRM Intelligence</h1>
+                    <p className="text-slate-500 mt-1 font-medium">Real-time overview of your sales ecosystem</p>
+                </div>
+                <div className="w-full md:w-auto bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between md:justify-end gap-6">
+                    <div className="text-left md:text-right">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Pipeline Health</p>
+                        <p className="text-2xl font-black text-primary">Stable</p>
+                    </div>
+                </div>
             </header>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-start gap-4 hover:shadow-lg transition-all border-b-4 border-b-blue-500">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shadow-sm">
                         <FiUsers />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Total Leads</p>
-                        <h3 className="text-2xl font-extrabold text-slate-800">{stats.totalLeads}</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Leads</p>
+                        <h3 className="text-3xl font-black text-slate-800">{stats.totalLeads}</h3>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center text-xl">
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-start gap-4 hover:shadow-lg transition-all border-b-4 border-b-primary">
+                    <div className="w-12 h-12 rounded-2xl bg-primary-light text-primary flex items-center justify-center text-xl shadow-sm">
                         <FiTrendingUp />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">New Leads</p>
-                        <h3 className="text-2xl font-bold text-slate-800">{stats.newLeads}</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">New Leads</p>
+                        <h3 className="text-3xl font-black text-slate-800">{stats.newLeads}</h3>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center text-xl">
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-start gap-4 hover:shadow-lg transition-all border-b-4 border-b-violet-500">
+                    <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center text-xl shadow-sm">
                         <FiDollarSign />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Pipeline Value</p>
-                        <h3 className="text-2xl font-extrabold text-slate-800">{formatCurrency(stats.totalPipelineValue)}</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pipeline Value</p>
+                        <h3 className="text-2xl font-black text-slate-800 truncate w-full">{formatCurrency(stats.totalPipelineValue)}</h3>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-start gap-4 hover:shadow-lg transition-all border-b-4 border-b-amber-500">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shadow-sm">
                         <FiBriefcase />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Active Deals</p>
-                        <h3 className="text-2xl font-bold text-slate-800">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Deals</p>
+                        <h3 className="text-3xl font-black text-slate-800">
                             {Object.entries(stats.dealStages).reduce((acc, [k, v]) => k !== 'LOST' && k !== 'WON' ? acc + v : acc, 0)}
                         </h3>
                     </div>
@@ -128,29 +136,40 @@ export default function CRMDashboard() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 className="text-lg font-medium text-slate-800 mb-6">Deals by Stage</h3>
-                    <div className="h-64 flex justify-center">
-                        {loading ? <p>Loading...</p> : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                    <header className="flex justify-between items-center mb-8">
+                        <h3 className="text-lg font-bold text-slate-800 tracking-tight">Deals by Stage</h3>
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                    </header>
+                    <div className="h-72 flex justify-center">
+                        {loading ? <p className="animate-pulse text-slate-400 font-medium">Gathering Data...</p> : (
                             Object.keys(stats.dealStages).length > 0 ?
-                                <Doughnut data={stageData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }} /> :
-                                <p className="text-slate-400 self-center">No deals data available</p>
+                                <Doughnut data={stageData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { weight: 'bold', size: 10 } } } } }} /> :
+                                <p className="text-slate-400 self-center italic font-medium uppercase tracking-widest text-[10px]">No deals data available</p>
                         )}
                     </div>
                 </div>
 
-                {/* Recent Activity Placeholder - To be implemented */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 className="text-lg font-medium text-slate-800 mb-6">Quick Actions</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <a href="/crm/leads" className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-primary/20 hover:bg-primary-light transition-all group cursor-pointer block">
-                            <div className="font-medium text-slate-700 group-hover:text-primary-dark">Add New Lead</div>
-                            <div className="text-xs text-slate-400 mt-1"> Capture a new potential client</div>
+                <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                    <header className="flex justify-between items-center mb-8">
+                        <h3 className="text-lg font-bold text-slate-800 tracking-tight">Intelligence & Actions</h3>
+                        <div className="text-[10px] font-bold text-primary bg-primary-light/10 px-2 py-0.5 rounded-full uppercase tracking-widest">Recommended</div>
+                    </header>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <a href="/crm/leads" className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white hover:shadow-xl transition-all group cursor-pointer block">
+                            <div className="w-10 h-10 rounded-xl bg-primary-light/20 text-primary flex items-center justify-center text-lg mb-4 group-hover:scale-110 transition-transform">
+                                <FiUsers />
+                            </div>
+                            <div className="font-black text-slate-800 uppercase tracking-widest text-[10px] mb-1">Add New Lead</div>
+                            <div className="text-[10px] text-slate-400 font-medium leading-relaxed">Capture a new potential client for the pipeline.</div>
                         </a>
-                        <a href="/crm/deals" className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition-all group cursor-pointer block">
-                            <div className="font-medium text-slate-700 group-hover:text-blue-700">Create Deal</div>
-                            <div className="text-xs text-slate-400 mt-1"> Start a new sales loop</div>
+                        <a href="/crm/deals" className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-300 hover:bg-white hover:shadow-xl transition-all group cursor-pointer block">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100/50 text-blue-600 flex items-center justify-center text-lg mb-4 group-hover:scale-110 transition-transform">
+                                <FiBriefcase />
+                            </div>
+                            <div className="font-black text-slate-800 uppercase tracking-widest text-[10px] mb-1">Create Deal</div>
+                            <div className="text-[10px] text-slate-400 font-medium leading-relaxed">Transform an interest into a formal opportunity.</div>
                         </a>
                     </div>
                 </div>

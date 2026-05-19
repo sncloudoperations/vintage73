@@ -68,10 +68,10 @@ export default function LeaveTypes() {
     if (loading) return <div className="p-8">Loading...</div>;
 
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-6">
-            <div className="flex justify-between items-center">
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800">Leave Types Master</h1>
+                    <h1 className="text-2xl font-semibold text-slate-800 leading-tight">Leave Types Master</h1>
                     <p className="text-slate-500 text-sm mt-1">Manage leave categories and limits</p>
                 </div>
                 <button
@@ -80,18 +80,18 @@ export default function LeaveTypes() {
                         setForm({ name: '', isPaid: true, monthlyLimit: 0, color: '#3B82F6' });
                         setIsModalOpen(true);
                     }}
-                    className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-medium hover:bg-primary-dark transition shadow-sm"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-black transition-all shadow-sm hover:shadow-lg"
                 >
                     <FiPlus /> Add New Type
                 </button>
-            </div>
+            </header>
 
             {/* List Table */}
             <div className="card shadow-md border border-slate-200">
-                <div className="table-container">
+                <div className="table-container scroll-line lg:no-scrollbar">
                     <table className="table-modern">
                         <thead>
-                            <tr>
+                            <tr className="whitespace-nowrap">
                                 <th style={{ width: '40%' }}>Name</th>
                                 <th style={{ width: '20%' }}>Payment Status</th>
                                 <th style={{ width: '20%' }}>Monthly Limit</th>
@@ -155,21 +155,24 @@ export default function LeaveTypes() {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-                        <header className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h3 className="text-lg font-medium text-slate-800">{editingType ? 'Edit Leave Type' : 'Add Leave Type'}</h3>
-                            <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 transition-colors">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-900">{editingType ? 'Edit Leave Type' : 'Add Leave Type'}</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Configure leave policy and limits</p>
+                            </div>
+                            <button onClick={closeModal} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
                                 <FiX size={20} />
                             </button>
                         </header>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                        <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Type Name</label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Type Name</label>
                                 <input
                                     required
                                     autoFocus
-                                    className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800"
                                     placeholder="e.g. Casual Leave"
                                     value={form.name}
                                     onChange={e => setForm({ ...form, name: e.target.value })}
@@ -177,19 +180,20 @@ export default function LeaveTypes() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Monthly Limit <span className="font-normal text-slate-400">(days)</span></label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Monthly Limit (Days)</label>
                                 <input
                                     type="number"
-                                    className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800"
                                     min="0"
                                     placeholder="0 for unlimited"
                                     value={form.monthlyLimit}
                                     onChange={e => setForm({ ...form, monthlyLimit: e.target.value })}
                                 />
-                                <p className="text-xs text-slate-500 mt-1">Set to 0 for unlimited leaves per month.</p>
+                                <p className="text-[10px] text-slate-400 mt-2 font-medium italic">Set to 0 if there is no monthly cap for this leave type.</p>
                             </div>
 
-                            <div className="flex items-center gap-3 p-3 border border-slate-100 rounded-lg bg-slate-50">
+                            <div className="flex items-center justify-between p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
+                                <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Paid Leave Status</span>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -198,35 +202,34 @@ export default function LeaveTypes() {
                                         checked={form.isPaid}
                                         onChange={e => setForm({ ...form, isPaid: e.target.checked })}
                                     />
-                                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
-                                    <span className="ml-3 text-sm font-medium text-slate-700 select-none">Is this a Paid Leave?</span>
+                                    <div className="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                 </label>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Color Label</label>
-                                <div className="flex items-center gap-3">
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Color Label</label>
+                                <div className="flex items-center gap-4">
                                     <input
                                         type="color"
-                                        className="h-10 w-20 rounded cursor-pointer border border-slate-300 p-1"
+                                        className="h-12 w-20 rounded-xl cursor-pointer border border-slate-200 p-1 bg-white"
                                         value={form.color || '#3B82F6'}
                                         onChange={e => setForm({ ...form, color: e.target.value })}
                                     />
-                                    <span className="text-sm text-slate-500 font-mono">{form.color || '#3B82F6'}</span>
+                                    <span className="text-sm text-slate-500 font-mono font-medium">{form.color || '#3B82F6'}</span>
                                 </div>
                             </div>
 
-                            <div className="pt-2 flex gap-3">
+                            <div className="pt-4 flex gap-3">
                                 <button
                                     type="button"
                                     onClick={closeModal}
-                                    className="flex-1 px-4 py-2.5 border border-slate-300 rounded-lg font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                                    className="flex-1 px-6 py-3.5 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors shadow-sm"
+                                    className="flex-1 px-6 py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest"
                                 >
                                     {editingType ? 'Update Type' : 'Create Type'}
                                 </button>

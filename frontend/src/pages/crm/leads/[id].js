@@ -259,39 +259,46 @@ export default function LeadDetail() {
                         </p>
                     </div>
                 </div>
-                <div className="flex flex-nowrap items-center justify-start lg:justify-end gap-2.5 w-full lg:w-auto mt-4 md:mt-0 overflow-x-auto scrollbar-hide py-1">
+                <div className="flex flex-nowrap items-center justify-start lg:justify-end gap-3 w-full lg:w-auto mt-6 lg:mt-0 overflow-x-auto no-scrollbar py-1 px-1">
+                    <button onClick={() => {
+                        setEditForm(lead);
+                        setShowEditModal(true);
+                    }} className="flex items-center gap-2 bg-white text-slate-600 px-4 py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-widest border border-slate-200 hover:bg-slate-50 transition-all active:scale-95 whitespace-nowrap">
+                        <FiEdit3 /> Edit Lead
+                    </button>
                     {lead.status !== 'WON' && lead.status !== 'LOST' && (
-                        <>
-                            <button onClick={() => setShowStatusModal(true)} className="btn btn-secondary py-1.5 px-3.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors rounded-lg whitespace-nowrap flex-shrink-0">Update Status</button>
-                        </>
+                        <button onClick={() => setShowStatusModal(true)} className="flex items-center gap-2 bg-white text-slate-600 px-4 py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-widest border border-slate-200 hover:bg-slate-50 transition-all active:scale-95 whitespace-nowrap">
+                            Update Status
+                        </button>
                     )}
-                    <button onClick={() => setShowFollowUpModal(true)} className="btn btn-primary py-1.5 px-4 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest shadow-md shadow-primary/20 rounded-lg whitespace-nowrap flex-shrink-0">Schedule Follow-up</button>
+                    <button onClick={() => setShowFollowUpModal(true)} className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all active:scale-95 whitespace-nowrap">
+                        <FiCalendar /> Schedule Follow-up
+                    </button>
                 </div>
             </header>
 
 
             {/* Pipeline Visualizer */}
-            <div className="card bg-white p-6 md:p-8 shadow-sm">
-                <div className="flex items-center justify-between relative">
-                    <div className="absolute left-0 right-0 h-0.5 bg-slate-100 top-1/2 -translate-y-1/2 z-0"></div>
+            <div className="card bg-white p-6 md:p-10 shadow-sm overflow-hidden relative">
+                <div className="flex items-center justify-between relative min-w-[600px] md:min-w-0">
+                    <div className="absolute left-0 right-0 h-1 bg-slate-100 top-1/2 -translate-y-1/2 z-0 rounded-full"></div>
                     <div 
-                        className="absolute left-0 h-0.5 bg-emerald-500 top-1/2 -translate-y-1/2 z-0 transition-all duration-1000"
+                        className="absolute left-0 h-1 bg-primary top-1/2 -translate-y-1/2 z-0 transition-all duration-1000 rounded-full shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)]"
                         style={{ width: `${(Math.max(0, currentStageIndex) / (stages.length - 1)) * 100}%` }}
                     ></div>
                     {stages.map((stage, i) => {
                         const isActive = stages.indexOf(lead.status) >= i;
                         const isCurrent = lead.status === stage;
-                        const isLost = lead.status === 'LOST' && i === currentStageIndex;
                         
                         return (
                             <div key={stage} className="relative z-10 flex flex-col items-center group">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 transition-all duration-500 ${
-                                    isActive ? 'bg-emerald-500 border-emerald-100 scale-110' : 'bg-white border-slate-100'
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500 bg-white ${
+                                    isActive ? 'border-primary scale-110 shadow-lg shadow-primary/20' : 'border-slate-100'
                                 }`}>
-                                    {isActive ? <FiCheckCircle className="text-white text-xs" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />}
+                                    {isActive ? <FiCheckCircle className="text-primary text-sm" /> : <div className="w-2 h-2 rounded-full bg-slate-200" />}
                                 </div>
-                                <span className={`absolute top-10 text-[8px] font-medium uppercase tracking-widest whitespace-nowrap ${
-                                    isActive ? 'text-emerald-600' : 'text-slate-400'
+                                <span className={`absolute top-12 text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap ${
+                                    isActive ? 'text-primary' : 'text-slate-400'
                                 }`}>
                                     {stage.replace('_', ' ')}
                                 </span>
@@ -300,9 +307,14 @@ export default function LeadDetail() {
                     })}
                 </div>
                 {lead.status === 'LOST' && (
-                    <div className="mt-12 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3">
-                        <FiXCircle className="text-red-500" />
-                        <p className="text-xs font-medium text-red-700 uppercase tracking-widest">Lead Marked as LOST</p>
+                    <div className="mt-16 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-4 animate-pulse">
+                        <div className="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xl">
+                            <FiXCircle />
+                        </div>
+                        <div>
+                            <p className="text-xs font-black text-red-800 uppercase tracking-widest leading-none">Deal Lost</p>
+                            <p className="text-[10px] text-red-600 font-medium mt-1 uppercase tracking-widest">Opportunity Closed</p>
+                        </div>
                     </div>
                 )}
             </div>
@@ -484,19 +496,26 @@ export default function LeadDetail() {
             {/* Modals */}
             {showStatusModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-6">
-                        <header>
-                            <h3 className="text-lg font-medium text-slate-800">Update Lead Status</h3>
-                            <p className="text-xs text-slate-400 font-medium mt-1">Select the current stage of this lead</p>
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight">Update Status</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Select the current lead stage</p>
+                            </div>
+                            <button onClick={() => setShowStatusModal(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiXCircle size={20} />
+                            </button>
                         </header>
                         
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="p-8 grid grid-cols-1 gap-3 overflow-y-auto">
                             {['NEW', 'CONTACTED', 'QUALIFIED', 'QUOTATION_SENT', 'NEGOTIATION', 'WON', 'LOST'].map(s => (
                                 <button 
                                     key={s}
                                     onClick={() => handleStatusUpdate(s)}
-                                    className={`p-3 rounded-xl text-[10px] font-medium uppercase tracking-widest text-center border-2 transition-all ${
-                                        lead.status === s ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-slate-50 border-transparent hover:border-slate-200'
+                                    className={`p-4 rounded-xl text-xs font-bold uppercase tracking-widest text-center border-2 transition-all active:scale-95 ${
+                                        lead.status === s 
+                                        ? 'bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-900/10' 
+                                        : 'bg-slate-50 border-transparent text-slate-500 hover:border-slate-200'
                                     }`}
                                 >
                                     {s.replace('_', ' ')}
@@ -504,61 +523,82 @@ export default function LeadDetail() {
                             ))}
                         </div>
                         
-                        <button onClick={() => setShowStatusModal(false)} className="w-full py-3 text-xs font-medium text-slate-400 border border-slate-100 rounded-xl">Cancel</button>
+                        <footer className="p-6 bg-slate-50 border-t border-slate-100">
+                            <button onClick={() => setShowStatusModal(false)} className="w-full py-4 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">Cancel</button>
+                        </footer>
                     </div>
                 </div>
             )}
 
             {showFollowUpModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <form onSubmit={handleScheduleFollowUp} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
-                        <header>
-                            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Schedule Follow-up</h3>
-                            <p className="text-xs text-slate-400 font-medium mt-1">Set a reminder to reach out back to {lead.name}</p>
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight">Schedule Follow-up</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Remind back to {lead.name}</p>
+                            </div>
+                            <button onClick={() => setShowFollowUpModal(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiXCircle size={20} />
+                            </button>
                         </header>
-                        
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Date & Time</label>
-                                <input required type="datetime-local" className="input" value={followUpDate} onChange={e => setFollowUpDate(e.target.value)} />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Notes / Objective</label>
-                                <textarea className="input min-h-[100px]" placeholder="e.g., Discuss bulk discount, Send catalogue..." value={followUpNotes} onChange={e => setFollowUpNotes(e.target.value)}></textarea>
-                            </div>
-                        </div>
 
-                        <div className="flex gap-3 pt-4">
-                            <button type="button" onClick={() => setShowFollowUpModal(false)} className="btn btn-secondary flex-1 font-medium text-xs uppercase tracking-widest">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Schedule</button>
-                        </div>
-                    </form>
+                        <form onSubmit={handleScheduleFollowUp} className="p-8 space-y-6 overflow-y-auto custom-scrollbar">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Date & Time</label>
+                                <input required type="datetime-local" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800" value={followUpDate} onChange={e => setFollowUpDate(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Notes / Objective</label>
+                                <textarea className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 min-h-[120px]" placeholder="e.g. Discuss bulk discount, Send catalogue..." value={followUpNotes} onChange={e => setFollowUpNotes(e.target.value)}></textarea>
+                            </div>
+
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowFollowUpModal(false)}
+                                    className="flex-1 px-6 py-4 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-6 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest"
+                                >
+                                    Schedule
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
 
             {showConvertModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <form onSubmit={handleConvert} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
-                        <header>
-                            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Convert to {showConvertModal}</h3>
-                            <p className="text-xs text-slate-400 font-medium mt-1">Transform this lead inquiry into a formal {showConvertModal.toLowerCase()}</p>
-                        </header>
-                        
-                        <div className="space-y-4">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                             <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Select Branch</label>
-                                <select required className="input" value={convertForm.branchId} onChange={e => setConvertForm({ ...convertForm, branchId: e.target.value })}>
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight uppercase tracking-widest">Convert to {showConvertModal}</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Transform lead into a formal record</p>
+                            </div>
+                            <button onClick={() => setShowConvertModal(null)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiXCircle size={20} />
+                            </button>
+                        </header>
+
+                        <form onSubmit={handleConvert} className="p-8 space-y-6 overflow-y-auto custom-scrollbar">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Select Branch</label>
+                                <select required className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800 appearance-none" value={convertForm.branchId} onChange={e => setConvertForm({ ...convertForm, branchId: e.target.value })}>
                                     <option value="">Select Branch</option>
                                     {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">
-                                    {showConvertModal} Number
-                                </label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">{showConvertModal} Number</label>
                                 <input 
                                     required 
-                                    className="input" 
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800" 
                                     placeholder={showConvertModal === 'QUOTATION' ? 'QTN-001' : 'INV-001'}
                                     value={convertForm.number}
                                     onChange={e => setConvertForm({ ...convertForm, number: e.target.value })}
@@ -566,8 +606,8 @@ export default function LeadDetail() {
                             </div>
                             {showConvertModal === 'ORDER' && (
                                 <div>
-                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Payment Method</label>
-                                    <select className="input" value={convertForm.paymentMethod} onChange={e => setConvertForm({ ...convertForm, paymentMethod: e.target.value })}>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Payment Method</label>
+                                    <select className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800 appearance-none" value={convertForm.paymentMethod} onChange={e => setConvertForm({ ...convertForm, paymentMethod: e.target.value })}>
                                         <option value="CASH">Cash</option>
                                         <option value="BANK_TRANSFER">Bank Transfer</option>
                                         <option value="UPI">UPI</option>
@@ -575,33 +615,46 @@ export default function LeadDetail() {
                                     </select>
                                 </div>
                             )}
-                        </div>
 
-                        <div className="flex gap-3 pt-4">
-                            <button type="button" onClick={() => setShowConvertModal(null)} className="btn btn-secondary flex-1 font-medium text-xs uppercase tracking-widest">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Confirm Conversion</button>
-                        </div>
-                    </form>
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConvertModal(null)}
+                                    className="flex-1 px-6 py-4 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-6 py-4 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg text-xs uppercase tracking-widest"
+                                >
+                                    Confirm
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
 
             {showOutcomeModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <form onSubmit={handleSubmitOutcome} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 space-y-6 animate-in zoom-in duration-300">
-                        <header className="flex justify-between items-start">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-800 tracking-tight">Record Outcome</h3>
-                                <p className="text-xs text-slate-400 font-medium mt-1">Updating follow-up for {lead.name}</p>
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight">Record Outcome</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Updating follow-up for {lead.name}</p>
                             </div>
-                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiXCircle /></button>
+                            <button onClick={() => setShowOutcomeModal(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiXCircle size={20} />
+                            </button>
                         </header>
-                        
-                        <div className="space-y-4">
+
+                        <form onSubmit={handleSubmitOutcome} className="p-8 space-y-6 overflow-y-auto custom-scrollbar">
                             <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Action Outcome</label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Action Outcome</label>
                                 <select 
                                     required 
-                                    className="input" 
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800 appearance-none" 
                                     value={outcomeForm.outcome} 
                                     onChange={e => setOutcomeForm({ ...outcomeForm, outcome: e.target.value })}
                                 >
@@ -614,9 +667,9 @@ export default function LeadDetail() {
                             </div>
                             
                             <div>
-                                <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest">Internal Notes</label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Internal Notes</label>
                                 <textarea 
-                                    className="input min-h-[80px]" 
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 min-h-[100px]" 
                                     placeholder="What happened during this follow-up?"
                                     value={outcomeForm.notes}
                                     onChange={e => setOutcomeForm({ ...outcomeForm, notes: e.target.value })}
@@ -625,118 +678,133 @@ export default function LeadDetail() {
 
                             {outcomeForm.outcome !== 'Not Interested' && (
                                 <div>
-                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-2 tracking-widest flex justify-between items-center">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex justify-between items-center">
                                         Next Follow-up Date
-                                        <span className="text-primary text-[8px]">REQUIRED</span>
+                                        <span className="text-primary text-[8px] bg-primary-light/10 px-2 py-0.5 rounded-full tracking-wider">REQUIRED</span>
                                     </label>
                                     <input 
                                         required 
                                         type="datetime-local" 
-                                        className="input" 
+                                        className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800" 
                                         value={outcomeForm.nextFollowUpDate} 
                                         onChange={e => setOutcomeForm({ ...outcomeForm, nextFollowUpDate: e.target.value })} 
                                     />
                                 </div>
                             )}
-                        </div>
 
-                        <div className="flex gap-3 pt-4">
-                            <button type="button" onClick={() => setShowOutcomeModal(false)} className="btn btn-secondary flex-1 font-medium text-xs uppercase tracking-widest">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/20">Update & Schedule</button>
-                        </div>
-                    </form>
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowOutcomeModal(false)}
+                                    className="flex-1 px-6 py-4 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-xs uppercase tracking-widest"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-6 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest"
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
 
             {showEditModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <form onSubmit={handleEditSubmit} className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300">
-                        <header className="p-6 border-b border-slate-50 flex justify-between items-center">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[95vh] flex flex-col">
+                        <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-800 tracking-tight">Edit Lead Information</h3>
-                                <p className="text-xs text-slate-400 font-medium mt-1">Update lead profile and negotiation details</p>
+                                <h3 className="text-xl font-bold text-slate-900 leading-tight">Edit Lead Profile</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Update core information and details</p>
                             </div>
-                            <button type="button" onClick={() => setShowEditModal(false)} className="p-2 hover:bg-slate-50 rounded-full"><FiXCircle /></button>
+                            <button onClick={() => setShowEditModal(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiXCircle size={20} />
+                            </button>
                         </header>
-                        
-                        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Customer Name</label>
-                                    <input required name="name" className="input" value={editForm.name} onChange={handleEditChange} />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Lead Source</label>
-                                    <select name="source" className="input" value={editForm.source} onChange={handleEditChange}>
-                                        <option value="Walk-in">Walk-in</option>
-                                        <option value="Website">Website</option>
-                                        <option value="Call">Phone Call</option>
-                                        <option value="WhatsApp">WhatsApp</option>
-                                        <option value="Social Media">Social Media</option>
-                                        <option value="Referral">Referral</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Interested Product</label>
-                                    <select name="productId" className="input" value={editForm.productId} onChange={handleEditChange}>
-                                        <option value="">Select Product</option>
-                                        {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                    </select>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
+
+                        <div className="p-8 overflow-y-auto custom-scrollbar">
+                            <form onSubmit={handleEditSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-6">
                                     <div>
-                                        <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Quantity</label>
-                                        <input type="number" name="quantity" className="input" value={editForm.quantity} onChange={handleEditChange} />
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Customer Name</label>
+                                        <input required name="name" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800" value={editForm.name} onChange={handleEditChange} />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Budget (₹)</label>
-                                        <input type="number" name="budget" className="input bg-emerald-50/20 font-medium text-emerald-600 border-emerald-100" value={editForm.budget} onChange={handleEditChange} />
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Lead Source</label>
+                                        <select name="source" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800 appearance-none" value={editForm.source} onChange={handleEditChange}>
+                                            <option value="Walk-in">Walk-in</option>
+                                            <option value="Website">Website</option>
+                                            <option value="Call">Phone Call</option>
+                                            <option value="WhatsApp">WhatsApp</option>
+                                            <option value="Social Media">Social Media</option>
+                                            <option value="Referral">Referral</option>
+                                        </select>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-[10px] font-medium text-blue-500 uppercase mb-1 tracking-widest">Negotiation Amount (₹)</label>
-                                    <input type="number" name="negotiationAmount" className="input border-blue-100 bg-blue-50/20 font-medium text-blue-600" value={editForm.negotiationAmount} onChange={handleEditChange} />
-                                </div>
-
-                                {editForm.source && /referral|refferal/i.test(editForm.source) && (
-                                    <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100 space-y-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Interested Product</label>
+                                        <select name="productId" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800 appearance-none" value={editForm.productId} onChange={handleEditChange}>
+                                            <option value="">Select Product</option>
+                                            {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-[10px] font-medium text-purple-400 uppercase mb-1 tracking-widest">Referred By</label>
-                                            <select name="referredById" className="input bg-white" value={editForm.referredById} onChange={handleEditChange}>
-                                                <option value="">Select Employee</option>
-                                                {users.filter(u => !editForm.branchId || u.branchId === editForm.branchId).map(u => (
-                                                    <option key={u.id} value={u.id}>{u.name || u.username}</option>
-                                                ))}
-                                            </select>
+                                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Quantity</label>
+                                            <input type="number" name="quantity" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-slate-800" value={editForm.quantity} onChange={handleEditChange} />
                                         </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex-1">
-                                                <label className="block text-[10px] font-medium text-purple-400 uppercase mb-1 tracking-widest">Commission %</label>
-                                                <input type="number" name="commissionPercentage" className="input bg-white" value={editForm.commissionPercentage} onChange={handleEditChange} />
-                                            </div>
-                                            <div className="flex-1">
-                                                <label className="block text-[10px] font-medium text-purple-400 uppercase mb-1 tracking-widest leading-none">Est. Amount</label>
-                                                <p className="text-lg font-medium text-purple-600 mt-1">₹{(parseFloat(editForm.negotiationAmount || 0) * parseFloat(editForm.commissionPercentage || 0) / 100).toFixed(2)}</p>
-                                            </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-emerald-500 uppercase tracking-widest mb-3">Budget (₹)</label>
+                                            <input type="number" name="budget" className="w-full bg-emerald-50/20 border border-emerald-100 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all font-bold text-emerald-600" value={editForm.budget} onChange={handleEditChange} />
                                         </div>
                                     </div>
-                                )}
-
-                                <div>
-                                    <label className="block text-[10px] font-medium text-slate-400 uppercase mb-1 tracking-widest">Internal Notes</label>
-                                    <textarea name="notes" className="input min-h-[100px]" value={editForm.notes} onChange={handleEditChange}></textarea>
                                 </div>
-                            </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block text-xs font-bold text-blue-500 uppercase tracking-widest mb-3">Negotiation Amt (₹)</label>
+                                        <input type="number" name="negotiationAmount" className="w-full bg-blue-50/20 border border-blue-100 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-bold text-blue-600" value={editForm.negotiationAmount} onChange={handleEditChange} />
+                                    </div>
+
+                                    {editForm.source && /referral|refferal/i.test(editForm.source) && (
+                                        <div className="p-6 bg-purple-50 rounded-2xl border border-purple-100 space-y-4">
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-2">Referred By</label>
+                                                <select name="referredById" className="w-full bg-white border border-purple-100 p-3 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none font-bold text-purple-800" value={editForm.referredById} onChange={handleEditChange}>
+                                                    <option value="">Select Employee</option>
+                                                    {users.filter(u => !editForm.branchId || u.branchId === editForm.branchId).map(u => (
+                                                        <option key={u.id} value={u.id}>{u.name || u.username}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex-1">
+                                                    <label className="block text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-2">Comm %</label>
+                                                    <input type="number" name="commissionPercentage" className="w-full bg-white border border-purple-100 p-3 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none font-bold text-purple-600" value={editForm.commissionPercentage} onChange={handleEditChange} />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <label className="block text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">Est. Amount</label>
+                                                    <p className="text-lg font-black text-purple-600">₹{(parseFloat(editForm.negotiationAmount || 0) * parseFloat(editForm.commissionPercentage || 0) / 100).toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Internal Notes</label>
+                                        <textarea name="notes" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 min-h-[150px]" value={editForm.notes} onChange={handleEditChange} placeholder="Add detailed lead notes..."></textarea>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
 
-                        <footer className="p-6 bg-slate-50 flex gap-3">
-                            <button type="button" onClick={() => setShowEditModal(false)} className="btn btn-secondary flex-1 font-medium text-xs uppercase">Cancel</button>
-                            <button type="submit" className="btn btn-primary flex-1 font-medium text-xs uppercase shadow-lg shadow-emerald-500/20">Save Changes</button>
+                        <footer className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
+                            <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 px-6 py-4 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-all text-xs uppercase tracking-widest">Cancel</button>
+                            <button type="button" onClick={handleEditSubmit} className="flex-1 px-6 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-xs uppercase tracking-widest">Save Changes</button>
                         </footer>
-                    </form>
+                    </div>
                 </div>
             )}
         </div>

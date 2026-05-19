@@ -214,21 +214,21 @@ export default function ReportDesign() {
   const selectedStyle = selectedId ? currentStyles[selectedId] : null;
 
   return (
-    <div className="flex h-screen bg-slate-100 overflow-hidden text-slate-800">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-slate-100 lg:overflow-hidden text-slate-800">
 
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Header Bar */}
-        <div className="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center z-10">
-          <div className="flex items-center gap-4">
+        <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 z-10">
+          <div className="flex flex-wrap items-center gap-4">
             <h1 className="text-xl font-bold flex items-center gap-2">
-              <FiLayout className="text-primary" /> Designer <span className="text-slate-300 font-light">|</span>
+              <FiLayout className="text-primary" /> Designer <span className="text-slate-300 font-light hidden sm:inline">|</span>
             </h1>
 
-            <div className="flex items-center gap-2 ml-4">
-              <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Select Branch:</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest whitespace-nowrap">Branch:</span>
               <select
-                className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:ring-2 focus:ring-primary min-w-[200px]"
+                className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:ring-2 focus:ring-primary min-w-[150px] max-w-[200px]"
                 value={selectedBranchId}
                 onChange={e => setSelectedBranchId(e.target.value)}
               >
@@ -238,7 +238,7 @@ export default function ReportDesign() {
               </select>
             </div>
 
-            <div className="flex bg-slate-100 p-1 rounded-lg ml-4">
+            <div className="flex bg-slate-100 p-1 rounded-lg">
               <button
                 onClick={() => setActiveTab('sales')}
                 className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${activeTab === 'sales' ? 'bg-white shadow text-primary' : 'text-slate-400'}`}
@@ -255,16 +255,16 @@ export default function ReportDesign() {
           </div>
           <button
             onClick={handleSave}
-            className="px-6 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 flex items-center gap-2 shadow-lg transition-transform active:scale-95"
+            className="w-full md:w-auto px-6 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-95 whitespace-nowrap"
           >
             <FiSave /> Save for Branch
           </button>
         </div>
 
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden lg:overflow-visible">
 
           {/* Left: Component Toolbox */}
-          <div className="w-72 bg-white border-r border-slate-200 p-6 overflow-y-auto">
+          <div className="w-full lg:w-72 bg-white border-r border-slate-200 p-6 overflow-y-auto lg:h-[calc(100vh-80px)]">
             <h3 className="text-xs font-medium text-slate-400 uppercase tracking-widest mb-4">Toolbar</h3>
             <div className="space-y-6">
 
@@ -355,7 +355,7 @@ export default function ReportDesign() {
           </div>
 
           {/* Center: Live Canvas */}
-          <div className="flex-1 bg-slate-100 p-12 overflow-y-auto flex justify-center items-start">
+          <div className="flex-1 bg-slate-100 p-4 md:p-12 overflow-y-auto flex justify-center items-start lg:h-[calc(100vh-80px)] lg:no-scrollbar">
             <DragDropContext onDragEnd={onDragEnd}>
               <div
                 className={`bg-white shadow-2xl transition-all duration-300 relative ${currentTabSettings.pageSize === 'Thermal' ? 'w-[320px]' : currentTabSettings.pageSize === 'A5' ? 'w-[480px]' : 'w-[640px]'}`}
@@ -435,7 +435,7 @@ export default function ReportDesign() {
           </div>
 
           {/* Right: Property Panel */}
-          <div className="w-80 bg-white border-l border-slate-200 p-6 overflow-y-auto">
+          <div className="w-full lg:w-80 bg-white border-l border-slate-200 p-6 overflow-y-auto lg:h-[calc(100vh-80px)]">
             {selectedId ? (
               <div className="space-y-6 animate-fade-in">
                 <div className="flex justify-between items-center">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { FiFilter, FiCalendar, FiUsers, FiDownload, FiCheck, FiX, FiMinus } from 'react-icons/fi';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function AttendanceSheet() {
     const [data, setData] = useState([]);
@@ -82,25 +83,29 @@ export default function AttendanceSheet() {
         }
     };
 
+    const deptOptions = [
+        { label: 'All Departments', value: '' },
+        ...departments.map(d => ({ label: d.name, value: d.id }))
+    ];
+
     return (
-        <div className="p-6">
-            <header className="mb-8 flex justify-between items-center">
+        <div className="p-6 max-w-[1600px] mx-auto">
+            <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-800">Attendance Sheet</h1>
                     <p className="text-slate-500 text-sm mt-1">Monthly overview of employee attendance</p>
                 </div>
-                <div className="flex gap-3">
-                    <select
-                        className="input bg-white border-slate-200"
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <SearchableSelect
+                        options={deptOptions}
                         value={filters.departmentId}
-                        onChange={e => setFilters({ ...filters, departmentId: e.target.value })}
-                    >
-                        <option value="">All Departments</option>
-                        {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                    </select>
+                        onChange={val => setFilters({ ...filters, departmentId: val })}
+                        placeholder="All Departments"
+                        className="w-full sm:w-64"
+                    />
                     <input
                         type="month"
-                        className="input bg-white border-slate-200"
+                        className="input bg-white border-slate-200 h-[48px] w-full sm:w-48"
                         value={`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`}
                         onChange={e => {
                             const [y, m] = e.target.value.split('-');
@@ -111,7 +116,7 @@ export default function AttendanceSheet() {
             </header>
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto overflow-y-auto max-h-[70vh]">
                     <table className="w-full text-left border-collapse min-w-max">
                         <thead className="sticky top-0 z-20">
                             <tr className="bg-slate-50 border-b border-slate-200">
@@ -158,14 +163,39 @@ export default function AttendanceSheet() {
                 </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap justify-between items-center text-xs font-medium text-slate-400 uppercase tracking-widest gap-4">
-                <div className="flex gap-6">
-                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-primary-light/10 text-primary flex items-center justify-center"><FiCheck size={10} /></div> Present</div>
-                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-red-100 text-red-500 flex items-center justify-center"><FiX size={10} /></div> Absent</div>
-                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-amber-100 text-amber-500 flex items-center justify-center"><FiMinus size={10} /></div> Half Day</div>
-                    <div className="flex items-center gap-2"><div className="w-5 h-5 rounded-lg bg-blue-100 text-blue-500"></div> Leave</div>
+            <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-t border-slate-100 pt-6">
+                <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-lg bg-primary-light/10 text-primary flex items-center justify-center shadow-sm border border-primary/5">
+                            <FiCheck size={12} />
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Present</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-lg bg-red-50 text-red-500 flex items-center justify-center shadow-sm border border-red-100/50">
+                            <FiX size={12} />
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Absent</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center shadow-sm border border-amber-100/50">
+                            <FiMinus size={12} />
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Half Day</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center shadow-sm border border-blue-100/50">
+                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Leave</span>
+                    </div>
                 </div>
-                <div className="italic text-[10px] normal-case">* Weekly Off is based on the day selected in User Master for each employee. Any blank working day is automatically docked.</div>
+                
+                <div className="max-w-md">
+                    <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                        <span className="font-bold text-slate-500 not-italic">* NOTE:</span> Weekly Off is based on the day selected in User Master. Blank working days are automatically docked as Absent.
+                    </p>
+                </div>
             </div>
         </div>
     );

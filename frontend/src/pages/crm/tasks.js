@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
-import { FiPlus, FiCheckCircle, FiCircle, FiCalendar, FiUser, FiLink } from 'react-icons/fi';
+import { FiPlus, FiCheckCircle, FiCircle, FiCalendar, FiUser, FiLink, FiX } from 'react-icons/fi';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function CRMTasks() {
     const [tasks, setTasks] = useState([]);
@@ -101,11 +102,11 @@ export default function CRMTasks() {
     };
 
     return (
-        <div className="p-8 max-w-5xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+        <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Tasks</h1>
-                    <p className="text-slate-500 mt-1 font-medium">Manage your activities</p>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Activities & Tasks</h1>
+                    <p className="text-slate-500 mt-1 font-medium uppercase tracking-widest text-[10px]">Manage your active scheduling and follow-ups</p>
                 </div>
                 <button
                     onClick={() => {
@@ -113,11 +114,11 @@ export default function CRMTasks() {
                         setForm({ title: '', dueDate: '', priority: 'MEDIUM', description: '', leadId: '', dealId: '', assignedTo: '', status: 'PENDING' });
                         setShowModal(true);
                     }}
-                    className="flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl font-medium hover:bg-slate-800 transition shadow-lg shadow-slate-900/20"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-800 transition shadow-xl shadow-slate-900/10 active:scale-95 text-xs uppercase tracking-widest"
                 >
-                    <FiPlus /> Add Task
+                    <FiPlus className="text-lg" /> Add Task
                 </button>
-            </div>
+            </header>
 
             <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden divide-y divide-slate-100">
                 {tasks.map(task => (
@@ -173,25 +174,55 @@ export default function CRMTasks() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-                        <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-slate-800">{editingId ? 'Edit Task' : 'New Task'}</h2>
-                            <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 font-medium">Close</button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col mx-auto">
+
+                        {/* ── Header ── */}
+                        <header className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem] flex-shrink-0">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Task Title</label>
-                                <input required className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Call Client" />
+                                <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">{editingId ? 'Edit Task' : 'New Task'}</h3>
+                                <p className="text-slate-400 text-xs mt-0.5">Define activity details</p>
+                            </div>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
+                            >
+                                <FiX size={18} />
+                            </button>
+                        </header>
+
+                        {/* ── Form ── */}
+                        <form onSubmit={handleSubmit} className="px-6 py-5 sm:px-8 sm:py-7 space-y-4 sm:space-y-5 overflow-y-auto custom-scrollbar flex-1 pb-2">
+
+                            {/* Task Title */}
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Task Title</label>
+                                <input
+                                    required
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold text-slate-800 text-sm placeholder:font-normal placeholder:text-slate-400"
+                                    value={form.title}
+                                    onChange={e => setForm({ ...form, title: e.target.value })}
+                                    placeholder="e.g. Call Client"
+                                />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            {/* Due Date + Priority — always 2-col */}
+                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Due Date</label>
-                                    <input type="date" className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.dueDate} onChange={e => setForm({ ...form, dueDate: e.target.value })} />
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Due Date</label>
+                                    <input
+                                        type="date"
+                                        className="w-full bg-slate-50 border border-slate-200 px-3 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold text-slate-800 text-sm"
+                                        value={form.dueDate}
+                                        onChange={e => setForm({ ...form, dueDate: e.target.value })}
+                                    />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Priority</label>
-                                    <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Priority</label>
+                                    <select
+                                        className="w-full bg-slate-50 border border-slate-200 px-3 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold text-slate-800 appearance-none text-sm"
+                                        value={form.priority}
+                                        onChange={e => setForm({ ...form, priority: e.target.value })}
+                                    >
                                         <option value="LOW">Low</option>
                                         <option value="MEDIUM">Medium</option>
                                         <option value="HIGH">High</option>
@@ -199,28 +230,44 @@ export default function CRMTasks() {
                                 </div>
                             </div>
 
+                            {/* Related To */}
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Related To</label>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.leadId} onChange={e => setForm({ ...form, leadId: e.target.value, dealId: '' })}>
-                                        <option value="">Select Lead</option>
-                                        {leads.map(l => (
-                                            <option key={l.id} value={l.id}>{l.name}</option>
-                                        ))}
-                                    </select>
-                                    <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.dealId} onChange={e => setForm({ ...form, dealId: e.target.value, leadId: '' })}>
-                                        <option value="">Select Deal</option>
-                                        {deals.map(d => (
-                                            <option key={d.id} value={d.id}>{d.title}</option>
-                                        ))}
-                                    </select>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Related To</label>
+                                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                                    <SearchableSelect
+                                        direction="down"
+                                        placeholder="Select Lead"
+                                        value={form.leadId}
+                                        onChange={val => setForm({ ...form, leadId: val, dealId: '' })}
+                                        options={[
+                                            { value: '', label: 'Select Lead' },
+                                            ...leads.map(l => ({ value: l.id, label: l.name }))
+                                        ]}
+                                        triggerClassName="min-h-[46px] !bg-slate-50 !shadow-none !border-slate-200 !rounded-xl"
+                                    />
+                                    <SearchableSelect
+                                        direction="down"
+                                        placeholder="Select Deal"
+                                        value={form.dealId}
+                                        onChange={val => setForm({ ...form, dealId: val, leadId: '' })}
+                                        options={[
+                                            { value: '', label: 'Select Deal' },
+                                            ...deals.map(d => ({ value: d.id, label: d.title }))
+                                        ]}
+                                        triggerClassName="min-h-[46px] !bg-slate-50 !shadow-none !border-slate-200 !rounded-xl"
+                                    />
                                 </div>
-                                <p className="text-[10px] text-slate-400 mt-1">*Select either a Lead OR a Deal</p>
+                                <p className="text-[10px] text-slate-400/80 mt-1.5 font-medium italic">* Link to either a Lead or a Deal</p>
                             </div>
 
+                            {/* Assigned To */}
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Assigned To</label>
-                                <select className="input w-full bg-slate-50 border-transparent focus:bg-white" value={form.assignedTo} onChange={e => setForm({ ...form, assignedTo: e.target.value })}>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Assigned To</label>
+                                <select
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-semibold text-slate-800 appearance-none text-sm"
+                                    value={form.assignedTo}
+                                    onChange={e => setForm({ ...form, assignedTo: e.target.value })}
+                                >
                                     <option value="">Unassigned</option>
                                     {users.map(u => (
                                         <option key={u.id} value={u.id}>{u.name || u.username}</option>
@@ -228,14 +275,34 @@ export default function CRMTasks() {
                                 </select>
                             </div>
 
+                            {/* Description */}
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Description</label>
-                                <textarea className="input w-full bg-slate-50 border-transparent focus:bg-white h-20" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}></textarea>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Description</label>
+                                <textarea
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3.5 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 text-sm min-h-[72px] sm:min-h-[96px] resize-none placeholder:text-slate-400"
+                                    placeholder="Add task notes..."
+                                    value={form.description}
+                                    onChange={e => setForm({ ...form, description: e.target.value })}
+                                />
                             </div>
 
-                            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-primary-dark transition">
-                                {editingId ? 'Update Task' : 'Create Task'}
-                            </button>
+                            {/* Action Buttons */}
+                            <div className="flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="flex-1 py-3.5 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 active:scale-95 transition-all text-[11px] uppercase tracking-widest"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-black active:scale-95 transition-all shadow-lg shadow-slate-900/15 text-[11px] uppercase tracking-widest"
+                                >
+                                    {editingId ? 'Update Task' : 'Create Task'}
+                                </button>
+                            </div>
+
                         </form>
                     </div>
                 </div>

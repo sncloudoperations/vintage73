@@ -94,7 +94,7 @@ export default function FinancialYear() {
 
     return (
         <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <h1 className="text-2xl font-semibold">Financial Years</h1>
                 <button
                     onClick={() => setShowModal(true)}
@@ -108,10 +108,10 @@ export default function FinancialYear() {
             {loading ? (
                 <div>Loading...</div>
             ) : (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <table className="w-full">
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto shadow border border-slate-200 rounded-lg">
+                    <table className="table-modern w-full">
                         <thead className="bg-gray-50">
-                            <tr>
+                            <tr className="whitespace-nowrap">
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Start Date</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">End Date</th>

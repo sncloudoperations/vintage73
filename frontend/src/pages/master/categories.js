@@ -110,23 +110,25 @@ export default function CategoryMaster() {
                     <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Category Master</h1>
                     <p className="text-slate-500 text-sm font-medium">Centralized management for system classification</p>
                 </div>
-                <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 shadow-inner">
-                    <button 
-                        onClick={() => setActiveTab('product')}
-                        className={`px-6 py-2.5 rounded-xl text-[10px] font-medium uppercase tracking-widest transition-all duration-300 ${activeTab === 'product' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
-                    >
-                        Product Inventory
-                    </button>
-                    <button 
-                        onClick={() => setActiveTab('ticket')}
-                        className={`px-6 py-2.5 rounded-xl text-[10px] font-medium uppercase tracking-widest transition-all duration-300 ${activeTab === 'ticket' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
-                    >
-                        Ticketing system
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                    <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 shadow-inner w-full sm:w-auto overflow-x-auto no-scrollbar whitespace-nowrap">
+                        <button 
+                            onClick={() => setActiveTab('product')}
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-medium uppercase tracking-widest transition-all duration-300 flex-shrink-0 ${activeTab === 'product' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
+                        >
+                            Product Inventory
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('ticket')}
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-medium uppercase tracking-widest transition-all duration-300 flex-shrink-0 ${activeTab === 'ticket' ? 'bg-white text-primary shadow-md scale-100' : 'text-slate-400 hover:text-slate-600 scale-95 hover:scale-100'}`}
+                        >
+                            Ticketing system
+                        </button>
+                    </div>
+                    <button onClick={() => openModal()} className="btn btn-primary shadow-primary/20 shadow-lg px-8 py-3 rounded-2xl text-[10px] uppercase font-medium tracking-widest w-full sm:w-auto whitespace-nowrap">
+                        <FiPlus className="text-lg" /> New {activeTab === 'product' ? 'Product' : 'Ticket'} Category
                     </button>
                 </div>
-                <button onClick={() => openModal()} className="btn btn-primary shadow-primary/20 shadow-lg px-8 py-3 rounded-2xl text-[10px] uppercase font-medium tracking-widest">
-                    <FiPlus className="text-lg" /> New {activeTab === 'product' ? 'Product' : 'Ticket'} Category
-                </button>
             </div>
 
             <div className="card mb-6">
@@ -143,16 +145,17 @@ export default function CategoryMaster() {
             </div>
 
             <div className="card overflow-hidden">
-                <table className="table-modern">
-                    <thead>
-                        <tr>
-                            <th>Category Name</th>
-                            {activeTab === 'product' && <th>Unit Type</th>}
-                            {activeTab === 'product' && <th>Products Linked</th>}
-                            {activeTab === 'ticket' && <th>Usage</th>}
-                            <th className="text-right">Actions</th>
-                        </tr>
-                    </thead>
+                <div className="table-container lg:no-scrollbar overflow-x-auto">
+                    <table className="table-modern">
+                        <thead>
+                            <tr className="whitespace-nowrap">
+                                <th>Category Name</th>
+                                {activeTab === 'product' && <th>Unit Type</th>}
+                                {activeTab === 'product' && <th>Products Linked</th>}
+                                {activeTab === 'ticket' && <th>Usage</th>}
+                                <th className="text-right">Actions</th>
+                            </tr>
+                        </thead>
                     <tbody>
                         {loading ? (
                             <tr><td colSpan="3" className="text-center py-8">Loading...</td></tr>
@@ -208,7 +211,8 @@ export default function CategoryMaster() {
                             ))
                         )}
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
 
             {showModal && (

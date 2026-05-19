@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
@@ -41,6 +41,10 @@ export default function InvoiceSettings() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('sales'); // 'sales' | 'return' | 'fy'
     const [previewMode, setPreviewMode] = useState('Desktop'); // 'Desktop' | 'Mobile'
+    const [previewScale, setPreviewScale] = useState(1);
+    const [previewHeight, setPreviewHeight] = useState('auto');
+    const previewContainerRef = useRef(null);
+    const previewCanvasRef = useRef(null);
     const [fyList, setFyList] = useState([]);
     const [isFyModalOpen, setIsFyModalOpen] = useState(false);
     const [fySearch, setFySearch] = useState('');
@@ -221,10 +225,40 @@ export default function InvoiceSettings() {
         setIsFyModalOpen(true);
     };
 
+    useEffect(() => {
+        const updateScale = () => {
+            if (!previewContainerRef.current || !previewCanvasRef.current) return;
+            const containerWidth = previewContainerRef.current.offsetWidth - 64; 
+            const canvasWidth = previewCanvasRef.current.offsetWidth;
+            const canvasHeight = previewCanvasRef.current.offsetHeight;
+            
+            let scale = 1;
+            if (canvasWidth > containerWidth) {
+                scale = containerWidth / canvasWidth;
+            }
+            
+            setPreviewScale(scale);
+            setPreviewHeight(canvasHeight * scale);
+        };
+
+        // Delay slightly to ensure initial render is complete
+        const timer = setTimeout(updateScale, 100);
+
+        const observer = new ResizeObserver(updateScale);
+        if (previewContainerRef.current) observer.observe(previewContainerRef.current);
+        
+        window.addEventListener('resize', updateScale);
+        return () => {
+            clearTimeout(timer);
+            observer.disconnect();
+            window.removeEventListener('resize', updateScale);
+        };
+    }, [previewMode, activeTab, settings]);
+
     const currentConfig = settings[activeTab];
 
     return (
-        <div className="flex h-screen bg-slate-50">
+        <div className="flex min-h-screen bg-slate-50">
 
             <div className="flex-1 overflow-auto">
                 <div className="p-8">
@@ -233,7 +267,7 @@ export default function InvoiceSettings() {
                     </h1>
 
                     {/* Tabs */}
-                    <div className="flex gap-4 mb-6 border-b border-slate-200">
+                    <div className="flex gap-4 mb-6 border-b border-slate-200 overflow-x-auto no-scrollbar whitespace-nowrap">
                         <button
                             onClick={() => setActiveTab('sales')}
                             className={`pb-3 px-4 font-medium flex items-center gap-2 transition-colors border-b-2 ${activeTab === 'sales' ? 'border-primary text-primary-dark' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
@@ -255,7 +289,7 @@ export default function InvoiceSettings() {
                     </div>
 
                     {activeTab !== 'fy' ? (
-                    <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-200px)]">
+                    <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[calc(100vh-200px)]">
                         {/* Left Panel - Controls */}
                         <div className="w-full lg:w-[400px] xl:w-[450px] bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden relative pb-[80px]">
                             {/* Inner Header */}
@@ -417,50 +451,66 @@ export default function InvoiceSettings() {
                             </div>
 
                             {/* Live Preview Area */}
-                            <div className="flex-1 overflow-auto p-4 md:p-8 flex items-start justify-center bg-slate-100">
-                                {/* Main Responsive Canvas */}
-                                <div className={`transition-all duration-300 shadow-2xl ${previewMode === 'Mobile' ? 'w-[360px]' : 'w-auto'}`}>
-                                    <ProfessionalInvoice 
-                                        previewMode={previewMode}
-                                        companyProfile={previewCompanyProfile || {
-                                            companyName: 'ABS HARDWARE & PAINTS',
-                                            address: 'Ayiramkolly, Ambalavayal, Wayanad, Kerala - 673593',
-                                            phone: '7510133133',
-                                            gstNumber: '32DXHPK3898B1ZF',
-                                            state: '32-KERALA'
+                            <div 
+                                ref={previewContainerRef}
+                                className="flex-1 overflow-auto p-4 md:p-8 flex items-start justify-center bg-slate-100"
+                            >
+                                {/* Main Responsive Canvas with Intelligent Scaling */}
+                                <div 
+                                    className="relative flex justify-center w-full"
+                                    style={{ height: previewHeight !== 'auto' ? `${previewHeight}px` : 'auto' }}
+                                >
+                                    <div 
+                                        ref={previewCanvasRef}
+                                        className={`transition-all duration-300 shadow-2xl origin-top mb-8 bg-white absolute top-0`}
+                                        style={{
+                                            width: previewMode === 'Mobile' ? '360px' : (currentConfig.pageSize === 'A4' ? '210mm' : '148mm'),
+                                            transform: `scale(${previewScale})`,
+                                            maxWidth: 'none'
                                         }}
-                                        printData={{
-                                            invoiceNumber: currentConfig.invoicePrefix + '-001',
-                                            saleDate: new Date().toISOString(),
-                                            customerName: 'WALK-IN CUSTOMER',
-                                            placeOfSupply: '32-KERALA',
-                                            currencySymbol: '₹',
-                                            currencyCode: 'INR',
-                                            exchangeRate: 1,
-                                            subTotal: 1000.00,
-                                            discount: 152.54,
-                                            taxAmount: 152.54,
-                                            totalAmount: 1000.00,
-                                            roundOffAmount: 0,
-                                            currentBalance: 1250,
-                                            settings: currentConfig,
-                                            items: [
-                                                {
-                                                    name: 'PREMIUM ASIAN PAINTS - WHITE (1L)',
-                                                    quantity: 2,
-                                                    unitPrice: 423.73,
-                                                    total: 1000.00,
-                                                    taxAmount: 152.54,
-                                                    taxRate: 18,
-                                                    product: {
+                                    >
+                                        <ProfessionalInvoice 
+                                            previewMode={previewMode}
+                                            companyProfile={previewCompanyProfile || {
+                                                companyName: 'ABS HARDWARE & PAINTS',
+                                                address: 'Ayiramkolly, Ambalavayal, Wayanad, Kerala - 673593',
+                                                phone: '7510133133',
+                                                gstNumber: '32DXHPK3898B1ZF',
+                                                state: '32-KERALA'
+                                            }}
+                                            printData={{
+                                                invoiceNumber: currentConfig.invoicePrefix + '-001',
+                                                saleDate: new Date().toISOString(),
+                                                customerName: 'WALK-IN CUSTOMER',
+                                                placeOfSupply: '32-KERALA',
+                                                currencySymbol: '₹',
+                                                currencyCode: 'INR',
+                                                exchangeRate: 1,
+                                                subTotal: 1000.00,
+                                                discount: 152.54,
+                                                taxAmount: 152.54,
+                                                totalAmount: 1000.00,
+                                                roundOffAmount: 0,
+                                                currentBalance: 1250,
+                                                settings: currentConfig,
+                                                items: [
+                                                    {
                                                         name: 'PREMIUM ASIAN PAINTS - WHITE (1L)',
-                                                        barcode: '890123456789',
-                                                        hsnCode: '3208'
+                                                        quantity: 2,
+                                                        unitPrice: 423.73,
+                                                        total: 1000.00,
+                                                        taxAmount: 152.54,
+                                                        taxRate: 18,
+                                                        product: {
+                                                            name: 'PREMIUM ASIAN PAINTS - WHITE (1L)',
+                                                            barcode: '890123456789',
+                                                            hsnCode: '3208'
+                                                        }
                                                     }
-                                                }
-                                            ]
-                                        }}
-                                    />
+                                                ]
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -828,7 +878,7 @@ function FinancialYearSection({ fyList, onRefresh, search, onSearchChange }) {
                 </div>
                 <button 
                     onClick={() => openModal()}
-                    className="bg-primary text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-primary-dark transition-all"
+                    className="bg-primary text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-primary-dark transition-all w-full md:w-auto justify-center whitespace-nowrap"
                 >
                     <FiPlus /> Add Financial Year
                 </button>
@@ -845,10 +895,10 @@ function FinancialYearSection({ fyList, onRefresh, search, onSearchChange }) {
                 />
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto lg:no-scrollbar">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-slate-50 text-slate-500 font-medium border-b">
+                        <tr className="bg-slate-50 text-slate-500 font-medium border-b whitespace-nowrap">
                             <th className="p-4">Name</th>
                             <th className="p-4">From Date</th>
                             <th className="p-4">To Date</th>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import { FiDownload, FiCheckCircle, FiPackage, FiInfo, FiClock, FiPrinter } from 'react-icons/fi';
+import { FiDownload, FiCheckCircle, FiPackage, FiInfo, FiClock, FiPrinter, FiRefreshCw } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import { toast } from 'react-toastify';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function StockReceipt() {
   const [incomingTransfers, setIncomingTransfers] = useState([]);
@@ -113,34 +114,42 @@ export default function StockReceipt() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-4 flex flex-wrap gap-4 items-end">
-        <div className="flex-1 min-w-[200px]">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-4 flex flex-wrap md:flex-nowrap gap-4 items-end">
+        <div className="w-full md:flex-1 min-w-[200px]">
           <label className="block text-xs font-medium text-slate-400 uppercase mb-2">From Branch</label>
-          <select className="input w-full" value={filterBranchId} onChange={e => setFilterBranchId(e.target.value)}>
-            <option value="">All Branches</option>
-            {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>
+          <SearchableSelect
+            options={[
+              { value: '', label: 'All Branches' },
+              ...branches.map(b => ({ value: b.id, label: b.name }))
+            ]}
+            value={filterBranchId}
+            onChange={val => setFilterBranchId(val)}
+            placeholder="Select Branch"
+            direction="down"
+          />
         </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-400 uppercase mb-2">From Date</label>
-          <input type="date" className="input" value={startDate} onChange={e => setStartDate(e.target.value)} />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-400 uppercase mb-2">To Date</label>
-          <input type="date" className="input" value={endDate} onChange={e => setEndDate(e.target.value)} />
+        <div className="grid grid-cols-2 md:flex md:flex-1 gap-4 w-full md:w-auto">
+          <div className="col-span-1 md:flex-1">
+            <label className="block text-xs font-medium text-slate-400 uppercase mb-2">From Date</label>
+            <input type="date" className="input w-full" value={startDate} onChange={e => setStartDate(e.target.value)} />
+          </div>
+          <div className="col-span-1 md:flex-1">
+            <label className="block text-xs font-medium text-slate-400 uppercase mb-2">To Date</label>
+            <input type="date" className="input w-full" value={endDate} onChange={e => setEndDate(e.target.value)} />
+          </div>
         </div>
         <button
           onClick={() => { setFilterBranchId(''); setStartDate(''); setEndDate(''); }}
-          className="text-slate-400 hover:text-red-500 font-medium text-xs flex items-center gap-1 pb-3 px-2 transition-colors uppercase"
+          className="text-slate-400 hover:text-red-500 font-medium text-xs flex items-center gap-1 pb-3 px-2 transition-colors uppercase whitespace-nowrap w-full md:w-auto justify-center"
         >
-          Reset
+          <FiRefreshCw className="md:hidden" /> Reset Filters
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-slate-50 text-slate-500 font-medium uppercase text-[10px] tracking-widest border-b border-slate-100">
-            <tr>
+      <div className="table-container scroll-line lg:no-scrollbar">
+        <table className="table-modern w-full text-sm text-left">
+          <thead>
+            <tr className="whitespace-nowrap">
               <th className="p-4 pl-6">Date</th>
               <th className="p-4">From Branch</th>
               <th className="p-4">Items</th>

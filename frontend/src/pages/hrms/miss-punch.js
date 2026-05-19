@@ -94,10 +94,10 @@ export default function MissPunchRequests() {
     const isAdmin = user?.role === 'admin';
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <header className="flex justify-between items-center mb-8">
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2 leading-tight">
                         <FiClock className="text-primary" />
                         Miss Punch Requests
                     </h1>
@@ -105,17 +105,17 @@ export default function MissPunchRequests() {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium text-sm flex items-center gap-2 hover:bg-black transition-all shadow-sm hover:shadow-lg"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-black transition-all shadow-sm hover:shadow-lg"
                 >
                     <FiPlus /> Request Miss Punch
                 </button>
             </header>
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="overflow-x-auto">
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-100 uppercase text-[10px] tracking-wider">
-                            <tr>
+                            <tr className="whitespace-nowrap">
                                 <th className="px-6 py-4 text-left">Employee</th>
                                 <th className="px-6 py-4 text-left">Date</th>
                                 <th className="px-6 py-4 text-left">Check-In</th>
@@ -195,78 +195,82 @@ export default function MissPunchRequests() {
 
             {/* Request Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-                        <div className="p-6 border-b border-slate-100">
-                            <h2 className="text-xl font-semibold text-slate-800">Request Miss Punch</h2>
-                            <p className="text-sm text-slate-500 mt-1">Submit a request for missed attendance punch</p>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
+                        <header className="px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
-                                    Date
-                                </label>
+                                <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">Request Miss Punch</h3>
+                                <p className="text-slate-400 text-[10px] sm:text-xs mt-0.5">Submit attendance correction</p>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
+                                <FiX size={18} />
+                            </button>
+                        </header>
+
+                        <form onSubmit={handleSubmit} className="px-6 sm:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6 overflow-y-auto custom-scrollbar">
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 sm:mb-3">Missed Date</label>
                                 <input
                                     required
                                     type="date"
-                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all mb-1"
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 sm:p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 text-sm sm:text-base"
                                     value={formData.date}
                                     onChange={e => setFormData({ ...formData, date: e.target.value })}
                                 />
-                                <p className="text-[10px] text-amber-600 font-medium flex items-center gap-1.5 px-1 uppercase tracking-tighter">
-                                    <FiCalendar size={12} /> Limit: Within 3 days from missed date
-                                </p>
+                                <div className="mt-2.5 flex items-center gap-2 p-2.5 bg-amber-50/50 border border-amber-100 rounded-xl">
+                                    <FiCalendar className="text-amber-500 shrink-0" size={13} />
+                                    <p className="text-[9px] sm:text-[10px] text-amber-700 font-bold uppercase tracking-tight">
+                                        Limit: Within 3 days from missed date
+                                    </p>
+                                </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+
+                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
-                                        Check-In Time
-                                    </label>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 sm:mb-3">Check-In</label>
                                     <input
                                         type="time"
-                                        className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all"
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 sm:p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 text-sm sm:text-base"
                                         value={formData.checkInTime}
                                         onChange={e => setFormData({ ...formData, checkInTime: e.target.value })}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
-                                        Check-Out Time
-                                    </label>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 sm:mb-3">Check-Out</label>
                                     <input
                                         type="time"
-                                        className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all"
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 sm:p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 text-sm sm:text-base"
                                         value={formData.checkOutTime}
                                         onChange={e => setFormData({ ...formData, checkOutTime: e.target.value })}
                                     />
                                 </div>
                             </div>
+
                             <div>
-                                <label className="block text-xs font-medium text-slate-400 uppercase tracking-widest mb-2">
-                                    Reason
-                                </label>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 sm:mb-3">Reason for Correction</label>
                                 <textarea
                                     required
-                                    rows="3"
-                                    className="input w-full bg-slate-50 border-transparent focus:bg-white transition-all resize-none"
+                                    rows="2"
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 sm:p-4 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-medium text-slate-800 text-sm sm:text-base min-h-[80px] sm:min-h-[100px]"
                                     value={formData.reason}
                                     onChange={e => setFormData({ ...formData, reason: e.target.value })}
-                                    placeholder="Explain why you missed the punch..."
+                                    placeholder="e.g. Card machine failure / Forgot to punch"
                                 />
                             </div>
-                            <div className="flex gap-3 pt-4">
+
+                            <div className="pt-2 sm:pt-4 flex gap-3 sticky bottom-0 bg-white">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-4 py-3 border border-slate-200 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-50 transition-all"
+                                    className="flex-1 px-4 sm:px-6 py-3 sm:py-3.5 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all text-[10px] uppercase tracking-widest"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-medium text-sm hover:bg-black transition-all"
+                                    className="flex-1 px-4 sm:px-6 py-3 sm:py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg text-[10px] uppercase tracking-widest"
                                 >
-                                    Submit Request
+                                    Submit
                                 </button>
                             </div>
                         </form>

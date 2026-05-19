@@ -104,54 +104,50 @@ export default function AccountingDashboard() {
             <p className="text-slate-500 mt-1 font-medium text-sm">Comprehensive overview of financial health and operations</p>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <div className="flex items-center bg-white border border-slate-200 hover:border-primary/30 transition-all rounded-xl p-1 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-sm w-full sm:w-auto transition-all focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10">
               <div className="hidden sm:flex items-center px-3 border-r border-slate-100">
                 <FiCalendar className="text-slate-400 mr-2" size={14} />
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Period</span>
               </div>
-              <input 
-                type="date" 
-                className="text-xs font-semibold text-slate-700 bg-transparent border-none focus:ring-0 outline-none px-3 py-1.5 cursor-pointer w-full sm:w-auto" 
-                value={filterStartDate}
-                onChange={e => setFilterStartDate(e.target.value)}
-                title="Start Date"
-              />
-              <span className="text-slate-300 font-medium px-1">→</span>
-              <input 
-                type="date" 
-                className="text-xs font-semibold text-slate-700 bg-transparent border-none focus:ring-0 outline-none px-3 py-1.5 cursor-pointer w-full sm:w-auto" 
-                value={filterEndDate}
-                onChange={e => setFilterEndDate(e.target.value)}
-                title="End Date"
-              />
-              
+              <div className="flex items-center flex-1 justify-between sm:justify-start px-2">
+                <input 
+                  type="date" 
+                  className="text-xs font-semibold text-slate-700 bg-transparent border-none focus:ring-0 outline-none py-1.5 cursor-pointer w-full max-w-[125px]" 
+                  value={filterStartDate}
+                  onChange={e => setFilterStartDate(e.target.value)}
+                />
+                <span className="text-slate-300 font-medium px-2">to</span>
+                <input 
+                  type="date" 
+                  className="text-xs font-semibold text-slate-700 bg-transparent border-none focus:ring-0 outline-none py-1.5 cursor-pointer w-full max-w-[125px]" 
+                  value={filterEndDate}
+                  onChange={e => setFilterEndDate(e.target.value)}
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 justify-end sm:justify-start">
               {(filterStartDate || filterEndDate) && (
                 <button
                   onClick={handleClear}
-                  className="p-1.5 mx-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors group relative"
-                  title="Clear Dates"
+                  className="flex-1 sm:flex-none px-4 py-2 bg-white border border-slate-200 text-slate-500 text-[10px] font-bold rounded-xl uppercase tracking-widest hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all flex items-center justify-center gap-1.5 shadow-sm"
                 >
-                  <FiX size={14} className="group-hover:scale-110 transition-transform" />
+                  <FiX size={14} /> Clear
                 </button>
               )}
-
               <button 
                 onClick={() => fetchDashboardStats(filterStartDate, filterEndDate)}
-                className="ml-1 px-5 py-2 bg-slate-900 text-white text-[10px] font-bold rounded-lg uppercase tracking-widest hover:bg-slate-800 shadow-sm hover:shadow transition-all active:scale-95 flex items-center gap-1.5"
+                className="flex-1 sm:flex-none px-6 py-2 bg-slate-900 text-white text-[10px] font-bold rounded-xl uppercase tracking-widest hover:bg-slate-800 shadow-sm transition-all active:scale-95 flex items-center justify-center gap-1.5"
               >
-                <FiFilter size={12} /> Apply
+                <FiFilter size={14} /> Apply Filter
               </button>
-            </div>
-            
-            <div className="hidden md:block text-xs text-slate-400 uppercase tracking-widest font-semibold px-3 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm">
-              Current FY
             </div>
           </div>
         </header>
 
         {/* SUMMARY CARDS GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard title="Bank Balance" value={formatCurrency(stats?.summary?.bankBalance)} icon={FiBriefcase} color="emerald" />
           <StatCard title="Cash in Hand" value={formatCurrency(stats?.summary?.cashInHand)} icon={FiCreditCard} color="amber" />
           <StatCard title="Monthly Income" value={formatCurrency(stats?.summary?.monthlyIncome)} icon={FiTrendingUp} color="blue" />
@@ -168,7 +164,7 @@ export default function AccountingDashboard() {
            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
              <FiTarget className="text-primary" /> Quick Actions
            </h3>
-           <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               <ActionButton name="Journal Entry" icon={FiFileText} path="/accounting/vouchers/journal" addTab={addTab} />
               <ActionButton name="Payment Voucher" icon={FiArrowUpRight} path="/accounting/vouchers/payment" addTab={addTab} />
               <ActionButton name="Receipt Voucher" icon={FiArrowDownLeft} path="/accounting/vouchers/receipt" addTab={addTab} />
@@ -254,10 +250,10 @@ export default function AccountingDashboard() {
         {/* RECENT ACTIVITY */}
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Recent Vouchers</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-600">
+          <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto shadow-sm border border-slate-200 rounded-lg">
+            <table className="w-full text-left text-sm text-slate-600 table-modern">
               <thead className="bg-slate-50 text-xs uppercase text-slate-400">
-                <tr>
+                <tr className="whitespace-nowrap">
                   <th className="px-4 py-3 rounded-tl-lg">Voucher #</th>
                   <th className="px-4 py-3">Type</th>
                   <th className="px-4 py-3">Date</th>
@@ -332,7 +328,7 @@ function ActionButton({ name, icon: Icon, path, addTab }) {
       <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
         <Icon className="text-slate-500 group-hover:text-primary-dark" />
       </div>
-      <span className="text-[10px] font-semibold text-slate-600 text-center uppercase tracking-wider">{name}</span>
+      <span className="text-[10px] font-semibold text-slate-600 text-center uppercase tracking-wider break-words w-full px-1">{name}</span>
     </button>
   );
 }

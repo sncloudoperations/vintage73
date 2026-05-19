@@ -82,14 +82,14 @@ export default function StateMaster() {
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">State Master</h1>
           <p className="text-slate-500 text-sm mt-1">{filteredStates.length} states</p>
         </div>
         <button
           onClick={() => openModal()}
-          className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
+          className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm w-full md:w-auto justify-center whitespace-nowrap"
         >
           <FiPlus size={16} /> Add State
         </button>
@@ -110,10 +110,10 @@ export default function StateMaster() {
       </div>
 
       <div className="card shadow-md border border-slate-200">
-        <div className="table-container">
+        <div className="table-container lg:no-scrollbar">
           <table className="table-modern">
             <thead>
-              <tr>
+              <tr className="whitespace-nowrap">
                 <th style={{ width: '5%' }}>#</th>
                 <th style={{ width: '60%' }}>State Name</th>
                 <th className="text-center" style={{ width: '20%' }}>GST Code</th>

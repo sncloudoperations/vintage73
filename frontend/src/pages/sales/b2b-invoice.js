@@ -390,9 +390,9 @@ export default function B2BInvoice() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center flex-shrink-0">
             <FiFileText className="text-primary" size={20} />
           </div>
           <div>
@@ -402,17 +402,17 @@ export default function B2BInvoice() {
         </div>
 
         {/* Tab Switch */}
-        <div className="flex bg-slate-100 rounded-lg p-1">
+        <div className="flex bg-slate-100 rounded-lg p-1 w-full md:w-auto justify-center">
           <button
             onClick={() => setActiveTab('create')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'create' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-800'
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-medium transition-all text-center ${activeTab === 'create' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-800'
               }`}
           >
             <FiPlus className="inline mr-1" /> New Invoice
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'history' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-800'
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-medium transition-all text-center ${activeTab === 'history' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-800'
               }`}
           >
             <FiList className="inline mr-1" /> Invoice History
@@ -535,13 +535,19 @@ export default function B2BInvoice() {
                 <div className="px-4 pb-4 grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-slate-500 mb-1">Mode</label>
-                    <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="input text-sm">
-                      <option value="">Select</option>
-                      <option value="Road">Road</option>
-                      <option value="Rail">Rail</option>
-                      <option value="Air">Air</option>
-                      <option value="Ship">Ship</option>
-                    </select>
+                    <SearchableSelect
+                      options={[
+                        { value: 'Road', label: 'Road' },
+                        { value: 'Rail', label: 'Rail' },
+                        { value: 'Air', label: 'Air' },
+                        { value: 'Ship', label: 'Ship' }
+                      ]}
+                      value={transportMode}
+                      onChange={val => setTransportMode(val)}
+                      placeholder="Select"
+                      direction="down"
+                      triggerClassName="min-h-0 h-[38px] py-1.5 px-3 text-sm w-full"
+                    />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-slate-500 mb-1">Vehicle No.</label>
@@ -565,9 +571,9 @@ export default function B2BInvoice() {
                 <h3 className="font-semibold text-slate-700">Invoice Items</h3>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-slate-50 text-slate-600">
+              <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                <table className="w-full text-sm min-w-[900px]">
+                  <thead className="bg-slate-50 text-slate-600 whitespace-nowrap">
                     <tr>
                       <th className="text-left p-3">Product</th>
                       <th className="text-left p-3">HSN</th>
@@ -734,16 +740,14 @@ export default function B2BInvoice() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">Customer</label>
-                <select
+                <SearchableSelect
+                  options={customers.map(c => ({ value: c.id, label: c.name }))}
                   value={filterCustomer}
-                  onChange={(e) => setFilterCustomer(e.target.value)}
-                  className="input text-sm"
-                >
-                  <option value="">All Customers</option>
-                  {customers.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
+                  onChange={val => setFilterCustomer(val)}
+                  placeholder="All Customers"
+                  direction="down"
+                  triggerClassName="min-h-0 h-[38px] py-1.5 px-3 text-sm w-full"
+                />
               </div>
               <div className="flex items-end">
                 <button
@@ -763,19 +767,20 @@ export default function B2BInvoice() {
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
               </div>
             ) : (
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="text-left p-4">Invoice No</th>
-                    <th className="text-left p-4">Date</th>
-                    <th className="text-left p-4">Customer</th>
-                    <th className="text-left p-4">GSTIN</th>
-                    <th className="text-right p-4">Amount</th>
-                    <th className="text-center p-4">E-Way Bill</th>
-                    <th className="text-center p-4">Status</th>
-                    <th className="text-center p-4">Actions</th>
-                  </tr>
-                </thead>
+              <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                <table className="w-full text-sm min-w-[900px]">
+                  <thead className="bg-slate-50 text-slate-600 whitespace-nowrap">
+                    <tr>
+                      <th className="text-left p-4">Invoice No</th>
+                      <th className="text-left p-4">Date</th>
+                      <th className="text-left p-4">Customer</th>
+                      <th className="text-left p-4">GSTIN</th>
+                      <th className="text-right p-4">Amount</th>
+                      <th className="text-center p-4">E-Way Bill</th>
+                      <th className="text-center p-4">Status</th>
+                      <th className="text-center p-4">Actions</th>
+                    </tr>
+                  </thead>
                 <tbody>
                   {invoices.map(inv => (
                     <tr key={inv.id} className="border-b border-slate-50 hover:bg-slate-50">
@@ -852,6 +857,7 @@ export default function B2BInvoice() {
                   )}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </div>
@@ -859,7 +865,7 @@ export default function B2BInvoice() {
 
       {/* E-Way Bill Modal */}
       {showEwayModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <h3 className="text-lg font-medium text-slate-800 mb-4">E-Way Bill Required</h3>
             <p className="text-sm text-slate-500 mb-4">Invoice value exceeds ₹{settings?.ewayBillThreshold}. Please enter E-Way Bill number.</p>

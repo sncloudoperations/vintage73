@@ -32,28 +32,30 @@ export default function BalanceSheet() {
         <div className="p-4 bg-[#f8fafc] min-h-screen text-slate-700">
             {/* Premium Gradient Header */}
             <header className="rounded-xl bg-gradient-to-r from-primary-dark to-primary p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-primary-dark/10 no-print">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
-                        <FiLayers className="text-white" size={20} />
+                <div className="flex flex-col xl:flex-row items-start xl:items-center gap-4 w-full md:w-auto">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
+                            <FiLayers className="text-white" size={20} />
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-normal text-white leading-tight">Financial Balance Sheet</h1>
+                            <p className="text-white/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-lg font-normal text-white leading-tight">Financial Balance Sheet</h1>
-                        <p className="text-white/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
-                    </div>
-                    <div className="hidden md:block h-8 border-l border-white/10 mx-2" />
-                    <div className="flex items-center gap-3">
-                        <div className="flex flex-col">
+                    <div className="hidden xl:block h-8 border-l border-white/10 mx-2" />
+                    <div className="flex items-center gap-3 w-full md:w-auto">
+                        <div className="flex flex-col flex-1 md:flex-none">
                             <span className="text-[9px] text-white/60 uppercase tracking-tighter">Reporting Date</span>
                             <input
                                 type="date"
-                                className="bg-transparent border-none p-0 text-sm text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark]"
+                                className="bg-transparent border-none p-0 text-sm text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark] w-full"
                                 value={asOfDate}
                                 onChange={e => setAsOfDate(e.target.value)}
                             />
                         </div>
                         <button
                             onClick={fetchBalanceSheet}
-                            className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95"
+                            className="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 rounded-lg transition-all text-xs font-normal shadow-sm active:scale-95 whitespace-nowrap"
                         >
                             Update Report
                         </button>
@@ -78,7 +80,7 @@ export default function BalanceSheet() {
                                 {data.balanced ? <FiCheckCircle size={14} /> : <FiAlertCircle size={14} />}
                                 <span>{data.balanced ? 'Equilibrium Maintained' : 'Out of Balance!'}</span>
                             </div>
-                            <div className="flex gap-6">
+                            <div className="flex flex-wrap gap-2 md:gap-6 mt-2 sm:mt-0">
                                 <span>Assets: {data.totalAssets.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                 <span>Lia + Eq: {(data.totalLiabilities + data.totalEquity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                                 <span>Variance: {(data.totalAssets - (data.totalLiabilities + data.totalEquity)).toFixed(2)}</span>
@@ -88,13 +90,13 @@ export default function BalanceSheet() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border-t border-l border-slate-300 shadow-xl shadow-slate-200/50">
                         {/* ASSETS TABLE */}
-                        <div className="border-r border-b border-slate-300">
-                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider">
+                        <div className="border-r border-b border-slate-300 table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider min-w-[300px]">
                                 Assets (Application of Funds)
                             </div>
-                            <table className="w-full border-collapse">
+                            <table className="w-full border-collapse min-w-[300px]">
                                 <thead className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
-                                    <tr>
+                                    <tr className="whitespace-nowrap">
                                         <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200">Account Name</th>
                                         <th className="px-4 py-1.5 text-right font-normal">Amount</th>
                                     </tr>
@@ -131,15 +133,15 @@ export default function BalanceSheet() {
                         </div>
 
                         {/* LIABILITIES & EQUITY TABLE */}
-                        <div className="border-r border-b border-slate-300">
-                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider">
+                        <div className="border-r border-b border-slate-300 table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider min-w-[300px]">
                                 Liabilities & Equity (Sources of Funds)
                             </div>
                             
                             {/* Liabilities Sub-section */}
-                            <table className="w-full border-collapse">
+                            <table className="w-full border-collapse min-w-[300px]">
                                 <thead className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
-                                    <tr>
+                                    <tr className="whitespace-nowrap">
                                         <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200">Account Name</th>
                                         <th className="px-4 py-1.5 text-right font-normal">Amount</th>
                                     </tr>

@@ -6,6 +6,7 @@ import {
 import { useReactToPrint } from 'react-to-print';
 import { toast } from 'react-toastify';
 import ProfessionalInvoice from '@/components/ProfessionalInvoice';
+import SearchableSelect from '@/components/SearchableSelect';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function SalesReport() {
@@ -147,28 +148,28 @@ export default function SalesReport() {
     return (
         <div className="p-6 max-w-[1600px] mx-auto">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-800">Sales Report</h1>
                     <p className="text-slate-500 text-sm mt-1">{filteredSales.length} invoices found</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full sm:w-auto">
                     <button
                         onClick={() => window.print()}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
                     >
                         <FiPrinter size={16} /> Print Report
                     </button>
                     <button
                         onClick={handleExport}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all"
+                        className="flex-1 sm:flex-none px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
                     >
                         <FiDownload size={16} /> Export CSV
                     </button>
                     <button
                         onClick={fetchData}
                         disabled={loading}
-                        className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
+                        className="w-full sm:w-auto bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-sm"
                         style={{ backgroundColor: theme.primaryColor }}
                     >
                         <FiRefreshCw size={16} className={loading ? 'animate-spin' : ''} /> {loading ? "Loading..." : "Refresh"}
@@ -200,14 +201,17 @@ export default function SalesReport() {
                     {user?.role === 'admin' && (
                         <div className="flex flex-col gap-1">
                             <label className="text-[10px] font-medium text-slate-500 uppercase">Branch</label>
-                            <select
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary h-[38px]"
+                            <SearchableSelect
+                                options={[
+                                    { label: 'All Branches', value: 'all' },
+                                    ...branches.map(b => ({ label: b.name, value: b.id }))
+                                ]}
                                 value={selectedBranch}
-                                onChange={e => setSelectedBranch(e.target.value)}
-                            >
-                                <option value="all">All Branches</option>
-                                {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                            </select>
+                                onChange={val => setSelectedBranch(val)}
+                                direction="down"
+                                triggerClassName="h-[38px] px-3 border-slate-300 rounded-lg text-sm bg-white"
+                                placeholder="Select Branch"
+                            />
                         </div>
                     )}
                     <div className="flex flex-col gap-1 flex-1">
@@ -228,7 +232,7 @@ export default function SalesReport() {
 
             <div className="card shadow-md border border-slate-200 overflow-hidden">
                 <div className="table-container">
-                    <table className="table-modern">
+                    <table className="table-modern" style={{ minWidth: '1000px' }}>
                         <thead>
                             <tr className="bg-slate-50/50 text-slate-400 text-[9px] font-medium uppercase tracking-widest">
                                 <th style={{ width: '15%' }}>Invoice Meta</th>
@@ -242,7 +246,7 @@ export default function SalesReport() {
                         <tbody className="divide-y divide-slate-50">
                             {filteredSales.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-12 text-slate-400 italic">
+                                    <td colSpan="6" className="text-left sm:text-center pl-4 sm:pl-0 py-12 text-slate-400 italic whitespace-nowrap">
                                         {loading ? "Fetching data..." : "No sales records found"}
                                     </td>
                                 </tr>
@@ -297,21 +301,20 @@ export default function SalesReport() {
                                 ))
                             )}
                         </tbody>
-                    </table>
-                </div>
-
-                {/* Summary Footer */}
-                <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex justify-between items-center">
-                    <div className="text-xs text-slate-500 font-medium uppercase">
-                        Net Total: <span className="text-slate-900 font-extrabold ml-1">
-                            ₹{filteredSales.reduce((sum, s) => sum + (s.status !== 'cancelled' ? parseFloat(s.totalAmount) : 0), 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        </span>
+                        </table>
+                        {/* Summary Footer */}
+                        <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex justify-between items-center" style={{ minWidth: '1000px' }}>
+                            <div className="text-xs text-slate-500 font-medium uppercase whitespace-nowrap">
+                                Net Total: <span className="text-slate-900 font-extrabold ml-1">
+                                    ₹{filteredSales.reduce((sum, s) => sum + (s.status !== 'cancelled' ? parseFloat(s.totalAmount) : 0), 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                            <div className="text-[10px] text-slate-400 font-medium uppercase whitespace-nowrap">
+                                Showing {filteredSales.length} records
+                            </div>
+                        </div>
                     </div>
-                    <div className="text-[10px] text-slate-400 font-medium uppercase">
-                        Showing {filteredSales.length} records
-                    </div>
                 </div>
-            </div>
 
             {/* Sale Detail Modal */}
             {selectedSale && (

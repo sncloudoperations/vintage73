@@ -176,16 +176,16 @@ export default function BankStatementPage() {
 
                         {/* Table */}
                         <table className="w-full border-collapse border border-slate-300 text-[11px] mb-10">
-                            <thead>
-                                <tr className="bg-slate-50">
-                                    <th className="border border-slate-300 p-2 text-center w-8">#</th>
-                                    <th className="border border-slate-300 p-2 text-left">EMPLOYEE NAME</th>
-                                    <th className="border border-slate-300 p-2 text-left">BANK NAME</th>
-                                    <th className="border border-slate-300 p-2 text-left w-32">ACCOUNT NUMBER</th>
-                                    <th className="border border-slate-300 p-2 text-left w-24">IFSC CODE</th>
-                                    <th className="border border-slate-300 p-2 text-right w-24">AMOUNT ({companyProfile?.currencySymbol || '₹'})</th>
-                                </tr>
-                            </thead>
+                        <thead className="whitespace-nowrap">
+                            <tr className="bg-slate-50">
+                                <th className="border border-slate-300 p-2 text-center w-8">#</th>
+                                <th className="border border-slate-300 p-2 text-left">EMPLOYEE NAME</th>
+                                <th className="border border-slate-300 p-2 text-left">BANK NAME</th>
+                                <th className="border border-slate-300 p-2 text-left w-32">ACCOUNT NUMBER</th>
+                                <th className="border border-slate-300 p-2 text-left w-24">IFSC CODE</th>
+                                <th className="border border-slate-300 p-2 text-right w-24">AMOUNT ({companyProfile?.currencySymbol || '₹'})</th>
+                            </tr>
+                        </thead>
                             <tbody>
                                 {payrolls.map((p, idx) => (
                                     <tr key={p.id}>

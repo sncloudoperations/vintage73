@@ -104,19 +104,21 @@ export default function TrialBalance() {
         <div className="p-4 bg-[#f8fafc] min-h-screen text-slate-700">
             {/* Premium Gradient Header */}
             <header className="rounded-xl bg-gradient-to-r from-primary-dark to-primary p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-primary-dark/10 no-print">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
-                        <FiBarChart2 className="text-white" size={20} />
+                <div className="flex flex-col xl:flex-row items-start xl:items-center gap-4 w-full md:w-auto">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
+                            <FiBarChart2 className="text-white" size={20} />
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-normal text-white leading-tight">Trial Balance</h1>
+                            <p className="text-white/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-lg font-normal text-white leading-tight">Trial Balance</h1>
-                        <p className="text-white/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
-                    </div>
-                    <div className="hidden md:block h-8 border-l border-white/10 mx-2" />
-                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-                        <div className="flex items-center gap-2">
+                    <div className="hidden xl:block h-8 border-l border-white/10 mx-2" />
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full xl:w-auto mt-2 xl:mt-0">
+                        <div className="flex flex-wrap items-center gap-2">
                             <span className="text-[9px] text-white/60 uppercase tracking-tighter">Period</span>
-                            <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded border border-white/10">
+                            <div className="flex flex-wrap items-center gap-2 bg-white/5 px-2 py-1 rounded border border-white/10">
                                 <input
                                     type="date"
                                     className="bg-transparent border-none p-0 text-xs text-white focus:ring-0 cursor-pointer font-normal [color-scheme:dark]"
@@ -168,28 +170,28 @@ export default function TrialBalance() {
 
             {/* Integrity Summary Row */}
             {data && (
-                <div className={`mb-6 px-4 py-3 border rounded-lg shadow-sm ${data.balanced ? 'bg-primary-light/20 border-primary-light text-primary-dark' : 'bg-red-50 border-red-200 text-red-800'}`}>
-                    <div className="flex justify-between items-center text-xs">
+                <div className={`mb-6 px-4 py-3 border rounded-xl shadow-sm ${data.balanced ? 'bg-primary-light/20 border-primary-light text-primary-dark' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 text-xs">
                         <div className="flex items-center gap-3">
                             {data.balanced ? <FiCheckCircle className="text-primary-dark" size={18} /> : <FiAlertCircle className="text-rose-600" size={18} />}
                             <span className="font-normal uppercase tracking-wider">
                                 {data.balanced ? 'Trial Balance Equilibrium Maintained' : 'Accounting Variance Detected!'}
                             </span>
                         </div>
-                        <div className="flex gap-8 items-center tabular-nums">
-                            <div className="flex flex-col items-end">
+                        <div className="grid grid-cols-2 sm:flex sm:flex-row sm:gap-6 gap-4 items-start sm:items-center tabular-nums w-full lg:w-auto pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-200/60 lg:border-none">
+                            <div className="flex flex-col items-start sm:items-end">
                                 <span className="text-[9px] opacity-60 uppercase">Net Opening</span>
                                 <span className="text-sm font-normal">₹{(data.totalOpening || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                             </div>
-                            <div className="flex flex-col items-end">
+                            <div className="flex flex-col items-start sm:items-end">
                                 <span className="text-[9px] opacity-60 uppercase">Total Debits</span>
                                 <span className="text-sm font-normal">₹{(data.totalDebit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                             </div>
-                            <div className="flex flex-col items-end">
+                            <div className="flex flex-col items-start sm:items-end">
                                 <span className="text-[9px] opacity-60 uppercase">Total Credits</span>
                                 <span className="text-sm font-normal">₹{(data.totalCredit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                             </div>
-                            <div className={`flex flex-col items-end px-4 border-l ${data.balanced ? 'border-primary-light' : 'border-red-200'}`}>
+                            <div className={`flex flex-col items-start sm:items-end px-0 sm:px-4 border-none sm:border-l ${data.balanced ? 'border-primary-light' : 'border-red-200'}`}>
                                 <span className="text-[9px] opacity-60 uppercase">Net Closing</span>
                                 <span className="text-sm font-normal">₹{(data.totalClosing || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                             </div>
@@ -201,11 +203,11 @@ export default function TrialBalance() {
             {loading ? (
                 <div className="text-center py-20 text-xs text-slate-400 uppercase tracking-widest font-normal animate-pulse">Running Ledger Validation...</div>
             ) : data ? (
-                <div className="border border-slate-300 shadow-xl shadow-slate-200/50 bg-white overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full border-collapse">
+                <div className="w-full rounded-xl border border-slate-200 shadow-xl shadow-slate-200/50 bg-white overflow-hidden">
+                    <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                        <table className="table-modern w-full border-collapse min-w-[800px]">
                             <thead>
-                                <tr className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
+                                <tr className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200 whitespace-nowrap">
                                     <th className="px-4 py-2 text-left font-normal border-r border-slate-200 w-12">#</th>
                                     <th className="px-4 py-2 text-left font-normal border-r border-slate-200">Account Particulars</th>
                                     <th className="px-4 py-2 text-left font-normal border-r border-slate-200 w-32">Classification</th>
@@ -292,7 +294,7 @@ export default function TrialBalance() {
                     </div>
 
                     {/* Footer Info */}
-                    <div className="bg-slate-50 border-t border-slate-200 px-4 py-2 flex justify-between items-center no-print">
+                    <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 no-print">
                         <div className="text-[10px] text-slate-400 uppercase tracking-widest font-normal">
                             System Generated • High Density Reporting
                         </div>

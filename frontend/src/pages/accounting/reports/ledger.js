@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import api from '@/lib/api';
 import { toast } from 'react-toastify';
 import { FiDownload, FiPrinter, FiFilter, FiSearch } from 'react-icons/fi';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function LedgerReport() {
     const router = useRouter();
@@ -191,20 +192,18 @@ export default function LedgerReport() {
             `}</style>
 
             {/* Controls (Hidden in Print) */}
-            <div className="mb-6 flex flex-wrap justify-between items-end gap-4 print:hidden bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <div className="flex flex-wrap gap-4 items-end">
-                    <div>
+            <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 print:hidden bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-4 items-end w-full md:w-auto">
+                    <div className="w-full sm:w-auto">
                         <label className="block text-xs font-medium text-slate-500 mb-1">Select Ledger</label>
-                        <select
-                            className="border border-slate-300 rounded px-3 py-1.5 text-sm w-64 focus:ring-2 focus:ring-primary focus:outline-none"
+                        <SearchableSelect
+                            options={ledgers.map(l => ({ value: l.id, label: `${l.name} (${l.group?.name || ''})` }))}
                             value={selectedLedgerId}
-                            onChange={(e) => setSelectedLedgerId(e.target.value)}
-                        >
-                            <option value="">-- Choose Ledger --</option>
-                            {ledgers.map(l => (
-                                <option key={l.id} value={l.id}>{l.name} ({l.group?.name})</option>
-                            ))}
-                        </select>
+                            onChange={(val) => setSelectedLedgerId(val)}
+                            placeholder="-- Choose Ledger --"
+                            direction="down"
+                            triggerClassName="border border-slate-300 rounded px-3 py-1.5 text-sm w-full sm:w-64 bg-white flex items-center justify-between h-[38px] text-slate-700 font-normal shadow-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                        />
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-slate-500 mb-1">From Date</label>
@@ -270,10 +269,10 @@ export default function LedgerReport() {
                     </div>
 
                     {/* Report Content */}
-                    <div className="overflow-x-auto">
-                        <table className="w-full border-collapse border border-slate-300 text-sm">
+                    <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                        <table className="table-modern w-full border-collapse border border-slate-300 text-sm min-w-[800px]">
                             <thead>
-                                <tr className="bg-slate-100 text-slate-700">
+                                <tr className="bg-slate-100 text-slate-700 whitespace-nowrap">
                                     <th className="border border-slate-300 px-3 py-2 text-left w-[12%]">Date</th>
                                     <th className="border border-slate-300 px-3 py-2 text-left w-[15%]">Voucher No</th>
                                     <th className="border border-slate-300 px-3 py-2 text-left w-[35%]">Particulars</th>

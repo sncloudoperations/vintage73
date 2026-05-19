@@ -128,12 +128,12 @@ const PostingSetup = () => {
         <div className="p-4 bg-slate-50 min-h-screen font-sans">
             {/* Header section matching screenshot */}
             <div className="mb-6 px-2">
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
                         <h1 className="text-xl font-semibold text-slate-800">Ledger Posting Setup</h1>
                         <p className="text-sm text-slate-500 mt-0.5">{postings.length} configurations</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                         <button
                             className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
                         >
@@ -167,10 +167,10 @@ const PostingSetup = () => {
             </div>
 
             {/* Main Table Matching Screenshot Style */}
-            <div className="mx-2 bg-white shadow-sm border border-slate-200 rounded-xl mb-12">
-                <table className="w-full text-left border-collapse">
+            <div className="mx-2 bg-white shadow-sm border border-slate-200 rounded-xl mb-12 table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                <table className="w-full text-left border-collapse table-modern min-w-[800px]">
                     <thead>
-                        <tr className="text-white text-[12px] font-medium uppercase tracking-wider h-10" style={{ backgroundColor: theme.primaryColor }}>
+                        <tr className="text-white text-[12px] font-medium uppercase tracking-wider h-10 whitespace-nowrap" style={{ backgroundColor: theme.primaryColor }}>
                             <th className="px-4 py-2 border-r border-white/10 w-[20%]">Mapping Label</th>
                             <th className="px-4 py-2 border-r border-white/10 w-[15%]">Type / Role</th>
                             <th className="px-4 py-2 border-r border-white/10 w-[25%]">Ledger Mapping</th>
@@ -240,9 +240,9 @@ const PostingSetup = () => {
 
             {/* Add Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100">
-                        <div className="bg-slate-50 px-8 py-6 border-b border-slate-100 flex justify-between items-center">
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100000] flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[90vh] sm:max-h-[85vh]">
+                        <div className="bg-slate-50 px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
                             <div>
                                 <h3 className="text-lg font-medium text-slate-800 uppercase tracking-tight">{isEdit ? 'Edit Posting Mapping' : 'New Posting Mapping'}</h3>
                                 <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-1">{isEdit ? 'Update existing rule' : 'Define Ledger Posting Rules'}</p>
@@ -250,7 +250,7 @@ const PostingSetup = () => {
                             <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><FiX /></button>
                         </div>
 
-                        <div className="p-8 grid grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
+                        <div className="p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 flex-1 overflow-y-auto">
                             <div className="space-y-1">
                                 <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Friendly Label</label>
                                 <input
@@ -263,19 +263,20 @@ const PostingSetup = () => {
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Transaction Type</label>
-                                <select
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all"
-                                    style={{ ringColor: theme.primaryColor + '20' }}
+                                <SearchableSelect
+                                    options={[
+                                        { value: 'SALES', label: 'SALES' },
+                                        { value: 'PURCHASE', label: 'PURCHASE' },
+                                        { value: 'PAYMENT', label: 'PAYMENT' },
+                                        { value: 'RECEIPT', label: 'RECEIPT' },
+                                        { value: 'STOCK_TRANSFER', label: 'STOCK_TRANSFER' },
+                                        { value: 'STOCK_RECEIPT', label: 'STOCK_RECEIPT' },
+                                    ]}
                                     value={newPosting.transactionType}
-                                    onChange={(e) => setNewPosting({ ...newPosting, transactionType: e.target.value })}
-                                >
-                                    <option value="SALES">SALES</option>
-                                    <option value="PURCHASE">PURCHASE</option>
-                                    <option value="PAYMENT">PAYMENT</option>
-                                    <option value="RECEIPT">RECEIPT</option>
-                                    <option value="STOCK_TRANSFER">STOCK_TRANSFER</option>
-                                    <option value="STOCK_RECEIPT">STOCK_RECEIPT</option>
-                                </select>
+                                    onChange={(val) => setNewPosting({ ...newPosting, transactionType: val })}
+                                    direction="down"
+                                    triggerClassName="h-11 bg-slate-50 border-slate-100 rounded-2xl"
+                                />
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Posting Role/Key</label>
@@ -301,52 +302,55 @@ const PostingSetup = () => {
                                 </div>
                             </div>
 
-                            <div className="col-span-2 space-y-1">
+                            <div className="col-span-1 sm:col-span-2 space-y-1">
                                 <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Link Account (Ledger)</label>
                                 <SearchableSelect
                                     options={ledgerOptions}
                                     value={newPosting.ledgerId}
                                     onChange={(val) => setNewPosting({ ...newPosting, ledgerId: val })}
                                     placeholder="Select Ledger..."
+                                    direction="down"
+                                    triggerClassName="h-11 bg-slate-50 border-slate-100 rounded-2xl"
                                 />
                             </div>
 
                             <div className="space-y-1">
                                 <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Target Model</label>
-                                <select
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all appearance-none"
-                                    style={{ ringColor: theme.primaryColor + '20' }}
+                                <SearchableSelect
+                                    options={metadata.map(m => ({ value: m.id, label: m.name }))}
                                     value={newPosting.targetTable}
-                                    onChange={(e) => setNewPosting({ ...newPosting, targetTable: e.target.value })}
-                                >
-                                    {metadata.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                                </select>
+                                    onChange={(val) => setNewPosting({ ...newPosting, targetTable: val })}
+                                    direction="down"
+                                    triggerClassName="h-11 bg-slate-50 border-slate-100 rounded-2xl"
+                                />
                             </div>
 
                             <div className="space-y-1">
                                 <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Posting Mode</label>
-                                <select
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all appearance-none"
-                                    style={{ ringColor: theme.primaryColor + '20' }}
+                                <SearchableSelect
+                                    options={[
+                                        { value: 'INDIVIDUAL', label: 'Individual per Invoice' },
+                                        { value: 'SUM', label: 'Sum (Aggregated)' }
+                                    ]}
                                     value={newPosting.postingMethod}
-                                    onChange={(e) => setNewPosting({ ...newPosting, postingMethod: e.target.value })}
-                                >
-                                    <option value="INDIVIDUAL">Individual per Invoice</option>
-                                    <option value="SUM">Sum (Aggregated)</option>
-                                </select>
+                                    onChange={(val) => setNewPosting({ ...newPosting, postingMethod: val })}
+                                    direction="down"
+                                    triggerClassName="h-11 bg-slate-50 border-slate-100 rounded-2xl"
+                                />
                             </div>
 
                             <div className="space-y-1">
                                 <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Source Field</label>
-                                <select
-                                    className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-xs font-medium text-slate-700 outline-none focus:ring-2 transition-all"
-                                    style={{ ringColor: theme.primaryColor + '20' }}
+                                <SearchableSelect
+                                    options={[
+                                        { value: '', label: '-- Custom Formula --' },
+                                        ...(selectedModel?.fields.map(f => ({ value: f, label: f })) || [])
+                                    ]}
                                     value={newPosting.amountField}
-                                    onChange={(e) => setNewPosting({ ...newPosting, amountField: e.target.value, customFormula: '' })}
-                                >
-                                    <option value="">-- Custom Formula --</option>
-                                    {selectedModel?.fields.map(f => <option key={f} value={f}>{f}</option>)}
-                                </select>
+                                    onChange={(val) => setNewPosting({ ...newPosting, amountField: val, customFormula: '' })}
+                                    direction="down"
+                                    triggerClassName="h-11 bg-slate-50 border-slate-100 rounded-2xl"
+                                />
                             </div>
 
                             <div className="space-y-1">
@@ -361,7 +365,7 @@ const PostingSetup = () => {
                                 />
                             </div>
 
-                            <div className="col-span-2 space-y-1">
+                            <div className="col-span-1 sm:col-span-2 space-y-1">
                                 <label className="text-[10px] font-medium uppercase text-slate-400 ml-1">Condition (Post only if true)</label>
                                 <input
                                     className="w-full h-11 bg-slate-50 border border-slate-100 rounded-2xl px-4 text-[11px] font-mono font-medium text-slate-700 outline-none focus:ring-2 transition-all"
@@ -373,10 +377,10 @@ const PostingSetup = () => {
                             </div>
                         </div>
 
-                        <div className="px-8 pb-8 mt-4 flex gap-4">
+                        <div className="px-6 sm:px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex gap-4 flex-shrink-0">
                             <button
                                 onClick={() => handleUpsert(newPosting)}
-                                className="flex-1 h-14 text-white rounded-2xl font-medium text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                                className="flex-1 h-12 sm:h-14 text-white rounded-2xl font-medium text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all"
                                 style={{ backgroundColor: theme.primaryColor, boxShadow: `0 10px 15px -3px ${theme.primaryColor}30` }}
                             >
                                 {isEdit ? 'Update Posting Mapping' : 'Save Posting Mapping'}

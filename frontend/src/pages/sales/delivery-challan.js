@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
 import { FiPlus, FiTrash2, FiPrinter, FiTruck, FiPackage, FiSearch, FiEye } from 'react-icons/fi';
 import DeliveryChallanPrint from '@/components/DeliveryChallanPrint';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function DeliveryChallan() {
   const [customers, setCustomers] = useState([]);
@@ -36,6 +37,29 @@ export default function DeliveryChallan() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const partyOptions = [
+    { value: '', label: 'Walk-in / Internal' },
+    ...(customers || []).map(c => ({ value: c?.id || '', label: c?.name || '' }))
+  ];
+
+  const reasonOptions = [
+    { value: '', label: 'Select Reason' },
+    { value: 'Job Work', label: 'Job Work' },
+    { value: 'Stock Transfer', label: 'Stock Transfer' },
+    { value: 'Exhibition', label: 'Exhibition' },
+    { value: 'Sales', label: 'Sales' },
+    { value: 'Supply on Approval', label: 'Supply on Approval' },
+    { value: 'Others', label: 'Others' }
+  ];
+
+  const modeOptions = [
+    { value: '', label: 'Select' },
+    { value: 'Road', label: 'Road' },
+    { value: 'Rail', label: 'Rail' },
+    { value: 'Air', label: 'Air' },
+    { value: 'Ship', label: 'Ship' }
+  ];
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -198,9 +222,9 @@ export default function DeliveryChallan() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
             <FiTruck className="text-orange-600" size={20} />
           </div>
           <div>
@@ -211,14 +235,14 @@ export default function DeliveryChallan() {
         {mode === 'list' ? (
           <button
             onClick={() => setMode('create')}
-            className="btn bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2"
+            className="btn bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 w-full md:w-auto"
           >
             <FiPlus /> New Challan
           </button>
         ) : (
           <button
             onClick={() => setMode('list')}
-            className="btn border border-slate-300 text-slate-600 px-4 py-2 rounded-lg font-medium"
+            className="btn border border-slate-300 text-slate-600 px-4 py-2 rounded-lg font-medium w-full md:w-auto text-center"
           >
             Back to List
           </button>
@@ -228,18 +252,19 @@ export default function DeliveryChallan() {
       {mode === 'list' ? (
         /* Challan List */
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600">
-              <tr>
-                <th className="text-left p-4">Challan No</th>
-                <th className="text-left p-4">Date</th>
-                <th className="text-left p-4">Party</th>
-                <th className="text-left p-4">Reason</th>
-                <th className="text-left p-4">Items</th>
-                <th className="text-center p-4">Status</th>
-                <th className="text-center p-4">Actions</th>
-              </tr>
-            </thead>
+          <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+            <table className="w-full text-sm min-w-[850px]">
+              <thead className="bg-slate-50 text-slate-600 whitespace-nowrap">
+                <tr>
+                  <th className="text-left p-4">Challan No</th>
+                  <th className="text-left p-4">Date</th>
+                  <th className="text-left p-4">Party</th>
+                  <th className="text-left p-4">Reason</th>
+                  <th className="text-left p-4">Items</th>
+                  <th className="text-center p-4">Status</th>
+                  <th className="text-center p-4">Actions</th>
+                </tr>
+              </thead>
             <tbody>
               {challans.map(challan => (
                 <tr key={challan.id} className="border-b border-slate-50 hover:bg-slate-50">
@@ -277,6 +302,7 @@ export default function DeliveryChallan() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       ) : (
         /* Create Form */
@@ -287,12 +313,14 @@ export default function DeliveryChallan() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-600 mb-1">Party (Optional)</label>
-                  <select value={customerId} onChange={(e) => setCustomerId(e.target.value)} className="input">
-                    <option value="">Walk-in / Internal</option>
-                    {customers.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
+                  <SearchableSelect
+                    options={partyOptions}
+                    value={customerId}
+                    onChange={(val) => setCustomerId(val)}
+                    placeholder="Walk-in / Internal"
+                    direction="down"
+                    triggerClassName="min-h-0 h-[38px] py-1.5 px-3 text-sm w-full"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-600 mb-1">Challan Date</label>
@@ -300,15 +328,14 @@ export default function DeliveryChallan() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-600 mb-1">Reason for Movement *</label>
-                  <select value={reasonForMovement} onChange={(e) => setReasonForMovement(e.target.value)} className="input">
-                    <option value="">Select Reason</option>
-                    <option value="Job Work">Job Work</option>
-                    <option value="Stock Transfer">Stock Transfer</option>
-                    <option value="Exhibition">Exhibition</option>
-                    <option value="Sales">Sales</option>
-                    <option value="Supply on Approval">Supply on Approval</option>
-                    <option value="Others">Others</option>
-                  </select>
+                  <SearchableSelect
+                    options={reasonOptions}
+                    value={reasonForMovement}
+                    onChange={(val) => setReasonForMovement(val)}
+                    placeholder="Select Reason"
+                    direction="down"
+                    triggerClassName="min-h-0 h-[38px] py-1.5 px-3 text-sm w-full"
+                  />
                 </div>
               </div>
 
@@ -332,13 +359,14 @@ export default function DeliveryChallan() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-500 mb-1">Mode</label>
-                  <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="input text-sm">
-                    <option value="">Select</option>
-                    <option value="Road">Road</option>
-                    <option value="Rail">Rail</option>
-                    <option value="Air">Air</option>
-                    <option value="Ship">Ship</option>
-                  </select>
+                  <SearchableSelect
+                    options={modeOptions}
+                    value={transportMode}
+                    onChange={(val) => setTransportMode(val)}
+                    placeholder="Select"
+                    direction="down"
+                    triggerClassName="min-h-0 h-[38px] py-1.5 px-3 text-sm w-full"
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-500 mb-1">Vehicle No.</label>
@@ -362,16 +390,17 @@ export default function DeliveryChallan() {
                   <FiPackage className="text-slate-500" /> Items
                 </h3>
               </div>
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="text-left p-3">Product</th>
-                    <th className="text-left p-3">HSN</th>
-                    <th className="text-center p-3 w-24">Qty</th>
-                    <th className="text-left p-3">Description</th>
-                    <th className="w-10"></th>
-                  </tr>
-                </thead>
+              <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                <table className="w-full text-sm min-w-[700px]">
+                  <thead className="bg-slate-50 text-slate-600 whitespace-nowrap">
+                    <tr>
+                      <th className="text-left p-3">Product</th>
+                      <th className="text-left p-3">HSN</th>
+                      <th className="text-center p-3 w-24">Qty</th>
+                      <th className="text-left p-3">Description</th>
+                      <th className="w-10"></th>
+                    </tr>
+                  </thead>
                 <tbody>
                   {items.map(item => (
                     <tr key={item.productId} className="border-b border-slate-50">
@@ -402,8 +431,9 @@ export default function DeliveryChallan() {
                       </td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
               {items.length === 0 && (
                 <div className="p-8 text-center text-slate-400">Add products from the right panel</div>
               )}

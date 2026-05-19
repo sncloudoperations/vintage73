@@ -42,7 +42,7 @@ exports.createSale = asyncHandler(async (req, res) => {
 
   // --- RETURN VALIDATION ---
   if (isReturn && originalInvoice) {
-    const originalSale = await prisma.sale.findUnique({
+    const originalSale = await prisma.sale.findFirst({
       where: { invoiceNumber: originalInvoice },
       include: { items: true }
     });

@@ -73,16 +73,18 @@ export default function ProfitLoss() {
         <div className="p-4 bg-[#f8fafc] min-h-screen text-slate-700">
             {/* Premium Gradient Header */}
             <header className="rounded-xl bg-gradient-to-r from-primary-dark to-primary p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-primary-dark/10 no-print">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
-                        <FiTrendingUp className="text-white" size={20} />
+                <div className="flex flex-col xl:flex-row items-start xl:items-center gap-4 w-full md:w-auto">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
+                            <FiTrendingUp className="text-white" size={20} />
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-normal text-white leading-tight">Profit & Loss Statement</h1>
+                            <p className="text-white/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-lg font-normal text-white leading-tight">Profit & Loss Statement</h1>
-                        <p className="text-white/80 text-[10px] uppercase font-normal tracking-widest mt-0.5">Corporate Accounting Division</p>
-                    </div>
-                    <div className="hidden md:block h-8 border-l border-white/10 mx-2" />
-                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                    <div className="hidden xl:block h-8 border-l border-white/10 mx-2" />
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full xl:w-auto mt-2 xl:mt-0">
                         <div className="flex items-center gap-2">
                             <span className="text-[9px] text-white/60 uppercase tracking-tighter">Period</span>
                             <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded border border-white/10">
@@ -133,13 +135,13 @@ export default function ProfitLoss() {
                 <div className="space-y-6 overflow-x-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                         {/* INCOME TABLE */}
-                        <div className="border border-slate-300 shadow-xl shadow-slate-200/50 bg-white">
-                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider">
+                        <div className="border border-slate-300 shadow-xl shadow-slate-200/50 bg-white table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider min-w-[300px]">
                                 Income Analysis
                             </div>
-                            <table className="w-full border-collapse">
+                            <table className="w-full border-collapse min-w-[300px]">
                                 <thead className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
-                                    <tr>
+                                    <tr className="whitespace-nowrap">
                                         <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200 w-12">#</th>
                                         <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200">Particulars</th>
                                         <th className="px-4 py-1.5 text-right font-normal">Amount (₹)</th>
@@ -183,13 +185,13 @@ export default function ProfitLoss() {
                         </div>
 
                         {/* EXPENSES TABLE */}
-                        <div className="border border-slate-300 shadow-xl shadow-slate-200/50 bg-white">
-                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider">
+                        <div className="border border-slate-300 shadow-xl shadow-slate-200/50 bg-white table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                            <div className="bg-gradient-to-r from-primary-dark to-primary px-4 py-3 border-b border-slate-300 text-xs text-white uppercase font-normal tracking-wider min-w-[300px]">
                                 Expense Analysis
                             </div>
-                            <table className="w-full border-collapse">
+                            <table className="w-full border-collapse min-w-[300px]">
                                 <thead className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
-                                    <tr>
+                                    <tr className="whitespace-nowrap">
                                         <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200 w-12">#</th>
                                         <th className="px-4 py-1.5 text-left font-normal border-r border-slate-200">Particulars</th>
                                         <th className="px-4 py-1.5 text-right font-normal">Amount (₹)</th>
@@ -235,14 +237,14 @@ export default function ProfitLoss() {
 
                     {/* FINAL SUMMARY ROW */}
                     <div className="p-0.5 bg-gradient-to-r from-primary-dark to-primary rounded-xl overflow-hidden shadow-xl ring-1 ring-white/10">
-                        <div className="bg-white/5 backdrop-blur-md px-8 py-6 flex justify-between items-center">
+                        <div className="bg-white/5 backdrop-blur-md px-8 py-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
                                 <span className="block text-white/60 uppercase text-[10px] tracking-[0.2em] font-normal mb-1">Statement Summary</span>
                                 <h3 className="text-white text-xl font-normal tracking-tight">
                                     {data.isProfitable ? 'Operational Surplus (Net Profit)' : 'Operational Deficit (Net Loss)'}
                                 </h3>
                             </div>
-                            <div className="text-right">
+                            <div className="text-left md:text-right">
                                 <span className="text-3xl font-normal text-white tabular-nums tracking-tighter">
                                     <span className="text-sm mr-2 opacity-60">₹</span>
                                     {Math.abs(data.netProfit).toLocaleString('en-IN', {minimumFractionDigits: 2})}

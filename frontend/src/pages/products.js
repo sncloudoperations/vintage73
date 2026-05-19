@@ -3,6 +3,7 @@ import api from '@/lib/api';
 import { FiPlus, FiPrinter, FiSearch, FiEdit, FiTrash2, FiBox, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 import Barcode from 'react-barcode';
 import { toast } from 'react-toastify';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -129,12 +130,12 @@ export default function Products() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Products</h1>
           <p className="text-slate-500 text-sm mt-1">Manage your inventory and stock levels</p>
         </div>
-        <button className="btn btn-primary" onClick={() => {
+        <button className="btn btn-primary w-full md:w-auto" onClick={() => {
           setFormData({
             name: '', category: '', categoryId: '', price: '', costPrice: '',
             taxRate: '0', taxType: 'none', hsnCode: '', warranty: '0',
@@ -151,25 +152,36 @@ export default function Products() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 mb-6">
-        <select className="input w-48" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
-          <option value="">All Categories</option>
-          {uniqueCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-        </select>
+      <div className="flex flex-col md:flex-row gap-4 mb-6 z-20">
+        <div className="w-full md:w-64">
+          <SearchableSelect
+            options={[{ label: 'All Categories', value: '' }, ...uniqueCategories.map(cat => ({ label: cat, value: cat }))]}
+            value={filterCategory}
+            onChange={setFilterCategory}
+            placeholder="Search Categories..."
+          />
+        </div>
 
-        <select className="input w-48" value={filterStock} onChange={e => setFilterStock(e.target.value)}>
-          <option value="all">All Stock Status</option>
-          <option value="low">Low Stock</option>
-          <option value="out">Out of Stock</option>
-        </select>
+        <div className="w-full md:w-64">
+          <SearchableSelect
+            options={[
+              { label: 'All Stock Status', value: 'all' },
+              { label: 'Low Stock', value: 'low' },
+              { label: 'Out of Stock', value: 'out' }
+            ]}
+            value={filterStock}
+            onChange={setFilterStock}
+            placeholder="Stock Status..."
+          />
+        </div>
       </div>
 
       {/* Product List */}
       <div className="card border-0 shadow-lg">
-        <div className="table-container">
+        <div className="table-container lg:no-scrollbar">
           <table className="table-modern">
             <thead>
-              <tr>
+              <tr className="whitespace-nowrap">
                 <th>Product Name</th>
                 <th>Category</th>
                 <th>Selling Price</th>
@@ -181,7 +193,7 @@ export default function Products() {
             </thead>
             <tbody>
               {filteredProducts.map((product) => (
-                <tr key={product.id}>
+                <tr key={product.id} className="whitespace-nowrap">
                   <td className="font-medium text-slate-700">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded bg-slate-100 flex items-center justify-center text-slate-500 overflow-hidden">
@@ -275,23 +287,19 @@ export default function Products() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                <select
-                  className="input"
+                <SearchableSelect
+                  options={categories.map(cat => ({ label: cat.name, value: cat.id }))}
                   value={formData.categoryId}
-                  onChange={e => {
-                    const selectedCat = categories.find(c => c.id.toString() === e.target.value);
+                  onChange={val => {
+                    const selectedCat = categories.find(c => c.id.toString() === val.toString());
                     setFormData({
                       ...formData,
-                      categoryId: e.target.value,
+                      categoryId: val,
                       categoryName: selectedCat ? selectedCat.name : ''
                     });
                   }}
-                >
-                  <option value="">Select Category</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
+                  placeholder="Select Category..."
+                />
               </div>
 
               <div>

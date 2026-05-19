@@ -1057,7 +1057,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Dell\\Desktop\\quickpos\\inventory\\backend\\prisma\\client",
+      "value": "C:\\Users\\Dell\\Documents\\vintage73\\vintage73\\backend\\prisma\\client",
       "fromEnvVar": null
     },
     "config": {

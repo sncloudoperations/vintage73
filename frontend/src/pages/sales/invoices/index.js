@@ -185,17 +185,18 @@ export default function InvoicesList() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-slate-50 text-slate-500 font-medium border-b text-sm uppercase tracking-wider">
-                            <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4">Invoice #</th>
-                            <th className="px-6 py-4">Customer</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4 text-right">Total Amount</th>
-                            <th className="px-6 py-4 text-center">Actions</th>
-                        </tr>
-                    </thead>
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[850px]">
+                        <thead>
+                            <tr className="bg-slate-50 text-slate-500 font-medium border-b text-sm uppercase tracking-wider whitespace-nowrap">
+                                <th className="px-6 py-4">Date</th>
+                                <th className="px-6 py-4">Invoice #</th>
+                                <th className="px-6 py-4">Customer</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4 text-right">Total Amount</th>
+                                <th className="px-6 py-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
                     <tbody className="divide-y divide-slate-100">
                         {loading ? (
                             Array(5).fill(0).map((_, i) => (
@@ -291,11 +292,12 @@ export default function InvoicesList() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* Preview Modal — uses modalPrintRef (separate from directPrintRef) */}
             {showPreview && printData && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+                <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden flex flex-col h-[90vh]">
                         <div className="flex justify-between items-center p-4 border-b bg-white relative z-10">
                             <div>
@@ -331,7 +333,7 @@ export default function InvoicesList() {
 
             {/* Cancel Modal */}
             {showDeleteModal && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b flex justify-between items-center bg-red-50 text-red-800">
                             <div className="flex items-center gap-2">
@@ -378,7 +380,7 @@ export default function InvoicesList() {
             )}
 
             {showHistoryModal && historyInvoice && (
-                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col">
                         <div className="p-5 border-b flex justify-between items-center bg-slate-50/50">
                             <div>

@@ -140,31 +140,32 @@ export default function QuotationsList() {
 
     return (
         <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-slate-800">Quotations</h1>
                     <p className="text-slate-500 text-sm">Manage and track customer quotations</p>
                 </div>
                 <button
                     onClick={() => router.push('/sales/quotations/create')}
-                    className="btn btn-primary flex items-center gap-2"
+                    className="btn btn-primary flex items-center justify-center gap-2 w-full sm:w-auto"
                 >
                     <FiPlus /> New Quotation
                 </button>
             </div>
 
             <div className="bg-white rounded-lg shadow overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Quote #</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Customer</th>
-                            <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Total</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-                            <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
-                        </tr>
-                    </thead>
+                <div className="table-container scroll-line lg:no-scrollbar overflow-x-auto">
+                    <table className="w-full min-w-[850px]">
+                        <thead className="bg-gray-50 border-b border-gray-200 whitespace-nowrap">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Quote #</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Customer</th>
+                                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Total</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
                     <tbody className="divide-y divide-gray-200">
                         {quotations.map((q) => (
                             <tr key={q.id} className="hover:bg-gray-50">
@@ -248,12 +249,13 @@ export default function QuotationsList() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* Preview Modal */}
             {
                 showPreview && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+                    <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
                         <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl relative">
                             <div className="flex justify-between items-center p-4 border-b">
                                 <h2 className="text-lg font-semibold">Quotation Preview</h2>

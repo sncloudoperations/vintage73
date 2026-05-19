@@ -261,12 +261,14 @@ export default function SalaryProcessing() {
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
-            <header className="mb-8">
-                <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
-                    <FiDollarSign className="text-primary" />
-                    Salary Processing
-                </h1>
-                <p className="text-slate-500 text-sm mt-1">Process employee salaries with custom date ranges</p>
+            <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                        <FiDollarSign className="text-primary" />
+                        Salary Processing
+                    </h1>
+                    <p className="text-slate-500 text-sm mt-1">Process employee salaries with custom date ranges</p>
+                </div>
             </header>
 
             {/* Stats Cards */}
@@ -306,20 +308,18 @@ export default function SalaryProcessing() {
                     />
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="relative group">
-                        <FiFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors z-10" size={14} />
-                        <select
-                            className="h-11 pl-10 pr-8 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium outline-none appearance-none cursor-pointer min-w-[160px]"
+                    <div className="min-w-[180px]">
+                        <SearchableSelect
+                            options={[
+                                { value: 'GENERATED', label: 'Generated' },
+                                { value: 'APPROVED', label: 'Approved' }
+                            ]}
                             value={statusFilter}
-                            onChange={e => setStatusFilter(e.target.value)}
-                        >
-                            <option value="">All Statuses</option>
-                            <option value="GENERATED">Generated</option>
-                            <option value="APPROVED">Approved</option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
-                        </div>
+                            onChange={val => setStatusFilter(val)}
+                            placeholder="All Statuses"
+                            className="w-full"
+                            direction="down"
+                        />
                     </div>
                     {(searchQuery || statusFilter) && (
                         <button 
@@ -398,6 +398,7 @@ export default function SalaryProcessing() {
                                         value={processingData.userId}
                                         onChange={val => setProcessingData({ ...processingData, userId: val })}
                                         placeholder="Select Employee"
+                                        direction="down"
                                     />
                                 </div>
                             )}

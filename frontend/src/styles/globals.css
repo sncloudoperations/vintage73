@@ -221,6 +221,7 @@ h2 {
   letter-spacing: 0.05em;
   border-right: 1px solid #cbd5e1; /* Slate 300 */
   vertical-align: middle;
+  white-space: nowrap;
 }
 
 .table-modern th:last-child {
@@ -302,7 +303,107 @@ h2 {
 
 .main-content {
   margin-left: 260px;
-  padding: 2rem;
+  padding: 1.5rem;
   background-color: #f8fafc;
   min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+}
+
+/* Global Responsive Improvements */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.table-container,
+.overflow-x-auto {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+.table-modern th {
+  white-space: nowrap !important;
+}
+
+/* Custom scrollbar on smaller viewports (< 1024px) */
+@media (max-width: 1023px) {
+  .table-container::-webkit-scrollbar,
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 6px;
+    display: block !important;
+  }
+  .table-container::-webkit-scrollbar-track,
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02);
+  }
+  .table-container::-webkit-scrollbar-thumb,
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+}
+
+/* Hide scrollbar on large screens (>= 1024px) */
+@media (min-width: 1024px) {
+  .table-container::-webkit-scrollbar,
+  .overflow-x-auto::-webkit-scrollbar {
+    display: none !important;
+  }
+  .table-container,
+  .overflow-x-auto {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
+/* Custom Scrollbar Utilities */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* Visible but subtle scrollbar for "scroll line" requirement */
+  .scroll-line::-webkit-scrollbar {
+    height: 4px;
+  }
+  .scroll-line::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+  }
+  .scroll-line::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.2); /* Subtle primary color */
+    border-radius: 10px;
+  }
+
+  @media (min-width: 1024px) {
+    .lg:no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .lg:no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  }
 }
