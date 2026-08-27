@@ -12,12 +12,49 @@ async function ensureLedger(tx, name, groupName) {
   const client = tx || prisma;
 
   // 1. Find the group first
-  const group = await client.accountGroup.findFirst({
+  let group = await client.accountGroup.findFirst({
     where: { name: groupName }
   });
 
   if (!group) {
-    throw new Error(`Accounting Group '${groupName}' not found. Please run seed script.`);
+    const defaultGroupTypes = {
+      'Sundry Debtors': 'ASSETS',
+      'Sundry Creditors': 'LIABILITIES',
+      'Sales Accounts': 'INCOME',
+      'Purchase Accounts': 'EXPENSES',
+      'Duties & Taxes': 'LIABILITIES',
+      'Bank Accounts': 'ASSETS',
+      'Cash-in-Hand': 'ASSETS',
+      'Indirect Expenses': 'EXPENSES',
+      'Direct Incomes': 'INCOME',
+      'Stock-in-Hand': 'ASSETS',
+      'Direct Expenses': 'EXPENSES',
+      'Indirect Incomes': 'INCOME',
+      'Fixed Assets': 'ASSETS',
+      'Current Assets': 'ASSETS',
+      'Current Liabilities': 'LIABILITIES',
+      'Capital Account': 'LIABILITIES'
+    };
+    const groupType = defaultGroupTypes[groupName] || 'EXPENSES';
+
+    try {
+      group = await client.accountGroup.upsert({
+        where: { name: groupName },
+        update: {},
+        create: {
+          name: groupName,
+          groupType: groupType
+        }
+      });
+    } catch (err) {
+      group = await client.accountGroup.findFirst({
+        where: { name: groupName }
+      });
+    }
+  }
+
+  if (!group) {
+    throw new Error(`Accounting Group '${groupName}' not found and could not be created. Please run seed script.`);
   }
 
   // 2. Find or Create Ledger

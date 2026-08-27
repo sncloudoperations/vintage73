@@ -110,6 +110,10 @@ app.use(errorHandler);
 
 server.listen(PORT, () => {
   console.log(`[STARTUP] Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  const { seedAccountGroups } = require('./utils/accountGroupSeeder');
+  seedAccountGroups()
+    .then(() => console.log('[STARTUP] Account groups verified and seeded successfully.'))
+    .catch(err => console.error('[STARTUP] Failed to seed account groups:', err.message));
 });
 
 // Graceful Shutdown
