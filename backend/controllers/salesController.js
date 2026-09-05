@@ -98,13 +98,45 @@ exports.createSale = asyncHandler(async (req, res) => {
       const product = await tx.product.findUnique({ where: { id: productId } });
       if (!product) throw new Error(`Product ${productId} not found.`);
 
-      // Stock Check
+      // Zero-stock variant check (CRITICAL: A variant with stock <= 0 must never be saleable, regardless of branch settings)
+      const selectedSize = item.size || item.selectedSize;
+      if (!isReturn && selectedSize && product.sizeStocks) {
+        let parsedSizeStocks = product.sizeStocks;
+        if (typeof parsedSizeStocks === 'string') {
+          try { parsedSizeStocks = JSON.parse(parsedSizeStocks); } catch (e) { parsedSizeStocks = []; }
+        }
+        if (Array.isArray(parsedSizeStocks)) {
+          const sizeEntry = parsedSizeStocks.find(s => String(s.size).trim().toLowerCase() === String(selectedSize).trim().toLowerCase());
+          if (sizeEntry) {
+            const vStock = parseInt(sizeEntry.stock, 10) || 0;
+            if (vStock <= 0) {
+              throw new Error(`Size "${selectedSize}" for product "${product.name}" is out of stock (Stock: 0) and cannot be sold.`);
+            }
+          }
+        }
+      }
+
+      // Stock Check for non-zero stock / branch stock
       if (!isReturn && stockIncluded) {
         const stock = await tx.productStock.findUnique({
           where: { branchId_productId: { branchId: validBranchId, productId } }
         });
         if (!stock || stock.quantity < item.quantity) {
           throw new Error(`Insufficient stock for ${product.name}.`);
+        }
+
+        // Size-level stock check
+        if (selectedSize && product.sizeStocks) {
+          let parsedSizeStocks = product.sizeStocks;
+          if (typeof parsedSizeStocks === 'string') {
+            try { parsedSizeStocks = JSON.parse(parsedSizeStocks); } catch (e) { parsedSizeStocks = []; }
+          }
+          if (Array.isArray(parsedSizeStocks)) {
+            const sizeEntry = parsedSizeStocks.find(s => String(s.size).trim().toLowerCase() === String(selectedSize).trim().toLowerCase());
+            if (sizeEntry && (parseInt(sizeEntry.stock, 10) || 0) < item.quantity) {
+              throw new Error(`Insufficient stock for ${product.name} (Size: ${selectedSize}). Available: ${sizeEntry.stock || 0}`);
+            }
+          }
         }
       }
 
@@ -137,6 +169,7 @@ exports.createSale = asyncHandler(async (req, res) => {
 
       saleItemsData.push({
         productId: parseInt(item.productId),
+        size: item.size || item.selectedSize || null,
         quantity: parseFloat(item.quantity || 1),
         unitPrice: parseFloat(unitPrice.toFixed(2)),
         discountPercent: parseFloat(item.discountPercent || 0),
@@ -264,6 +297,32 @@ exports.createSale = asyncHandler(async (req, res) => {
         create: { branchId: validBranchId, productId: parseInt(item.productId), quantity: isReturn ? item.quantity : -item.quantity },
         update: { quantity: isReturn ? { increment: item.quantity } : { decrement: item.quantity } }
       });
+
+      // Deduct size-level stock if product has sizeStocks
+      const selectedSize = item.size || item.selectedSize;
+      if (selectedSize) {
+        const prod = await tx.product.findUnique({ where: { id: parseInt(item.productId) } });
+        if (prod && prod.sizeStocks) {
+          let pSizeStocks = prod.sizeStocks;
+          if (typeof pSizeStocks === 'string') {
+            try { pSizeStocks = JSON.parse(pSizeStocks); } catch (e) { pSizeStocks = []; }
+          }
+          if (Array.isArray(pSizeStocks)) {
+            const updatedSizeStocks = pSizeStocks.map(s => {
+              if (String(s.size).trim().toLowerCase() === String(selectedSize).trim().toLowerCase()) {
+                const cur = parseInt(s.stock, 10) || 0;
+                const newStock = isReturn ? (cur + item.quantity) : (cur - item.quantity);
+                return { ...s, stock: Math.max(0, newStock) };
+              }
+              return s;
+            });
+            await tx.product.update({
+              where: { id: prod.id },
+              data: { sizeStocks: updatedSizeStocks }
+            });
+          }
+        }
+      }
     }
 
     const paymentsList = req.body.payments || (finalPaidAmount > 0 ? [{ method: paymentMethod, amount: finalPaidAmount }] : []);
@@ -333,6 +392,30 @@ exports.cancelSale = asyncHandler(async (req, res) => {
         where: { branchId_productId: { branchId: sale.branchId, productId: item.productId } },
         data: { quantity: { increment: item.quantity } }
       });
+
+      // Restore size stock if item has size
+      if (item.size) {
+        const prod = await tx.product.findUnique({ where: { id: item.productId } });
+        if (prod && prod.sizeStocks) {
+          let pSizeStocks = prod.sizeStocks;
+          if (typeof pSizeStocks === 'string') {
+            try { pSizeStocks = JSON.parse(pSizeStocks); } catch (e) { pSizeStocks = []; }
+          }
+          if (Array.isArray(pSizeStocks)) {
+            const updatedSizeStocks = pSizeStocks.map(s => {
+              if (String(s.size).trim().toLowerCase() === String(item.size).trim().toLowerCase()) {
+                const cur = parseInt(s.stock, 10) || 0;
+                return { ...s, stock: cur + item.quantity };
+              }
+              return s;
+            });
+            await tx.product.update({
+              where: { id: prod.id },
+              data: { sizeStocks: updatedSizeStocks }
+            });
+          }
+        }
+      }
     }
     await tx.payment.deleteMany({ where: { saleId: parseInt(id) } });
     await tx.voucher.updateMany({ where: { reference: sale.invoiceNumber }, data: { status: 'CANCELLED' } });
@@ -360,6 +443,30 @@ exports.updateSale = asyncHandler(async (req, res) => {
         create: { branchId: existing.branchId, productId: item.productId, quantity: item.quantity },
         update: { quantity: { increment: item.quantity } }
       });
+
+      // Restore size stock
+      if (item.size) {
+        const prod = await tx.product.findUnique({ where: { id: item.productId } });
+        if (prod && prod.sizeStocks) {
+          let pSizeStocks = prod.sizeStocks;
+          if (typeof pSizeStocks === 'string') {
+            try { pSizeStocks = JSON.parse(pSizeStocks); } catch (e) { pSizeStocks = []; }
+          }
+          if (Array.isArray(pSizeStocks)) {
+            const updatedSizeStocks = pSizeStocks.map(s => {
+              if (String(s.size).trim().toLowerCase() === String(item.size).trim().toLowerCase()) {
+                const cur = parseInt(s.stock, 10) || 0;
+                return { ...s, stock: cur + item.quantity };
+              }
+              return s;
+            });
+            await tx.product.update({
+              where: { id: prod.id },
+              data: { sizeStocks: updatedSizeStocks }
+            });
+          }
+        }
+      }
     }
 
     // --- ADVANCE REVERSAL (IF ANY) ---
@@ -407,13 +514,45 @@ exports.updateSale = asyncHandler(async (req, res) => {
       const product = await tx.product.findUnique({ where: { id: productId } });
       if (!product) throw new Error(`Product ${productId} not found.`);
 
-      // Stock Check
+      // Zero-stock variant check (CRITICAL: A variant with stock <= 0 must never be saleable, regardless of branch settings)
+      const selectedSize = item.size || item.selectedSize;
+      if (selectedSize && product.sizeStocks) {
+        let parsedSizeStocks = product.sizeStocks;
+        if (typeof parsedSizeStocks === 'string') {
+          try { parsedSizeStocks = JSON.parse(parsedSizeStocks); } catch (e) { parsedSizeStocks = []; }
+        }
+        if (Array.isArray(parsedSizeStocks)) {
+          const sizeEntry = parsedSizeStocks.find(s => String(s.size).trim().toLowerCase() === String(selectedSize).trim().toLowerCase());
+          if (sizeEntry) {
+            const vStock = parseInt(sizeEntry.stock, 10) || 0;
+            if (vStock <= 0) {
+              throw new Error(`Size "${selectedSize}" for product "${product.name}" is out of stock (Stock: 0) and cannot be sold.`);
+            }
+          }
+        }
+      }
+
+      // Stock Check for non-zero stock / branch stock
       if (stockIncluded) {
         const stock = await tx.productStock.findUnique({
           where: { branchId_productId: { branchId: existing.branchId, productId } }
         });
         if (!stock || stock.quantity < item.quantity) {
           throw new Error(`Insufficient stock for ${product.name}. Available: ${stock?.quantity || 0}`);
+        }
+
+        // Size-level stock check
+        if (selectedSize && product.sizeStocks) {
+          let parsedSizeStocks = product.sizeStocks;
+          if (typeof parsedSizeStocks === 'string') {
+            try { parsedSizeStocks = JSON.parse(parsedSizeStocks); } catch (e) { parsedSizeStocks = []; }
+          }
+          if (Array.isArray(parsedSizeStocks)) {
+            const sizeEntry = parsedSizeStocks.find(s => String(s.size).trim().toLowerCase() === String(selectedSize).trim().toLowerCase());
+            if (sizeEntry && (parseInt(sizeEntry.stock, 10) || 0) < item.quantity) {
+              throw new Error(`Insufficient stock for ${product.name} (Size: ${selectedSize}). Available: ${sizeEntry.stock || 0}`);
+            }
+          }
         }
       }
 
@@ -442,6 +581,7 @@ exports.updateSale = asyncHandler(async (req, res) => {
 
       saleItemsData.push({
         productId: parseInt(item.productId),
+        size: item.size || item.selectedSize || null,
         quantity: parseFloat(item.quantity || 1),
         unitPrice: parseFloat(unitPrice.toFixed(2)),
         discountPercent: parseFloat(item.discountPercent || 0),
@@ -519,6 +659,31 @@ exports.updateSale = asyncHandler(async (req, res) => {
         create: { branchId: updated.branchId, productId: parseInt(item.productId), quantity: -item.quantity },
         update: { quantity: { decrement: item.quantity } }
       });
+
+      // Deduct size-level stock if product has sizeStocks
+      const selectedSize = item.size || item.selectedSize;
+      if (selectedSize) {
+        const prod = await tx.product.findUnique({ where: { id: parseInt(item.productId) } });
+        if (prod && prod.sizeStocks) {
+          let pSizeStocks = prod.sizeStocks;
+          if (typeof pSizeStocks === 'string') {
+            try { pSizeStocks = JSON.parse(pSizeStocks); } catch (e) { pSizeStocks = []; }
+          }
+          if (Array.isArray(pSizeStocks)) {
+            const updatedSizeStocks = pSizeStocks.map(s => {
+              if (String(s.size).trim().toLowerCase() === String(selectedSize).trim().toLowerCase()) {
+                const cur = parseInt(s.stock, 10) || 0;
+                return { ...s, stock: Math.max(0, cur - item.quantity) };
+              }
+              return s;
+            });
+            await tx.product.update({
+              where: { id: prod.id },
+              data: { sizeStocks: updatedSizeStocks }
+            });
+          }
+        }
+      }
     }
 
     const paymentsList = req.body.payments || (finalPaidAmount > 0 ? [{ method: paymentMethod, amount: finalPaidAmount }] : []);

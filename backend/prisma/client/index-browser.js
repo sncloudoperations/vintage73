@@ -233,7 +233,20 @@ exports.Prisma.SupplierScalarFieldEnum = {
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  unitType: 'unitType'
+  unitType: 'unitType',
+  attributes: 'attributes'
+};
+
+exports.Prisma.ProductTypeScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  categoryId: 'categoryId',
+  genders: 'genders',
+  attributes: 'attributes',
+  sizes: 'sizes',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ProductScalarFieldEnum = {
@@ -241,6 +254,12 @@ exports.Prisma.ProductScalarFieldEnum = {
   name: 'name',
   categoryId: 'categoryId',
   categoryName: 'categoryName',
+  productTypeId: 'productTypeId',
+  productTypeName: 'productTypeName',
+  gender: 'gender',
+  attributes: 'attributes',
+  size: 'size',
+  sizeStocks: 'sizeStocks',
   price: 'price',
   costPrice: 'costPrice',
   taxRate: 'taxRate',
@@ -343,6 +362,7 @@ exports.Prisma.SaleItemScalarFieldEnum = {
   id: 'id',
   saleId: 'saleId',
   productId: 'productId',
+  size: 'size',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   total: 'total',
@@ -1014,6 +1034,7 @@ exports.Prisma.ModelName = {
   AdvanceHistory: 'AdvanceHistory',
   Supplier: 'Supplier',
   Category: 'Category',
+  ProductType: 'ProductType',
   Product: 'Product',
   ProductStock: 'ProductStock',
   Purchase: 'Purchase',

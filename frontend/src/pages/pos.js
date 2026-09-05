@@ -83,6 +83,7 @@ const CURRENCY_SYMBOLS = {
 
     // Payment Modal
     const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [sizeModalProduct, setSizeModalProduct] = useState(null); // For size selection popup
     const [paymentData, setPaymentData] = useState({ method: 'Cash', paidAmount: '', notes: '' });
     const [addedPayments, setAddedPayments] = useState([]); // For Split Payments
     const [lastSale, setLastSale] = useState(null); // Store last sale for printing
@@ -324,10 +325,16 @@ const CURRENCY_SYMBOLS = {
             const restoredCart = invoice.items.map(item => {
                 const product = (currentProducts || products).find(p => p.id === item.productId);
                 const itemExRate = invoice.exchangeRate || 1;
+                const selectedSize = item.size || null;
+                const cartKey = `${item.productId}_${selectedSize || 'nosize'}`;
                 return {
                     ...(product || item.product),
+                    cartItemId: cartKey,
                     id: item.productId,
                     name: item.product?.name || 'Unknown Product',
+                    productTypeName: item.product?.productTypeName || item.product?.productType?.name || '',
+                    selectedSize,
+                    size: selectedSize,
                     // Convert stored INR price back to invoice's currency and round to 2 decimals
                     price: parseFloat((item.unitPrice * itemExRate).toFixed(2)),
                     quantity: item.quantity,
@@ -451,48 +458,230 @@ const CURRENCY_SYMBOLS = {
 
     // ... (useEffect for dropdown click outside - lines 50-61, unchanged)
 
+    // Group products by (Product Name + Product Type)
+    // Conceptually:
+    // - Same Product Name + Same Product Type -> ONE card (consolidating size variants)
+    // - Same Product Name + Different Product Type -> DIFFERENT cards
+    // - Products without type or sizes -> preserved cleanly
+    const groupedProducts = useMemo(() => {
+        const groups = new Map();
+
+        products.forEach(p => {
+            const rawName = (p.name || '').trim();
+            const normName = rawName.toLowerCase();
+            const typeId = (p.productTypeId || p.productType?.id) ? String(p.productTypeId || p.productType?.id) : null;
+            const typeName = (p.productTypeName || p.productType?.name || '').trim();
+            const normTypeName = typeName.toLowerCase();
+
+            // Grouping key: Same Product + Same Product Type -> 1 card
+            // Same Product Name + Different Product Type -> Different cards
+            let groupKey;
+            if (typeId) {
+                groupKey = `${normName}___typeid_${typeId}`;
+            } else if (normTypeName) {
+                groupKey = `${normName}___typename_${normTypeName}`;
+            } else {
+                groupKey = `${normName}___notype_cat_${p.categoryId || 'none'}`;
+            }
+
+            if (!groups.has(groupKey)) {
+                groups.set(groupKey, {
+                    groupKey,
+                    id: p.id,
+                    name: rawName,
+                    productTypeId: p.productTypeId,
+                    productTypeName: typeName || null,
+                    gender: p.gender || (p.productType?.genders && p.productType.genders[0]) || null,
+                    price: p.price,
+                    imageUrl: p.imageUrl,
+                    barcode: p.barcode,
+                    hasBarcode: p.hasBarcode,
+                    taxRate: p.taxRate,
+                    taxPercent: p.taxPercent,
+                    isTaxInclusive: p.isTaxInclusive,
+                    minDiscount: p.minDiscount,
+                    maxDiscount: p.maxDiscount,
+                    rawProducts: [],
+                    sizeMap: new Map(), // sizeName -> { size, stock, productId, barcode }
+                    hasSizes: false,
+                    totalRawStock: 0
+                });
+            }
+
+            const group = groups.get(groupKey);
+            group.rawProducts.push(p);
+            group.totalRawStock += (parseInt(p.stock, 10) || 0);
+
+            // 1. Initialize from productType.sizes if defined
+            let ptSizes = p.productType?.sizes;
+            if (typeof ptSizes === 'string') {
+                try { ptSizes = JSON.parse(ptSizes); } catch (e) { ptSizes = null; }
+            }
+            if (Array.isArray(ptSizes) && ptSizes.length > 0) {
+                group.hasSizes = true;
+                ptSizes.forEach(s => {
+                    const sName = String(s || '').trim();
+                    if (!sName) return;
+                    if (!group.sizeMap.has(sName)) {
+                        group.sizeMap.set(sName, { size: sName, stock: 0, productId: p.id, barcode: p.barcode });
+                    }
+                });
+            }
+
+            // 2. Parse sizeStocks
+            let pSizeStocks = p.sizeStocks;
+            if (typeof pSizeStocks === 'string') {
+                try { pSizeStocks = JSON.parse(pSizeStocks); } catch (e) { pSizeStocks = null; }
+            }
+
+            if (Array.isArray(pSizeStocks) && pSizeStocks.length > 0) {
+                group.hasSizes = true;
+                pSizeStocks.forEach(item => {
+                    const sName = (item.size || '').trim();
+                    if (!sName) return;
+                    const existing = group.sizeMap.get(sName) || { size: sName, stock: 0, productId: p.id, barcode: p.barcode };
+                    existing.stock = (existing.stock || 0) + (parseInt(item.stock, 10) || 0);
+                    group.sizeMap.set(sName, existing);
+                });
+            } else if (p.size && typeof p.size === 'string' && p.size.trim()) {
+                const sizes = p.size.split(',').map(s => s.trim()).filter(Boolean);
+                if (sizes.length > 0) {
+                    group.hasSizes = true;
+                    sizes.forEach(sName => {
+                        const existing = group.sizeMap.get(sName) || { size: sName, stock: 0, productId: p.id, barcode: p.barcode };
+                        existing.stock += (sizes.length === 1 ? (parseInt(p.stock, 10) || 0) : 0);
+                        group.sizeMap.set(sName, existing);
+                    });
+                }
+            }
+
+            if (group.sizeMap.size > 0) {
+                group.hasSizes = true;
+            }
+        });
+
+        return Array.from(groups.values()).map(g => {
+            const variants = Array.from(g.sizeMap.values());
+            const finalStock = g.hasSizes
+                ? variants.reduce((sum, v) => sum + v.stock, 0)
+                : g.totalRawStock;
+
+            return {
+                ...g,
+                variants,
+                stock: finalStock,
+                totalStock: finalStock
+            };
+        });
+    }, [products]);
+
+    const handleProductCardClick = (product) => {
+        if (!customerId) {
+            toast.error('Please select a customer first');
+            return;
+        }
+
+        if (product.hasSizes && product.variants && product.variants.length > 0) {
+            const hasSaleableVariant = product.variants.some(v => (parseInt(v.stock, 10) || 0) > 0);
+            if (!hasSaleableVariant || (parseInt(product.stock, 10) || 0) <= 0) {
+                toast.error(`"${product.name}" is completely out of stock.`);
+                return;
+            }
+            // Open size selection modal
+            setSizeModalProduct(product);
+        } else {
+            // Sizeless product: directly add to cart using existing logic!
+            const isStockEnabled = branchSettings.stockIncluded !== false && branchSettings.stockIncluded !== 'false';
+            if (isStockEnabled && (parseInt(product.stock, 10) || 0) <= 0) {
+                toast.error(`"${product.name}" is out of stock in your branch.`);
+                return;
+            }
+            addToCart(product, null);
+        }
+    };
+
     const handleScan = (e) => {
         if (e.key === 'Enter') {
-            const product = products.find(p => p.barcode === search || p.name.toLowerCase().includes(search.toLowerCase()));
-            if (product) {
-                addToCart(product);
+            const query = search.trim();
+            if (!query) return;
+
+            const foundGroup = groupedProducts.find(p => 
+                (p.barcode && p.barcode.toLowerCase() === query.toLowerCase()) || 
+                p.name.toLowerCase() === query.toLowerCase() ||
+                p.variants?.some(v => v.barcode && v.barcode.toLowerCase() === query.toLowerCase())
+            );
+
+            if (foundGroup) {
+                const matchedVariant = foundGroup.variants?.find(v => v.barcode && v.barcode.toLowerCase() === query.toLowerCase());
+                if (matchedVariant) {
+                    if ((parseInt(matchedVariant.stock, 10) || 0) <= 0) {
+                        toast.error(`Size "${matchedVariant.size}" is out of stock (Stock: 0) and cannot be sold.`);
+                        setSearch('');
+                        return;
+                    }
+                    addToCart(foundGroup, matchedVariant.size);
+                } else if (foundGroup.hasSizes) {
+                    handleProductCardClick(foundGroup);
+                } else {
+                    addToCart(foundGroup, null);
+                }
                 setSearch('');
+            } else {
+                const rawProd = products.find(p => p.barcode === query || p.name.toLowerCase().includes(query.toLowerCase()));
+                if (rawProd) {
+                    addToCart(rawProd, null);
+                    setSearch('');
+                }
             }
         }
     };
 
-    const addToCart = (product) => {
+    const addToCart = (product, selectedSize = null) => {
         if (!customerId) {
             toast.error('Please select a customer first');
             return;
         }
         const isStockEnabled = branchSettings.stockIncluded !== false && branchSettings.stockIncluded !== 'false';
 
-        if (isStockEnabled && product.stock <= 0) {
+        // Determine stock for variant or product
+        let availableStock = parseInt(product.stock, 10) || 0;
+        let representativeProductId = product.id;
+
+        if (selectedSize && product.variants && product.variants.length > 0) {
+            const v = product.variants.find(item => item.size === selectedSize);
+            if (v) {
+                availableStock = parseInt(v.stock, 10) || 0;
+                if (v.productId) representativeProductId = v.productId;
+            }
+        }
+
+        // ZERO STOCK MUST NOT BE SALEABLE: If selectedSize has 0 stock, reject unconditionally
+        if (selectedSize && availableStock <= 0) {
+            toast.error(`Size "${selectedSize}" is out of stock (Stock: 0) and cannot be sold.`);
+            return;
+        }
+
+        if (!selectedSize && isStockEnabled && availableStock <= 0) {
             toast.error('Out of stock in your branch');
             return;
         }
 
-        const existing = cart.find(item => item.id === product.id);
+        const cartKey = `${representativeProductId}_${selectedSize || 'nosize'}`;
+        const existing = cart.find(item => (item.cartItemId || `${item.id}_${item.selectedSize || 'nosize'}`) === cartKey);
 
-        if (existing && isStockEnabled && (existing.quantity + 1) > product.stock) {
-            toast.error(`Only ${product.stock} units available in stock`);
+        if (existing && isStockEnabled && (existing.quantity + 1) > availableStock) {
+            toast.error(`Only ${availableStock} units available in stock`);
             return;
         }
 
-        // Initial behavior as per requirement: 
-        // 1. Price field shows original master price (INR)
-        // 2. Total calculation (handled in calcResults) uses exchangeRate
-        // 3. isPriceOverridden starts as FALSE
         const freshPrice = Number(product.price);
         const freshTaxRate = parseFloat(product.taxRate || 0);
         const freshIsInclusive = product.isTaxInclusive === true || product.isTaxInclusive === 'true';
 
         if (existing) {
-            setCart(cart.map(item => item.id === product.id ? {
+            setCart(cart.map(item => ((item.cartItemId || `${item.id}_${item.selectedSize || 'nosize'}`) === cartKey) ? {
                 ...item,
                 quantity: item.quantity + 1,
-                // Do NOT reset price to master if it was already overridden by user
                 price: item.isPriceOverridden ? item.price : freshPrice,
                 taxRate: freshTaxRate,
                 isTaxInclusive: freshIsInclusive,
@@ -501,45 +690,57 @@ const CURRENCY_SYMBOLS = {
         } else {
             setCart([...cart, {
                 ...product,
-                id: product.id,
+                cartItemId: cartKey,
+                id: representativeProductId,
                 name: product.name,
+                productTypeName: product.productTypeName || product.productType?.name || '',
+                selectedSize: selectedSize || null,
+                size: selectedSize || product.size || null,
+                stock: availableStock,
                 price: freshPrice,
                 isPriceOverridden: false,
                 quantity: 1,
                 discountPercent: 0,
                 discountAmount: 0,
                 taxRate: freshTaxRate,
-                taxPercent: freshTaxRate, // Sync taxPercent with taxRate
+                taxPercent: freshTaxRate,
                 isTaxInclusive: freshIsInclusive
             }]);
         }
     };
 
-    const updateQuantity = (id, newQty) => {
+    const updateQuantity = (cartKey, newQty) => {
         if (newQty < 1) return;
-        const item = cart.find(i => i.id === id);
-        
+        const item = cart.find(i => (i.cartItemId || `${i.id}_${i.selectedSize || 'nosize'}`) === cartKey);
+        if (!item) return;
+
+        // Zero-stock variant check: variant with stock <= 0 cannot have quantity increased
+        if (item.selectedSize && (parseInt(item.stock, 10) || 0) <= 0) {
+            toast.error(`Size "${item.selectedSize}" has 0 stock and cannot be sold.`);
+            return;
+        }
+
         const isStockEnabled = branchSettings.stockIncluded !== false && branchSettings.stockIncluded !== 'false';
         
         // Only block if stockIncluded is ON
-        if (isStockEnabled && item && newQty > item.stock) {
+        if (isStockEnabled && newQty > item.stock) {
             toast.error(`Only ${item.stock} units available in stock`);
             return;
         }
-        setCart(cart.map(item => item.id === id ? { ...item, quantity: newQty } : item));
+        setCart(cart.map(item => (item.cartItemId || `${item.id}_${item.selectedSize || 'nosize'}`) === cartKey ? { ...item, quantity: newQty } : item));
     };
 
-    const updatePrice = (id, newPrice) => {
-        setCart(cart.map(item => item.id === id ? { 
+    const updatePrice = (cartKey, newPrice) => {
+        setCart(cart.map(item => (item.cartItemId || `${item.id}_${item.selectedSize || 'nosize'}`) === cartKey ? { 
             ...item, 
             price: parseFloat(newPrice) || 0,
             isPriceOverridden: true 
         } : item));
     };
 
-    const updateDiscount = (id, type, value) => {
+    const updateDiscount = (cartKey, type, value) => {
         setCart(cart.map(item => {
-            if (item.id === id) {
+            if ((item.cartItemId || `${item.id}_${item.selectedSize || 'nosize'}`) === cartKey) {
                 let newPercent = item.discountPercent;
                 let newAmount = item.discountAmount;
 
@@ -559,7 +760,7 @@ const CURRENCY_SYMBOLS = {
         }));
     };
 
-    const removeFromCart = (id) => setCart(cart.filter(item => item.id !== id));
+    const removeFromCart = (cartKey) => setCart(cart.filter(item => (item.cartItemId || `${item.id}_${item.selectedSize || 'nosize'}`) !== cartKey));
 
     // Numpad Input Handler
     const handleNumpadInput = (value) => {
@@ -744,7 +945,13 @@ const CURRENCY_SYMBOLS = {
                 }
             }
 
-
+            // Strict check: zero stock variants must never be sold
+            for (const item of cart) {
+                if (item.selectedSize && (parseInt(item.stock, 10) || 0) <= 0) {
+                    toast.error(`Variant "${item.name}" (Size: ${item.selectedSize}) is out of stock (Stock: 0) and cannot be sold.`);
+                    return;
+                }
+            }
 
             const payload = {
                 customerId: customerId ? parseInt(customerId) : null,
@@ -760,6 +967,7 @@ const CURRENCY_SYMBOLS = {
 
                     return {
                         productId: item.id,
+                        size: item.selectedSize || item.size || null,
                         quantity: item.quantity,
                         unitPrice: unitPriceINR,
                         taxPercent: taxEnabled ? item.taxPercent : 0,
@@ -906,31 +1114,103 @@ const CURRENCY_SYMBOLS = {
                 {/* Product Grid */}
                 <div className="flex-1 overflow-y-auto p-4 bg-slate-50/50">
                     <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {products.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(product => (
-                            <div key={product.id}
-                                className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group active:scale-95"
-                                onClick={() => addToCart(product)}>
-                                <div className="aspect-square bg-slate-50 rounded-lg mb-3 flex items-center justify-center overflow-hidden relative">
-                                    {product.imageUrl ? (
-                                        <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
-                                    ) : (
-                                        <span className="text-2xl font-semibold text-slate-300">{product.name.substring(0, 2)}</span>
-                                    )}
-                                    <div className="absolute top-2 right-2 bg-slate-900/70 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur-sm">
-                                        {product.stock}
+                        {groupedProducts.filter(p => {
+                            const q = search.toLowerCase();
+                            return p.name.toLowerCase().includes(q) ||
+                                (p.productTypeName && p.productTypeName.toLowerCase().includes(q)) ||
+                                (p.barcode && p.barcode.toLowerCase().includes(q)) ||
+                                (p.variants && p.variants.some(v => v.size.toLowerCase().includes(q) || (v.barcode && v.barcode.toLowerCase().includes(q))));
+                        }).map(product => {
+                            const hasSaleableVariant = product.hasSizes ? product.variants?.some(v => (parseInt(v.stock, 10) || 0) > 0) : true;
+                            const isOutOfStock = product.hasSizes ? !hasSaleableVariant : (parseInt(product.stock, 10) || 0) <= 0;
+
+                            return (
+                                <div key={product.groupKey || product.id}
+                                    className={`bg-white p-3 rounded-xl border border-slate-100 shadow-sm transition-all flex flex-col justify-between ${
+                                        isOutOfStock 
+                                            ? 'opacity-70 cursor-not-allowed border-slate-200' 
+                                            : 'hover:shadow-md cursor-pointer group active:scale-98'
+                                    }`}
+                                    onClick={() => {
+                                        if (isOutOfStock) {
+                                            toast.error(`"${product.name}" is completely out of stock.`);
+                                            return;
+                                        }
+                                        handleProductCardClick(product);
+                                    }}>
+                                    <div>
+                                        <div className="aspect-square bg-slate-50 rounded-lg mb-2.5 flex items-center justify-center overflow-hidden relative">
+                                            {product.imageUrl ? (
+                                                <img src={product.imageUrl} alt={product.name} className={`w-full h-full object-cover transition-transform duration-300 ${!isOutOfStock ? 'group-hover:scale-105' : 'grayscale-[30%]'}`} />
+                                            ) : (
+                                                <span className="text-2xl font-semibold text-slate-300">{product.name.substring(0, 2).toUpperCase()}</span>
+                                            )}
+                                            <div className={`absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm shadow-sm ${
+                                                !isOutOfStock ? 'bg-slate-900/75 text-white' : 'bg-red-500 text-white uppercase tracking-wider'
+                                            }`}>
+                                                {!isOutOfStock ? `${product.stock} in stock` : 'Out of Stock'}
+                                            </div>
+                                            {product.gender && (
+                                                <div className="absolute top-2 left-2 bg-white/90 text-slate-700 text-[9px] font-semibold px-1.5 py-0.5 rounded backdrop-blur-sm shadow-xs">
+                                                    {product.gender}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Product Type (Clearly visible) */}
+                                        {product.productTypeName && (
+                                            <div className="mb-1">
+                                                <span className="inline-block text-[10px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded">
+                                                    {product.productTypeName}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {/* Product Name */}
+                                        <h3 className="font-semibold text-slate-800 text-sm truncate mb-1" title={product.name}>{product.name}</h3>
+
+                                        {/* Available Sizes & Stock (Compact display) */}
+                                        {product.hasSizes && product.variants && product.variants.length > 0 && (
+                                            <div className="flex flex-wrap items-center gap-1 mb-2">
+                                                {product.variants.slice(0, 6).map(v => (
+                                                    <span 
+                                                        key={v.size} 
+                                                        className={`text-[9px] px-1.5 py-0.5 rounded border font-medium ${
+                                                            v.stock > 0 
+                                                                ? 'bg-slate-50 border-slate-200 text-slate-700' 
+                                                                : 'bg-red-50 border-red-200 text-red-500'
+                                                        }`}
+                                                        title={`${v.size}: ${v.stock} in stock`}
+                                                    >
+                                                        <strong className="font-bold">{v.size}</strong>: {v.stock}
+                                                    </span>
+                                                ))}
+                                                {product.variants.length > 6 && (
+                                                    <span className="text-[9px] text-slate-400 font-semibold px-0.5">
+                                                        +{product.variants.length - 6}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex justify-between items-center pt-2 border-t border-slate-50 mt-auto">
+                                        <p className="text-primary font-bold text-sm">
+                                            {currencyCode === 'AED' ? `${(product.price * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(product.price * exchangeRate).toFixed(2)}`}
+                                        </p>
+                                        {isOutOfStock ? (
+                                            <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-300 cursor-not-allowed opacity-50" title="Out of Stock">
+                                                <FiPlus size={14} />
+                                            </div>
+                                        ) : (
+                                            <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors cursor-pointer">
+                                                <FiPlus size={14} />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                                <h3 className="font-semibold text-slate-700 text-sm truncate mb-1">{product.name}</h3>
-                                <div className="flex justify-between items-center">
-                                    <p className="text-primary font-medium">
-                                        {currencyCode === 'AED' ? `${(product.price * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(product.price * exchangeRate).toFixed(2)}`}
-                                    </p>
-                                    <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors">
-                                        <FiPlus size={14} />
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -1142,23 +1422,38 @@ const CURRENCY_SYMBOLS = {
                     ) : (
                         <div className="divide-y divide-slate-50">
                             {cart.map(item => {
+                                const itemKey = item.cartItemId || `${item.id}_${item.selectedSize || 'nosize'}`;
                                 const effPrice = item.isPriceOverridden ? parseFloat(item.price || 0) : parseFloat(item.price || 0) * (exchangeRate || 1);
                                 const effDisc = item.isPriceOverridden ? parseFloat(item.discountAmount || 0) : parseFloat(item.discountAmount || 0) * (exchangeRate || 1);
                                 const lineTotal = (effPrice - effDisc) * (parseFloat(item.quantity) || 0);
 
                                 return (
-                                    <div key={item.id} className="px-4 py-3 hover:bg-slate-50 group transition-colors">
+                                    <div key={itemKey} className="px-4 py-3 hover:bg-slate-50 group transition-colors">
                                         <div className="flex items-center text-sm">
                                             {/* Item & Disc */}
                                             <div className="flex-[3] pr-2">
-                                                <h4 className="font-medium text-slate-700 leading-tight mb-1">{item.name}</h4>
+                                                <h4 className="font-medium text-slate-700 leading-tight mb-0.5">{item.name}</h4>
+                                                {(item.productTypeName || item.selectedSize) && (
+                                                    <div className="flex flex-wrap items-center gap-1 mb-1">
+                                                        {item.productTypeName && (
+                                                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 font-semibold border border-indigo-100">
+                                                                {item.productTypeName}
+                                                            </span>
+                                                        )}
+                                                        {item.selectedSize && (
+                                                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-bold border border-slate-200">
+                                                                Size: {item.selectedSize}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
                                                 <div className="flex items-center gap-1 mt-1">
                                                     <div className="flex items-center border border-slate-200 rounded overflow-hidden h-6 bg-slate-50">
                                                         <input 
                                                             className="w-10 text-center text-[10px] bg-transparent outline-none focus:bg-white transition-colors"
                                                             placeholder="%"
                                                             value={item.discountPercent || ''}
-                                                            onChange={e => updateDiscount(item.id, 'percent', e.target.value)}
+                                                            onChange={e => updateDiscount(itemKey, 'percent', e.target.value)}
                                                         />
                                                     </div>
                                                     <div className="flex items-center gap-1">
@@ -1169,7 +1464,7 @@ const CURRENCY_SYMBOLS = {
                                                             className="w-10 p-0.5 text-[10px] text-center bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
                                                             placeholder="Amt"
                                                             value={item.discountAmount || ''}
-                                                            onChange={e => updateDiscount(item.id, 'amount', e.target.value)}
+                                                            onChange={e => updateDiscount(itemKey, 'amount', e.target.value)}
                                                         />
                                                     </div>
                                                 </div>
@@ -1178,13 +1473,13 @@ const CURRENCY_SYMBOLS = {
                                             {/* Qty */}
                                             <div className="flex-[2] flex justify-center">
                                                 <div className="flex items-center border border-slate-200 rounded bg-white">
-                                                    <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                                                    <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(itemKey, item.quantity - 1)}>-</button>
                                                     <input
                                                         className="w-8 text-center text-xs font-medium text-slate-700 outline-none"
                                                         value={item.quantity}
-                                                        onChange={e => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                                                        onChange={e => updateQuantity(itemKey, parseInt(e.target.value) || 1)}
                                                     />
-                                                    <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                                                    <button className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-light/10" onClick={() => updateQuantity(itemKey, item.quantity + 1)}>+</button>
                                                 </div>
                                             </div>
 
@@ -1197,7 +1492,7 @@ const CURRENCY_SYMBOLS = {
                                                     <input
                                                         className="w-16 p-0.5 font-medium text-right text-slate-700 bg-slate-100 border border-slate-200 rounded outline-none focus:border-primary"
                                                         value={item.price}
-                                                        onChange={e => updatePrice(item.id, e.target.value)}
+                                                        onChange={e => updatePrice(itemKey, e.target.value)}
                                                         onClick={e => e.target.select()}
                                                     />
                                                 </div>
@@ -1215,7 +1510,7 @@ const CURRENCY_SYMBOLS = {
 
                                             {/* Remove */}
                                             <div className="w-6 text-right pl-2">
-                                                <button onClick={() => removeFromCart(item.id)} className="text-slate-300 hover:text-red-500 transition-colors">
+                                                <button onClick={() => removeFromCart(itemKey)} className="text-slate-300 hover:text-red-500 transition-colors">
                                                     <FiTrash2 size={14} />
                                                 </button>
                                             </div>
@@ -1647,6 +1942,95 @@ const CURRENCY_SYMBOLS = {
                                 <button type="submit" className="btn btn-primary">Create</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Size Selection Modal */}
+            {sizeModalProduct && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100">
+                        {/* Header */}
+                        <div className="p-5 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
+                            <div>
+                                <span className="text-[10px] font-bold text-primary uppercase tracking-wider">Select Size</span>
+                                <h2 className="text-lg font-bold text-slate-800 leading-tight mt-0.5">{sizeModalProduct.name}</h2>
+                                <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                                    {sizeModalProduct.productTypeName && (
+                                        <span className="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                            {sizeModalProduct.productTypeName}
+                                        </span>
+                                    )}
+                                    {sizeModalProduct.gender && (
+                                        <span className="text-xs text-slate-500 font-medium">
+                                            • {sizeModalProduct.gender}
+                                        </span>
+                                    )}
+                                    <span className="text-xs font-bold text-primary">
+                                        • {currencyCode === 'AED' ? `${(sizeModalProduct.price * exchangeRate).toFixed(2)} ${currencySymbol}` : `${currencySymbol}${(sizeModalProduct.price * exchangeRate).toFixed(2)}`}
+                                    </span>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setSizeModalProduct(null)} 
+                                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-200/50 transition-colors"
+                            >
+                                <FiX size={18} />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-5">
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Select Size</p>
+                            <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
+                                {sizeModalProduct.variants?.map(v => {
+                                    const stockVal = parseInt(v.stock, 10) || 0;
+                                    const isZeroStock = stockVal <= 0;
+
+                                    return (
+                                        <button
+                                            key={v.size}
+                                            type="button"
+                                            disabled={isZeroStock}
+                                            onClick={() => {
+                                                if (isZeroStock) return;
+                                                addToCart(sizeModalProduct, v.size);
+                                                setSizeModalProduct(null);
+                                            }}
+                                            className={`p-3 rounded-xl border text-left flex items-center justify-between transition-all select-none ${
+                                                isZeroStock 
+                                                    ? 'bg-slate-100/80 border-slate-200 text-slate-400 opacity-60 cursor-not-allowed shadow-none'
+                                                    : 'bg-white hover:bg-primary/5 hover:border-primary/40 border-slate-200 text-slate-800 active:scale-98 shadow-xs cursor-pointer'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-1.5 font-bold text-base">
+                                                <span>{v.size} — {stockVal}</span>
+                                            </div>
+                                            {isZeroStock ? (
+                                                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-red-100 text-red-600 border border-red-200">
+                                                    Disabled
+                                                </span>
+                                            ) : (
+                                                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    Enabled
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                            <button 
+                                type="button" 
+                                className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200/60 rounded-lg transition-colors" 
+                                onClick={() => setSizeModalProduct(null)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

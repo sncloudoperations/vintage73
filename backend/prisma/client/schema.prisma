@@ -199,43 +199,68 @@ model Supplier {
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  unitType String?
-  products Product[]
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  unitType     String?
+  attributes   Json?         @default("[]")
+  products     Product[]
+  productTypes ProductType[]
+}
+
+model ProductType {
+  id         Int       @id @default(autoincrement())
+  name       String
+  categoryId Int
+  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  genders    Json?     @default("[]")
+  attributes Json?
+  sizes      Json?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  products   Product[]
+
+  @@unique([name, categoryId])
 }
 
 model Product {
-  id             Int                   @id @default(autoincrement())
-  name           String
-  categoryId     Int?
-  categoryName   String?
-  price          Decimal               @db.Decimal(10, 2)
-  costPrice      Decimal?              @db.Decimal(10, 2)
-  taxRate        Decimal               @default(0) @db.Decimal(5, 2)
-  taxPercent     Decimal?              @db.Decimal(5, 2)
-  taxType        String?
-  isTaxInclusive Boolean               @default(false)
-  hsnCode        String?
-  warranty       Int?
-  description    String?
-  barcode        String?               @unique
-  hasBarcode     Boolean               @default(false)
-  minStockLevel  Int                   @default(5)
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
-  maxDiscount    Decimal?              @db.Decimal(5, 2)
-  minDiscount    Decimal?              @db.Decimal(5, 2)
-  imageUrl       String?
-  isActive       Boolean               @default(true)
-  challanItems   DeliveryChallanItem[]
-  category       Category?             @relation(fields: [categoryId], references: [id])
-  stocks         ProductStock[]
-  purchaseItems  PurchaseItem[]
-  quotationItems QuotationItem[]
-  saleItems      SaleItem[]
-  transferItems  StockTransferItem[]
-  leads          Lead[]
+  id              Int                   @id @default(autoincrement())
+  name            String
+  categoryId      Int?
+  categoryName    String?
+  productTypeId   Int?
+  productTypeName String?
+  gender          String?
+  attributes      Json?
+  size            String?
+  sizeStocks      Json?
+  price           Decimal               @db.Decimal(10, 2)
+  costPrice       Decimal?              @db.Decimal(10, 2)
+  taxRate         Decimal               @default(0) @db.Decimal(5, 2)
+  taxPercent      Decimal?              @db.Decimal(5, 2)
+  taxType         String?
+  isTaxInclusive  Boolean               @default(false)
+  hsnCode         String?
+  warranty        Int?
+  description     String?
+  barcode         String?               @unique
+  hasBarcode      Boolean               @default(false)
+  minStockLevel   Int                   @default(5)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  maxDiscount     Decimal?              @db.Decimal(5, 2)
+  minDiscount     Decimal?              @db.Decimal(5, 2)
+  imageUrl        String?
+  isActive        Boolean               @default(true)
+  challanItems    DeliveryChallanItem[]
+  category        Category?             @relation(fields: [categoryId], references: [id])
+  productType     ProductType?          @relation(fields: [productTypeId], references: [id])
+  stocks          ProductStock[]
+  purchaseItems   PurchaseItem[]
+  quotationItems  QuotationItem[]
+  saleItems       SaleItem[]
+  transferItems   StockTransferItem[]
+  leads           Lead[]
 }
 
 model ProductStock {
@@ -343,6 +368,7 @@ model SaleItem {
   id              Int     @id @default(autoincrement())
   saleId          Int
   productId       Int
+  size            String?
   quantity        Int
   unitPrice       Decimal @db.Decimal(10, 2)
   total           Decimal @db.Decimal(10, 2)

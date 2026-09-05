@@ -5,6 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 router.use(authMiddleware);
 
+router.get('/sales-analytics', reportsController.getSalesAnalyticsReport);
 router.get('/', reportsController.getSalesReports);
 router.get('/payments', reportsController.getDailyPaymentReport);
 router.get('/stock-movement', reportsController.getStockMovementRegister);

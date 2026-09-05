@@ -80,6 +80,7 @@ export const MENU_STRUCTURE = [
       { name: 'Bank Master', icon: FiCreditCard, path: '/master/banks' },
       { name: 'Branches', icon: FiHome, path: '/branches' },
       { name: 'Category Master', icon: FiGrid, path: '/master/categories' },
+      { name: 'Product Types', icon: FiLayers, path: '/master/product-types' },
       { name: 'Company Profile', icon: FiSettings, path: '/company' },
       { name: 'Invoice Settings', icon: FiFileText, path: '/master/invoice_settings' },
       { name: 'Products', icon: FiBox, path: '/products' },

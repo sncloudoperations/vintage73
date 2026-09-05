@@ -1,6 +1,17 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../middleware/asyncHandler');
 
+// Helper to safely parse JSON if string
+const safeJsonParse = (val) => {
+  if (val === null || val === undefined || val === '') return null;
+  if (typeof val === 'object') return val;
+  try {
+    return JSON.parse(val);
+  } catch (e) {
+    return null;
+  }
+};
+
 // Get All Products
 exports.getAllProducts = asyncHandler(async (req, res) => {
   const { branchId: queryBranchId } = req.query;
@@ -28,6 +39,7 @@ exports.getAllProducts = asyncHandler(async (req, res) => {
     where: whereClause,
     include: {
       category: true,
+      productType: true,
       stocks: parsedBranchId ? {
         where: { branchId: parsedBranchId }
       } : true
@@ -48,7 +60,31 @@ exports.getAllProducts = asyncHandler(async (req, res) => {
 
 // Create Product
 exports.createProduct = asyncHandler(async (req, res) => {
-  let { name, price, taxRate, taxType, taxPercent, hsnCode, warranty, description, barcode, hasBarcode, categoryName, categoryId, minDiscount, maxDiscount, isTaxInclusive } = req.body;
+  let {
+    name,
+    price,
+    taxRate,
+    taxType,
+    taxPercent,
+    hsnCode,
+    warranty,
+    description,
+    barcode,
+    hasBarcode,
+    categoryName,
+    categoryId,
+    productTypeId,
+    productTypeName,
+    gender,
+    attributes,
+    size,
+    sizeStocks,
+    stock,
+    initialStock,
+    minDiscount,
+    maxDiscount,
+    isTaxInclusive
+  } = req.body;
 
   // Handle Image Upload
   let imageUrl = null;
@@ -56,22 +92,39 @@ exports.createProduct = asyncHandler(async (req, res) => {
     imageUrl = '/uploads/' + req.file.filename;
   }
 
-  // Auto-generate barcode if missing and enabled (Check 'true' string because multipart/form-data sends strings)
+  // Auto-generate barcode if missing and enabled
   if ((hasBarcode === 'true' || hasBarcode === true) && !barcode) {
     barcode = 'BC' + Date.now().toString().slice(-10) + Math.floor(Math.random() * 1000).toString();
   }
 
   const priceDecimal = parseFloat(price);
-
-  // Decide which tax field to use. Prioritize taxRate/taxPercent if it's the specific field updated, 
-  // but unified across the system, taxRate is the primary source.
   const taxVal = taxPercent !== undefined ? taxPercent : (taxRate !== undefined ? taxRate : 0);
   const taxRateDecimal = parseFloat(taxVal) || 0;
+
+  // Parse complex JSON fields
+  const parsedAttributes = safeJsonParse(attributes);
+  const parsedSizeStocks = safeJsonParse(sizeStocks);
+
+  // Determine stock quantity
+  let totalStockQty = 0;
+  if (parsedSizeStocks && Array.isArray(parsedSizeStocks) && parsedSizeStocks.length > 0) {
+    totalStockQty = parsedSizeStocks.reduce((sum, item) => sum + (parseInt(item.stock, 10) || 0), 0);
+  } else if (stock !== undefined && stock !== '') {
+    totalStockQty = parseInt(stock, 10) || 0;
+  } else if (initialStock !== undefined && initialStock !== '') {
+    totalStockQty = parseInt(initialStock, 10) || 0;
+  }
+
   try {
     const data = {
       name,
       categoryName,
-      price: !isNaN(parseFloat(price)) ? parseFloat(price) : 0,
+      productTypeName,
+      gender: gender || null,
+      attributes: parsedAttributes || undefined,
+      size: size || null,
+      sizeStocks: parsedSizeStocks || undefined,
+      price: !isNaN(priceDecimal) ? priceDecimal : 0,
       taxType,
       taxRate: taxRateDecimal,
       taxPercent: taxRateDecimal,
@@ -87,11 +140,49 @@ exports.createProduct = asyncHandler(async (req, res) => {
       isActive: req.body.isActive !== undefined ? (req.body.isActive === 'true' || req.body.isActive === true) : true
     };
 
-    if (categoryId) {
+    if (categoryId && !isNaN(parseInt(categoryId))) {
       data.category = { connect: { id: parseInt(categoryId) } };
     }
 
-    const product = await prisma.product.create({ data });
+    if (productTypeId && !isNaN(parseInt(productTypeId))) {
+      data.productType = { connect: { id: parseInt(productTypeId) } };
+    }
+
+    const product = await prisma.product.create({
+      data,
+      include: {
+        category: true,
+        productType: true,
+        stocks: true
+      }
+    });
+
+    // Synchronize initial stock with ProductStock if branch is available
+    const branchId = req.body.branchId ? parseInt(req.body.branchId) : (req.user?.branchId || null);
+    let targetBranchId = branchId;
+
+    if (!targetBranchId) {
+      const firstBranch = await prisma.branch.findFirst({ where: { isActive: true } });
+      if (firstBranch) targetBranchId = firstBranch.id;
+    }
+
+    if (targetBranchId && totalStockQty >= 0) {
+      await prisma.productStock.upsert({
+        where: {
+          branchId_productId: {
+            branchId: targetBranchId,
+            productId: product.id
+          }
+        },
+        update: { quantity: totalStockQty },
+        create: {
+          branchId: targetBranchId,
+          productId: product.id,
+          quantity: totalStockQty
+        }
+      });
+    }
+
     res.status(201).json(product);
   } catch (error) {
     if (error.code === 'P2002') {
@@ -105,16 +196,50 @@ exports.createProduct = asyncHandler(async (req, res) => {
 // Update Product
 exports.updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, price, taxRate, taxPercent, taxType, hsnCode, warranty, description, barcode, categoryName, categoryId, minDiscount, maxDiscount, isTaxInclusive, isActive } = req.body;
+  const {
+    name,
+    price,
+    taxRate,
+    taxPercent,
+    taxType,
+    hsnCode,
+    warranty,
+    description,
+    barcode,
+    categoryName,
+    categoryId,
+    productTypeId,
+    productTypeName,
+    gender,
+    attributes,
+    size,
+    sizeStocks,
+    stock,
+    minDiscount,
+    maxDiscount,
+    isTaxInclusive,
+    isActive
+  } = req.body;
 
   const dataToUpdate = {};
 
   if (name !== undefined) dataToUpdate.name = name;
   if (categoryName !== undefined) dataToUpdate.categoryName = categoryName;
+  if (productTypeName !== undefined) dataToUpdate.productTypeName = productTypeName;
+  if (gender !== undefined) dataToUpdate.gender = gender || null;
+  if (size !== undefined) dataToUpdate.size = size || null;
   if (taxType !== undefined) dataToUpdate.taxType = taxType;
   if (hsnCode !== undefined) dataToUpdate.hsnCode = hsnCode;
   if (description !== undefined) dataToUpdate.description = description;
   if (barcode !== undefined) dataToUpdate.barcode = barcode;
+
+  if (attributes !== undefined) {
+    dataToUpdate.attributes = safeJsonParse(attributes);
+  }
+
+  if (sizeStocks !== undefined) {
+    dataToUpdate.sizeStocks = safeJsonParse(sizeStocks);
+  }
 
   if (price !== undefined && !isNaN(parseFloat(price))) {
     dataToUpdate.price = parseFloat(price);
@@ -143,10 +268,18 @@ exports.updateProduct = asyncHandler(async (req, res) => {
   }
 
   if (categoryId !== undefined) {
-    if (categoryId) {
+    if (categoryId && !isNaN(parseInt(categoryId))) {
       dataToUpdate.category = { connect: { id: parseInt(categoryId) } };
     } else {
       dataToUpdate.category = { disconnect: true };
+    }
+  }
+
+  if (productTypeId !== undefined) {
+    if (productTypeId && !isNaN(parseInt(productTypeId))) {
+      dataToUpdate.productType = { connect: { id: parseInt(productTypeId) } };
+    } else {
+      dataToUpdate.productType = { disconnect: true };
     }
   }
 
@@ -156,8 +289,51 @@ exports.updateProduct = asyncHandler(async (req, res) => {
 
   const product = await prisma.product.update({
     where: { id: parseInt(id) },
-    data: dataToUpdate
+    data: dataToUpdate,
+    include: {
+      category: true,
+      productType: true,
+      stocks: true
+    }
   });
+
+  // If sizeStocks or stock explicitly changed, update ProductStock for branch
+  const parsedSizeStocks = safeJsonParse(sizeStocks);
+  let updatedStockQty = null;
+
+  if (parsedSizeStocks && Array.isArray(parsedSizeStocks) && parsedSizeStocks.length > 0) {
+    updatedStockQty = parsedSizeStocks.reduce((sum, item) => sum + (parseInt(item.stock, 10) || 0), 0);
+  } else if (stock !== undefined && stock !== '' && !isNaN(parseInt(stock, 10))) {
+    updatedStockQty = parseInt(stock, 10);
+  }
+
+  if (updatedStockQty !== null) {
+    const branchId = req.body.branchId ? parseInt(req.body.branchId) : (req.user?.branchId || null);
+    let targetBranchId = branchId;
+
+    if (!targetBranchId) {
+      const firstBranch = await prisma.branch.findFirst({ where: { isActive: true } });
+      if (firstBranch) targetBranchId = firstBranch.id;
+    }
+
+    if (targetBranchId) {
+      await prisma.productStock.upsert({
+        where: {
+          branchId_productId: {
+            branchId: targetBranchId,
+            productId: parseInt(id)
+          }
+        },
+        update: { quantity: updatedStockQty },
+        create: {
+          branchId: targetBranchId,
+          productId: parseInt(id),
+          quantity: updatedStockQty
+        }
+      });
+    }
+  }
+
   res.json(product);
 });
 
